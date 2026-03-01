@@ -1,5 +1,7 @@
 package neon.wave
 
+import neon.common.OrderId
+
 class WaveSuite extends munit.FunSuite:
   val id = WaveId()
   val orderIds = List(OrderId(), OrderId(), OrderId())

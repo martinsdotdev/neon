@@ -8,19 +8,28 @@ ThisBuild / scalacOptions       ++= Seq("-Wunused:imports")
 val munitVersion       = "1.1.0"
 val uuidCreatorVersion = "6.1.1"
 
+lazy val common = project
+  .in(file("common"))
+  .settings(
+    name := "neon-common",
+    libraryDependencies ++= Seq(
+      "com.github.f4b6a3" % "uuid-creator" % uuidCreatorVersion
+    )
+  )
+
 lazy val wave = project
   .in(file("wave"))
+  .dependsOn(common)
   .settings(
     name := "neon-wave",
     libraryDependencies ++= Seq(
-      "com.github.f4b6a3" % "uuid-creator" % uuidCreatorVersion,
-      "org.scalameta"    %% "munit"         % munitVersion % Test
+      "org.scalameta" %% "munit" % munitVersion % Test
     )
   )
 
 lazy val root = project
   .in(file("."))
-  .aggregate(wave)
+  .aggregate(common, wave)
   .settings(
     name := "neon-wes",
     publish / skip := true

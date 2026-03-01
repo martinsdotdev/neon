@@ -1,5 +1,6 @@
 package neon.wave
 
+import neon.common.OrderId
 import java.time.Instant
 
 sealed trait Wave:
