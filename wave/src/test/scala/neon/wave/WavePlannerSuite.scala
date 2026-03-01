@@ -1,6 +1,7 @@
 package neon.wave
 
 import neon.common.{OrderId, PackagingLevel, SkuId}
+import neon.order.{Order, OrderLine}
 import org.scalatest.funspec.AnyFunSpec
 import java.time.Instant
 

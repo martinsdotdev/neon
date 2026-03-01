@@ -1,6 +1,7 @@
 package neon.wave
 
 import neon.common.WaveId
+import neon.order.{Order, OrderLine}
 import java.time.Instant
 
 case class WavePlan(

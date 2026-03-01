@@ -1,4 +1,4 @@
-package neon.wave
+package neon.order
 
 import neon.common.{OrderId, PackagingLevel, SkuId}
 

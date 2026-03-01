@@ -19,9 +19,14 @@ lazy val common = project
     )
   )
 
+lazy val order = project
+  .in(file("order"))
+  .dependsOn(common)
+  .settings(name := "neon-order")
+
 lazy val wave = project
   .in(file("wave"))
-  .dependsOn(common)
+  .dependsOn(common, order)
   .settings(name := "neon-wave")
 
 lazy val task = project
@@ -41,7 +46,7 @@ lazy val app = project
 
 lazy val root = project
   .in(file("."))
-  .aggregate(common, wave, task, consolidation, app)
+  .aggregate(common, order, wave, task, consolidation, app)
   .settings(
     name := "neon-wes",
     publish / skip := true
