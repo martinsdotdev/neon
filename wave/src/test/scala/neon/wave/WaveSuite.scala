@@ -1,37 +1,46 @@
 package neon.wave
 
 import neon.common.{OrderId, WaveId}
+import org.scalatest.funspec.AnyFunSpec
 
-class WaveSuite extends munit.FunSuite:
+class WaveSuite extends AnyFunSpec:
   val id = WaveId()
   val orderIds = List(OrderId(), OrderId(), OrderId())
 
-  test("releasing a wave authorizes work to begin"):
-    val (released, event) = Wave.Planned(id, OrderGrouping.Multi, orderIds).release()
-    assertEquals(event.waveId, id)
-    assertEquals(event.orderGrouping, OrderGrouping.Multi)
+  def planned(grouping: OrderGrouping = OrderGrouping.Multi) =
+    Wave.Planned(id, grouping, orderIds)
 
-  test("the release event carries order IDs for task creation"):
-    val (_, event) = Wave.Planned(id, OrderGrouping.Multi, orderIds).release()
-    assertEquals(event.orderIds, orderIds)
+  describe("Wave"):
+    describe("releasing"):
+      it("authorizes work to begin"):
+        val (_, event) = planned().release()
+        assert(event.waveId == id)
+        assert(event.orderGrouping == OrderGrouping.Multi)
 
-  test("completing a released wave marks all work as done"):
-    val (released, _) = Wave.Planned(id, OrderGrouping.Multi, orderIds).release()
-    val (completed, event) = released.complete()
-    assertEquals(event.waveId, id)
+      it("carries order IDs for task creation"):
+        val (_, event) = planned().release()
+        assert(event.orderIds == orderIds)
 
-  test("a planned wave can be discarded before any work starts"):
-    val (cancelled, event) = Wave.Planned(id, OrderGrouping.Single, orderIds).cancel()
-    assertEquals(event.waveId, id)
+    describe("completing"):
+      it("marks all work as done"):
+        val (released, _) = planned().release()
+        val (_, event) = released.complete()
+        assert(event.waveId == id)
 
-  test("a released wave can be cancelled to stop in-progress work"):
-    val (released, _) = Wave.Planned(id, OrderGrouping.Multi, orderIds).release()
-    val (cancelled, event) = released.cancel()
-    assertEquals(event.waveId, id)
+    describe("cancelling"):
+      it("can be cancelled before release"):
+        val (_, event) = planned(OrderGrouping.Single).cancel()
+        assert(event.waveId == id)
 
-  test("order grouping is carried in events for downstream routing"):
-    val (_, releaseEvent) = Wave.Planned(id, OrderGrouping.Multi, orderIds).release()
-    assertEquals(releaseEvent.orderGrouping, OrderGrouping.Multi)
-    val (released, _) = Wave.Planned(id, OrderGrouping.Single, orderIds).release()
-    val (_, completeEvent) = released.complete()
-    assertEquals(completeEvent.orderGrouping, OrderGrouping.Single)
+      it("can be cancelled after release"):
+        val (released, _) = planned().release()
+        val (_, event) = released.cancel()
+        assert(event.waveId == id)
+
+    describe("order grouping"):
+      it("is carried in events for downstream routing"):
+        val (_, releaseEvent) = planned(OrderGrouping.Multi).release()
+        assert(releaseEvent.orderGrouping == OrderGrouping.Multi)
+        val (released, _) = planned(OrderGrouping.Single).release()
+        val (_, completeEvent) = released.complete()
+        assert(completeEvent.orderGrouping == OrderGrouping.Single)

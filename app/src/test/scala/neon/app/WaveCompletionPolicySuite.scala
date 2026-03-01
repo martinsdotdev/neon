@@ -3,43 +3,41 @@ package neon.app
 import neon.common.{OrderId, SkuId, TaskId, WaveId}
 import neon.task.{Task, TaskType}
 import neon.wave.{OrderGrouping, Wave}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.OptionValues
 
-class WaveCompletionPolicySuite extends munit.FunSuite:
+class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
   val waveId = WaveId()
   val skuId = SkuId()
   val orderIds = List(OrderId(), OrderId())
 
   def released() = Wave.Released(waveId, OrderGrouping.Multi, orderIds)
 
-  def completedTask(waveId: WaveId = waveId) =
+  def completedTask() =
     Task.Completed(TaskId(), TaskType.Pick, skuId, 10, 10, Some(waveId))
 
-  def cancelledTask(waveId: WaveId = waveId) =
+  def cancelledTask() =
     Task.Cancelled(TaskId(), TaskType.Pick, skuId, Some(waveId))
 
-  def assignedTask(waveId: WaveId = waveId) =
+  def assignedTask() =
     Task.Assigned(TaskId(), TaskType.Pick, skuId, 10, Some(waveId), None, neon.common.UserId())
 
-  def plannedTask(waveId: WaveId = waveId) =
-    Task.Planned(TaskId(), TaskType.Pick, skuId, 10, Some(waveId), None)
+  describe("WaveCompletionPolicy"):
+    describe("when all tasks are terminal"):
+      it("completes the wave"):
+        val tasks = List(completedTask(), completedTask(), completedTask())
+        val (_, event) = WaveCompletionPolicy.evaluate(tasks, released()).value
+        assert(event.waveId == waveId)
 
-  test("wave completes when all its tasks are done"):
-    val tasks = List(completedTask(), completedTask(), completedTask())
-    val result = WaveCompletionPolicy.evaluate(tasks, released())
-    assert(result.isDefined)
-    val (completed, event) = result.get
-    assertEquals(event.waveId, waveId)
+      it("treats cancelled tasks as terminal"):
+        val tasks = List(completedTask(), cancelledTask(), completedTask())
+        assert(WaveCompletionPolicy.evaluate(tasks, released()).isDefined)
 
-  test("wave does not complete while tasks are still open"):
-    val tasks = List(completedTask(), assignedTask(), completedTask())
-    val result = WaveCompletionPolicy.evaluate(tasks, released())
-    assertEquals(result, None)
+    describe("when tasks are still open"):
+      it("does not complete the wave"):
+        val tasks = List(completedTask(), assignedTask(), completedTask())
+        assert(WaveCompletionPolicy.evaluate(tasks, released()).isEmpty)
 
-  test("cancelled tasks count as done for wave completion"):
-    val tasks = List(completedTask(), cancelledTask(), completedTask())
-    val result = WaveCompletionPolicy.evaluate(tasks, released())
-    assert(result.isDefined)
-
-  test("wave does not complete with an empty task list"):
-    val result = WaveCompletionPolicy.evaluate(List.empty, released())
-    assertEquals(result, None)
+    describe("when the task list is empty"):
+      it("does not complete the wave"):
+        assert(WaveCompletionPolicy.evaluate(List.empty, released()).isEmpty)

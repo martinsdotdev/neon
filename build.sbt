@@ -5,7 +5,7 @@ ThisBuild / semanticdbEnabled    := true
 ThisBuild / semanticdbVersion    := scalafixSemanticdb.revision
 ThisBuild / scalacOptions       ++= Seq("-Wunused:imports")
 
-val munitVersion       = "1.1.0"
+val scalatestVersion   = "3.2.19"
 val uuidCreatorVersion = "6.1.1"
 
 lazy val common = project
@@ -23,7 +23,7 @@ lazy val wave = project
   .settings(
     name := "neon-wave",
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit" % munitVersion % Test
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test
     )
   )
 
@@ -33,7 +33,7 @@ lazy val task = project
   .settings(
     name := "neon-task",
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit" % munitVersion % Test
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test
     )
   )
 
@@ -43,7 +43,7 @@ lazy val consolidation = project
   .settings(
     name := "neon-consolidation",
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit" % munitVersion % Test
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test
     )
   )
 
@@ -53,7 +53,7 @@ lazy val app = project
   .settings(
     name := "neon-app",
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit" % munitVersion % Test
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test
     )
   )
 

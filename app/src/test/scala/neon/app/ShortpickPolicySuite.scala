@@ -2,31 +2,32 @@ package neon.app
 
 import neon.common.{SkuId, TaskId, WaveId}
 import neon.task.{Task, TaskType}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.OptionValues
 
-class ShortpickPolicySuite extends munit.FunSuite:
+class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
   val skuId = SkuId()
   val waveId = WaveId()
 
   def completed(requested: Int, actual: Int, waveId: Option[WaveId] = Some(waveId)) =
     Task.Completed(TaskId(), TaskType.Pick, skuId, requested, actual, waveId)
 
-  test("no shortpick when actual meets requested"):
-    val result = ShortpickPolicy.evaluate(completed(10, 10))
-    assertEquals(result, None)
+  describe("ShortpickPolicy"):
+    describe("when actual meets requested"):
+      it("returns None"):
+        assert(ShortpickPolicy.evaluate(completed(10, 10)).isEmpty)
 
-  test("shortpick creates task for remaining quantity"):
-    val result = ShortpickPolicy.evaluate(completed(10, 7))
-    assert(result.isDefined)
-    assertEquals(result.get.requestedQty, 3)
+    describe("when actual is less than requested"):
+      val task = completed(10, 7)
+      val replacement = ShortpickPolicy.evaluate(task).value
 
-  test("replacement task inherits wave and sku"):
-    val task = completed(10, 4)
-    val replacement = ShortpickPolicy.evaluate(task).get
-    assertEquals(replacement.waveId, task.waveId)
-    assertEquals(replacement.skuId, task.skuId)
-    assertEquals(replacement.taskType, task.taskType)
+      it("creates a task for the remaining quantity"):
+        assert(replacement.requestedQty == 3)
 
-  test("replacement task links to original via parent"):
-    val task = completed(10, 6)
-    val replacement = ShortpickPolicy.evaluate(task).get
-    assertEquals(replacement.parentTaskId, Some(task.id))
+      it("inherits wave, sku, and task type"):
+        assert(replacement.waveId == task.waveId)
+        assert(replacement.skuId == task.skuId)
+        assert(replacement.taskType == task.taskType)
+
+      it("links to the original via parentTaskId"):
+        assert(replacement.parentTaskId.value == task.id)
