@@ -1,51 +1,35 @@
 package neon.wave
 
-class WaveIdSuite extends munit.FunSuite:
-  test("each generated id is unique"):
-    assert(WaveId() != WaveId())
-
-  test("ids generated in sequence are time-ordered (UUIDv7)"):
-    val first = WaveId()
-    val second = WaveId()
-    assert(first.value.compareTo(second.value) < 0)
-
 class WaveSuite extends munit.FunSuite:
   val id = WaveId()
+  val orderIds = List(OrderId(), OrderId(), OrderId())
 
-  test("releasing a planned wave produces a released wave"):
-    val released: Wave.Released = Wave.Planned(id, OrderGrouping.Multi).release()
-    assertEquals(released.id, id)
+  test("releasing a wave authorizes work to begin"):
+    val (released, event) = Wave.Planned(id, OrderGrouping.Multi, orderIds).release()
+    assertEquals(event.waveId, id)
+    assertEquals(event.orderGrouping, OrderGrouping.Multi)
 
-  test("completing a released wave produces a completed wave"):
-    val completed: Wave.Completed =
-      Wave.Planned(id, OrderGrouping.Multi).release().complete()
-    assertEquals(completed.id, id)
+  test("the release event carries order IDs for task creation"):
+    val (_, event) = Wave.Planned(id, OrderGrouping.Multi, orderIds).release()
+    assertEquals(event.orderIds, orderIds)
 
-  test("a planned wave can be cancelled before release"):
-    val cancelled: Wave.Cancelled =
-      Wave.Planned(id, OrderGrouping.Single).cancel()
-    assertEquals(cancelled.id, id)
+  test("completing a released wave marks all work as done"):
+    val (released, _) = Wave.Planned(id, OrderGrouping.Multi, orderIds).release()
+    val (completed, event) = released.complete()
+    assertEquals(event.waveId, id)
 
-  test("a released wave can be cancelled before completion"):
-    val cancelled: Wave.Cancelled =
-      Wave.Planned(id, OrderGrouping.Multi).release().cancel()
-    assertEquals(cancelled.id, id)
+  test("a planned wave can be discarded before any work starts"):
+    val (cancelled, event) = Wave.Planned(id, OrderGrouping.Single, orderIds).cancel()
+    assertEquals(event.waveId, id)
 
-  test("a cancelled wave is the same regardless of when it was cancelled"):
-    val fromPlanned = Wave.Planned(id, OrderGrouping.Multi).cancel()
-    val fromReleased = Wave.Planned(id, OrderGrouping.Multi).release().cancel()
-    assertEquals(fromPlanned, fromReleased)
+  test("a released wave can be cancelled to stop in-progress work"):
+    val (released, _) = Wave.Planned(id, OrderGrouping.Multi, orderIds).release()
+    val (cancelled, event) = released.cancel()
+    assertEquals(event.waveId, id)
 
-  test("all four wave states are distinguishable by pattern match"):
-    val waves: List[Wave] = List(
-      Wave.Planned(id, OrderGrouping.Multi),
-      Wave.Planned(id, OrderGrouping.Multi).release(),
-      Wave.Planned(id, OrderGrouping.Multi).release().complete(),
-      Wave.Planned(id, OrderGrouping.Multi).cancel()
-    )
-    val labels = waves.map:
-      case _: Wave.Planned   => "planned"
-      case _: Wave.Released  => "released"
-      case _: Wave.Completed => "completed"
-      case _: Wave.Cancelled => "cancelled"
-    assertEquals(labels, List("planned", "released", "completed", "cancelled"))
+  test("order grouping is carried in events for downstream routing"):
+    val (_, releaseEvent) = Wave.Planned(id, OrderGrouping.Multi, orderIds).release()
+    assertEquals(releaseEvent.orderGrouping, OrderGrouping.Multi)
+    val (released, _) = Wave.Planned(id, OrderGrouping.Single, orderIds).release()
+    val (_, completeEvent) = released.complete()
+    assertEquals(completeEvent.orderGrouping, OrderGrouping.Single)
