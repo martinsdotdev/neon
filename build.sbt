@@ -27,11 +27,11 @@ lazy val wave = project
     )
   )
 
-lazy val picking = project
-  .in(file("picking"))
+lazy val task = project
+  .in(file("task"))
   .dependsOn(common)
   .settings(
-    name := "neon-picking",
+    name := "neon-task",
     libraryDependencies ++= Seq(
       "org.scalameta" %% "munit" % munitVersion % Test
     )
@@ -49,7 +49,7 @@ lazy val consolidation = project
 
 lazy val root = project
   .in(file("."))
-  .aggregate(common, wave, picking, consolidation)
+  .aggregate(common, wave, task, consolidation)
   .settings(
     name := "neon-wes",
     publish / skip := true
