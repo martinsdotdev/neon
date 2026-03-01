@@ -18,14 +18,14 @@ object Task:
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId]
   ) extends Task:
-    def assign(userId: UserId): (Assigned, TaskEvent.TaskAssigned) =
+    def assign(userId: UserId, at: Instant): (Assigned, TaskEvent.TaskAssigned) =
       val assigned = Assigned(id, taskType, skuId, requestedQty, waveId, parentTaskId, userId)
-      val event = TaskEvent.TaskAssigned(id, taskType, userId, Instant.now())
+      val event = TaskEvent.TaskAssigned(id, taskType, userId, at)
       (assigned, event)
 
-    def cancel(): (Cancelled, TaskEvent.TaskCancelled) =
+    def cancel(at: Instant): (Cancelled, TaskEvent.TaskCancelled) =
       val cancelled = Cancelled(id, taskType, skuId, waveId)
-      val event = TaskEvent.TaskCancelled(id, taskType, waveId, Instant.now())
+      val event = TaskEvent.TaskCancelled(id, taskType, waveId, at)
       (cancelled, event)
 
   case class Assigned(
@@ -37,15 +37,15 @@ object Task:
       parentTaskId: Option[TaskId],
       assignedTo: UserId
   ) extends Task:
-    def complete(actualQty: Int): (Completed, TaskEvent.TaskCompleted) =
+    def complete(actualQty: Int, at: Instant): (Completed, TaskEvent.TaskCompleted) =
       val completed = Completed(id, taskType, skuId, requestedQty, actualQty, waveId)
       val event =
-        TaskEvent.TaskCompleted(id, taskType, skuId, waveId, requestedQty, actualQty, Instant.now())
+        TaskEvent.TaskCompleted(id, taskType, skuId, waveId, requestedQty, actualQty, at)
       (completed, event)
 
-    def cancel(): (Cancelled, TaskEvent.TaskCancelled) =
+    def cancel(at: Instant): (Cancelled, TaskEvent.TaskCancelled) =
       val cancelled = Cancelled(id, taskType, skuId, waveId)
-      val event = TaskEvent.TaskCancelled(id, taskType, waveId, Instant.now())
+      val event = TaskEvent.TaskCancelled(id, taskType, waveId, at)
       (cancelled, event)
 
   case class Completed(

@@ -8,6 +8,8 @@ ThisBuild / scalacOptions       ++= Seq("-Wunused:imports")
 val scalatestVersion   = "3.2.19"
 val uuidCreatorVersion = "6.1.1"
 
+ThisBuild / libraryDependencies += "org.scalatest" %% "scalatest" % scalatestVersion % Test
+
 lazy val common = project
   .in(file("common"))
   .settings(
@@ -20,42 +22,22 @@ lazy val common = project
 lazy val wave = project
   .in(file("wave"))
   .dependsOn(common)
-  .settings(
-    name := "neon-wave",
-    libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % scalatestVersion % Test
-    )
-  )
+  .settings(name := "neon-wave")
 
 lazy val task = project
   .in(file("task"))
   .dependsOn(common)
-  .settings(
-    name := "neon-task",
-    libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % scalatestVersion % Test
-    )
-  )
+  .settings(name := "neon-task")
 
 lazy val consolidation = project
   .in(file("consolidation"))
   .dependsOn(common)
-  .settings(
-    name := "neon-consolidation",
-    libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % scalatestVersion % Test
-    )
-  )
+  .settings(name := "neon-consolidation")
 
 lazy val app = project
   .in(file("app"))
   .dependsOn(common, wave, task)
-  .settings(
-    name := "neon-app",
-    libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % scalatestVersion % Test
-    )
-  )
+  .settings(name := "neon-app")
 
 lazy val root = project
   .in(file("."))

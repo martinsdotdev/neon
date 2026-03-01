@@ -13,14 +13,14 @@ object Wave:
       orderGrouping: OrderGrouping,
       orderIds: List[OrderId]
   ) extends Wave:
-    def release(): (Released, WaveEvent.WaveReleased) =
+    def release(at: Instant): (Released, WaveEvent.WaveReleased) =
       val released = Released(id, orderGrouping, orderIds)
-      val event = WaveEvent.WaveReleased(id, orderGrouping, orderIds, Instant.now())
+      val event = WaveEvent.WaveReleased(id, orderGrouping, orderIds, at)
       (released, event)
 
-    def cancel(): (Cancelled, WaveEvent.WaveCancelled) =
+    def cancel(at: Instant): (Cancelled, WaveEvent.WaveCancelled) =
       val cancelled = Cancelled(id, orderGrouping)
-      val event = WaveEvent.WaveCancelled(id, orderGrouping, Instant.now())
+      val event = WaveEvent.WaveCancelled(id, orderGrouping, at)
       (cancelled, event)
 
   case class Released(
@@ -28,14 +28,14 @@ object Wave:
       orderGrouping: OrderGrouping,
       orderIds: List[OrderId]
   ) extends Wave:
-    def complete(): (Completed, WaveEvent.WaveCompleted) =
+    def complete(at: Instant): (Completed, WaveEvent.WaveCompleted) =
       val completed = Completed(id, orderGrouping)
-      val event = WaveEvent.WaveCompleted(id, orderGrouping, Instant.now())
+      val event = WaveEvent.WaveCompleted(id, orderGrouping, at)
       (completed, event)
 
-    def cancel(): (Cancelled, WaveEvent.WaveCancelled) =
+    def cancel(at: Instant): (Cancelled, WaveEvent.WaveCancelled) =
       val cancelled = Cancelled(id, orderGrouping)
-      val event = WaveEvent.WaveCancelled(id, orderGrouping, Instant.now())
+      val event = WaveEvent.WaveCancelled(id, orderGrouping, at)
       (cancelled, event)
 
   case class Completed(id: WaveId, orderGrouping: OrderGrouping) extends Wave
