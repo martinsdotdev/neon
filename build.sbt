@@ -47,9 +47,19 @@ lazy val consolidation = project
     )
   )
 
+lazy val app = project
+  .in(file("app"))
+  .dependsOn(common, wave, task)
+  .settings(
+    name := "neon-app",
+    libraryDependencies ++= Seq(
+      "org.scalameta" %% "munit" % munitVersion % Test
+    )
+  )
+
 lazy val root = project
   .in(file("."))
-  .aggregate(common, wave, task, consolidation)
+  .aggregate(common, wave, task, consolidation, app)
   .settings(
     name := "neon-wes",
     publish / skip := true
