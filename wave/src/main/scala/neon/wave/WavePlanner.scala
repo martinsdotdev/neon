@@ -1,5 +1,7 @@
 package neon.wave
 
+import neon.common.WaveId
+
 case class WavePlan(
     wave: Wave.Released,
     event: WaveEvent.WaveReleased,
@@ -12,7 +14,8 @@ object WavePlanner:
     val orderIds = orders.map(_.id)
     val planned = Wave.Planned(id, grouping, orderIds)
     val (released, event) = planned.release()
-    val taskRequests = orders.flatMap: order =>
-      order.lines.map: line =>
-        TaskRequest(id, line.skuId, line.packagingLevel, line.quantity)
+    val taskRequests = for
+      order <- orders
+      line  <- order.lines
+    yield TaskRequest(id, line.skuId, line.packagingLevel, line.quantity)
     WavePlan(released, event, taskRequests)

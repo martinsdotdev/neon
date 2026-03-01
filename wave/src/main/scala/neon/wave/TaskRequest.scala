@@ -1,6 +1,6 @@
 package neon.wave
 
-import neon.common.{PackagingLevel, SkuId}
+import neon.common.{PackagingLevel, SkuId, WaveId}
 
 case class TaskRequest(
     waveId: WaveId,
