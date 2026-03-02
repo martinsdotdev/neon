@@ -76,6 +76,11 @@ class ConsolidationGroupCancellationPolicySuite extends AnyFunSpec:
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 
+      it("preserves orderIds in cancelled state for audit"):
+        val groups = List(created())
+        val (cancelled, _) = ConsolidationGroupCancellationPolicy.evaluate(groups, at).head
+        assert(cancelled.orderIds == orderIds)
+
     describe("when all groups are already terminal"):
       it("produces no cancellations"):
         val groups = List(completed(), cancelled())

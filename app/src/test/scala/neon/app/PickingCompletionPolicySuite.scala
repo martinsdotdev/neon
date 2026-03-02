@@ -47,6 +47,13 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 
+      it("preserves group identity across transition"):
+        val group = createdGroup()
+        val tasks = List(completedTask())
+        val (picked, _) = PickingCompletionPolicy.evaluate(tasks, group, at).value
+        assert(picked.waveId == waveId)
+        assert(picked.orderIds == orderIds)
+
     describe("when tasks are still open"):
       it("does not pick the group"):
         val tasks = List(completedTask(), assignedTask())

@@ -6,10 +6,7 @@ import neon.wave.{Wave, WaveEvent}
 import java.time.Instant
 
 object WaveCompletionPolicy:
-  private def isTerminal(task: Task): Boolean = task match
-    case _: Task.Completed => true
-    case _: Task.Cancelled => true
-    case _                 => false
+  import TaskPredicates.isTerminal
 
   def evaluate(
       waveTasks: List[Task],

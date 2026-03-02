@@ -6,6 +6,10 @@ import neon.handlingunit.HandlingUnit
 import java.time.Instant
 
 object BufferCompletionPolicy:
+  private def isInBuffer(hu: HandlingUnit): Boolean = hu match
+    case _: HandlingUnit.InBuffer => true
+    case _                        => false
+
   def evaluate(
       handlingUnits: List[HandlingUnit],
       group: ConsolidationGroup.Picked,
@@ -17,6 +21,5 @@ object BufferCompletionPolicy:
     )
   ] =
     if handlingUnits.isEmpty then None
-    else if handlingUnits.forall(_.isInstanceOf[HandlingUnit.InBuffer]) then
-      Some(group.readyForWorkstation(at))
+    else if handlingUnits.forall(isInBuffer) then Some(group.readyForWorkstation(at))
     else None

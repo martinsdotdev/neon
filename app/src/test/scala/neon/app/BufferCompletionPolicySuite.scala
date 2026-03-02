@@ -23,6 +23,9 @@ class BufferCompletionPolicySuite extends AnyFunSpec with OptionValues:
   def pickCreated() =
     HandlingUnit.PickCreated(HandlingUnitId(), PackagingLevel.Case, pickFace)
 
+  def empty() =
+    HandlingUnit.Empty(HandlingUnitId(), PackagingLevel.Case)
+
   describe("BufferCompletionPolicy"):
     describe("when all handling units are in buffer"):
       it("transitions the group to ready for workstation"):
@@ -38,9 +41,20 @@ class BufferCompletionPolicySuite extends AnyFunSpec with OptionValues:
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 
+      it("preserves group identity across transition"):
+        val group = pickedGroup()
+        val hus = List(inBuffer())
+        val (ready, _) = BufferCompletionPolicy.evaluate(hus, group, at).value
+        assert(ready.waveId == waveId)
+        assert(ready.orderIds == orderIds)
+
     describe("when some handling units are not yet in buffer"):
-      it("does not transition the group"):
+      it("does not transition when pick HUs are still in transit"):
         val hus = List(inBuffer(), pickCreated())
+        assert(BufferCompletionPolicy.evaluate(hus, pickedGroup(), at).isEmpty)
+
+      it("does not transition when HUs have already been emptied"):
+        val hus = List(inBuffer(), empty())
         assert(BufferCompletionPolicy.evaluate(hus, pickedGroup(), at).isEmpty)
 
     describe("when the handling unit list is empty"):

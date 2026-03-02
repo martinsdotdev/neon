@@ -20,12 +20,11 @@ class WorkstationReleasePolicySuite extends AnyFunSpec:
     Workstation.Active(workstationId, wsType, groupId)
 
   describe("WorkstationReleasePolicy"):
-    it("releases the workstation to idle"):
+    it("returns the workstation to idle"):
       val (idle, _) = WorkstationReleasePolicy.evaluate(completedEvent(), activeWorkstation(), at)
       assert(idle.id == workstationId)
-      assert(idle.isInstanceOf[Workstation.Idle])
 
-    it("emits event with workstationId and occurredAt"):
+    it("emits a released event with workstationId and occurredAt"):
       val (_, event) = WorkstationReleasePolicy.evaluate(completedEvent(), activeWorkstation(), at)
       assert(event.workstationId == workstationId)
       assert(event.occurredAt == at)
