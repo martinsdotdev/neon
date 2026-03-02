@@ -41,6 +41,10 @@ class WavePlannerSuite extends AnyFunSpec:
       val result = WavePlanner.plan(orders, OrderGrouping.Single, at)
       assert(result.taskRequests.forall(_.waveId == result.wave.id))
 
+    it("rejects empty order list"):
+      assertThrows[IllegalArgumentException]:
+        WavePlanner.plan(List.empty, OrderGrouping.Single, at)
+
     it("handles multiple orders with multiple lines"):
       val order1 = Order(OrderId(), List(
         OrderLine(sku1, PackagingLevel.Each, 5),

@@ -54,6 +54,10 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
 
       it("emits a TaskCreated event for the replacement"):
         assert(event.taskId == replacement.id)
+        assert(event.taskType == task.taskType)
+        assert(event.skuId == task.skuId)
+        assert(event.waveId == task.waveId)
+        assert(event.handlingUnitId == Some(handlingUnitId))
         assert(event.requestedQty == 3)
         assert(event.parentTaskId.value == task.id)
         assert(event.occurredAt == at)

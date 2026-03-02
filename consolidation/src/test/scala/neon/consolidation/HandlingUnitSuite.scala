@@ -65,3 +65,19 @@ class HandlingUnitSuite extends AnyFunSpec:
         val (_, event) = pickCreated().moveToBuffer(bufferArea, at)
         assert(event.locationId == bufferArea)
         assert(event.occurredAt == at)
+
+      it("emptied event identifies the handling unit"):
+        val (inBuffer, _) = pickCreated().moveToBuffer(bufferArea, at)
+        val (_, event) = inBuffer.empty(at)
+        assert(event.handlingUnitId == id)
+        assert(event.occurredAt == at)
+
+      it("ship lifecycle events identify the handling unit"):
+        val (packed, packEvent) = shipCreated().pack(at)
+        assert(packEvent.occurredAt == at)
+        val (ready, readyEvent) = packed.readyToShip(at)
+        assert(readyEvent.handlingUnitId == id)
+        assert(readyEvent.occurredAt == at)
+        val (_, shipEvent) = ready.ship(at)
+        assert(shipEvent.handlingUnitId == id)
+        assert(shipEvent.occurredAt == at)

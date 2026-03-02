@@ -73,10 +73,14 @@ class TaskSuite extends AnyFunSpec:
         assert(event.taskType == TaskType.Pick)
         assert(event.skuId == skuId)
 
-      it("completed event carries handling unit ID for routing"):
+      it("completed event carries all fields for downstream routing"):
         val (assigned, _) = planned().assign(userId, at)
-        val (_, event) = assigned.complete(10, at)
+        val (_, event) = assigned.complete(8, at)
+        assert(event.waveId == Some(waveId))
         assert(event.handlingUnitId == Some(handlingUnitId))
+        assert(event.requestedQty == 10)
+        assert(event.actualQty == 8)
+        assert(event.occurredAt == at)
 
       it("accepts zero actual quantity for full shortpick"):
         val (assigned, _) = planned().assign(userId, at)

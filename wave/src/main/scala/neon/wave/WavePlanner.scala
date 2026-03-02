@@ -16,6 +16,7 @@ object WavePlanner:
       grouping: OrderGrouping,
       at: Instant
   ): WavePlan =
+    require(orders.nonEmpty, "orders must not be empty")
     val id = WaveId()
     val orderIds = orders.map(_.id)
     val planned = Wave.Planned(id, grouping, orderIds)
