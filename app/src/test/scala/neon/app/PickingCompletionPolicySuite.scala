@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{GroupId, OrderId, SkuId, TaskId, UserId, WaveId}
+import neon.common.{GroupId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 import neon.consolidationgroup.ConsolidationGroup
 import neon.task.{Task, TaskType}
 import org.scalatest.OptionValues
@@ -17,16 +17,46 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
   def createdGroup() = ConsolidationGroup.Created(GroupId(), waveId, orderIds)
 
   def completedTask() =
-    Task.Completed(TaskId(), TaskType.Pick, skuId, 10, 10, Some(waveId), None, None, UserId())
+    Task.Completed(
+      TaskId(),
+      TaskType.Pick,
+      skuId,
+      PackagingLevel.Each,
+      10,
+      10,
+      Some(waveId),
+      None,
+      None,
+      UserId()
+    )
 
   def cancelledTask() =
-    Task.Cancelled(TaskId(), TaskType.Pick, skuId, Some(waveId), None, None, None)
+    Task.Cancelled(
+      TaskId(),
+      TaskType.Pick,
+      skuId,
+      PackagingLevel.Each,
+      Some(waveId),
+      None,
+      None,
+      None
+    )
 
   def assignedTask() =
-    Task.Assigned(TaskId(), TaskType.Pick, skuId, 10, Some(waveId), None, None, UserId())
+    Task.Assigned(
+      TaskId(),
+      TaskType.Pick,
+      skuId,
+      PackagingLevel.Each,
+      10,
+      Some(waveId),
+      None,
+      None,
+      UserId()
+    )
 
   def plannedTask() =
-    Task.Planned(TaskId(), TaskType.Pick, skuId, 10, Some(waveId), None, None)
+    Task.Planned(TaskId(), TaskType.Pick, skuId, PackagingLevel.Each, 10, Some(waveId), None, None)
 
   describe("PickingCompletionPolicy"):
     describe("when all tasks are terminal"):

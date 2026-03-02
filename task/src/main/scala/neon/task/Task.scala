@@ -1,6 +1,6 @@
 package neon.task
 
-import neon.common.{HandlingUnitId, SkuId, TaskId, UserId, WaveId}
+import neon.common.{HandlingUnitId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 
 import java.time.Instant
 
@@ -15,6 +15,7 @@ object Task:
   def create(
       taskType: TaskType,
       skuId: SkuId,
+      packagingLevel: PackagingLevel,
       requestedQty: Int,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
@@ -23,12 +24,23 @@ object Task:
   ): (Planned, TaskEvent.TaskCreated) =
     require(requestedQty > 0, s"requestedQty must be positive, got $requestedQty")
     val id = TaskId()
-    val planned = Planned(id, taskType, skuId, requestedQty, waveId, parentTaskId, handlingUnitId)
+    val planned =
+      Planned(
+        id,
+        taskType,
+        skuId,
+        packagingLevel,
+        requestedQty,
+        waveId,
+        parentTaskId,
+        handlingUnitId
+      )
     val event =
       TaskEvent.TaskCreated(
         id,
         taskType,
         skuId,
+        packagingLevel,
         waveId,
         parentTaskId,
         handlingUnitId,
@@ -41,6 +53,7 @@ object Task:
       id: TaskId,
       taskType: TaskType,
       skuId: SkuId,
+      packagingLevel: PackagingLevel,
       requestedQty: Int,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
@@ -48,12 +61,23 @@ object Task:
   ) extends Task:
     def assign(userId: UserId, at: Instant): (Assigned, TaskEvent.TaskAssigned) =
       val assigned =
-        Assigned(id, taskType, skuId, requestedQty, waveId, parentTaskId, handlingUnitId, userId)
+        Assigned(
+          id,
+          taskType,
+          skuId,
+          packagingLevel,
+          requestedQty,
+          waveId,
+          parentTaskId,
+          handlingUnitId,
+          userId
+        )
       val event = TaskEvent.TaskAssigned(id, taskType, userId, at)
       (assigned, event)
 
     def cancel(at: Instant): (Cancelled, TaskEvent.TaskCancelled) =
-      val cancelled = Cancelled(id, taskType, skuId, waveId, parentTaskId, handlingUnitId, None)
+      val cancelled =
+        Cancelled(id, taskType, skuId, packagingLevel, waveId, parentTaskId, handlingUnitId, None)
       val event =
         TaskEvent.TaskCancelled(id, taskType, waveId, parentTaskId, handlingUnitId, None, at)
       (cancelled, event)
@@ -62,6 +86,7 @@ object Task:
       id: TaskId,
       taskType: TaskType,
       skuId: SkuId,
+      packagingLevel: PackagingLevel,
       requestedQty: Int,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
@@ -75,6 +100,7 @@ object Task:
           id,
           taskType,
           skuId,
+          packagingLevel,
           requestedQty,
           actualQty,
           waveId,
@@ -87,6 +113,7 @@ object Task:
           id,
           taskType,
           skuId,
+          packagingLevel,
           waveId,
           parentTaskId,
           handlingUnitId,
@@ -99,7 +126,16 @@ object Task:
 
     def cancel(at: Instant): (Cancelled, TaskEvent.TaskCancelled) =
       val cancelled =
-        Cancelled(id, taskType, skuId, waveId, parentTaskId, handlingUnitId, Some(assignedTo))
+        Cancelled(
+          id,
+          taskType,
+          skuId,
+          packagingLevel,
+          waveId,
+          parentTaskId,
+          handlingUnitId,
+          Some(assignedTo)
+        )
       val event = TaskEvent
         .TaskCancelled(id, taskType, waveId, parentTaskId, handlingUnitId, Some(assignedTo), at)
       (cancelled, event)
@@ -108,6 +144,7 @@ object Task:
       id: TaskId,
       taskType: TaskType,
       skuId: SkuId,
+      packagingLevel: PackagingLevel,
       requestedQty: Int,
       actualQty: Int,
       waveId: Option[WaveId],
@@ -120,6 +157,7 @@ object Task:
       id: TaskId,
       taskType: TaskType,
       skuId: SkuId,
+      packagingLevel: PackagingLevel,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],

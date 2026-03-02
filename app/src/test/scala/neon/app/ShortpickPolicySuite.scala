@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{HandlingUnitId, SkuId, TaskId, UserId, WaveId}
+import neon.common.{HandlingUnitId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 import neon.task.{Task, TaskType}
 import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
@@ -18,12 +18,14 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
       requested: Int,
       actual: Int,
       waveId: Option[WaveId] = Some(waveId),
-      handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId)
+      handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId),
+      packagingLevel: PackagingLevel = PackagingLevel.Each
   ) =
     Task.Completed(
       TaskId(),
       TaskType.Pick,
       skuId,
+      packagingLevel,
       requested,
       actual,
       waveId,
@@ -58,6 +60,9 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
         assert(replacement.skuId == task.skuId)
         assert(replacement.taskType == task.taskType)
 
+      it("inherits packagingLevel from the original task"):
+        assert(replacement.packagingLevel == task.packagingLevel)
+
       it("links to the original via parentTaskId"):
         assert(replacement.parentTaskId.value == task.id)
 
@@ -68,6 +73,7 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
         assert(event.taskId == replacement.id)
         assert(event.taskType == task.taskType)
         assert(event.skuId == task.skuId)
+        assert(event.packagingLevel == task.packagingLevel)
         assert(event.waveId == task.waveId)
         assert(event.handlingUnitId == Some(handlingUnitId))
         assert(event.requestedQty == 3)
@@ -80,3 +86,10 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
         val (replacement, _) = ShortpickPolicy(task, at).value
         assert(replacement.waveId == None)
         assert(replacement.handlingUnitId == None)
+
+    describe("packagingLevel propagation"):
+      it("replacement inherits Case packagingLevel"):
+        val task = completed(3, 1, packagingLevel = PackagingLevel.Case)
+        val (replacement, event) = ShortpickPolicy(task, at).value
+        assert(replacement.packagingLevel == PackagingLevel.Case)
+        assert(event.packagingLevel == PackagingLevel.Case)

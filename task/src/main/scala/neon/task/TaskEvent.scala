@@ -1,6 +1,6 @@
 package neon.task
 
-import neon.common.{HandlingUnitId, SkuId, TaskId, UserId, WaveId}
+import neon.common.{HandlingUnitId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 
 import java.time.Instant
 
@@ -14,6 +14,7 @@ object TaskEvent:
       taskId: TaskId,
       taskType: TaskType,
       skuId: SkuId,
+      packagingLevel: PackagingLevel,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
@@ -32,6 +33,7 @@ object TaskEvent:
       taskId: TaskId,
       taskType: TaskType,
       skuId: SkuId,
+      packagingLevel: PackagingLevel,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],

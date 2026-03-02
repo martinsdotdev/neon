@@ -16,6 +16,7 @@ object ShortpickPolicy:
         Task.create(
           taskType = completed.taskType,
           skuId = completed.skuId,
+          packagingLevel = completed.packagingLevel,
           requestedQty = remainder,
           waveId = completed.waveId,
           parentTaskId = Some(completed.id),

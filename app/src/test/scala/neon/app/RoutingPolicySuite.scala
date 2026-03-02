@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{HandlingUnitId, LocationId, SkuId, TaskId, UserId, WaveId}
+import neon.common.{HandlingUnitId, LocationId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 import neon.task.{TaskEvent, TaskType}
 import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
@@ -23,6 +23,7 @@ class RoutingPolicySuite extends AnyFunSpec with OptionValues:
       taskId,
       TaskType.Pick,
       skuId,
+      PackagingLevel.Each,
       Some(waveId),
       None,
       handlingUnitId,

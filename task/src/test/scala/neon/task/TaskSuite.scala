@@ -1,6 +1,6 @@
 package neon.task
 
-import neon.common.{HandlingUnitId, SkuId, TaskId, UserId, WaveId}
+import neon.common.{HandlingUnitId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 import org.scalatest.funspec.AnyFunSpec
 
 import java.time.Instant
@@ -17,13 +17,31 @@ class TaskSuite extends AnyFunSpec:
       waveId: Option[WaveId] = Some(waveId),
       handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId)
   ) =
-    Task.Planned(taskId, TaskType.Pick, skuId, 10, waveId, None, handlingUnitId)
+    Task.Planned(
+      taskId,
+      TaskType.Pick,
+      skuId,
+      PackagingLevel.Each,
+      10,
+      waveId,
+      None,
+      handlingUnitId
+    )
 
   describe("Task"):
     describe("creating"):
       it("produces a Planned state and a TaskCreated event"):
         val (planned, event) =
-          Task.create(TaskType.Pick, skuId, 10, Some(waveId), None, Some(handlingUnitId), at)
+          Task.create(
+            TaskType.Pick,
+            skuId,
+            PackagingLevel.Each,
+            10,
+            Some(waveId),
+            None,
+            Some(handlingUnitId),
+            at
+          )
         assert(planned.id == event.taskId)
         assert(planned.taskType == TaskType.Pick)
         assert(planned.requestedQty == 10)
@@ -31,9 +49,19 @@ class TaskSuite extends AnyFunSpec:
       it("event carries all fields for replay"):
         val parentId = TaskId()
         val (_, event) =
-          Task.create(TaskType.Replenish, skuId, 5, None, Some(parentId), None, at)
+          Task.create(
+            TaskType.Replenish,
+            skuId,
+            PackagingLevel.Case,
+            5,
+            None,
+            Some(parentId),
+            None,
+            at
+          )
         assert(event.taskType == TaskType.Replenish)
         assert(event.skuId == skuId)
+        assert(event.packagingLevel == PackagingLevel.Case)
         assert(event.waveId == None)
         assert(event.parentTaskId == Some(parentId))
         assert(event.handlingUnitId == None)
@@ -42,11 +70,11 @@ class TaskSuite extends AnyFunSpec:
 
       it("rejects zero requested quantity"):
         assertThrows[IllegalArgumentException]:
-          Task.create(TaskType.Pick, skuId, 0, None, None, None, at)
+          Task.create(TaskType.Pick, skuId, PackagingLevel.Each, 0, None, None, None, at)
 
       it("rejects negative requested quantity"):
         assertThrows[IllegalArgumentException]:
-          Task.create(TaskType.Pick, skuId, -1, None, None, None, at)
+          Task.create(TaskType.Pick, skuId, PackagingLevel.Each, -1, None, None, None, at)
 
     describe("assigning"):
       it("designates who performs the work"):
@@ -78,6 +106,7 @@ class TaskSuite extends AnyFunSpec:
       it("completed event carries all fields for downstream routing"):
         val (assigned, _) = planned().assign(userId, at)
         val (_, event) = assigned.complete(8, at)
+        assert(event.packagingLevel == PackagingLevel.Each)
         assert(event.waveId == Some(waveId))
         assert(event.handlingUnitId == Some(handlingUnitId))
         assert(event.requestedQty == 10)
@@ -89,6 +118,11 @@ class TaskSuite extends AnyFunSpec:
         val (assigned, _) = planned().assign(userId, at)
         val (completed, _) = assigned.complete(8, at)
         assert(completed.assignedTo == userId)
+
+      it("completed state carries packagingLevel"):
+        val (assigned, _) = planned().assign(userId, at)
+        val (completed, _) = assigned.complete(8, at)
+        assert(completed.packagingLevel == PackagingLevel.Each)
 
       it("accepts zero actual quantity for full shortpick"):
         val (assigned, _) = planned().assign(userId, at)
@@ -137,6 +171,10 @@ class TaskSuite extends AnyFunSpec:
         assert(cancelled.assignedTo == Some(userId))
         assert(event.assignedTo == Some(userId))
 
+      it("cancelled state carries packagingLevel"):
+        val (cancelled, _) = planned().cancel(at)
+        assert(cancelled.packagingLevel == PackagingLevel.Each)
+
     describe("parentTaskId traceability"):
       val parentId = TaskId()
 
@@ -145,6 +183,7 @@ class TaskSuite extends AnyFunSpec:
           taskId,
           TaskType.Pick,
           skuId,
+          PackagingLevel.Each,
           10,
           Some(waveId),
           Some(parentId),

@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{HandlingUnitId, SkuId, TaskId, UserId, WaveId}
+import neon.common.{HandlingUnitId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 import neon.task.{Task, TaskType}
 import org.scalatest.funspec.AnyFunSpec
 
@@ -13,13 +13,23 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
   val at = Instant.now()
 
   def plannedTask() =
-    Task.Planned(TaskId(), TaskType.Pick, skuId, 10, Some(waveId), None, Some(handlingUnitId))
+    Task.Planned(
+      TaskId(),
+      TaskType.Pick,
+      skuId,
+      PackagingLevel.Each,
+      10,
+      Some(waveId),
+      None,
+      Some(handlingUnitId)
+    )
 
   def assignedTask() =
     Task.Assigned(
       TaskId(),
       TaskType.Pick,
       skuId,
+      PackagingLevel.Each,
       10,
       Some(waveId),
       None,
@@ -32,6 +42,7 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
       TaskId(),
       TaskType.Pick,
       skuId,
+      PackagingLevel.Each,
       10,
       10,
       Some(waveId),
@@ -41,7 +52,16 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
     )
 
   def cancelledTask() =
-    Task.Cancelled(TaskId(), TaskType.Pick, skuId, Some(waveId), None, Some(handlingUnitId), None)
+    Task.Cancelled(
+      TaskId(),
+      TaskType.Pick,
+      skuId,
+      PackagingLevel.Each,
+      Some(waveId),
+      None,
+      Some(handlingUnitId),
+      None
+    )
 
   describe("TaskCancellationPolicy"):
     describe("when wave tasks include open tasks"):
