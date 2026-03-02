@@ -13,6 +13,19 @@ class TransportOrderSuite extends AnyFunSpec:
   def aPending() = TransportOrder.Pending(id, handlingUnitId, destination)
 
   describe("TransportOrder"):
+    describe("creating"):
+      it("produces a Pending state and a TransportOrderCreated event"):
+        val (pending, event) = TransportOrder.create(handlingUnitId, destination, at)
+        assert(pending.id == event.transportOrderId)
+        assert(pending.handlingUnitId == handlingUnitId)
+        assert(pending.destination == destination)
+
+      it("event carries all fields for operator notification"):
+        val (_, event) = TransportOrder.create(handlingUnitId, destination, at)
+        assert(event.handlingUnitId == handlingUnitId)
+        assert(event.destination == destination)
+        assert(event.occurredAt == at)
+
     describe("confirming"):
       it("records that the operator delivered the container"):
         val (confirmed, _) = aPending().confirm(at)
@@ -25,6 +38,18 @@ class TransportOrderSuite extends AnyFunSpec:
 
       it("emits an event for downstream routing policies"):
         val (_, event) = aPending().confirm(at)
+        assert(event.transportOrderId == id)
+        assert(event.handlingUnitId == handlingUnitId)
+        assert(event.destination == destination)
+        assert(event.occurredAt == at)
+
+    describe("cancelling"):
+      it("cancels a pending order when the wave is aborted"):
+        val (cancelled, _) = aPending().cancel(at)
+        assert(cancelled.isInstanceOf[TransportOrder.Cancelled])
+
+      it("cancelled event carries transport order ID and destination for audit"):
+        val (_, event) = aPending().cancel(at)
         assert(event.transportOrderId == id)
         assert(event.handlingUnitId == handlingUnitId)
         assert(event.destination == destination)

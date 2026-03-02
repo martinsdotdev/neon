@@ -70,3 +70,13 @@ class WorkstationSuite extends AnyFunSpec:
         assert(idle.workstationType == WorkstationType.PutWall)
         val (active, _) = idle.assign(groupId, at)
         assert(active.workstationType == WorkstationType.PutWall)
+
+      it("events carry workstation type for capacity routing"):
+        val (_, enabledEvent) = disabled().enable(at)
+        assert(enabledEvent.workstationType == WorkstationType.PutWall)
+        val (active, assignedEvent) = idle().assign(groupId, at)
+        assert(assignedEvent.workstationType == WorkstationType.PutWall)
+        val (_, releasedEvent) = active.release(at)
+        assert(releasedEvent.workstationType == WorkstationType.PutWall)
+        val (_, disabledEvent) = idle().disable(at)
+        assert(disabledEvent.workstationType == WorkstationType.PutWall)

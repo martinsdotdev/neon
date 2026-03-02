@@ -30,18 +30,28 @@ class WaveSuite extends AnyFunSpec:
     describe("completing"):
       it("marks all work as done"):
         val (released, _) = planned().release(at)
-        val (_, event) = released.complete(at)
+        val (completed, event) = released.complete(at)
+        assert(completed.isInstanceOf[Wave.Completed])
         assert(event.waveId == id)
 
     describe("cancelling"):
       it("can be cancelled before release"):
-        val (_, event) = planned(OrderGrouping.Single).cancel(at)
+        val (cancelled, event) = planned(OrderGrouping.Single).cancel(at)
+        assert(cancelled.isInstanceOf[Wave.Cancelled])
         assert(event.waveId == id)
 
       it("can be cancelled after release"):
         val (released, _) = planned().release(at)
-        val (_, event) = released.cancel(at)
+        val (cancelled, event) = released.cancel(at)
+        assert(cancelled.isInstanceOf[Wave.Cancelled])
         assert(event.waveId == id)
+
+      it("cancellation event carries orderGrouping for downstream routing"):
+        val (_, event) = planned(OrderGrouping.Single).cancel(at)
+        assert(event.orderGrouping == OrderGrouping.Single)
+        val (released, _) = planned(OrderGrouping.Multi).release(at)
+        val (_, releasedCancelEvent) = released.cancel(at)
+        assert(releasedCancelEvent.orderGrouping == OrderGrouping.Multi)
 
     describe("order grouping"):
       it("is carried in events for downstream routing"):

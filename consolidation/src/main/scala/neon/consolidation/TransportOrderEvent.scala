@@ -8,7 +8,21 @@ sealed trait TransportOrderEvent:
   def occurredAt: Instant
 
 object TransportOrderEvent:
+  case class TransportOrderCreated(
+      transportOrderId: TransportOrderId,
+      handlingUnitId: HandlingUnitId,
+      destination: LocationId,
+      occurredAt: Instant
+  ) extends TransportOrderEvent
+
   case class TransportOrderConfirmed(
+      transportOrderId: TransportOrderId,
+      handlingUnitId: HandlingUnitId,
+      destination: LocationId,
+      occurredAt: Instant
+  ) extends TransportOrderEvent
+
+  case class TransportOrderCancelled(
       transportOrderId: TransportOrderId,
       handlingUnitId: HandlingUnitId,
       destination: LocationId,

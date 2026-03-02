@@ -16,13 +16,16 @@ class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
   def released() = Wave.Released(waveId, OrderGrouping.Multi, orderIds)
 
   def completedTask() =
-    Task.Completed(TaskId(), TaskType.Pick, skuId, 10, 10, Some(waveId))
+    Task.Completed(TaskId(), TaskType.Pick, skuId, 10, 10, Some(waveId), None, None)
 
   def cancelledTask() =
-    Task.Cancelled(TaskId(), TaskType.Pick, skuId, Some(waveId))
+    Task.Cancelled(TaskId(), TaskType.Pick, skuId, Some(waveId), None, None)
 
   def assignedTask() =
-    Task.Assigned(TaskId(), TaskType.Pick, skuId, 10, Some(waveId), None, neon.common.UserId())
+    Task.Assigned(TaskId(), TaskType.Pick, skuId, 10, Some(waveId), None, None, neon.common.UserId())
+
+  def plannedTask() =
+    Task.Planned(TaskId(), TaskType.Pick, skuId, 10, Some(waveId), None, None)
 
   describe("WaveCompletionPolicy"):
     describe("when all tasks are terminal"):
@@ -38,6 +41,10 @@ class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
     describe("when tasks are still open"):
       it("does not complete the wave"):
         val tasks = List(completedTask(), assignedTask(), completedTask())
+        assert(WaveCompletionPolicy.evaluate(tasks, released(), at).isEmpty)
+
+      it("treats planned tasks as non-terminal"):
+        val tasks = List(completedTask(), plannedTask())
         assert(WaveCompletionPolicy.evaluate(tasks, released(), at).isEmpty)
 
     describe("when the task list is empty"):

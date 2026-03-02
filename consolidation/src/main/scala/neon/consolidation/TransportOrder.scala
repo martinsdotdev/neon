@@ -9,6 +9,16 @@ sealed trait TransportOrder:
   def destination: LocationId
 
 object TransportOrder:
+  def create(
+      handlingUnitId: HandlingUnitId,
+      destination: LocationId,
+      at: Instant
+  ): (Pending, TransportOrderEvent.TransportOrderCreated) =
+    val id = TransportOrderId()
+    val pending = Pending(id, handlingUnitId, destination)
+    val event = TransportOrderEvent.TransportOrderCreated(id, handlingUnitId, destination, at)
+    (pending, event)
+
   case class Pending(
       id: TransportOrderId,
       handlingUnitId: HandlingUnitId,
@@ -20,7 +30,19 @@ object TransportOrder:
         TransportOrderEvent.TransportOrderConfirmed(id, handlingUnitId, destination, at)
       (confirmed, event)
 
+    def cancel(at: Instant): (Cancelled, TransportOrderEvent.TransportOrderCancelled) =
+      val cancelled = Cancelled(id, handlingUnitId, destination)
+      val event =
+        TransportOrderEvent.TransportOrderCancelled(id, handlingUnitId, destination, at)
+      (cancelled, event)
+
   case class Confirmed(
+      id: TransportOrderId,
+      handlingUnitId: HandlingUnitId,
+      destination: LocationId
+  ) extends TransportOrder
+
+  case class Cancelled(
       id: TransportOrderId,
       handlingUnitId: HandlingUnitId,
       destination: LocationId

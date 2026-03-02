@@ -65,3 +65,37 @@ class ConsolidationGroupSuite extends AnyFunSpec:
         val (assigned, _) = ready.assign(workstationId, at)
         val (_, event) = assigned.complete(at)
         assert(event.workstationId == workstationId)
+
+    describe("cancelling"):
+      it("cancels from Created before any picking starts"):
+        val (cancelled, _) = created().cancel(at)
+        assert(cancelled.isInstanceOf[ConsolidationGroup.Cancelled])
+
+      it("cancels from Picked when wave is aborted mid-flow"):
+        val (picked, _) = created().pick(at)
+        val (cancelled, _) = picked.cancel(at)
+        assert(cancelled.isInstanceOf[ConsolidationGroup.Cancelled])
+
+      it("cancels from ReadyForWorkstation when no workstation available"):
+        val (picked, _) = created().pick(at)
+        val (ready, _) = picked.readyForWorkstation(at)
+        val (cancelled, _) = ready.cancel(at)
+        assert(cancelled.isInstanceOf[ConsolidationGroup.Cancelled])
+
+      it("cancels from Assigned when workstation must be freed"):
+        val (picked, _) = created().pick(at)
+        val (ready, _) = picked.readyForWorkstation(at)
+        val (assigned, _) = ready.assign(workstationId, at)
+        val (cancelled, _) = assigned.cancel(at)
+        assert(cancelled.isInstanceOf[ConsolidationGroup.Cancelled])
+
+      it("cancelled event carries group ID and wave ID for cascade coordination"):
+        val (_, event) = created().cancel(at)
+        assert(event.groupId == id)
+        assert(event.waveId == waveId)
+        assert(event.occurredAt == at)
+
+      it("cancelled state preserves order IDs for audit"):
+        val (picked, _) = created().pick(at)
+        val (cancelled, _) = picked.cancel(at)
+        assert(cancelled.orderIds == orderIds)

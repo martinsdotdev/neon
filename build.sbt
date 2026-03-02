@@ -41,7 +41,7 @@ lazy val consolidation = project
 
 lazy val app = project
   .in(file("app"))
-  .dependsOn(common, wave, task)
+  .dependsOn(common, wave, task, consolidation)
   .settings(name := "neon-app")
 
 lazy val root = project
