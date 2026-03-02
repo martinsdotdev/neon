@@ -40,6 +40,11 @@ class HandlingUnitSuite extends AnyFunSpec:
         val (packed, _) = shipCreated().pack(at)
         assert(packed.currentLocation == packStation)
 
+      it("readyToShip preserves station location through the ship stream"):
+        val (packed, _) = shipCreated().pack(at)
+        val (ready, _) = packed.readyToShip(at)
+        assert(ready.currentLocation == packStation)
+
     describe("packaging level"):
       it("carries through the Pick path"):
         val (inBuffer, _) = pickCreated().moveToBuffer(bufferArea, at)

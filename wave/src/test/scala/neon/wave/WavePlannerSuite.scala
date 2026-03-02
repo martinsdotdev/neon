@@ -64,3 +64,16 @@ class WavePlannerSuite extends AnyFunSpec:
       assert(result.taskRequests.length == 3)
       assert(result.taskRequests.count(_.orderId == order1.id) == 2)
       assert(result.taskRequests.count(_.orderId == order2.id) == 1)
+
+    it("produces a wave and event consumed by downstream policies"):
+      val orderId1 = OrderId()
+      val orderId2 = OrderId()
+      val orders = List(
+        Order(orderId1, List(OrderLine(sku1, PackagingLevel.Each, 5))),
+        Order(orderId2, List(OrderLine(sku2, PackagingLevel.Case, 3)))
+      )
+      val result = WavePlanner.plan(orders, OrderGrouping.Multi, at)
+      assert(result.event.orderGrouping == OrderGrouping.Multi)
+      assert(result.event.orderIds == List(orderId1, orderId2))
+      assert(result.event.occurredAt == at)
+      assert(result.wave.id == result.event.waveId)

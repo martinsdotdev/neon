@@ -71,6 +71,13 @@ class ConsolidationGroupSuite extends AnyFunSpec:
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 
+      it("readyForWorkstation event carries group and wave for assignment policy"):
+        val (picked, _) = created().pick(at)
+        val (_, event) = picked.readyForWorkstation(at)
+        assert(event.groupId == id)
+        assert(event.waveId == waveId)
+        assert(event.occurredAt == at)
+
       it("assigned event carries workstation ID for workstation coordination"):
         val (picked, _) = created().pick(at)
         val (ready, _) = picked.readyForWorkstation(at)
