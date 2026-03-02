@@ -57,3 +57,10 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
         assert(event.requestedQty == 3)
         assert(event.parentTaskId.value == task.id)
         assert(event.occurredAt == at)
+
+    describe("when task has no wave"):
+      it("replacement inherits None for waveId"):
+        val task = completed(10, 7, waveId = None, handlingUnitId = None)
+        val (replacement, _) = ShortpickPolicy.evaluate(task, at).value
+        assert(replacement.waveId == None)
+        assert(replacement.handlingUnitId == None)

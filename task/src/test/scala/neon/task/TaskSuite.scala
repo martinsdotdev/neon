@@ -83,6 +83,12 @@ class TaskSuite extends AnyFunSpec:
         val (completed, _) = assigned.complete(0, at)
         assert(completed.actualQty == 0)
 
+      it("accepts actual quantity exceeding requested for over-picking"):
+        val (assigned, _) = planned().assign(userId, at)
+        val (completed, _) = assigned.complete(12, at)
+        assert(completed.actualQty == 12)
+        assert(completed.requestedQty == 10)
+
       it("rejects negative actual quantity"):
         val (assigned, _) = planned().assign(userId, at)
         assertThrows[IllegalArgumentException]:
