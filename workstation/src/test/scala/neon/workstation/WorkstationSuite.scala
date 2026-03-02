@@ -1,4 +1,4 @@
-package neon.consolidationgroup
+package neon.workstation
 
 import neon.common.{GroupId, WorkstationId}
 import org.scalatest.funspec.AnyFunSpec

@@ -34,19 +34,34 @@ lazy val task = project
   .dependsOn(common)
   .settings(name := "neon-task")
 
-lazy val consolidation = project
-  .in(file("consolidation"))
+lazy val consolidationGroup = project
+  .in(file("consolidation-group"))
   .dependsOn(common)
-  .settings(name := "neon-consolidation")
+  .settings(name := "neon-consolidation-group")
+
+lazy val handlingUnit = project
+  .in(file("handling-unit"))
+  .dependsOn(common)
+  .settings(name := "neon-handling-unit")
+
+lazy val transportOrder = project
+  .in(file("transport-order"))
+  .dependsOn(common)
+  .settings(name := "neon-transport-order")
+
+lazy val workstation = project
+  .in(file("workstation"))
+  .dependsOn(common)
+  .settings(name := "neon-workstation")
 
 lazy val app = project
   .in(file("app"))
-  .dependsOn(common, wave, task, consolidation)
+  .dependsOn(common, wave, task, consolidationGroup, handlingUnit, transportOrder, workstation)
   .settings(name := "neon-app")
 
 lazy val root = project
   .in(file("."))
-  .aggregate(common, order, wave, task, consolidation, app)
+  .aggregate(common, order, wave, task, consolidationGroup, handlingUnit, transportOrder, workstation, app)
   .settings(
     name := "neon-wes",
     publish / skip := true

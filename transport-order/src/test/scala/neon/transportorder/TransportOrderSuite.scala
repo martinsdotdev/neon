@@ -1,4 +1,4 @@
-package neon.consolidationgroup
+package neon.transportorder
 
 import neon.common.{HandlingUnitId, LocationId, TransportOrderId}
 import org.scalatest.funspec.AnyFunSpec

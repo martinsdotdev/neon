@@ -1,7 +1,8 @@
 package neon.app
 
 import neon.common.{HandlingUnitId, LocationId, PackagingLevel, TransportOrderId}
-import neon.consolidationgroup.{HandlingUnit, TransportOrderEvent}
+import neon.handlingunit.HandlingUnit
+import neon.transportorder.TransportOrderEvent
 import org.scalatest.funspec.AnyFunSpec
 import java.time.Instant
 

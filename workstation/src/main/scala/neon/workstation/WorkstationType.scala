@@ -1,4 +1,4 @@
-package neon.consolidationgroup
+package neon.workstation
 
 enum WorkstationType:
   case PutWall, PackStation

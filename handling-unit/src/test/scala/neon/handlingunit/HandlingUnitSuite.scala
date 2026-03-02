@@ -1,4 +1,4 @@
-package neon.consolidationgroup
+package neon.handlingunit
 
 import neon.common.{HandlingUnitId, LocationId, PackagingLevel}
 import org.scalatest.funspec.AnyFunSpec

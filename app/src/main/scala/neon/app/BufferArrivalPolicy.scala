@@ -1,6 +1,7 @@
 package neon.app
 
-import neon.consolidationgroup.{HandlingUnit, HandlingUnitEvent, TransportOrderEvent}
+import neon.handlingunit.{HandlingUnit, HandlingUnitEvent}
+import neon.transportorder.TransportOrderEvent
 import java.time.Instant
 
 object BufferArrivalPolicy:

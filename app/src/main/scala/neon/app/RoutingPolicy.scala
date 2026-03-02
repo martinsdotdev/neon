@@ -1,7 +1,7 @@
 package neon.app
 
 import neon.common.LocationId
-import neon.consolidationgroup.{TransportOrder, TransportOrderEvent}
+import neon.transportorder.{TransportOrder, TransportOrderEvent}
 import neon.task.TaskEvent
 import java.time.Instant
 
