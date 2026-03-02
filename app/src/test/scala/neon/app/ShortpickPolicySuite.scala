@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{HandlingUnitId, SkuId, TaskId, WaveId}
+import neon.common.{HandlingUnitId, SkuId, TaskId, UserId, WaveId}
 import neon.task.{Task, TaskType}
 import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
@@ -9,6 +9,7 @@ import java.time.Instant
 
 class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
   val skuId = SkuId()
+  val userId = UserId()
   val waveId = WaveId()
   val handlingUnitId = HandlingUnitId()
   val at = Instant.now()
@@ -19,15 +20,25 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
       waveId: Option[WaveId] = Some(waveId),
       handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId)
   ) =
-    Task.Completed(TaskId(), TaskType.Pick, skuId, requested, actual, waveId, None, handlingUnitId)
+    Task.Completed(
+      TaskId(),
+      TaskType.Pick,
+      skuId,
+      requested,
+      actual,
+      waveId,
+      None,
+      handlingUnitId,
+      userId
+    )
 
   describe("ShortpickPolicy"):
     describe("when actual meets requested"):
-      it("returns None"):
+      it("does not create a replacement task"):
         assert(ShortpickPolicy.evaluate(completed(10, 10), at).isEmpty)
 
     describe("when actual exceeds requested"):
-      it("returns None"):
+      it("does not create a replacement task"):
         assert(ShortpickPolicy.evaluate(completed(10, 12), at).isEmpty)
 
     describe("when actual is zero"):

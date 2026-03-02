@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{HandlingUnitId, LocationId, SkuId, TaskId, WaveId}
+import neon.common.{HandlingUnitId, LocationId, SkuId, TaskId, UserId, WaveId}
 import neon.task.{TaskEvent, TaskType}
 import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
@@ -10,6 +10,7 @@ import java.time.Instant
 class RoutingPolicySuite extends AnyFunSpec with OptionValues:
   val taskId = TaskId()
   val skuId = SkuId()
+  val userId = UserId()
   val waveId = WaveId()
   val handlingUnitId = HandlingUnitId()
   val destination = LocationId()
@@ -27,11 +28,12 @@ class RoutingPolicySuite extends AnyFunSpec with OptionValues:
       handlingUnitId,
       10,
       10,
+      userId,
       at
     )
 
   describe("RoutingPolicy"):
-    it("returns None when the task has no handling unit"):
+    it("skips tasks without a handling unit"):
       assert(RoutingPolicy.evaluate(completedEvent(None), destination, at).isEmpty)
 
     it("creates a transport order for the handling unit"):

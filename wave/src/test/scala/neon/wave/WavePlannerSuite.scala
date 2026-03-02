@@ -46,7 +46,7 @@ class WavePlannerSuite extends AnyFunSpec:
       assertThrows[IllegalArgumentException]:
         WavePlanner.plan(List.empty, OrderGrouping.Single, at)
 
-    it("handles multiple orders with multiple lines"):
+    it("flattens multiple orders into individual task requests"):
       val order1 = Order(
         OrderId(),
         List(

@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{OrderId, SkuId, TaskId, WaveId}
+import neon.common.{OrderId, SkuId, TaskId, UserId, WaveId}
 import neon.task.{Task, TaskType}
 import neon.wave.{OrderGrouping, Wave}
 import org.scalatest.OptionValues
@@ -17,10 +17,10 @@ class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
   def released() = Wave.Released(waveId, OrderGrouping.Multi, orderIds)
 
   def completedTask() =
-    Task.Completed(TaskId(), TaskType.Pick, skuId, 10, 10, Some(waveId), None, None)
+    Task.Completed(TaskId(), TaskType.Pick, skuId, 10, 10, Some(waveId), None, None, UserId())
 
   def cancelledTask() =
-    Task.Cancelled(TaskId(), TaskType.Pick, skuId, Some(waveId), None, None)
+    Task.Cancelled(TaskId(), TaskType.Pick, skuId, Some(waveId), None, None, None)
 
   def assignedTask() =
     Task.Assigned(TaskId(), TaskType.Pick, skuId, 10, Some(waveId), None, None, neon.common.UserId())

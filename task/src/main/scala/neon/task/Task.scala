@@ -53,8 +53,9 @@ object Task:
       (assigned, event)
 
     def cancel(at: Instant): (Cancelled, TaskEvent.TaskCancelled) =
-      val cancelled = Cancelled(id, taskType, skuId, waveId, parentTaskId, handlingUnitId)
-      val event = TaskEvent.TaskCancelled(id, taskType, waveId, parentTaskId, handlingUnitId, at)
+      val cancelled = Cancelled(id, taskType, skuId, waveId, parentTaskId, handlingUnitId, None)
+      val event =
+        TaskEvent.TaskCancelled(id, taskType, waveId, parentTaskId, handlingUnitId, None, at)
       (cancelled, event)
 
   case class Assigned(
@@ -78,7 +79,8 @@ object Task:
           actualQty,
           waveId,
           parentTaskId,
-          handlingUnitId
+          handlingUnitId,
+          assignedTo
         )
       val event =
         TaskEvent.TaskCompleted(
@@ -90,13 +92,16 @@ object Task:
           handlingUnitId,
           requestedQty,
           actualQty,
+          assignedTo,
           at
         )
       (completed, event)
 
     def cancel(at: Instant): (Cancelled, TaskEvent.TaskCancelled) =
-      val cancelled = Cancelled(id, taskType, skuId, waveId, parentTaskId, handlingUnitId)
-      val event = TaskEvent.TaskCancelled(id, taskType, waveId, parentTaskId, handlingUnitId, at)
+      val cancelled =
+        Cancelled(id, taskType, skuId, waveId, parentTaskId, handlingUnitId, Some(assignedTo))
+      val event = TaskEvent
+        .TaskCancelled(id, taskType, waveId, parentTaskId, handlingUnitId, Some(assignedTo), at)
       (cancelled, event)
 
   case class Completed(
@@ -107,7 +112,8 @@ object Task:
       actualQty: Int,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
-      handlingUnitId: Option[HandlingUnitId]
+      handlingUnitId: Option[HandlingUnitId],
+      assignedTo: UserId
   ) extends Task
 
   case class Cancelled(
@@ -116,5 +122,6 @@ object Task:
       skuId: SkuId,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
-      handlingUnitId: Option[HandlingUnitId]
+      handlingUnitId: Option[HandlingUnitId],
+      assignedTo: Option[UserId]
   ) extends Task

@@ -58,7 +58,7 @@ class TaskSuite extends AnyFunSpec:
         assert(event.taskId == taskId)
         assert(event.userId == userId)
 
-      it("stamps the event with the given instant"):
+      it("records when the assignment occurred"):
         val (_, event) = planned().assign(userId, at)
         assert(event.occurredAt == at)
 
@@ -82,7 +82,13 @@ class TaskSuite extends AnyFunSpec:
         assert(event.handlingUnitId == Some(handlingUnitId))
         assert(event.requestedQty == 10)
         assert(event.actualQty == 8)
+        assert(event.assignedTo == userId)
         assert(event.occurredAt == at)
+
+      it("completed state carries assignedTo"):
+        val (assigned, _) = planned().assign(userId, at)
+        val (completed, _) = assigned.complete(8, at)
+        assert(completed.assignedTo == userId)
 
       it("accepts zero actual quantity for full shortpick"):
         val (assigned, _) = planned().assign(userId, at)
@@ -119,6 +125,17 @@ class TaskSuite extends AnyFunSpec:
       it("cancelled event carries handling unit ID"):
         val (_, event) = planned().cancel(at)
         assert(event.handlingUnitId == Some(handlingUnitId))
+
+      it("planned cancel carries no assignedTo"):
+        val (cancelled, event) = planned().cancel(at)
+        assert(cancelled.assignedTo == None)
+        assert(event.assignedTo == None)
+
+      it("assigned cancel carries assignedTo"):
+        val (assigned, _) = planned().assign(userId, at)
+        val (cancelled, event) = assigned.cancel(at)
+        assert(cancelled.assignedTo == Some(userId))
+        assert(event.assignedTo == Some(userId))
 
     describe("parentTaskId traceability"):
       val parentId = TaskId()

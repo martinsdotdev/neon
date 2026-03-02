@@ -28,10 +28,20 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
     )
 
   def completedTask() =
-    Task.Completed(TaskId(), TaskType.Pick, skuId, 10, 10, Some(waveId), None, Some(handlingUnitId))
+    Task.Completed(
+      TaskId(),
+      TaskType.Pick,
+      skuId,
+      10,
+      10,
+      Some(waveId),
+      None,
+      Some(handlingUnitId),
+      UserId()
+    )
 
   def cancelledTask() =
-    Task.Cancelled(TaskId(), TaskType.Pick, skuId, Some(waveId), None, Some(handlingUnitId))
+    Task.Cancelled(TaskId(), TaskType.Pick, skuId, Some(waveId), None, Some(handlingUnitId), None)
 
   describe("TaskCancellationPolicy"):
     describe("when wave tasks include open tasks"):
@@ -58,7 +68,7 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
         assert(results.size == 1)
         assert(results.head._1.id == tasks.head.id)
 
-      it("returns events for each cancelled task"):
+      it("emits one event per cancelled task"):
         val tasks = List(plannedTask(), assignedTask(), completedTask())
         val results = TaskCancellationPolicy.evaluate(tasks, at)
         assert(results.size == 2)
@@ -66,11 +76,24 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
           assert(event.occurredAt == at)
           assert(event.taskId == cancelled.id)
 
+      it("planned cancellation carries no assignedTo"):
+        val tasks = List(plannedTask())
+        val results = TaskCancellationPolicy.evaluate(tasks, at)
+        assert(results.head._1.assignedTo == None)
+        assert(results.head._2.assignedTo == None)
+
+      it("assigned cancellation carries the operator"):
+        val tasks = List(assignedTask())
+        val results = TaskCancellationPolicy.evaluate(tasks, at)
+        assert(results.head._1.assignedTo.isDefined)
+        assert(results.head._2.assignedTo.isDefined)
+        assert(results.head._1.assignedTo == results.head._2.assignedTo)
+
     describe("when all tasks are already terminal"):
-      it("returns an empty list"):
+      it("produces no cancellations"):
         val tasks = List(completedTask(), cancelledTask(), completedTask())
         assert(TaskCancellationPolicy.evaluate(tasks, at).isEmpty)
 
     describe("when the task list is empty"):
-      it("returns an empty list"):
+      it("produces no cancellations"):
         assert(TaskCancellationPolicy.evaluate(List.empty, at).isEmpty)

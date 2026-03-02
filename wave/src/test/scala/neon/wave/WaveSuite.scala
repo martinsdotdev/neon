@@ -24,7 +24,7 @@ class WaveSuite extends AnyFunSpec:
         val (_, event) = planned().release(at)
         assert(event.orderIds == orderIds)
 
-      it("stamps the event with the given instant"):
+      it("records when the wave was released"):
         val (_, event) = planned().release(at)
         assert(event.occurredAt == at)
 

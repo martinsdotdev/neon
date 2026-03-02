@@ -59,6 +59,16 @@ lazy val inventory = project
   .dependsOn(common)
   .settings(name := "neon-inventory")
 
+lazy val sku = project
+  .in(file("sku"))
+  .dependsOn(common)
+  .settings(name := "neon-sku")
+
+lazy val user = project
+  .in(file("user"))
+  .dependsOn(common)
+  .settings(name := "neon-user")
+
 lazy val workstation = project
   .in(file("workstation"))
   .dependsOn(common)
@@ -71,7 +81,7 @@ lazy val app = project
 
 lazy val root = project
   .in(file("."))
-  .aggregate(common, order, wave, task, location, inventory, consolidationGroup, handlingUnit, transportOrder, workstation, app)
+  .aggregate(common, order, wave, task, location, inventory, consolidationGroup, handlingUnit, transportOrder, sku, user, workstation, app)
   .settings(
     name := "neon-wes",
     publish / skip := true
