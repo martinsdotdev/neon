@@ -1,6 +1,6 @@
 package neon.task
 
-import neon.common.{HandlingUnitId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
+import neon.common.{HandlingUnitId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 import org.scalatest.funspec.AnyFunSpec
 
 import java.time.Instant
@@ -9,6 +9,7 @@ class TaskSuite extends AnyFunSpec:
   val taskId = TaskId()
   val skuId = SkuId()
   val userId = UserId()
+  val orderId = OrderId()
   val waveId = WaveId()
   val handlingUnitId = HandlingUnitId()
   val at = Instant.now()
@@ -23,6 +24,7 @@ class TaskSuite extends AnyFunSpec:
       skuId,
       PackagingLevel.Each,
       10,
+      orderId,
       waveId,
       None,
       handlingUnitId
@@ -30,13 +32,14 @@ class TaskSuite extends AnyFunSpec:
 
   describe("Task"):
     describe("creating"):
-      it("produces a Planned state and a TaskCreated event"):
+      it("returns Planned state and emits TaskCreated event"):
         val (planned, event) =
           Task.create(
             TaskType.Pick,
             skuId,
             PackagingLevel.Each,
             10,
+            orderId,
             Some(waveId),
             None,
             Some(handlingUnitId),
@@ -46,7 +49,7 @@ class TaskSuite extends AnyFunSpec:
         assert(planned.taskType == TaskType.Pick)
         assert(planned.requestedQty == 10)
 
-      it("event carries all fields for replay"):
+      it("TaskCreated event includes all fields for event sourcing"):
         val parentId = TaskId()
         val (_, event) =
           Task.create(
@@ -54,6 +57,7 @@ class TaskSuite extends AnyFunSpec:
             skuId,
             PackagingLevel.Case,
             5,
+            orderId,
             None,
             Some(parentId),
             None,
@@ -68,42 +72,42 @@ class TaskSuite extends AnyFunSpec:
         assert(event.requestedQty == 5)
         assert(event.occurredAt == at)
 
-      it("rejects zero requested quantity"):
+      it("throws IllegalArgumentException for zero requested quantity"):
         assertThrows[IllegalArgumentException]:
-          Task.create(TaskType.Pick, skuId, PackagingLevel.Each, 0, None, None, None, at)
+          Task.create(TaskType.Pick, skuId, PackagingLevel.Each, 0, orderId, None, None, None, at)
 
-      it("rejects negative requested quantity"):
+      it("throws IllegalArgumentException for negative requested quantity"):
         assertThrows[IllegalArgumentException]:
-          Task.create(TaskType.Pick, skuId, PackagingLevel.Each, -1, None, None, None, at)
+          Task.create(TaskType.Pick, skuId, PackagingLevel.Each, -1, orderId, None, None, None, at)
 
     describe("assigning"):
-      it("designates who performs the work"):
+      it("stores operator ID in Assigned state"):
         val (assigned, _) = planned().assign(userId, at)
         assert(assigned.assignedTo == userId)
 
-      it("emits an event identifying the operator"):
+      it("TaskAssigned event includes operator ID"):
         val (_, event) = planned().assign(userId, at)
         assert(event.taskId == taskId)
         assert(event.userId == userId)
 
-      it("records when the assignment occurred"):
+      it("TaskAssigned event includes assignment timestamp"):
         val (_, event) = planned().assign(userId, at)
         assert(event.occurredAt == at)
 
     describe("completing"):
-      it("records the actual quantity"):
+      it("Completed state stores both actual and requested quantities"):
         val (assigned, _) = planned().assign(userId, at)
         val (completed, _) = assigned.complete(8, at)
         assert(completed.actualQty == 8)
         assert(completed.requestedQty == 10)
 
-      it("carries task type for downstream routing"):
+      it("TaskCompleted event includes task type and SKU ID"):
         val (assigned, _) = planned().assign(userId, at)
         val (_, event) = assigned.complete(10, at)
         assert(event.taskType == TaskType.Pick)
         assert(event.skuId == skuId)
 
-      it("completed event carries all fields for downstream routing"):
+      it("TaskCompleted event includes all fields for routing policies"):
         val (assigned, _) = planned().assign(userId, at)
         val (_, event) = assigned.complete(8, at)
         assert(event.packagingLevel == PackagingLevel.Each)
@@ -114,64 +118,64 @@ class TaskSuite extends AnyFunSpec:
         assert(event.assignedTo == userId)
         assert(event.occurredAt == at)
 
-      it("completed state carries assignedTo"):
+      it("Completed state preserves operator ID"):
         val (assigned, _) = planned().assign(userId, at)
         val (completed, _) = assigned.complete(8, at)
         assert(completed.assignedTo == userId)
 
-      it("completed state carries packagingLevel"):
+      it("Completed state preserves packaging level"):
         val (assigned, _) = planned().assign(userId, at)
         val (completed, _) = assigned.complete(8, at)
         assert(completed.packagingLevel == PackagingLevel.Each)
 
-      it("accepts zero actual quantity for full shortpick"):
+      it("allows zero actual quantity (full shortpick scenario)"):
         val (assigned, _) = planned().assign(userId, at)
         val (completed, _) = assigned.complete(0, at)
         assert(completed.actualQty == 0)
 
-      it("accepts actual quantity exceeding requested for over-picking"):
+      it("allows actual quantity greater than requested (over-picking)"):
         val (assigned, _) = planned().assign(userId, at)
         val (completed, _) = assigned.complete(12, at)
         assert(completed.actualQty == 12)
         assert(completed.requestedQty == 10)
 
-      it("rejects negative actual quantity"):
+      it("throws IllegalArgumentException for negative actual quantity"):
         val (assigned, _) = planned().assign(userId, at)
         assertThrows[IllegalArgumentException]:
           assigned.complete(-1, at)
 
     describe("cancelling"):
-      it("can cancel a planned task before assignment"):
+      it("Planned task transitions to Cancelled state"):
         val (_, event) = planned().cancel(at)
         assert(event.taskId == taskId)
 
-      it("can cancel an assigned task to stop in-progress work"):
+      it("Assigned task transitions to Cancelled state"):
         val (assigned, _) = planned().assign(userId, at)
         val (_, event) = assigned.cancel(at)
         assert(event.taskId == taskId)
 
-      it("carries wave ID for wave completion tracking"):
+      it("TaskCancelled event includes wave ID"):
         val (_, event) = planned().cancel(at)
         assert(event.waveId == Some(waveId))
         val (_, eventNoWave) = planned(waveId = None).cancel(at)
         assert(eventNoWave.waveId == None)
 
-      it("cancelled event carries handling unit ID"):
+      it("TaskCancelled event includes handling unit ID"):
         val (_, event) = planned().cancel(at)
         assert(event.handlingUnitId == Some(handlingUnitId))
 
-      it("planned cancel carries no assignedTo"):
+      it("Planned task cancellation omits assignedTo"):
         val (cancelled, event) = planned().cancel(at)
         assert(cancelled.assignedTo == None)
         assert(event.assignedTo == None)
 
-      it("assigned cancel carries assignedTo"):
+      it("Assigned task cancellation includes operator ID"):
         val (assigned, _) = planned().assign(userId, at)
         val (cancelled, event) = assigned.cancel(at)
         assert(cancelled.assignedTo == Some(userId))
         assert(event.assignedTo == Some(userId))
 
-      it("cancelled state carries packagingLevel"):
+      it("Cancelled state preserves packaging level"):
         val (cancelled, _) = planned().cancel(at)
         assert(cancelled.packagingLevel == PackagingLevel.Each)
 
@@ -185,30 +189,31 @@ class TaskSuite extends AnyFunSpec:
           skuId,
           PackagingLevel.Each,
           10,
+          orderId,
           Some(waveId),
           Some(parentId),
           Some(handlingUnitId)
         )
 
-      it("completed state carries parentTaskId"):
+      it("Completed state preserves parent task reference"):
         val (assigned, _) = withParent().assign(userId, at)
         val (completed, _) = assigned.complete(8, at)
         assert(completed.parentTaskId == Some(parentId))
 
-      it("completed event carries parentTaskId"):
+      it("TaskCompleted event includes parent task reference"):
         val (assigned, _) = withParent().assign(userId, at)
         val (_, event) = assigned.complete(8, at)
         assert(event.parentTaskId == Some(parentId))
 
-      it("cancelled state carries parentTaskId"):
+      it("Cancelled state preserves parent task reference"):
         val (cancelled, _) = withParent().cancel(at)
         assert(cancelled.parentTaskId == Some(parentId))
 
-      it("cancelled event carries parentTaskId"):
+      it("TaskCancelled event includes parent task reference"):
         val (_, event) = withParent().cancel(at)
         assert(event.parentTaskId == Some(parentId))
 
-      it("parentTaskId is None when not a replacement task"):
+      it("omits parent task reference for non-replacement tasks"):
         val (assigned, _) = planned().assign(userId, at)
         val (completed, event) = assigned.complete(10, at)
         assert(completed.parentTaskId == None)

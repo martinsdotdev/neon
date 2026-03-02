@@ -26,7 +26,7 @@ lazy val order = project
 
 lazy val wave = project
   .in(file("wave"))
-  .dependsOn(common, order)
+  .dependsOn(common, order, sku)
   .settings(name := "neon-wave")
 
 lazy val task = project

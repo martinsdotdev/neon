@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{HandlingUnitId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
+import neon.common.{HandlingUnitId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 import neon.task.{Task, TaskType}
 import org.scalatest.funspec.AnyFunSpec
 
@@ -8,6 +8,7 @@ import java.time.Instant
 
 class TaskCancellationPolicySuite extends AnyFunSpec:
   val skuId = SkuId()
+  val orderId = OrderId()
   val waveId = WaveId()
   val handlingUnitId = HandlingUnitId()
   val at = Instant.now()
@@ -19,6 +20,7 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
       skuId,
       PackagingLevel.Each,
       10,
+      orderId,
       Some(waveId),
       None,
       Some(handlingUnitId)
@@ -31,6 +33,7 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
       skuId,
       PackagingLevel.Each,
       10,
+      orderId,
       Some(waveId),
       None,
       Some(handlingUnitId),
@@ -45,6 +48,7 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
       PackagingLevel.Each,
       10,
       10,
+      orderId,
       Some(waveId),
       None,
       Some(handlingUnitId),
@@ -57,6 +61,7 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
       TaskType.Pick,
       skuId,
       PackagingLevel.Each,
+      orderId,
       Some(waveId),
       None,
       Some(handlingUnitId),
@@ -95,6 +100,8 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
         results.foreach: (cancelled, event) =>
           assert(event.occurredAt == at)
           assert(event.taskId == cancelled.id)
+          assert(event.waveId == Some(waveId))
+          assert(event.handlingUnitId == Some(handlingUnitId))
 
       it("planned cancellation carries no assignedTo"):
         val tasks = List(plannedTask())

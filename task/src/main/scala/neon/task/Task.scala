@@ -1,6 +1,6 @@
 package neon.task
 
-import neon.common.{HandlingUnitId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
+import neon.common.{HandlingUnitId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 
 import java.time.Instant
 
@@ -8,6 +8,7 @@ sealed trait Task:
   def id: TaskId
   def taskType: TaskType
   def skuId: SkuId
+  def orderId: OrderId
   def waveId: Option[WaveId]
   def handlingUnitId: Option[HandlingUnitId]
 
@@ -17,6 +18,7 @@ object Task:
       skuId: SkuId,
       packagingLevel: PackagingLevel,
       requestedQty: Int,
+      orderId: OrderId,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
@@ -31,6 +33,7 @@ object Task:
         skuId,
         packagingLevel,
         requestedQty,
+        orderId,
         waveId,
         parentTaskId,
         handlingUnitId
@@ -41,6 +44,7 @@ object Task:
         taskType,
         skuId,
         packagingLevel,
+        orderId,
         waveId,
         parentTaskId,
         handlingUnitId,
@@ -55,6 +59,7 @@ object Task:
       skuId: SkuId,
       packagingLevel: PackagingLevel,
       requestedQty: Int,
+      orderId: OrderId,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId]
@@ -67,6 +72,7 @@ object Task:
           skuId,
           packagingLevel,
           requestedQty,
+          orderId,
           waveId,
           parentTaskId,
           handlingUnitId,
@@ -77,7 +83,17 @@ object Task:
 
     def cancel(at: Instant): (Cancelled, TaskEvent.TaskCancelled) =
       val cancelled =
-        Cancelled(id, taskType, skuId, packagingLevel, waveId, parentTaskId, handlingUnitId, None)
+        Cancelled(
+          id,
+          taskType,
+          skuId,
+          packagingLevel,
+          orderId,
+          waveId,
+          parentTaskId,
+          handlingUnitId,
+          None
+        )
       val event =
         TaskEvent.TaskCancelled(id, taskType, waveId, parentTaskId, handlingUnitId, None, at)
       (cancelled, event)
@@ -88,6 +104,7 @@ object Task:
       skuId: SkuId,
       packagingLevel: PackagingLevel,
       requestedQty: Int,
+      orderId: OrderId,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
@@ -103,6 +120,7 @@ object Task:
           packagingLevel,
           requestedQty,
           actualQty,
+          orderId,
           waveId,
           parentTaskId,
           handlingUnitId,
@@ -131,6 +149,7 @@ object Task:
           taskType,
           skuId,
           packagingLevel,
+          orderId,
           waveId,
           parentTaskId,
           handlingUnitId,
@@ -147,6 +166,7 @@ object Task:
       packagingLevel: PackagingLevel,
       requestedQty: Int,
       actualQty: Int,
+      orderId: OrderId,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
@@ -158,6 +178,7 @@ object Task:
       taskType: TaskType,
       skuId: SkuId,
       packagingLevel: PackagingLevel,
+      orderId: OrderId,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],

@@ -21,40 +21,44 @@ class TaskCreationPolicySuite extends AnyFunSpec:
 
   describe("TaskCreationPolicy"):
     describe("with an empty list"):
-      it("returns an empty list"):
+      it("returns empty list"):
         assert(TaskCreationPolicy(List.empty, at).isEmpty)
 
     describe("with a single request"):
       val req = request()
       val List((planned, event)) = TaskCreationPolicy(List(req), at)
 
-      it("taskType is always Pick"):
+      it("assigns Pick task type to all created tasks"):
         assert(planned.taskType == TaskType.Pick)
 
-      it("loads skuId from request"):
+      it("copies SKU ID from request"):
         assert(planned.skuId == skuId)
 
-      it("loads packagingLevel from request"):
+      it("copies packaging level from request"):
         assert(planned.packagingLevel == PackagingLevel.Each)
 
-      it("loads quantity as requestedQty"):
+      it("assigns request quantity as requestedQty"):
         assert(planned.requestedQty == 5)
 
-      it("loads waveId from request"):
+      it("copies order ID from request"):
+        assert(planned.orderId == orderId)
+
+      it("wraps wave ID from request in Some"):
         assert(planned.waveId == Some(waveId))
 
-      it("parentTaskId is None"):
+      it("sets parentTaskId to None"):
         assert(planned.parentTaskId == None)
 
-      it("handlingUnitId is None"):
+      it("sets handlingUnitId to None"):
         assert(planned.handlingUnitId == None)
 
-      it("event reflects the Planned state"):
+      it("TaskCreated event mirrors all fields of the Planned task"):
         assert(event.taskId == planned.id)
         assert(event.taskType == TaskType.Pick)
         assert(event.skuId == skuId)
         assert(event.packagingLevel == PackagingLevel.Each)
         assert(event.requestedQty == 5)
+        assert(event.orderId == orderId)
         assert(event.waveId == Some(waveId))
         assert(event.parentTaskId == None)
         assert(event.handlingUnitId == None)
@@ -65,13 +69,13 @@ class TaskCreationPolicySuite extends AnyFunSpec:
       val req2 = request(PackagingLevel.Each, 10)
       val results = TaskCreationPolicy(List(req1, req2), at)
 
-      it("creates one task per request"):
+      it("produces one Planned task per TaskRequest"):
         assert(results.size == 2)
 
-      it("waveId is consistent across all tasks"):
+      it("all tasks share the same wave ID"):
         assert(results.forall(_._1.waveId == Some(waveId)))
 
-      it("each task carries its own packagingLevel"):
+      it("each task preserves its request's packaging level"):
         val (p1, _) = results(0)
         val (p2, _) = results(1)
         assert(p1.packagingLevel == PackagingLevel.Case)

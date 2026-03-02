@@ -11,6 +11,7 @@ import java.time.Instant
 class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
   val waveId = WaveId()
   val skuId = SkuId()
+  val orderId = OrderId()
   val orderIds = List(OrderId(), OrderId())
   val at = Instant.now()
 
@@ -24,6 +25,7 @@ class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
       PackagingLevel.Each,
       10,
       10,
+      orderId,
       Some(waveId),
       None,
       None,
@@ -36,6 +38,7 @@ class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
       TaskType.Pick,
       skuId,
       PackagingLevel.Each,
+      orderId,
       Some(waveId),
       None,
       None,
@@ -49,35 +52,46 @@ class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
       skuId,
       PackagingLevel.Each,
       10,
+      orderId,
       Some(waveId),
       None,
       None,
-      neon.common.UserId()
+      UserId()
     )
 
   def plannedTask() =
-    Task.Planned(TaskId(), TaskType.Pick, skuId, PackagingLevel.Each, 10, Some(waveId), None, None)
+    Task.Planned(
+      TaskId(),
+      TaskType.Pick,
+      skuId,
+      PackagingLevel.Each,
+      10,
+      orderId,
+      Some(waveId),
+      None,
+      None
+    )
 
   describe("WaveCompletionPolicy"):
     describe("when all tasks are terminal"):
-      it("completes the wave"):
+      it("emits WaveCompleted event"):
         val tasks = List(completedTask(), completedTask(), completedTask())
         val (_, event) = WaveCompletionPolicy(tasks, released(), at).value
         assert(event.waveId == waveId)
 
-      it("treats cancelled tasks as terminal"):
+      it("considers Cancelled tasks terminal"):
         val tasks = List(completedTask(), cancelledTask(), completedTask())
         assert(WaveCompletionPolicy(tasks, released(), at).isDefined)
 
     describe("when tasks are still open"):
-      it("does not complete the wave"):
+      it("returns None when non-terminal tasks remain"):
         val tasks = List(completedTask(), assignedTask(), completedTask())
         assert(WaveCompletionPolicy(tasks, released(), at).isEmpty)
 
-      it("treats planned tasks as non-terminal"):
+      it("considers Planned tasks non-terminal"):
         val tasks = List(completedTask(), plannedTask())
         assert(WaveCompletionPolicy(tasks, released(), at).isEmpty)
 
     describe("when the task list is empty"):
-      it("does not complete the wave"):
+      it("returns None for empty task list"):
         assert(WaveCompletionPolicy(List.empty, released(), at).isEmpty)

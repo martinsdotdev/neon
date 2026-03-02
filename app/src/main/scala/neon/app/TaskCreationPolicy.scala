@@ -16,6 +16,7 @@ object TaskCreationPolicy:
         skuId = req.skuId,
         packagingLevel = req.packagingLevel,
         requestedQty = req.quantity,
+        orderId = req.orderId,
         waveId = Some(req.waveId),
         parentTaskId = None,
         handlingUnitId = None,

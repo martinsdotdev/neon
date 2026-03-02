@@ -18,6 +18,7 @@ object ShortpickPolicy:
           skuId = completed.skuId,
           packagingLevel = completed.packagingLevel,
           requestedQty = remainder,
+          orderId = completed.orderId,
           waveId = completed.waveId,
           parentTaskId = Some(completed.id),
           handlingUnitId = completed.handlingUnitId,
