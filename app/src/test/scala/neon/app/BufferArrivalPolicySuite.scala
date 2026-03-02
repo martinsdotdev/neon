@@ -4,6 +4,7 @@ import neon.common.{HandlingUnitId, LocationId, PackagingLevel, TransportOrderId
 import neon.handlingunit.HandlingUnit
 import neon.transportorder.TransportOrderEvent
 import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class BufferArrivalPolicySuite extends AnyFunSpec:

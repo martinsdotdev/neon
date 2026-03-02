@@ -2,6 +2,7 @@ package neon.transportorder
 
 import neon.common.{HandlingUnitId, LocationId, TransportOrderId}
 import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class TransportOrderSuite extends AnyFunSpec:

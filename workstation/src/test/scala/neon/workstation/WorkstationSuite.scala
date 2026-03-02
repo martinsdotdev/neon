@@ -2,6 +2,7 @@ package neon.workstation
 
 import neon.common.{GroupId, WorkstationId}
 import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class WorkstationSuite extends AnyFunSpec:

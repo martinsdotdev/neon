@@ -3,6 +3,7 @@ package neon.app
 import neon.common.{HandlingUnitId, SkuId, TaskId, UserId, WaveId}
 import neon.task.{Task, TaskType}
 import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class TaskCancellationPolicySuite extends AnyFunSpec:
@@ -16,7 +17,14 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
 
   def assignedTask() =
     Task.Assigned(
-      TaskId(), TaskType.Pick, skuId, 10, Some(waveId), None, Some(handlingUnitId), UserId()
+      TaskId(),
+      TaskType.Pick,
+      skuId,
+      10,
+      Some(waveId),
+      None,
+      Some(handlingUnitId),
+      UserId()
     )
 
   def completedTask() =

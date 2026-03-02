@@ -1,6 +1,7 @@
 package neon.task
 
 import neon.common.{HandlingUnitId, SkuId, TaskId, UserId, WaveId}
+
 import java.time.Instant
 
 sealed trait TaskEvent:

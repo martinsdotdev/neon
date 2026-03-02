@@ -2,8 +2,9 @@ package neon.app
 
 import neon.common.{HandlingUnitId, LocationId, SkuId, TaskId, WaveId}
 import neon.task.{TaskEvent, TaskType}
-import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.OptionValues
+import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class RoutingPolicySuite extends AnyFunSpec with OptionValues:
@@ -18,7 +19,15 @@ class RoutingPolicySuite extends AnyFunSpec with OptionValues:
       handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId)
   ) =
     TaskEvent.TaskCompleted(
-      taskId, TaskType.Pick, skuId, Some(waveId), None, handlingUnitId, 10, 10, at
+      taskId,
+      TaskType.Pick,
+      skuId,
+      Some(waveId),
+      None,
+      handlingUnitId,
+      10,
+      10,
+      at
     )
 
   describe("RoutingPolicy"):

@@ -2,6 +2,7 @@ package neon.task
 
 import neon.common.{HandlingUnitId, SkuId, TaskId, UserId, WaveId}
 import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class TaskSuite extends AnyFunSpec:
@@ -21,7 +22,8 @@ class TaskSuite extends AnyFunSpec:
   describe("Task"):
     describe("creating"):
       it("produces a Planned state and a TaskCreated event"):
-        val (planned, event) = Task.create(TaskType.Pick, skuId, 10, Some(waveId), None, Some(handlingUnitId), at)
+        val (planned, event) =
+          Task.create(TaskType.Pick, skuId, 10, Some(waveId), None, Some(handlingUnitId), at)
         assert(planned.id == event.taskId)
         assert(planned.taskType == TaskType.Pick)
         assert(planned.requestedQty == 10)
@@ -122,7 +124,15 @@ class TaskSuite extends AnyFunSpec:
       val parentId = TaskId()
 
       def withParent() =
-        Task.Planned(taskId, TaskType.Pick, skuId, 10, Some(waveId), Some(parentId), Some(handlingUnitId))
+        Task.Planned(
+          taskId,
+          TaskType.Pick,
+          skuId,
+          10,
+          Some(waveId),
+          Some(parentId),
+          Some(handlingUnitId)
+        )
 
       it("completed state carries parentTaskId"):
         val (assigned, _) = withParent().assign(userId, at)

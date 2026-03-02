@@ -1,6 +1,7 @@
 package neon.consolidationgroup
 
 import neon.common.{GroupId, OrderId, WaveId, WorkstationId}
+
 import java.time.Instant
 
 sealed trait ConsolidationGroup:

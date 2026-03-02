@@ -1,6 +1,7 @@
 package neon.handlingunit
 
 import neon.common.{HandlingUnitId, LocationId, PackagingLevel}
+
 import java.time.Instant
 
 sealed trait HandlingUnit:

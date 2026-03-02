@@ -3,6 +3,7 @@ package neon.app
 import neon.common.{OrderId, WaveId}
 import neon.wave.{OrderGrouping, WaveEvent}
 import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class ConsolidationGroupFormationPolicySuite extends AnyFunSpec:

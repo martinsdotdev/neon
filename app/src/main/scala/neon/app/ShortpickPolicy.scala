@@ -1,6 +1,7 @@
 package neon.app
 
 import neon.task.{Task, TaskEvent}
+
 import java.time.Instant
 
 object ShortpickPolicy:

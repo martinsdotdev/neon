@@ -2,6 +2,7 @@ package neon.wave
 
 import neon.common.{OrderId, WaveId}
 import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class WaveSuite extends AnyFunSpec:

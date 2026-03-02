@@ -3,8 +3,9 @@ package neon.app
 import neon.common.{OrderId, SkuId, TaskId, WaveId}
 import neon.task.{Task, TaskType}
 import neon.wave.{OrderGrouping, Wave}
-import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.OptionValues
+import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:

@@ -2,8 +2,9 @@ package neon.app
 
 import neon.common.{HandlingUnitId, SkuId, TaskId, WaveId}
 import neon.task.{Task, TaskType}
-import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.OptionValues
+import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class ShortpickPolicySuite extends AnyFunSpec with OptionValues:

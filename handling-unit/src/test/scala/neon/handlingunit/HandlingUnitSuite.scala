@@ -2,6 +2,7 @@ package neon.handlingunit
 
 import neon.common.{HandlingUnitId, LocationId, PackagingLevel}
 import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class HandlingUnitSuite extends AnyFunSpec:

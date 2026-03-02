@@ -3,6 +3,7 @@ package neon.wave
 import neon.common.{OrderId, PackagingLevel, SkuId}
 import neon.order.{Order, OrderLine}
 import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class WavePlannerSuite extends AnyFunSpec:
@@ -46,13 +47,19 @@ class WavePlannerSuite extends AnyFunSpec:
         WavePlanner.plan(List.empty, OrderGrouping.Single, at)
 
     it("handles multiple orders with multiple lines"):
-      val order1 = Order(OrderId(), List(
-        OrderLine(sku1, PackagingLevel.Each, 5),
-        OrderLine(sku2, PackagingLevel.Case, 3)
-      ))
-      val order2 = Order(OrderId(), List(
-        OrderLine(sku1, PackagingLevel.Pallet, 1)
-      ))
+      val order1 = Order(
+        OrderId(),
+        List(
+          OrderLine(sku1, PackagingLevel.Each, 5),
+          OrderLine(sku2, PackagingLevel.Case, 3)
+        )
+      )
+      val order2 = Order(
+        OrderId(),
+        List(
+          OrderLine(sku1, PackagingLevel.Pallet, 1)
+        )
+      )
       val result = WavePlanner.plan(List(order1, order2), OrderGrouping.Multi, at)
       assert(result.taskRequests.length == 3)
       assert(result.taskRequests.count(_.orderId == order1.id) == 2)

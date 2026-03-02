@@ -1,6 +1,7 @@
 package neon.transportorder
 
 import neon.common.{HandlingUnitId, LocationId, TransportOrderId}
+
 import java.time.Instant
 
 sealed trait TransportOrder:

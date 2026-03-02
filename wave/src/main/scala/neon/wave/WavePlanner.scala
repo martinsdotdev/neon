@@ -2,6 +2,7 @@ package neon.wave
 
 import neon.common.WaveId
 import neon.order.Order
+
 import java.time.Instant
 
 case class WavePlan(
@@ -24,7 +25,7 @@ object WavePlanner:
 
     val taskRequests = for
       order <- orders
-      line  <- order.lines
+      line <- order.lines
     yield TaskRequest(id, order.id, line.skuId, line.packagingLevel, line.quantity)
 
     WavePlan(released, event, taskRequests)

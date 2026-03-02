@@ -2,6 +2,7 @@ package neon.app
 
 import neon.task.Task
 import neon.wave.{Wave, WaveEvent}
+
 import java.time.Instant
 
 object WaveCompletionPolicy:

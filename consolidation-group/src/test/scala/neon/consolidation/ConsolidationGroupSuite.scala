@@ -2,6 +2,7 @@ package neon.consolidationgroup
 
 import neon.common.{GroupId, OrderId, WaveId, WorkstationId}
 import org.scalatest.funspec.AnyFunSpec
+
 import java.time.Instant
 
 class ConsolidationGroupSuite extends AnyFunSpec:

@@ -1,6 +1,7 @@
 package neon.task
 
 import neon.common.{HandlingUnitId, SkuId, TaskId, UserId, WaveId}
+
 import java.time.Instant
 
 sealed trait Task:
@@ -24,7 +25,16 @@ object Task:
     val id = TaskId()
     val planned = Planned(id, taskType, skuId, requestedQty, waveId, parentTaskId, handlingUnitId)
     val event =
-      TaskEvent.TaskCreated(id, taskType, skuId, waveId, parentTaskId, handlingUnitId, requestedQty, at)
+      TaskEvent.TaskCreated(
+        id,
+        taskType,
+        skuId,
+        waveId,
+        parentTaskId,
+        handlingUnitId,
+        requestedQty,
+        at
+      )
     (planned, event)
 
   case class Planned(
@@ -60,9 +70,28 @@ object Task:
     def complete(actualQty: Int, at: Instant): (Completed, TaskEvent.TaskCompleted) =
       require(actualQty >= 0, s"actualQty must be non-negative, got $actualQty")
       val completed =
-        Completed(id, taskType, skuId, requestedQty, actualQty, waveId, parentTaskId, handlingUnitId)
+        Completed(
+          id,
+          taskType,
+          skuId,
+          requestedQty,
+          actualQty,
+          waveId,
+          parentTaskId,
+          handlingUnitId
+        )
       val event =
-        TaskEvent.TaskCompleted(id, taskType, skuId, waveId, parentTaskId, handlingUnitId, requestedQty, actualQty, at)
+        TaskEvent.TaskCompleted(
+          id,
+          taskType,
+          skuId,
+          waveId,
+          parentTaskId,
+          handlingUnitId,
+          requestedQty,
+          actualQty,
+          at
+        )
       (completed, event)
 
     def cancel(at: Instant): (Cancelled, TaskEvent.TaskCancelled) =

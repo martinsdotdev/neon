@@ -1,6 +1,7 @@
 package neon.workstation
 
 import neon.common.{GroupId, WorkstationId}
+
 import java.time.Instant
 
 sealed trait Workstation:

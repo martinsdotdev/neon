@@ -1,8 +1,9 @@
 package neon.app
 
 import neon.common.LocationId
-import neon.transportorder.{TransportOrder, TransportOrderEvent}
 import neon.task.TaskEvent
+import neon.transportorder.{TransportOrder, TransportOrderEvent}
+
 import java.time.Instant
 
 object RoutingPolicy:
