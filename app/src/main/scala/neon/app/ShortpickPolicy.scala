@@ -5,7 +5,7 @@ import neon.task.{Task, TaskEvent}
 import java.time.Instant
 
 object ShortpickPolicy:
-  def evaluate(
+  def apply(
       completed: Task.Completed,
       at: Instant
   ): Option[(Task.Planned, TaskEvent.TaskCreated)] =

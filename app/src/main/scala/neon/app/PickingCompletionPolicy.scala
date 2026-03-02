@@ -8,7 +8,7 @@ import java.time.Instant
 object PickingCompletionPolicy:
   import TaskPredicates.isTerminal
 
-  def evaluate(
+  def apply(
       tasks: List[Task],
       group: ConsolidationGroup.Created,
       at: Instant

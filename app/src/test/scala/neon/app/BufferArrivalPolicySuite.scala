@@ -22,11 +22,11 @@ class BufferArrivalPolicySuite extends AnyFunSpec:
 
   describe("BufferArrivalPolicy"):
     it("moves the handling unit to the transport order destination"):
-      val (inBuffer, _) = BufferArrivalPolicy.evaluate(confirmed(), pickCreated(), at)
+      val (inBuffer, _) = BufferArrivalPolicy(confirmed(), pickCreated(), at)
       assert(inBuffer.currentLocation == bufferArea)
 
     it("emits an event identifying the handling unit and destination"):
-      val (_, event) = BufferArrivalPolicy.evaluate(confirmed(), pickCreated(), at)
+      val (_, event) = BufferArrivalPolicy(confirmed(), pickCreated(), at)
       assert(event.handlingUnitId == handlingUnitId)
       assert(event.locationId == bufferArea)
       assert(event.occurredAt == at)

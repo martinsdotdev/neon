@@ -8,7 +8,7 @@ import java.time.Instant
 object WaveCompletionPolicy:
   import TaskPredicates.isTerminal
 
-  def evaluate(
+  def apply(
       waveTasks: List[Task],
       wave: Wave.Released,
       at: Instant

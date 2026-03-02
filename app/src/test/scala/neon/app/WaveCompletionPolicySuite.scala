@@ -32,22 +32,22 @@ class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
     describe("when all tasks are terminal"):
       it("completes the wave"):
         val tasks = List(completedTask(), completedTask(), completedTask())
-        val (_, event) = WaveCompletionPolicy.evaluate(tasks, released(), at).value
+        val (_, event) = WaveCompletionPolicy(tasks, released(), at).value
         assert(event.waveId == waveId)
 
       it("treats cancelled tasks as terminal"):
         val tasks = List(completedTask(), cancelledTask(), completedTask())
-        assert(WaveCompletionPolicy.evaluate(tasks, released(), at).isDefined)
+        assert(WaveCompletionPolicy(tasks, released(), at).isDefined)
 
     describe("when tasks are still open"):
       it("does not complete the wave"):
         val tasks = List(completedTask(), assignedTask(), completedTask())
-        assert(WaveCompletionPolicy.evaluate(tasks, released(), at).isEmpty)
+        assert(WaveCompletionPolicy(tasks, released(), at).isEmpty)
 
       it("treats planned tasks as non-terminal"):
         val tasks = List(completedTask(), plannedTask())
-        assert(WaveCompletionPolicy.evaluate(tasks, released(), at).isEmpty)
+        assert(WaveCompletionPolicy(tasks, released(), at).isEmpty)
 
     describe("when the task list is empty"):
       it("does not complete the wave"):
-        assert(WaveCompletionPolicy.evaluate(List.empty, released(), at).isEmpty)
+        assert(WaveCompletionPolicy(List.empty, released(), at).isEmpty)

@@ -33,36 +33,36 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
       it("picks the consolidation group"):
         val tasks = List(completedTask(), completedTask())
         val group = createdGroup()
-        val (picked, event) = PickingCompletionPolicy.evaluate(tasks, group, at).value
+        val (picked, event) = PickingCompletionPolicy(tasks, group, at).value
         assert(picked.id == group.id)
         assert(event.groupId == group.id)
 
       it("treats cancelled tasks as terminal"):
         val tasks = List(completedTask(), cancelledTask())
-        assert(PickingCompletionPolicy.evaluate(tasks, createdGroup(), at).isDefined)
+        assert(PickingCompletionPolicy(tasks, createdGroup(), at).isDefined)
 
       it("carries waveId and occurredAt in the event"):
         val tasks = List(completedTask())
-        val (_, event) = PickingCompletionPolicy.evaluate(tasks, createdGroup(), at).value
+        val (_, event) = PickingCompletionPolicy(tasks, createdGroup(), at).value
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 
       it("preserves group identity across transition"):
         val group = createdGroup()
         val tasks = List(completedTask())
-        val (picked, _) = PickingCompletionPolicy.evaluate(tasks, group, at).value
+        val (picked, _) = PickingCompletionPolicy(tasks, group, at).value
         assert(picked.waveId == waveId)
         assert(picked.orderIds == orderIds)
 
     describe("when tasks are still open"):
       it("does not pick the group"):
         val tasks = List(completedTask(), assignedTask())
-        assert(PickingCompletionPolicy.evaluate(tasks, createdGroup(), at).isEmpty)
+        assert(PickingCompletionPolicy(tasks, createdGroup(), at).isEmpty)
 
       it("treats planned tasks as non-terminal"):
         val tasks = List(completedTask(), plannedTask())
-        assert(PickingCompletionPolicy.evaluate(tasks, createdGroup(), at).isEmpty)
+        assert(PickingCompletionPolicy(tasks, createdGroup(), at).isEmpty)
 
     describe("when the task list is empty"):
       it("does not pick the group"):
-        assert(PickingCompletionPolicy.evaluate(List.empty, createdGroup(), at).isEmpty)
+        assert(PickingCompletionPolicy(List.empty, createdGroup(), at).isEmpty)

@@ -6,7 +6,7 @@ import neon.workstation.{Workstation, WorkstationEvent}
 import java.time.Instant
 
 object WorkstationAssignmentPolicy:
-  def evaluate(
+  def apply(
       group: ConsolidationGroup.ReadyForWorkstation,
       workstation: Workstation.Idle,
       at: Instant

@@ -5,7 +5,7 @@ import neon.transportorder.{TransportOrder, TransportOrderEvent}
 import java.time.Instant
 
 object TransportOrderCancellationPolicy:
-  def evaluate(
+  def apply(
       transportOrders: List[TransportOrder],
       at: Instant
   ): List[(TransportOrder.Cancelled, TransportOrderEvent.TransportOrderCancelled)] =

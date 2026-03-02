@@ -16,7 +16,7 @@ class ConsolidationGroupFormationPolicySuite extends AnyFunSpec:
 
   describe("ConsolidationGroupFormationPolicy"):
     describe("Multi-order wave"):
-      val results = ConsolidationGroupFormationPolicy.evaluate(released(OrderGrouping.Multi), at)
+      val results = ConsolidationGroupFormationPolicy(released(OrderGrouping.Multi), at)
 
       it("creates a consolidation group for the wave"):
         assert(results.size == 1)
@@ -34,5 +34,5 @@ class ConsolidationGroupFormationPolicySuite extends AnyFunSpec:
 
     describe("Single-order wave"):
       it("produces no consolidation groups"):
-        val results = ConsolidationGroupFormationPolicy.evaluate(released(OrderGrouping.Single), at)
+        val results = ConsolidationGroupFormationPolicy(released(OrderGrouping.Single), at)
         assert(results.isEmpty)

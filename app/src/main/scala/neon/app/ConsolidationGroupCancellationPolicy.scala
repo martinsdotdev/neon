@@ -5,7 +5,7 @@ import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent}
 import java.time.Instant
 
 object ConsolidationGroupCancellationPolicy:
-  def evaluate(
+  def apply(
       groups: List[ConsolidationGroup],
       at: Instant
   ): List[(ConsolidationGroup.Cancelled, ConsolidationGroupEvent.ConsolidationGroupCancelled)] =

@@ -34,15 +34,15 @@ class RoutingPolicySuite extends AnyFunSpec with OptionValues:
 
   describe("RoutingPolicy"):
     it("skips tasks without a handling unit"):
-      assert(RoutingPolicy.evaluate(completedEvent(None), destination, at).isEmpty)
+      assert(RoutingPolicy(completedEvent(None), destination, at).isEmpty)
 
     it("creates a transport order for the handling unit"):
-      val (pending, _) = RoutingPolicy.evaluate(completedEvent(), destination, at).value
+      val (pending, _) = RoutingPolicy(completedEvent(), destination, at).value
       assert(pending.handlingUnitId == handlingUnitId)
       assert(pending.destination == destination)
 
     it("emits a TransportOrderCreated event with correct fields"):
-      val (pending, event) = RoutingPolicy.evaluate(completedEvent(), destination, at).value
+      val (pending, event) = RoutingPolicy(completedEvent(), destination, at).value
       assert(event.transportOrderId == pending.id)
       assert(event.handlingUnitId == handlingUnitId)
       assert(event.destination == destination)

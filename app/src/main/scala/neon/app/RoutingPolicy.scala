@@ -7,7 +7,7 @@ import neon.transportorder.{TransportOrder, TransportOrderEvent}
 import java.time.Instant
 
 object RoutingPolicy:
-  def evaluate(
+  def apply(
       event: TaskEvent.TaskCompleted,
       destination: LocationId,
       at: Instant

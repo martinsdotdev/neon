@@ -23,14 +23,14 @@ class WorkstationAssignmentPolicySuite extends AnyFunSpec:
       it("assigns the group to the workstation"):
         val group = readyGroup()
         val ws = idleWorkstation()
-        val ((assigned, _), _) = WorkstationAssignmentPolicy.evaluate(group, ws, at)
+        val ((assigned, _), _) = WorkstationAssignmentPolicy(group, ws, at)
         assert(assigned.id == group.id)
         assert(assigned.workstationId == ws.id)
 
       it("group event carries workstationId and occurredAt"):
         val group = readyGroup()
         val ws = idleWorkstation()
-        val ((_, cgEvent), _) = WorkstationAssignmentPolicy.evaluate(group, ws, at)
+        val ((_, cgEvent), _) = WorkstationAssignmentPolicy(group, ws, at)
         assert(cgEvent.workstationId == ws.id)
         assert(cgEvent.occurredAt == at)
 
@@ -38,20 +38,20 @@ class WorkstationAssignmentPolicySuite extends AnyFunSpec:
       it("activates the workstation with the group"):
         val group = readyGroup()
         val ws = idleWorkstation()
-        val (_, (active, _)) = WorkstationAssignmentPolicy.evaluate(group, ws, at)
+        val (_, (active, _)) = WorkstationAssignmentPolicy(group, ws, at)
         assert(active.id == ws.id)
         assert(active.groupId == group.id)
 
       it("workstation event carries groupId and occurredAt"):
         val group = readyGroup()
         val ws = idleWorkstation()
-        val (_, (_, wsEvent)) = WorkstationAssignmentPolicy.evaluate(group, ws, at)
+        val (_, (_, wsEvent)) = WorkstationAssignmentPolicy(group, ws, at)
         assert(wsEvent.groupId == group.id)
         assert(wsEvent.occurredAt == at)
 
       it("preserves workstation type after assignment"):
         val ws = Workstation.Idle(WorkstationId(), WorkstationType.PackStation)
-        val (_, (active, event)) = WorkstationAssignmentPolicy.evaluate(readyGroup(), ws, at)
+        val (_, (active, event)) = WorkstationAssignmentPolicy(readyGroup(), ws, at)
         assert(active.workstationType == WorkstationType.PackStation)
         assert(event.workstationType == WorkstationType.PackStation)
 
@@ -59,6 +59,6 @@ class WorkstationAssignmentPolicySuite extends AnyFunSpec:
       it("group's workstationId matches workstation's id"):
         val group = readyGroup()
         val ws = idleWorkstation()
-        val ((assigned, _), (active, _)) = WorkstationAssignmentPolicy.evaluate(group, ws, at)
+        val ((assigned, _), (active, _)) = WorkstationAssignmentPolicy(group, ws, at)
         assert(assigned.workstationId == active.id)
         assert(active.groupId == assigned.id)

@@ -35,20 +35,20 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
   describe("ShortpickPolicy"):
     describe("when actual meets requested"):
       it("does not create a replacement task"):
-        assert(ShortpickPolicy.evaluate(completed(10, 10), at).isEmpty)
+        assert(ShortpickPolicy(completed(10, 10), at).isEmpty)
 
     describe("when actual exceeds requested"):
       it("does not create a replacement task"):
-        assert(ShortpickPolicy.evaluate(completed(10, 12), at).isEmpty)
+        assert(ShortpickPolicy(completed(10, 12), at).isEmpty)
 
     describe("when actual is zero"):
       it("creates a replacement for the entire quantity"):
-        val (replacement, _) = ShortpickPolicy.evaluate(completed(10, 0), at).value
+        val (replacement, _) = ShortpickPolicy(completed(10, 0), at).value
         assert(replacement.requestedQty == 10)
 
     describe("when actual is less than requested"):
       val task = completed(10, 7)
-      val (replacement, event) = ShortpickPolicy.evaluate(task, at).value
+      val (replacement, event) = ShortpickPolicy(task, at).value
 
       it("creates a task for the remaining quantity"):
         assert(replacement.requestedQty == 3)
@@ -77,6 +77,6 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
     describe("when task has no wave"):
       it("replacement inherits None for waveId"):
         val task = completed(10, 7, waveId = None, handlingUnitId = None)
-        val (replacement, _) = ShortpickPolicy.evaluate(task, at).value
+        val (replacement, _) = ShortpickPolicy(task, at).value
         assert(replacement.waveId == None)
         assert(replacement.handlingUnitId == None)

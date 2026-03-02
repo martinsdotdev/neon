@@ -5,7 +5,7 @@ import neon.task.{Task, TaskEvent}
 import java.time.Instant
 
 object TaskCancellationPolicy:
-  def evaluate(
+  def apply(
       waveTasks: List[Task],
       at: Instant
   ): List[(Task.Cancelled, TaskEvent.TaskCancelled)] =

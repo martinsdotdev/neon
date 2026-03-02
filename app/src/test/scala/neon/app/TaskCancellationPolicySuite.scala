@@ -47,30 +47,30 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
     describe("when wave tasks include open tasks"):
       it("cancels planned tasks"):
         val tasks = List(plannedTask(), completedTask())
-        val results = TaskCancellationPolicy.evaluate(tasks, at)
+        val results = TaskCancellationPolicy(tasks, at)
         assert(results.size == 1)
         assert(results.head._1.id == tasks.head.id)
 
       it("cancels assigned tasks"):
         val tasks = List(assignedTask(), completedTask())
-        val results = TaskCancellationPolicy.evaluate(tasks, at)
+        val results = TaskCancellationPolicy(tasks, at)
         assert(results.size == 1)
         assert(results.head._1.id == tasks.head.id)
 
       it("skips already completed tasks"):
         val tasks = List(plannedTask(), completedTask(), completedTask())
-        val results = TaskCancellationPolicy.evaluate(tasks, at)
+        val results = TaskCancellationPolicy(tasks, at)
         assert(results.size == 1)
 
       it("skips already cancelled tasks"):
         val tasks = List(plannedTask(), cancelledTask())
-        val results = TaskCancellationPolicy.evaluate(tasks, at)
+        val results = TaskCancellationPolicy(tasks, at)
         assert(results.size == 1)
         assert(results.head._1.id == tasks.head.id)
 
       it("emits one event per cancelled task"):
         val tasks = List(plannedTask(), assignedTask(), completedTask())
-        val results = TaskCancellationPolicy.evaluate(tasks, at)
+        val results = TaskCancellationPolicy(tasks, at)
         assert(results.size == 2)
         results.foreach: (cancelled, event) =>
           assert(event.occurredAt == at)
@@ -78,13 +78,13 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
 
       it("planned cancellation carries no assignedTo"):
         val tasks = List(plannedTask())
-        val results = TaskCancellationPolicy.evaluate(tasks, at)
+        val results = TaskCancellationPolicy(tasks, at)
         assert(results.head._1.assignedTo == None)
         assert(results.head._2.assignedTo == None)
 
       it("assigned cancellation carries the operator"):
         val tasks = List(assignedTask())
-        val results = TaskCancellationPolicy.evaluate(tasks, at)
+        val results = TaskCancellationPolicy(tasks, at)
         assert(results.head._1.assignedTo.isDefined)
         assert(results.head._2.assignedTo.isDefined)
         assert(results.head._1.assignedTo == results.head._2.assignedTo)
@@ -92,8 +92,8 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
     describe("when all tasks are already terminal"):
       it("produces no cancellations"):
         val tasks = List(completedTask(), cancelledTask(), completedTask())
-        assert(TaskCancellationPolicy.evaluate(tasks, at).isEmpty)
+        assert(TaskCancellationPolicy(tasks, at).isEmpty)
 
     describe("when the task list is empty"):
       it("produces no cancellations"):
-        assert(TaskCancellationPolicy.evaluate(List.empty, at).isEmpty)
+        assert(TaskCancellationPolicy(List.empty, at).isEmpty)

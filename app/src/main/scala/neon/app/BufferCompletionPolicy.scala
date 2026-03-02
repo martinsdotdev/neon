@@ -10,7 +10,7 @@ object BufferCompletionPolicy:
     case _: HandlingUnit.InBuffer => true
     case _                        => false
 
-  def evaluate(
+  def apply(
       handlingUnits: List[HandlingUnit],
       group: ConsolidationGroup.Picked,
       at: Instant

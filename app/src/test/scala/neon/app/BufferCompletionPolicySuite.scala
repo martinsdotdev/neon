@@ -31,32 +31,32 @@ class BufferCompletionPolicySuite extends AnyFunSpec with OptionValues:
       it("transitions the group to ready for workstation"):
         val hus = List(inBuffer(), inBuffer())
         val group = pickedGroup()
-        val (ready, event) = BufferCompletionPolicy.evaluate(hus, group, at).value
+        val (ready, event) = BufferCompletionPolicy(hus, group, at).value
         assert(ready.id == group.id)
         assert(event.groupId == group.id)
 
       it("carries waveId and occurredAt in the event"):
         val hus = List(inBuffer())
-        val (_, event) = BufferCompletionPolicy.evaluate(hus, pickedGroup(), at).value
+        val (_, event) = BufferCompletionPolicy(hus, pickedGroup(), at).value
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 
       it("preserves group identity across transition"):
         val group = pickedGroup()
         val hus = List(inBuffer())
-        val (ready, _) = BufferCompletionPolicy.evaluate(hus, group, at).value
+        val (ready, _) = BufferCompletionPolicy(hus, group, at).value
         assert(ready.waveId == waveId)
         assert(ready.orderIds == orderIds)
 
     describe("when some handling units are not yet in buffer"):
       it("does not transition when pick HUs are still in transit"):
         val hus = List(inBuffer(), pickCreated())
-        assert(BufferCompletionPolicy.evaluate(hus, pickedGroup(), at).isEmpty)
+        assert(BufferCompletionPolicy(hus, pickedGroup(), at).isEmpty)
 
       it("does not transition when HUs have already been emptied"):
         val hus = List(inBuffer(), empty())
-        assert(BufferCompletionPolicy.evaluate(hus, pickedGroup(), at).isEmpty)
+        assert(BufferCompletionPolicy(hus, pickedGroup(), at).isEmpty)
 
     describe("when the handling unit list is empty"):
       it("does not transition the group"):
-        assert(BufferCompletionPolicy.evaluate(List.empty, pickedGroup(), at).isEmpty)
+        assert(BufferCompletionPolicy(List.empty, pickedGroup(), at).isEmpty)

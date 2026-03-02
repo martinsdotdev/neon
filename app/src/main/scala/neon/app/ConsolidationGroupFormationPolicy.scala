@@ -6,7 +6,7 @@ import neon.wave.{OrderGrouping, WaveEvent}
 import java.time.Instant
 
 object ConsolidationGroupFormationPolicy:
-  def evaluate(
+  def apply(
       event: WaveEvent.WaveReleased,
       at: Instant
   ): List[(ConsolidationGroup.Created, ConsolidationGroupEvent.ConsolidationGroupCreated)] =
