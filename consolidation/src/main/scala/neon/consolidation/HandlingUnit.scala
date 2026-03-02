@@ -8,9 +8,8 @@ sealed trait HandlingUnit:
   def packagingLevel: PackagingLevel
 
 object HandlingUnit:
-  case class Created(
+  case class PickCreated(
       id: HandlingUnitId,
-      role: HandlingUnitRole,
       packagingLevel: PackagingLevel,
       currentLocation: LocationId
   ) extends HandlingUnit:
@@ -18,13 +17,16 @@ object HandlingUnit:
         locationId: LocationId,
         at: Instant
     ): (InBuffer, HandlingUnitEvent.HandlingUnitMovedToBuffer) =
-      require(role == HandlingUnitRole.Pick, "moveToBuffer is only valid for Pick handling units")
       val inBuffer = InBuffer(id, packagingLevel, locationId)
       val event = HandlingUnitEvent.HandlingUnitMovedToBuffer(id, locationId, at)
       (inBuffer, event)
 
+  case class ShipCreated(
+      id: HandlingUnitId,
+      packagingLevel: PackagingLevel,
+      currentLocation: LocationId
+  ) extends HandlingUnit:
     def pack(at: Instant): (Packed, HandlingUnitEvent.HandlingUnitPacked) =
-      require(role == HandlingUnitRole.Ship, "pack is only valid for Ship handling units")
       val packed = Packed(id, packagingLevel, currentLocation)
       val event = HandlingUnitEvent.HandlingUnitPacked(id, at)
       (packed, event)

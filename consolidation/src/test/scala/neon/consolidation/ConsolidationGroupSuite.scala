@@ -14,6 +14,23 @@ class ConsolidationGroupSuite extends AnyFunSpec:
   def created() = ConsolidationGroup.Created(id, waveId, orderIds)
 
   describe("ConsolidationGroup"):
+    describe("creating"):
+      it("produces a Created state and a ConsolidationGroupCreated event"):
+        val (created, event) = ConsolidationGroup.create(waveId, orderIds, at)
+        assert(created.id == event.groupId)
+        assert(created.waveId == waveId)
+        assert(created.orderIds == orderIds)
+
+      it("event carries order IDs for downstream slot allocation"):
+        val (_, event) = ConsolidationGroup.create(waveId, orderIds, at)
+        assert(event.orderIds == orderIds)
+        assert(event.waveId == waveId)
+        assert(event.occurredAt == at)
+
+      it("rejects empty order list"):
+        assertThrows[IllegalArgumentException]:
+          ConsolidationGroup.create(waveId, List.empty, at)
+
     describe("full lifecycle"):
       it("tracks orders from wave completion through put-wall processing"):
         val (picked, _) = created().pick(at)

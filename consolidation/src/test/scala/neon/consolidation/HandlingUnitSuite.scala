@@ -12,9 +12,9 @@ class HandlingUnitSuite extends AnyFunSpec:
   val at = Instant.now()
 
   def pickCreated() =
-    HandlingUnit.Created(id, HandlingUnitRole.Pick, PackagingLevel.Case, pickFace)
+    HandlingUnit.PickCreated(id, PackagingLevel.Case, pickFace)
   def shipCreated() =
-    HandlingUnit.Created(id, HandlingUnitRole.Ship, PackagingLevel.Each, packStation)
+    HandlingUnit.ShipCreated(id, PackagingLevel.Each, packStation)
 
   describe("HandlingUnit"):
     describe("Pick lifecycle"):
@@ -29,15 +29,6 @@ class HandlingUnitSuite extends AnyFunSpec:
         val (ready, _) = packed.readyToShip(at)
         val (shipped, _) = ready.ship(at)
         assert(shipped.isInstanceOf[HandlingUnit.Shipped])
-
-    describe("role enforcement"):
-      it("moveToBuffer rejects Ship role"):
-        assertThrows[IllegalArgumentException]:
-          shipCreated().moveToBuffer(bufferArea, at)
-
-      it("pack rejects Pick role"):
-        assertThrows[IllegalArgumentException]:
-          pickCreated().pack(at)
 
     describe("location tracking"):
       it("moveToBuffer updates location from pick face to buffer"):
