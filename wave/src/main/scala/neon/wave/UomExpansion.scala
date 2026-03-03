@@ -15,11 +15,11 @@ object UomExpansion:
       case level               => uomHierarchy.get(level).map(_ * line.quantity)
     eachesOpt match
       case Some(eaches) if uomHierarchy.nonEmpty =>
-        decompose(waveId, orderId, line.skuId, eaches, uomHierarchy)
+        expand(waveId, orderId, line.skuId, eaches, uomHierarchy)
       case _ =>
         List(TaskRequest(waveId, orderId, line.skuId, line.packagingLevel, line.quantity))
 
-  private def decompose(
+  private def expand(
       waveId: WaveId,
       orderId: OrderId,
       skuId: SkuId,

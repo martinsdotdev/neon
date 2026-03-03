@@ -1,7 +1,7 @@
 package neon.wave
 
-import neon.common.{SkuId, UomHierarchy, WaveId}
-import neon.order.Order
+import neon.common.{OrderId, WaveId}
+import neon.order.{Order, OrderLine}
 
 import java.time.Instant
 
@@ -12,11 +12,15 @@ case class WavePlan(
 )
 
 object WavePlanner:
+  private val passThrough: (WaveId, OrderId, OrderLine) => List[TaskRequest] =
+    (waveId, orderId, line) =>
+      List(TaskRequest(waveId, orderId, line.skuId, line.packagingLevel, line.quantity))
+
   def plan(
       orders: List[Order],
       grouping: OrderGrouping,
       at: Instant,
-      uomHierarchies: Map[SkuId, UomHierarchy] = Map.empty
+      lineResolution: (WaveId, OrderId, OrderLine) => List[TaskRequest] = passThrough
   ): WavePlan =
     require(orders.nonEmpty, "orders must not be empty")
     val id = WaveId()
@@ -27,8 +31,7 @@ object WavePlanner:
     val taskRequests = for
       order <- orders
       line <- order.lines
-      hierarchy = uomHierarchies.getOrElse(line.skuId, UomHierarchy.empty)
-      req <- UomExpansion(id, order.id, line, hierarchy)
+      req <- lineResolution(id, order.id, line)
     yield req
 
     WavePlan(released, event, taskRequests)

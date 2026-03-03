@@ -2,7 +2,6 @@ package neon.wave
 
 import neon.common.{OrderId, PackagingLevel, Priority, SkuId, UomHierarchy}
 import neon.order.{Order, OrderLine}
-import neon.sku.Sku
 import org.scalatest.funspec.AnyFunSpec
 
 import java.time.Instant
@@ -13,7 +12,7 @@ class WavePlannerSuite extends AnyFunSpec:
   val at = Instant.now()
 
   describe("WavePlanner"):
-    it("creates one task request per order line"):
+    it("produces one task request per order line by default"):
       val orders = List(
         Order(
           OrderId(),
@@ -29,7 +28,7 @@ class WavePlannerSuite extends AnyFunSpec:
       assert(result.taskRequests.exists(r => r.skuId == sku1 && r.quantity == 5))
       assert(result.taskRequests.exists(r => r.skuId == sku2 && r.quantity == 3))
 
-    it("preserves order ID traceability in task requests"):
+    it("tags every task request with the source order ID"):
       val orderId = OrderId()
       val orders = List(
         Order(orderId, Priority.Normal, List(OrderLine(sku1, PackagingLevel.Each, 5)))
@@ -37,18 +36,18 @@ class WavePlannerSuite extends AnyFunSpec:
       val result = WavePlanner.plan(orders, OrderGrouping.Single, at)
       assert(result.taskRequests.head.orderId == orderId)
 
-    it("carries wave ID in all task requests"):
+    it("tags every task request with the wave ID"):
       val orders = List(
         Order(OrderId(), Priority.Normal, List(OrderLine(sku1, PackagingLevel.Each, 10)))
       )
       val result = WavePlanner.plan(orders, OrderGrouping.Single, at)
       assert(result.taskRequests.forall(_.waveId == result.wave.id))
 
-    it("rejects empty order list"):
+    it("rejects an empty order list"):
       assertThrows[IllegalArgumentException]:
         WavePlanner.plan(List.empty, OrderGrouping.Single, at)
 
-    it("flattens multiple orders into individual task requests"):
+    it("flattens lines across multiple orders"):
       val order1 = Order(
         OrderId(),
         Priority.Normal,
@@ -69,7 +68,7 @@ class WavePlannerSuite extends AnyFunSpec:
       assert(result.taskRequests.count(_.orderId == order1.id) == 2)
       assert(result.taskRequests.count(_.orderId == order2.id) == 1)
 
-    it("produces a wave and event consumed by downstream policies"):
+    it("emits a WaveReleased event with grouping, order IDs, and timestamp"):
       val orderId1 = OrderId()
       val orderId2 = OrderId()
       val orders = List(
@@ -82,44 +81,38 @@ class WavePlannerSuite extends AnyFunSpec:
       assert(result.event.occurredAt == at)
       assert(result.wave.id == result.event.waveId)
 
-    it("delegates UOM decomposition when SKU hierarchy is provided"):
-      val skuId = SkuId()
-      val sku = Sku(
-        skuId,
-        "SKU-H",
-        "Hierarchy SKU",
-        lotManaged = false,
-        uomHierarchy = UomHierarchy(PackagingLevel.Pallet -> 20, PackagingLevel.Case -> 6)
-      )
-      val orders = List(
-        Order(OrderId(), Priority.Normal, List(OrderLine(skuId, PackagingLevel.Each, 28)))
-      )
-      val result = WavePlanner.plan(orders, OrderGrouping.Single, at, List(sku))
-      assert(result.taskRequests.length == 3)
-      assert(
-        result.taskRequests.exists(r =>
-          r.packagingLevel == PackagingLevel.Pallet && r.quantity == 1
+    describe("lineResolution"):
+      it("defaults to 1:1 pass-through"):
+        val orders = List(
+          Order(OrderId(), Priority.Normal, List(OrderLine(sku1, PackagingLevel.Each, 28)))
         )
-      )
+        val result = WavePlanner.plan(orders, OrderGrouping.Single, at)
+        assert(result.taskRequests.length == 1)
+        assert(result.taskRequests.head.packagingLevel == PackagingLevel.Each)
+        assert(result.taskRequests.head.quantity == 28)
 
-    it("treats unknown SKU as having no hierarchy"):
-      val knownSku = SkuId()
-      val unknownSku = SkuId()
-      val sku = Sku(
-        knownSku,
-        "SKU-K",
-        "Known SKU",
-        lotManaged = false,
-        uomHierarchy = UomHierarchy(PackagingLevel.Pallet -> 20)
-      )
-      val orders = List(
-        Order(
-          OrderId(),
-          Priority.Normal,
-          List(OrderLine(unknownSku, PackagingLevel.Each, 15))
+      it("delegates to custom strategy when provided"):
+        val skuId = SkuId()
+        val hierarchies =
+          Map(skuId -> UomHierarchy(PackagingLevel.Pallet -> 20, PackagingLevel.Case -> 6))
+        val orders = List(
+          Order(OrderId(), Priority.Normal, List(OrderLine(skuId, PackagingLevel.Each, 28)))
         )
-      )
-      val result = WavePlanner.plan(orders, OrderGrouping.Single, at, List(sku))
-      assert(result.taskRequests.length == 1)
-      assert(result.taskRequests.head.packagingLevel == PackagingLevel.Each)
-      assert(result.taskRequests.head.quantity == 15)
+        val result = WavePlanner.plan(
+          orders,
+          OrderGrouping.Single,
+          at,
+          lineResolution = (waveId, orderId, line) =>
+            UomExpansion(
+              waveId,
+              orderId,
+              line,
+              hierarchies.getOrElse(line.skuId, UomHierarchy.empty)
+            )
+        )
+        assert(result.taskRequests.length == 3)
+        assert(
+          result.taskRequests.exists(r =>
+            r.packagingLevel == PackagingLevel.Pallet && r.quantity == 1
+          )
+        )

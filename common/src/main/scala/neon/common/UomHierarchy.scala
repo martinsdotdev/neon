@@ -20,4 +20,3 @@ object UomHierarchy:
     def contains(level: PackagingLevel): Boolean = h.contains(level)
     def nonEmpty: Boolean = h.nonEmpty
     def isEmpty: Boolean = h.isEmpty
-    def toMap: Map[PackagingLevel, Int] = h
