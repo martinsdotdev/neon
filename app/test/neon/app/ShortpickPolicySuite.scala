@@ -1,6 +1,15 @@
 package neon.app
 
-import neon.common.{HandlingUnitId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
+import neon.common.{
+  HandlingUnitId,
+  LocationId,
+  OrderId,
+  PackagingLevel,
+  SkuId,
+  TaskId,
+  UserId,
+  WaveId
+}
 import neon.task.{Task, TaskType}
 import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
@@ -13,6 +22,8 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
   val orderId = OrderId()
   val waveId = WaveId()
   val handlingUnitId = HandlingUnitId()
+  val sourceLocationId = LocationId()
+  val destinationLocationId = LocationId()
   val at = Instant.now()
 
   def completed(
@@ -33,16 +44,18 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
       waveId,
       None,
       handlingUnitId,
+      sourceLocationId,
+      destinationLocationId,
       userId
     )
 
   describe("ShortpickPolicy"):
     describe("when actual meets requested"):
-      it("returns None"):
+      it("does not create a replacement task"):
         assert(ShortpickPolicy(completed(10, 10), at).isEmpty)
 
     describe("when actual exceeds requested"):
-      it("returns None"):
+      it("does not create a replacement task"):
         assert(ShortpickPolicy(completed(10, 12), at).isEmpty)
 
     describe("when actual is zero"):
@@ -84,7 +97,7 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
         assert(event.occurredAt == at)
 
     describe("when task has no wave"):
-      it("copies None waveId and handlingUnitId when original has no wave"):
+      it("copies None for both waveId and handlingUnitId"):
         val task = completed(10, 7, waveId = None, handlingUnitId = None)
         val (replacement, _) = ShortpickPolicy(task, at).value
         assert(replacement.waveId == None)

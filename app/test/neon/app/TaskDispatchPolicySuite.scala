@@ -1,6 +1,16 @@
 package neon.app
 
-import neon.common.{GroupId, OrderId, PackagingLevel, Priority, SkuId, TaskId, UserId, WaveId}
+import neon.common.{
+  GroupId,
+  LocationId,
+  OrderId,
+  PackagingLevel,
+  Priority,
+  SkuId,
+  TaskId,
+  UserId,
+  WaveId
+}
 import neon.consolidationgroup.ConsolidationGroup
 import neon.order.{Order, OrderLine}
 import neon.task.{Task, TaskType}
@@ -11,14 +21,28 @@ import java.time.Instant
 class TaskDispatchPolicySuite extends AnyFunSpec:
   val skuId = SkuId()
   val userId = UserId()
+  val sourceLocationId = LocationId()
+  val destinationLocationId = LocationId()
   val at = Instant.now()
 
-  def planned(
+  def allocated(
       orderId: OrderId,
       waveId: Option[WaveId] = None,
       packagingLevel: PackagingLevel = PackagingLevel.Each
-  ): Task.Planned =
-    Task.Planned(TaskId(), TaskType.Pick, skuId, packagingLevel, 1, orderId, waveId, None, None)
+  ): Task.Allocated =
+    Task.Allocated(
+      TaskId(),
+      TaskType.Pick,
+      skuId,
+      packagingLevel,
+      1,
+      orderId,
+      waveId,
+      None,
+      None,
+      sourceLocationId,
+      destinationLocationId
+    )
 
   def completedTask(orderId: OrderId, waveId: Option[WaveId] = None): Task.Completed =
     Task.Completed(
@@ -32,6 +56,8 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
       waveId,
       None,
       None,
+      sourceLocationId,
+      destinationLocationId,
       userId
     )
 
@@ -49,12 +75,12 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
     )
 
   def dispatch(
-      candidates: List[Task.Planned],
+      candidates: List[Task.Allocated],
       allTasks: List[Task] = List.empty,
       orders: List[Order] = List.empty,
       groups: List[ConsolidationGroup] = List.empty,
       criteria: List[DispatchCriterion] = List.empty
-  ): List[Task.Planned] =
+  ): List[Task.Allocated] =
     TaskDispatchPolicy(candidates, allTasks, orders, groups, DispatchProfile(criteria))
 
   describe("TaskDispatchPolicy"):
@@ -65,16 +91,16 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
     describe("with empty profile"):
       it("returns candidates in original order"):
         val orderId = OrderId()
-        val t1 = planned(orderId)
-        val t2 = planned(orderId)
+        val t1 = allocated(orderId)
+        val t2 = allocated(orderId)
         val result = dispatch(List(t1, t2), orders = List(singleLineOrder(orderId)))
         assert(result == List(t1, t2))
 
-    describe("returns all candidates"):
-      it("does not truncate the result"):
+    describe("count preservation"):
+      it("returns all candidates — dispatch only reorders, never filters"):
         val orderId = OrderId()
         val order = singleLineOrder(orderId)
-        val tasks = (1 to 5).map(_ => planned(orderId)).toList
+        val tasks = (1 to 5).map(_ => allocated(orderId)).toList
         val result =
           dispatch(tasks, orders = List(order), criteria = List(DispatchCriterion.OrderPriority))
         assert(result.size == 5)
@@ -85,8 +111,8 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
         val wave2 = WaveId()
         val orderId = OrderId()
         val order = singleLineOrder(orderId)
-        val tNewer = planned(orderId, Some(wave2))
-        val tOlder = planned(orderId, Some(wave1))
+        val tNewer = allocated(orderId, Some(wave2))
+        val tOlder = allocated(orderId, Some(wave1))
         val result = dispatch(
           List(tNewer, tOlder),
           orders = List(order),
@@ -98,8 +124,8 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
         val wave1 = WaveId()
         val orderId = OrderId()
         val order = singleLineOrder(orderId)
-        val tNoWave = planned(orderId, None)
-        val tWithWave = planned(orderId, Some(wave1))
+        val tNoWave = allocated(orderId, None)
+        val tWithWave = allocated(orderId, Some(wave1))
         val result = dispatch(
           List(tNoWave, tWithWave),
           orders = List(order),
@@ -112,8 +138,8 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
       it("sorts higher priority orders first"):
         val orderId1 = OrderId()
         val orderId2 = OrderId()
-        val tLow = planned(orderId1)
-        val tCritical = planned(orderId2)
+        val tLow = allocated(orderId1)
+        val tCritical = allocated(orderId2)
         val result = dispatch(
           List(tLow, tCritical),
           orders = List(
@@ -127,7 +153,7 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
       it("sorts Critical > High > Normal > Low"):
         val ids = List.fill(4)(OrderId())
         val priorities = List(Priority.Normal, Priority.High, Priority.Critical, Priority.Low)
-        val tasks = ids.map(planned(_))
+        val tasks = ids.map(allocated(_))
         val orders = ids.zip(priorities).map((id, p) => singleLineOrder(id, p))
         val result =
           dispatch(tasks, orders = orders, criteria = List(DispatchCriterion.OrderPriority))
@@ -139,8 +165,8 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
       it("sorts known orders before tasks whose orderId is absent from the orders list"):
         val knownId = OrderId()
         val unknownId = OrderId()
-        val tKnown = planned(knownId)
-        val tUnknown = planned(unknownId)
+        val tKnown = allocated(knownId)
+        val tUnknown = allocated(unknownId)
         val result = dispatch(
           List(tUnknown, tKnown),
           orders = List(singleLineOrder(knownId, Priority.Low)),
@@ -152,8 +178,8 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
       it("sorts single-line orders before multi-line orders"):
         val orderId1 = OrderId()
         val orderId2 = OrderId()
-        val tMulti = planned(orderId1)
-        val tSingle = planned(orderId2)
+        val tMulti = allocated(orderId1)
+        val tSingle = allocated(orderId2)
         val result = dispatch(
           List(tMulti, tSingle),
           orders = List(multiLineOrder(orderId1), singleLineOrder(orderId2)),
@@ -166,8 +192,8 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
         val waveId = WaveId()
         val orderId1 = OrderId()
         val orderId2 = OrderId()
-        val tPending1 = planned(orderId1, Some(waveId))
-        val tPending2 = planned(orderId2, Some(waveId))
+        val tPending1 = allocated(orderId1, Some(waveId))
+        val tPending2 = allocated(orderId2, Some(waveId))
         val tCompleted1 = completedTask(orderId1, Some(waveId))
         val group1 = ConsolidationGroup.Created(GroupId(), waveId, List(orderId1))
         val group2 = ConsolidationGroup.Created(GroupId(), waveId, List(orderId2))
@@ -184,8 +210,8 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
         val waveId = WaveId()
         val orderId1 = OrderId()
         val orderId2 = OrderId()
-        val tInGroup = planned(orderId1, Some(waveId))
-        val tNoGroup = planned(orderId2, Some(waveId))
+        val tInGroup = allocated(orderId1, Some(waveId))
+        val tNoGroup = allocated(orderId2, Some(waveId))
         val tCompleted = completedTask(orderId1, Some(waveId))
         val group = ConsolidationGroup.Created(GroupId(), waveId, List(orderId1))
         val result = dispatch(
@@ -201,8 +227,8 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
       it("treats tasks with waveId=None as 0% completion — groups require a waveId match"):
         val waveId = WaveId()
         val orderId = OrderId()
-        val tNoWave = planned(orderId, None)
-        val tInGroup = planned(orderId, Some(waveId))
+        val tNoWave = allocated(orderId, None)
+        val tInGroup = allocated(orderId, Some(waveId))
         val tCompleted = completedTask(orderId, Some(waveId))
         val group = ConsolidationGroup.Created(GroupId(), waveId, List(orderId))
         val result = dispatch(
@@ -219,9 +245,9 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
       it("sorts Pallet before Case before Each"):
         val orderId = OrderId()
         val order = singleLineOrder(orderId)
-        val tEach = planned(orderId, packagingLevel = PackagingLevel.Each)
-        val tCase = planned(orderId, packagingLevel = PackagingLevel.Case)
-        val tPallet = planned(orderId, packagingLevel = PackagingLevel.Pallet)
+        val tEach = allocated(orderId, packagingLevel = PackagingLevel.Each)
+        val tCase = allocated(orderId, packagingLevel = PackagingLevel.Case)
+        val tPallet = allocated(orderId, packagingLevel = PackagingLevel.Pallet)
         val result = dispatch(
           List(tEach, tCase, tPallet),
           orders = List(order),
@@ -236,8 +262,8 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
         val waveId = WaveId()
         val orderId1 = OrderId()
         val orderId2 = OrderId()
-        val tMulti = planned(orderId1, Some(waveId))
-        val tSingle = planned(orderId2, Some(waveId))
+        val tMulti = allocated(orderId1, Some(waveId))
+        val tSingle = allocated(orderId2, Some(waveId))
         val result = dispatch(
           List(tMulti, tSingle),
           orders = List(multiLineOrder(orderId1), singleLineOrder(orderId2)),
@@ -251,9 +277,9 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
         val orderId1 = OrderId()
         val orderId2 = OrderId()
         val orderId3 = OrderId()
-        val t1 = planned(orderId1, Some(wave1))
-        val t2 = planned(orderId2, Some(wave2))
-        val t3 = planned(orderId3, Some(wave2))
+        val t1 = allocated(orderId1, Some(wave1))
+        val t2 = allocated(orderId2, Some(wave2))
+        val t3 = allocated(orderId3, Some(wave2))
         val result = dispatch(
           List(t3, t2, t1),
           orders = List(

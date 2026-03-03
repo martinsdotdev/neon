@@ -19,19 +19,19 @@ class TransportOrderCancellationPolicySuite extends AnyFunSpec:
 
   describe("TransportOrderCancellationPolicy"):
     describe("when orders include cancellable states"):
-      it("cancels pending orders"):
+      it("cancels Pending orders"):
         val orders = List(pendingOrder(), confirmed())
         val results = TransportOrderCancellationPolicy(orders, at)
         assert(results.size == 1)
         assert(results.head._1.id == orders.head.id)
 
-      it("skips confirmed orders"):
+      it("skips Confirmed orders"):
         val orders = List(confirmed(), pendingOrder())
         val results = TransportOrderCancellationPolicy(orders, at)
         assert(results.size == 1)
         assert(results.head._1.id == orders.last.id)
 
-      it("skips already cancelled orders"):
+      it("skips already Cancelled orders"):
         val orders = List(pendingOrder(), cancelled())
         val results = TransportOrderCancellationPolicy(orders, at)
         assert(results.size == 1)
@@ -45,15 +45,13 @@ class TransportOrderCancellationPolicySuite extends AnyFunSpec:
           assert(event.occurredAt == at)
           assert(event.transportOrderId == cancelled.id)
 
-    describe("event fields"):
-      it("carries handlingUnitId and destination for audit"):
+      it("event carries handlingUnitId and destination for audit"):
         val orders = List(pendingOrder())
         val (_, event) = TransportOrderCancellationPolicy(orders, at).head
         assert(event.handlingUnitId == handlingUnitId)
         assert(event.destination == destination)
 
-    describe("state preservation"):
-      it("preserves handlingUnitId and destination in cancelled state"):
+      it("preserves handlingUnitId and destination in Cancelled state"):
         val orders = List(pendingOrder())
         val (cancelled, _) = TransportOrderCancellationPolicy(orders, at).head
         assert(cancelled.handlingUnitId == handlingUnitId)

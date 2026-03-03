@@ -62,7 +62,7 @@ class ConsolidationGroupCancellationPolicySuite extends AnyFunSpec:
         assert(results.size == 1)
         assert(results.head._1.id == groups.last.id)
 
-      it("cancels mixed non-terminal states"):
+      it("cancels all four non-terminal states in one pass"):
         val groups =
           List(created(), picked(), readyForWorkstation(), assigned(), completed(), cancelled())
         val results = ConsolidationGroupCancellationPolicy(groups, at)
