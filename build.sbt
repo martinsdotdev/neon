@@ -10,8 +10,14 @@ val uuidCreatorVersion = "6.1.1"
 
 ThisBuild / libraryDependencies += "org.scalatest" %% "scalatest" % scalatestVersion % Test
 
+val flatLayout = Seq(
+  Compile / scalaSource := baseDirectory.value / "src",
+  Test / scalaSource    := baseDirectory.value / "test"
+)
+
 lazy val common = project
   .in(file("common"))
+  .settings(flatLayout)
   .settings(
     name := "neon-common",
     libraryDependencies ++= Seq(
@@ -22,61 +28,73 @@ lazy val common = project
 lazy val order = project
   .in(file("order"))
   .dependsOn(common)
+  .settings(flatLayout)
   .settings(name := "neon-order")
 
 lazy val wave = project
   .in(file("wave"))
   .dependsOn(common, order, sku)
+  .settings(flatLayout)
   .settings(name := "neon-wave")
 
 lazy val task = project
   .in(file("task"))
   .dependsOn(common)
+  .settings(flatLayout)
   .settings(name := "neon-task")
 
 lazy val consolidationGroup = project
   .in(file("consolidation-group"))
   .dependsOn(common)
+  .settings(flatLayout)
   .settings(name := "neon-consolidation-group")
 
 lazy val handlingUnit = project
   .in(file("handling-unit"))
   .dependsOn(common)
+  .settings(flatLayout)
   .settings(name := "neon-handling-unit")
 
 lazy val transportOrder = project
   .in(file("transport-order"))
   .dependsOn(common)
+  .settings(flatLayout)
   .settings(name := "neon-transport-order")
 
 lazy val location = project
   .in(file("location"))
   .dependsOn(common)
+  .settings(flatLayout)
   .settings(name := "neon-location")
 
 lazy val inventory = project
   .in(file("inventory"))
   .dependsOn(common)
+  .settings(flatLayout)
   .settings(name := "neon-inventory")
 
 lazy val sku = project
   .in(file("sku"))
   .dependsOn(common)
+  .settings(flatLayout)
   .settings(name := "neon-sku")
 
 lazy val user = project
   .in(file("user"))
   .dependsOn(common)
+  .settings(flatLayout)
   .settings(name := "neon-user")
 
 lazy val workstation = project
   .in(file("workstation"))
   .dependsOn(common)
+  .settings(flatLayout)
   .settings(name := "neon-workstation")
 
 lazy val app = project
   .in(file("app"))
   .dependsOn(common, wave, task, consolidationGroup, handlingUnit, transportOrder, workstation)
+  .settings(flatLayout)
   .settings(name := "neon-app")
 
 lazy val root = project
