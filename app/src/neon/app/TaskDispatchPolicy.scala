@@ -7,12 +7,12 @@ import neon.task.Task
 
 object TaskDispatchPolicy:
   def apply(
-      candidates: List[Task.Planned],
+      candidates: List[Task.Allocated],
       allTasks: List[Task],
       orders: List[Order],
       groups: List[ConsolidationGroup],
       profile: DispatchProfile
-  ): List[Task.Planned] =
+  ): List[Task.Allocated] =
     if profile.criteria.isEmpty then candidates
     else
       val orderMap = orders.map(o => o.id -> o).toMap
@@ -27,8 +27,8 @@ object TaskDispatchPolicy:
           .getOrElse(0) < 0
 
   private def compare(
-      a: Task.Planned,
-      b: Task.Planned,
+      a: Task.Allocated,
+      b: Task.Allocated,
       criterion: DispatchCriterion,
       orderMap: Map[OrderId, Order],
       ratioMap: Map[TaskId, Double]
@@ -62,7 +62,7 @@ object TaskDispatchPolicy:
         a.packagingLevel.ordinal - b.packagingLevel.ordinal
 
   private def completionRatio(
-      task: Task.Planned,
+      task: Task.Allocated,
       allTasks: List[Task],
       groups: List[ConsolidationGroup]
   ): Double =

@@ -10,5 +10,6 @@ object TaskCancellationPolicy:
       at: Instant
   ): List[(Task.Cancelled, TaskEvent.TaskCancelled)] =
     waveTasks.collect:
-      case t: Task.Planned  => t.cancel(at)
-      case t: Task.Assigned => t.cancel(at)
+      case t: Task.Planned   => t.cancel(at)
+      case t: Task.Allocated => t.cancel(at)
+      case t: Task.Assigned  => t.cancel(at)

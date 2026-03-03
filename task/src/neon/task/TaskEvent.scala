@@ -1,6 +1,15 @@
 package neon.task
 
-import neon.common.{HandlingUnitId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
+import neon.common.{
+  HandlingUnitId,
+  LocationId,
+  OrderId,
+  PackagingLevel,
+  SkuId,
+  TaskId,
+  UserId,
+  WaveId
+}
 
 import java.time.Instant
 
@@ -23,6 +32,14 @@ object TaskEvent:
       occurredAt: Instant
   ) extends TaskEvent
 
+  case class TaskAllocated(
+      taskId: TaskId,
+      taskType: TaskType,
+      sourceLocationId: LocationId,
+      destinationLocationId: LocationId,
+      occurredAt: Instant
+  ) extends TaskEvent
+
   case class TaskAssigned(
       taskId: TaskId,
       taskType: TaskType,
@@ -38,6 +55,8 @@ object TaskEvent:
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
+      sourceLocationId: LocationId,
+      destinationLocationId: LocationId,
       requestedQty: Int,
       actualQty: Int,
       assignedTo: UserId,
@@ -50,6 +69,8 @@ object TaskEvent:
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
+      sourceLocationId: Option[LocationId],
+      destinationLocationId: Option[LocationId],
       assignedTo: Option[UserId],
       occurredAt: Instant
   ) extends TaskEvent

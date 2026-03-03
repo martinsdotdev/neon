@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{GroupId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
+import neon.common.{GroupId, LocationId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 import neon.consolidationgroup.ConsolidationGroup
 import neon.task.{Task, TaskType}
 import org.scalatest.OptionValues
@@ -13,6 +13,8 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
   val skuId = SkuId()
   val orderId = OrderId()
   val orderIds = List(OrderId(), OrderId())
+  val sourceLocationId = LocationId()
+  val destinationLocationId = LocationId()
   val at = Instant.now()
 
   def createdGroup() = ConsolidationGroup.Created(GroupId(), waveId, orderIds)
@@ -29,6 +31,8 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
       Some(waveId),
       None,
       None,
+      sourceLocationId,
+      destinationLocationId,
       UserId()
     )
 
@@ -42,6 +46,8 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
       Some(waveId),
       None,
       None,
+      Some(sourceLocationId),
+      Some(destinationLocationId),
       None
     )
 
@@ -56,7 +62,24 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
       Some(waveId),
       None,
       None,
+      sourceLocationId,
+      destinationLocationId,
       UserId()
+    )
+
+  def allocatedTask() =
+    Task.Allocated(
+      TaskId(),
+      TaskType.Pick,
+      skuId,
+      PackagingLevel.Each,
+      10,
+      orderId,
+      Some(waveId),
+      None,
+      None,
+      sourceLocationId,
+      destinationLocationId
     )
 
   def plannedTask() =
@@ -85,7 +108,7 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
         val tasks = List(completedTask(), cancelledTask())
         assert(PickingCompletionPolicy(tasks, createdGroup(), at).isDefined)
 
-      it("ConsolidationGroupPicked event includes waveId and occurredAt"):
+      it("ConsolidationGroupPicked event carries wave context and timestamp"):
         val tasks = List(completedTask())
         val (_, event) = PickingCompletionPolicy(tasks, createdGroup(), at).value
         assert(event.waveId == waveId)
@@ -99,8 +122,12 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
         assert(picked.orderIds == orderIds)
 
     describe("when tasks are still open"):
-      it("returns None when non-terminal tasks remain"):
+      it("does not transition when Assigned tasks remain"):
         val tasks = List(completedTask(), assignedTask())
+        assert(PickingCompletionPolicy(tasks, createdGroup(), at).isEmpty)
+
+      it("considers Allocated tasks non-terminal"):
+        val tasks = List(completedTask(), allocatedTask())
         assert(PickingCompletionPolicy(tasks, createdGroup(), at).isEmpty)
 
       it("considers Planned tasks non-terminal"):
@@ -108,5 +135,5 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
         assert(PickingCompletionPolicy(tasks, createdGroup(), at).isEmpty)
 
     describe("when the task list is empty"):
-      it("returns None for empty task list"):
+      it("does not transition for empty task list"):
         assert(PickingCompletionPolicy(List.empty, createdGroup(), at).isEmpty)

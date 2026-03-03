@@ -13,7 +13,8 @@ class RoutingPolicySuite extends AnyFunSpec with OptionValues:
   val userId = UserId()
   val waveId = WaveId()
   val handlingUnitId = HandlingUnitId()
-  val destination = LocationId()
+  val sourceLocationId = LocationId()
+  val destinationLocationId = LocationId()
   val at = Instant.now()
 
   def completedEvent(
@@ -27,6 +28,8 @@ class RoutingPolicySuite extends AnyFunSpec with OptionValues:
       Some(waveId),
       None,
       handlingUnitId,
+      sourceLocationId,
+      destinationLocationId,
       10,
       10,
       userId,
@@ -35,16 +38,16 @@ class RoutingPolicySuite extends AnyFunSpec with OptionValues:
 
   describe("RoutingPolicy"):
     it("skips tasks without a handling unit"):
-      assert(RoutingPolicy(completedEvent(None), destination, at).isEmpty)
+      assert(RoutingPolicy(completedEvent(None), at).isEmpty)
 
     it("creates a transport order for the handling unit"):
-      val (pending, _) = RoutingPolicy(completedEvent(), destination, at).value
+      val (pending, _) = RoutingPolicy(completedEvent(), at).value
       assert(pending.handlingUnitId == handlingUnitId)
-      assert(pending.destination == destination)
+      assert(pending.destination == destinationLocationId)
 
-    it("emits a TransportOrderCreated event with correct fields"):
-      val (pending, event) = RoutingPolicy(completedEvent(), destination, at).value
+    it("TransportOrderCreated event carries handling unit, destination, and timestamp"):
+      val (pending, event) = RoutingPolicy(completedEvent(), at).value
       assert(event.transportOrderId == pending.id)
       assert(event.handlingUnitId == handlingUnitId)
-      assert(event.destination == destination)
+      assert(event.destination == destinationLocationId)
       assert(event.occurredAt == at)

@@ -1,6 +1,15 @@
 package neon.task
 
-import neon.common.{HandlingUnitId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
+import neon.common.{
+  HandlingUnitId,
+  LocationId,
+  OrderId,
+  PackagingLevel,
+  SkuId,
+  TaskId,
+  UserId,
+  WaveId
+}
 
 import java.time.Instant
 
@@ -64,6 +73,70 @@ object Task:
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId]
   ) extends Task:
+    def allocate(
+        sourceLocationId: LocationId,
+        destinationLocationId: LocationId,
+        at: Instant
+    ): (Allocated, TaskEvent.TaskAllocated) =
+      val allocated =
+        Allocated(
+          id,
+          taskType,
+          skuId,
+          packagingLevel,
+          requestedQty,
+          orderId,
+          waveId,
+          parentTaskId,
+          handlingUnitId,
+          sourceLocationId,
+          destinationLocationId
+        )
+      val event = TaskEvent.TaskAllocated(id, taskType, sourceLocationId, destinationLocationId, at)
+      (allocated, event)
+
+    def cancel(at: Instant): (Cancelled, TaskEvent.TaskCancelled) =
+      val cancelled =
+        Cancelled(
+          id,
+          taskType,
+          skuId,
+          packagingLevel,
+          orderId,
+          waveId,
+          parentTaskId,
+          handlingUnitId,
+          None,
+          None,
+          None
+        )
+      val event =
+        TaskEvent.TaskCancelled(
+          id,
+          taskType,
+          waveId,
+          parentTaskId,
+          handlingUnitId,
+          None,
+          None,
+          None,
+          at
+        )
+      (cancelled, event)
+
+  case class Allocated(
+      id: TaskId,
+      taskType: TaskType,
+      skuId: SkuId,
+      packagingLevel: PackagingLevel,
+      requestedQty: Int,
+      orderId: OrderId,
+      waveId: Option[WaveId],
+      parentTaskId: Option[TaskId],
+      handlingUnitId: Option[HandlingUnitId],
+      sourceLocationId: LocationId,
+      destinationLocationId: LocationId
+  ) extends Task:
     def assign(userId: UserId, at: Instant): (Assigned, TaskEvent.TaskAssigned) =
       val assigned =
         Assigned(
@@ -76,6 +149,8 @@ object Task:
           waveId,
           parentTaskId,
           handlingUnitId,
+          sourceLocationId,
+          destinationLocationId,
           userId
         )
       val event = TaskEvent.TaskAssigned(id, taskType, userId, at)
@@ -92,10 +167,21 @@ object Task:
           waveId,
           parentTaskId,
           handlingUnitId,
+          Some(sourceLocationId),
+          Some(destinationLocationId),
           None
         )
-      val event =
-        TaskEvent.TaskCancelled(id, taskType, waveId, parentTaskId, handlingUnitId, None, at)
+      val event = TaskEvent.TaskCancelled(
+        id,
+        taskType,
+        waveId,
+        parentTaskId,
+        handlingUnitId,
+        Some(sourceLocationId),
+        Some(destinationLocationId),
+        None,
+        at
+      )
       (cancelled, event)
 
   case class Assigned(
@@ -108,6 +194,8 @@ object Task:
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
+      sourceLocationId: LocationId,
+      destinationLocationId: LocationId,
       assignedTo: UserId
   ) extends Task:
     def complete(actualQty: Int, at: Instant): (Completed, TaskEvent.TaskCompleted) =
@@ -124,6 +212,8 @@ object Task:
           waveId,
           parentTaskId,
           handlingUnitId,
+          sourceLocationId,
+          destinationLocationId,
           assignedTo
         )
       val event =
@@ -135,6 +225,8 @@ object Task:
           waveId,
           parentTaskId,
           handlingUnitId,
+          sourceLocationId,
+          destinationLocationId,
           requestedQty,
           actualQty,
           assignedTo,
@@ -153,10 +245,21 @@ object Task:
           waveId,
           parentTaskId,
           handlingUnitId,
+          Some(sourceLocationId),
+          Some(destinationLocationId),
           Some(assignedTo)
         )
-      val event = TaskEvent
-        .TaskCancelled(id, taskType, waveId, parentTaskId, handlingUnitId, Some(assignedTo), at)
+      val event = TaskEvent.TaskCancelled(
+        id,
+        taskType,
+        waveId,
+        parentTaskId,
+        handlingUnitId,
+        Some(sourceLocationId),
+        Some(destinationLocationId),
+        Some(assignedTo),
+        at
+      )
       (cancelled, event)
 
   case class Completed(
@@ -170,6 +273,8 @@ object Task:
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
+      sourceLocationId: LocationId,
+      destinationLocationId: LocationId,
       assignedTo: UserId
   ) extends Task
 
@@ -182,5 +287,7 @@ object Task:
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
+      sourceLocationId: Option[LocationId],
+      destinationLocationId: Option[LocationId],
       assignedTo: Option[UserId]
   ) extends Task

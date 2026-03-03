@@ -21,7 +21,7 @@ class TaskCreationPolicySuite extends AnyFunSpec:
 
   describe("TaskCreationPolicy"):
     describe("with an empty list"):
-      it("returns empty list"):
+      it("produces no tasks"):
         assert(TaskCreationPolicy(List.empty, at).isEmpty)
 
     describe("with a single request"):
@@ -43,7 +43,7 @@ class TaskCreationPolicySuite extends AnyFunSpec:
       it("copies order ID from request"):
         assert(planned.orderId == orderId)
 
-      it("wraps wave ID from request in Some"):
+      it("carries wave ID from the request"):
         assert(planned.waveId == Some(waveId))
 
       it("sets parentTaskId to None"):
