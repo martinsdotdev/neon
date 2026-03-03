@@ -1,6 +1,6 @@
 package neon.handlingunit
 
-import neon.common.{HandlingUnitId, LocationId}
+import neon.common.{HandlingUnitId, LocationId, OrderId}
 
 import java.time.Instant
 
@@ -22,15 +22,18 @@ object HandlingUnitEvent:
 
   case class HandlingUnitPacked(
       handlingUnitId: HandlingUnitId,
+      orderId: OrderId,
       occurredAt: Instant
   ) extends HandlingUnitEvent
 
   case class HandlingUnitReadyToShip(
       handlingUnitId: HandlingUnitId,
+      orderId: OrderId,
       occurredAt: Instant
   ) extends HandlingUnitEvent
 
   case class HandlingUnitShipped(
       handlingUnitId: HandlingUnitId,
+      orderId: OrderId,
       occurredAt: Instant
   ) extends HandlingUnitEvent

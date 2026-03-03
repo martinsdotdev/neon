@@ -41,7 +41,7 @@ class ConsolidationGroupSuite extends AnyFunSpec:
         assert(completed.isInstanceOf[ConsolidationGroup.Completed])
 
     describe("assigning"):
-      it("binds the group to a put-wall for sorting"):
+      it("binds the consolidation group to a put-wall for sorting"):
         val (picked, _) = created().pick(at)
         val (ready, _) = picked.readyForWorkstation(at)
         val (assigned, _) = ready.assign(workstationId, at)
@@ -65,13 +65,13 @@ class ConsolidationGroupSuite extends AnyFunSpec:
         assert(assigned.orderIds == orderIds)
 
     describe("events"):
-      it("identify the group and wave for policy routing"):
+      it("identify the consolidation group and wave for policy routing"):
         val (_, event) = created().pick(at)
         assert(event.groupId == id)
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 
-      it("readyForWorkstation event carries group and wave for assignment policy"):
+      it("readyForWorkstation event carries consolidation group and wave for assignment policy"):
         val (picked, _) = created().pick(at)
         val (_, event) = picked.readyForWorkstation(at)
         assert(event.groupId == id)
@@ -83,6 +83,7 @@ class ConsolidationGroupSuite extends AnyFunSpec:
         val (ready, _) = picked.readyForWorkstation(at)
         val (_, event) = ready.assign(workstationId, at)
         assert(event.workstationId == workstationId)
+        assert(event.occurredAt == at)
 
       it("completed event carries workstation ID to trigger release"):
         val (picked, _) = created().pick(at)
@@ -90,6 +91,7 @@ class ConsolidationGroupSuite extends AnyFunSpec:
         val (assigned, _) = ready.assign(workstationId, at)
         val (_, event) = assigned.complete(at)
         assert(event.workstationId == workstationId)
+        assert(event.occurredAt == at)
 
     describe("cancelling"):
       it("cancels from Created before any picking starts"):
@@ -114,7 +116,7 @@ class ConsolidationGroupSuite extends AnyFunSpec:
         val (cancelled, _) = assigned.cancel(at)
         assert(cancelled.isInstanceOf[ConsolidationGroup.Cancelled])
 
-      it("cancelled event carries group ID and wave ID for cascade coordination"):
+      it("cancelled event carries consolidation group ID and wave ID for cascade coordination"):
         val (_, event) = created().cancel(at)
         assert(event.groupId == id)
         assert(event.waveId == waveId)

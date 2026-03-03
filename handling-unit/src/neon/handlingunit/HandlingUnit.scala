@@ -1,6 +1,6 @@
 package neon.handlingunit
 
-import neon.common.{HandlingUnitId, LocationId, PackagingLevel}
+import neon.common.{HandlingUnitId, LocationId, OrderId, PackagingLevel}
 
 import java.time.Instant
 
@@ -25,11 +25,12 @@ object HandlingUnit:
   case class ShipCreated(
       id: HandlingUnitId,
       packagingLevel: PackagingLevel,
-      currentLocation: LocationId
+      currentLocation: LocationId,
+      orderId: OrderId
   ) extends HandlingUnit:
     def pack(at: Instant): (Packed, HandlingUnitEvent.HandlingUnitPacked) =
-      val packed = Packed(id, packagingLevel, currentLocation)
-      val event = HandlingUnitEvent.HandlingUnitPacked(id, at)
+      val packed = Packed(id, packagingLevel, currentLocation, orderId)
+      val event = HandlingUnitEvent.HandlingUnitPacked(id, orderId, at)
       (packed, event)
 
   case class InBuffer(
@@ -50,24 +51,27 @@ object HandlingUnit:
   case class Packed(
       id: HandlingUnitId,
       packagingLevel: PackagingLevel,
-      currentLocation: LocationId
+      currentLocation: LocationId,
+      orderId: OrderId
   ) extends HandlingUnit:
     def readyToShip(at: Instant): (ReadyToShip, HandlingUnitEvent.HandlingUnitReadyToShip) =
-      val ready = ReadyToShip(id, packagingLevel, currentLocation)
-      val event = HandlingUnitEvent.HandlingUnitReadyToShip(id, at)
+      val ready = ReadyToShip(id, packagingLevel, currentLocation, orderId)
+      val event = HandlingUnitEvent.HandlingUnitReadyToShip(id, orderId, at)
       (ready, event)
 
   case class ReadyToShip(
       id: HandlingUnitId,
       packagingLevel: PackagingLevel,
-      currentLocation: LocationId
+      currentLocation: LocationId,
+      orderId: OrderId
   ) extends HandlingUnit:
     def ship(at: Instant): (Shipped, HandlingUnitEvent.HandlingUnitShipped) =
-      val shipped = Shipped(id, packagingLevel)
-      val event = HandlingUnitEvent.HandlingUnitShipped(id, at)
+      val shipped = Shipped(id, packagingLevel, orderId)
+      val event = HandlingUnitEvent.HandlingUnitShipped(id, orderId, at)
       (shipped, event)
 
   case class Shipped(
       id: HandlingUnitId,
-      packagingLevel: PackagingLevel
+      packagingLevel: PackagingLevel,
+      orderId: OrderId
   ) extends HandlingUnit

@@ -91,15 +91,21 @@ lazy val workstation = project
   .settings(flatLayout)
   .settings(name := "neon-workstation")
 
+lazy val slot = project
+  .in(file("slot"))
+  .dependsOn(common)
+  .settings(flatLayout)
+  .settings(name := "neon-slot")
+
 lazy val app = project
   .in(file("app"))
-  .dependsOn(common, wave, task, consolidationGroup, handlingUnit, transportOrder, workstation)
+  .dependsOn(common, wave, task, consolidationGroup, handlingUnit, transportOrder, workstation, slot)
   .settings(flatLayout)
   .settings(name := "neon-app")
 
 lazy val root = project
   .in(file("."))
-  .aggregate(common, order, wave, task, location, inventory, consolidationGroup, handlingUnit, transportOrder, sku, user, workstation, app)
+  .aggregate(common, order, wave, task, location, inventory, consolidationGroup, handlingUnit, transportOrder, sku, user, workstation, slot, app)
   .settings(
     name := "neon-wes",
     publish / skip := true

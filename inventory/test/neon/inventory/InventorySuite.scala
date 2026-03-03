@@ -13,28 +13,29 @@ class InventorySuite extends AnyFunSpec:
   val at = Instant.now()
 
   def anInventory(onHand: Int = 100, reserved: Int = 0, inventoryLot: Option[Lot] = lot) =
-    val (inv, _) = Inventory.create(locationId, skuId, packagingLevel, inventoryLot, onHand, at)
-    if reserved > 0 then inv.reserve(reserved, at)._1 else inv
+    val (inventory, _) =
+      Inventory.create(locationId, skuId, packagingLevel, inventoryLot, onHand, at)
+    if reserved > 0 then inventory.reserve(reserved, at)._1 else inventory
 
   describe("Inventory"):
     describe("creating"):
       it("produces an Inventory with reserved = 0 and an InventoryCreated event"):
-        val (inv, event) = Inventory.create(locationId, skuId, packagingLevel, lot, 50, at)
-        assert(inv.id == event.inventoryId)
-        assert(inv.locationId == locationId)
-        assert(inv.skuId == skuId)
-        assert(inv.packagingLevel == packagingLevel)
-        assert(inv.lot == lot)
-        assert(inv.onHand == 50)
-        assert(inv.reserved == 0)
+        val (inventory, event) = Inventory.create(locationId, skuId, packagingLevel, lot, 50, at)
+        assert(inventory.id == event.inventoryId)
+        assert(inventory.locationId == locationId)
+        assert(inventory.skuId == skuId)
+        assert(inventory.packagingLevel == packagingLevel)
+        assert(inventory.lot == lot)
+        assert(inventory.onHand == 50)
+        assert(inventory.reserved == 0)
 
       it("rejects negative onHand"):
         assertThrows[IllegalArgumentException]:
           Inventory.create(locationId, skuId, packagingLevel, lot, -1, at)
 
       it("allows onHand = 0 for empty position tracking"):
-        val (inv, _) = Inventory.create(locationId, skuId, packagingLevel, lot, 0, at)
-        assert(inv.onHand == 0)
+        val (inventory, _) = Inventory.create(locationId, skuId, packagingLevel, lot, 0, at)
+        assert(inventory.onHand == 0)
 
       it("event carries all fields for downstream consumers"):
         val (_, event) = Inventory.create(locationId, skuId, packagingLevel, lot, 50, at)
@@ -47,12 +48,12 @@ class InventorySuite extends AnyFunSpec:
 
     describe("available"):
       it("is onHand minus reserved"):
-        val inv = anInventory(onHand = 100, reserved = 30)
-        assert(inv.available == 70)
+        val inventory = anInventory(onHand = 100, reserved = 30)
+        assert(inventory.available == 70)
 
       it("is zero when fully reserved"):
-        val inv = anInventory(onHand = 50, reserved = 50)
-        assert(inv.available == 0)
+        val inventory = anInventory(onHand = 50, reserved = 50)
+        assert(inventory.available == 0)
 
     describe("reserving"):
       it("increments reserved and emits InventoryReserved"):
@@ -62,13 +63,13 @@ class InventorySuite extends AnyFunSpec:
         assert(event.quantityReserved == 20)
 
       it("rejects qty exceeding available"):
-        val inv = anInventory(onHand = 100, reserved = 90)
+        val inventory = anInventory(onHand = 100, reserved = 90)
         assertThrows[IllegalArgumentException]:
-          inv.reserve(11, at)
+          inventory.reserve(11, at)
 
       it("allows reserving exactly the available amount"):
-        val inv = anInventory(onHand = 100, reserved = 90)
-        val (updated, _) = inv.reserve(10, at)
+        val inventory = anInventory(onHand = 100, reserved = 90)
+        val (updated, _) = inventory.reserve(10, at)
         assert(updated.available == 0)
 
       it("rejects qty <= 0"):
@@ -78,9 +79,9 @@ class InventorySuite extends AnyFunSpec:
           anInventory().reserve(-1, at)
 
       it("event carries inventory identity and lot"):
-        val inv = anInventory()
-        val (_, event) = inv.reserve(5, at)
-        assert(event.inventoryId == inv.id)
+        val inventory = anInventory()
+        val (_, event) = inventory.reserve(5, at)
+        assert(event.inventoryId == inventory.id)
         assert(event.locationId == locationId)
         assert(event.skuId == skuId)
         assert(event.lot == lot)
@@ -94,9 +95,9 @@ class InventorySuite extends AnyFunSpec:
         assert(event.quantityReleased == 10)
 
       it("rejects qty exceeding reserved"):
-        val inv = anInventory(onHand = 100, reserved = 10)
+        val inventory = anInventory(onHand = 100, reserved = 10)
         assertThrows[IllegalArgumentException]:
-          inv.release(11, at)
+          inventory.release(11, at)
 
       it("allows releasing exactly the reserved amount"):
         val (updated, _) = anInventory(onHand = 100, reserved = 30).release(30, at)
@@ -109,9 +110,9 @@ class InventorySuite extends AnyFunSpec:
           anInventory(onHand = 100, reserved = 30).release(-1, at)
 
       it("event carries inventory identity and lot"):
-        val inv = anInventory(onHand = 100, reserved = 30)
-        val (_, event) = inv.release(10, at)
-        assert(event.inventoryId == inv.id)
+        val inventory = anInventory(onHand = 100, reserved = 30)
+        val (_, event) = inventory.release(10, at)
+        assert(event.inventoryId == inventory.id)
         assert(event.locationId == locationId)
         assert(event.skuId == skuId)
         assert(event.lot == lot)
@@ -125,9 +126,9 @@ class InventorySuite extends AnyFunSpec:
         assert(event.quantityConsumed == 20)
 
       it("rejects qty exceeding reserved"):
-        val inv = anInventory(onHand = 100, reserved = 10)
+        val inventory = anInventory(onHand = 100, reserved = 10)
         assertThrows[IllegalArgumentException]:
-          inv.consume(11, at)
+          inventory.consume(11, at)
 
       it("allows consuming exactly the reserved amount"):
         val (updated, _) = anInventory(onHand = 100, reserved = 30).consume(30, at)
@@ -141,9 +142,9 @@ class InventorySuite extends AnyFunSpec:
           anInventory(onHand = 100, reserved = 30).consume(-1, at)
 
       it("event carries inventory identity and lot"):
-        val inv = anInventory(onHand = 100, reserved = 30)
-        val (_, event) = inv.consume(10, at)
-        assert(event.inventoryId == inv.id)
+        val inventory = anInventory(onHand = 100, reserved = 30)
+        val (_, event) = inventory.consume(10, at)
+        assert(event.inventoryId == inventory.id)
         assert(event.locationId == locationId)
         assert(event.skuId == skuId)
         assert(event.lot == lot)
@@ -151,55 +152,55 @@ class InventorySuite extends AnyFunSpec:
 
     describe("correcting lot"):
       it("changes the lot and emits LotCorrected with previous and new"):
-        val inv = anInventory(inventoryLot = Some(Lot("OLD")))
-        val (updated, event) = inv.correctLot(Some(Lot("NEW")), at)
+        val inventory = anInventory(inventoryLot = Some(Lot("OLD")))
+        val (updated, event) = inventory.correctLot(Some(Lot("NEW")), at)
         assert(updated.lot == Some(Lot("NEW")))
         assert(event.previousLot == Some(Lot("OLD")))
         assert(event.newLot == Some(Lot("NEW")))
 
       it("can set lot from None to Some"):
-        val inv = anInventory(inventoryLot = None)
-        val (updated, event) = inv.correctLot(Some(Lot("LOT-X")), at)
+        val inventory = anInventory(inventoryLot = None)
+        val (updated, event) = inventory.correctLot(Some(Lot("LOT-X")), at)
         assert(updated.lot == Some(Lot("LOT-X")))
         assert(event.previousLot == None)
         assert(event.newLot == Some(Lot("LOT-X")))
 
       it("can clear lot from Some to None"):
-        val inv = anInventory(inventoryLot = Some(Lot("LOT-X")))
-        val (updated, event) = inv.correctLot(None, at)
+        val inventory = anInventory(inventoryLot = Some(Lot("LOT-X")))
+        val (updated, event) = inventory.correctLot(None, at)
         assert(updated.lot == None)
         assert(event.previousLot == Some(Lot("LOT-X")))
         assert(event.newLot == None)
 
       it("emits event even when correcting to the same lot"):
-        val inv = anInventory(inventoryLot = Some(Lot("SAME")))
-        val (updated, event) = inv.correctLot(Some(Lot("SAME")), at)
+        val inventory = anInventory(inventoryLot = Some(Lot("SAME")))
+        val (updated, event) = inventory.correctLot(Some(Lot("SAME")), at)
         assert(updated.lot == Some(Lot("SAME")))
         assert(event.previousLot == Some(Lot("SAME")))
         assert(event.newLot == Some(Lot("SAME")))
 
       it("event carries inventory identity"):
-        val inv = anInventory()
-        val (_, event) = inv.correctLot(Some(Lot("NEW")), at)
-        assert(event.inventoryId == inv.id)
+        val inventory = anInventory()
+        val (_, event) = inventory.correctLot(Some(Lot("NEW")), at)
+        assert(event.inventoryId == inventory.id)
         assert(event.locationId == locationId)
         assert(event.skuId == skuId)
         assert(event.occurredAt == at)
 
       it("rejects correction when units are reserved"):
-        val inv = anInventory(onHand = 100, reserved = 10)
+        val inventory = anInventory(onHand = 100, reserved = 10)
         assertThrows[IllegalArgumentException]:
-          inv.correctLot(Some(Lot("NEW")), at)
+          inventory.correctLot(Some(Lot("NEW")), at)
 
       it("succeeds when reserved is zero"):
-        val inv = anInventory(onHand = 100, reserved = 0)
-        val (updated, _) = inv.correctLot(Some(Lot("NEW")), at)
+        val inventory = anInventory(onHand = 100, reserved = 0)
+        val (updated, _) = inventory.correctLot(Some(Lot("NEW")), at)
         assert(updated.lot == Some(Lot("NEW")))
 
     describe("lotless inventory"):
       it("reserve and consume work without lot tracking"):
-        val inv = anInventory(onHand = 50, inventoryLot = None)
-        val (reserved, reserveEvent) = inv.reserve(10, at)
+        val inventory = anInventory(onHand = 50, inventoryLot = None)
+        val (reserved, reserveEvent) = inventory.reserve(10, at)
         assert(reserveEvent.lot == None)
         val (consumed, consumeEvent) = reserved.consume(10, at)
         assert(consumeEvent.lot == None)
@@ -208,10 +209,10 @@ class InventorySuite extends AnyFunSpec:
 
     describe("lifecycle"):
       it("stock arrives, gets allocated, and leaves the position"):
-        val (inv, created) = Inventory.create(locationId, skuId, packagingLevel, lot, 30, at)
+        val (inventory, created) = Inventory.create(locationId, skuId, packagingLevel, lot, 30, at)
         assert(created.onHand == 30)
 
-        val (reserved, _) = inv.reserve(20, at)
+        val (reserved, _) = inventory.reserve(20, at)
         assert(reserved.available == 10)
 
         val (consumed, _) = reserved.consume(20, at)

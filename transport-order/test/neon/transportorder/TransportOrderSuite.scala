@@ -45,9 +45,10 @@ class TransportOrderSuite extends AnyFunSpec:
         assert(event.occurredAt == at)
 
     describe("cancelling"):
-      it("cancels a pending order when the wave is aborted"):
+      it("preserves handling unit and destination for audit"):
         val (cancelled, _) = aPending().cancel(at)
-        assert(cancelled.isInstanceOf[TransportOrder.Cancelled])
+        assert(cancelled.handlingUnitId == handlingUnitId)
+        assert(cancelled.destination == destination)
 
       it("cancelled event carries transport order ID and destination for audit"):
         val (_, event) = aPending().cancel(at)

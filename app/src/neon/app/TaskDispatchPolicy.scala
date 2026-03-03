@@ -10,7 +10,7 @@ object TaskDispatchPolicy:
       candidates: List[Task.Allocated],
       allTasks: List[Task],
       orders: List[Order],
-      groups: List[ConsolidationGroup],
+      consolidationGroups: List[ConsolidationGroup],
       profile: DispatchProfile
   ): List[Task.Allocated] =
     if profile.criteria.isEmpty then candidates
@@ -18,7 +18,7 @@ object TaskDispatchPolicy:
       val orderMap = orders.map(o => o.id -> o).toMap
       val ratioMap: Map[TaskId, Double] =
         if profile.criteria.contains(DispatchCriterion.GroupCompletion) then
-          candidates.map(t => t.id -> completionRatio(t, allTasks, groups)).toMap
+          candidates.map(t => t.id -> completionRatio(t, allTasks, consolidationGroups)).toMap
         else Map.empty
       candidates.sortWith: (a, b) =>
         profile.criteria.iterator
@@ -64,9 +64,9 @@ object TaskDispatchPolicy:
   private def completionRatio(
       task: Task.Allocated,
       allTasks: List[Task],
-      groups: List[ConsolidationGroup]
+      consolidationGroups: List[ConsolidationGroup]
   ): Double =
-    groups
+    consolidationGroups
       .find(g => task.waveId.contains(g.waveId) && g.orderIds.contains(task.orderId))
       .map: g =>
         val groupTasks =

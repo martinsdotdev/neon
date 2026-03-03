@@ -32,8 +32,9 @@ class WaveSuite extends AnyFunSpec:
       it("marks all work as done"):
         val (released, _) = planned().release(at)
         val (completed, event) = released.complete(at)
-        assert(completed.isInstanceOf[Wave.Completed])
+        assert(completed.orderGrouping == OrderGrouping.Multi)
         assert(event.waveId == id)
+        assert(event.occurredAt == at)
 
     describe("cancelling"):
       it("can be cancelled before release"):

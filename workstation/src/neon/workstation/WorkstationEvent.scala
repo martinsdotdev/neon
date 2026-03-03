@@ -13,6 +13,7 @@ object WorkstationEvent:
   case class WorkstationEnabled(
       workstationId: WorkstationId,
       workstationType: WorkstationType,
+      slotCount: Int,
       occurredAt: Instant
   ) extends WorkstationEvent
 

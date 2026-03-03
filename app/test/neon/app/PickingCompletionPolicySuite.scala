@@ -17,7 +17,7 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
   val destinationLocationId = LocationId()
   val at = Instant.now()
 
-  def createdGroup() = ConsolidationGroup.Created(GroupId(), waveId, orderIds)
+  def createdConsolidationGroup() = ConsolidationGroup.Created(GroupId(), waveId, orderIds)
 
   def completedTask() =
     Task.Completed(
@@ -97,43 +97,43 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
 
   describe("PickingCompletionPolicy"):
     describe("when all tasks are terminal"):
-      it("transitions group to Picked state"):
+      it("transitions consolidation group to Picked state"):
         val tasks = List(completedTask(), completedTask())
-        val group = createdGroup()
-        val (picked, event) = PickingCompletionPolicy(tasks, group, at).value
-        assert(picked.id == group.id)
-        assert(event.groupId == group.id)
+        val consolidationGroup = createdConsolidationGroup()
+        val (picked, event) = PickingCompletionPolicy(tasks, consolidationGroup, at).value
+        assert(picked.id == consolidationGroup.id)
+        assert(event.groupId == consolidationGroup.id)
 
       it("considers Cancelled tasks terminal"):
         val tasks = List(completedTask(), cancelledTask())
-        assert(PickingCompletionPolicy(tasks, createdGroup(), at).isDefined)
+        assert(PickingCompletionPolicy(tasks, createdConsolidationGroup(), at).isDefined)
 
       it("ConsolidationGroupPicked event carries wave context and timestamp"):
         val tasks = List(completedTask())
-        val (_, event) = PickingCompletionPolicy(tasks, createdGroup(), at).value
+        val (_, event) = PickingCompletionPolicy(tasks, createdConsolidationGroup(), at).value
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 
-      it("Picked state retains group waveId and orderIds"):
-        val group = createdGroup()
+      it("Picked state retains consolidation group waveId and orderIds"):
+        val consolidationGroup = createdConsolidationGroup()
         val tasks = List(completedTask())
-        val (picked, _) = PickingCompletionPolicy(tasks, group, at).value
+        val (picked, _) = PickingCompletionPolicy(tasks, consolidationGroup, at).value
         assert(picked.waveId == waveId)
         assert(picked.orderIds == orderIds)
 
     describe("when tasks are still open"):
       it("does not transition when Assigned tasks remain"):
         val tasks = List(completedTask(), assignedTask())
-        assert(PickingCompletionPolicy(tasks, createdGroup(), at).isEmpty)
+        assert(PickingCompletionPolicy(tasks, createdConsolidationGroup(), at).isEmpty)
 
       it("considers Allocated tasks non-terminal"):
         val tasks = List(completedTask(), allocatedTask())
-        assert(PickingCompletionPolicy(tasks, createdGroup(), at).isEmpty)
+        assert(PickingCompletionPolicy(tasks, createdConsolidationGroup(), at).isEmpty)
 
       it("considers Planned tasks non-terminal"):
         val tasks = List(completedTask(), plannedTask())
-        assert(PickingCompletionPolicy(tasks, createdGroup(), at).isEmpty)
+        assert(PickingCompletionPolicy(tasks, createdConsolidationGroup(), at).isEmpty)
 
     describe("when the task list is empty"):
       it("does not transition for empty task list"):
-        assert(PickingCompletionPolicy(List.empty, createdGroup(), at).isEmpty)
+        assert(PickingCompletionPolicy(List.empty, createdConsolidationGroup(), at).isEmpty)

@@ -7,13 +7,17 @@ import java.time.Instant
 
 object WorkstationAssignmentPolicy:
   def apply(
-      group: ConsolidationGroup.ReadyForWorkstation,
+      consolidationGroup: ConsolidationGroup.ReadyForWorkstation,
       workstation: Workstation.Idle,
       at: Instant
-  ): (
-      (ConsolidationGroup.Assigned, ConsolidationGroupEvent.ConsolidationGroupAssigned),
-      (Workstation.Active, WorkstationEvent.WorkstationAssigned)
-  ) =
-    val cgResult = group.assign(workstation.id, at)
-    val wsResult = workstation.assign(group.id, at)
-    (cgResult, wsResult)
+  ): Option[
+    (
+        (ConsolidationGroup.Assigned, ConsolidationGroupEvent.ConsolidationGroupAssigned),
+        (Workstation.Active, WorkstationEvent.WorkstationAssigned)
+    )
+  ] =
+    if workstation.slotCount < consolidationGroup.orderIds.size then None
+    else
+      val consolidationGroupResult = consolidationGroup.assign(workstation.id, at)
+      val workstationResult = workstation.assign(consolidationGroup.id, at)
+      Some((consolidationGroupResult, workstationResult))

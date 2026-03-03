@@ -1,12 +1,13 @@
 package neon.handlingunit
 
-import neon.common.{HandlingUnitId, LocationId, PackagingLevel}
+import neon.common.{HandlingUnitId, LocationId, OrderId, PackagingLevel}
 import org.scalatest.funspec.AnyFunSpec
 
 import java.time.Instant
 
 class HandlingUnitSuite extends AnyFunSpec:
   val id = HandlingUnitId()
+  val orderId = OrderId()
   val pickFace = LocationId()
   val bufferArea = LocationId()
   val packStation = LocationId()
@@ -15,7 +16,7 @@ class HandlingUnitSuite extends AnyFunSpec:
   def pickCreated() =
     HandlingUnit.PickCreated(id, PackagingLevel.Case, pickFace)
   def shipCreated() =
-    HandlingUnit.ShipCreated(id, PackagingLevel.Each, packStation)
+    HandlingUnit.ShipCreated(id, PackagingLevel.Each, packStation, orderId)
 
   describe("HandlingUnit"):
     describe("Pick lifecycle"):
@@ -59,6 +60,23 @@ class HandlingUnitSuite extends AnyFunSpec:
         assert(ready.packagingLevel == PackagingLevel.Each)
         val (shipped, _) = ready.ship(at)
         assert(shipped.packagingLevel == PackagingLevel.Each)
+
+    describe("order identity"):
+      it("threads orderId through the Ship lifecycle"):
+        val (packed, _) = shipCreated().pack(at)
+        assert(packed.orderId == orderId)
+        val (ready, _) = packed.readyToShip(at)
+        assert(ready.orderId == orderId)
+        val (shipped, _) = ready.ship(at)
+        assert(shipped.orderId == orderId)
+
+      it("ship events carry orderId for downstream routing"):
+        val (packed, packEvent) = shipCreated().pack(at)
+        assert(packEvent.orderId == orderId)
+        val (ready, readyEvent) = packed.readyToShip(at)
+        assert(readyEvent.orderId == orderId)
+        val (_, shipEvent) = ready.ship(at)
+        assert(shipEvent.orderId == orderId)
 
     describe("events"):
       it("identify the handling unit for downstream routing"):

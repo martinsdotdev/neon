@@ -16,8 +16,8 @@ class WorkstationReleasePolicySuite extends AnyFunSpec:
   def completedEvent() =
     ConsolidationGroupEvent.ConsolidationGroupCompleted(groupId, waveId, workstationId, at)
 
-  def activeWorkstation(wsType: WorkstationType = WorkstationType.PutWall) =
-    Workstation.Active(workstationId, wsType, groupId)
+  def activeWorkstation(workstationType: WorkstationType = WorkstationType.PutWall) =
+    Workstation.Active(workstationId, workstationType, 8, groupId)
 
   describe("WorkstationReleasePolicy"):
     it("returns the workstation to idle"):
@@ -30,7 +30,7 @@ class WorkstationReleasePolicySuite extends AnyFunSpec:
       assert(event.occurredAt == at)
 
     it("preserves workstation type after release"):
-      val ws = activeWorkstation(WorkstationType.PackStation)
-      val (idle, event) = WorkstationReleasePolicy(completedEvent(), ws, at)
+      val workstation = activeWorkstation(WorkstationType.PackStation)
+      val (idle, event) = WorkstationReleasePolicy(completedEvent(), workstation, at)
       assert(idle.workstationType == WorkstationType.PackStation)
       assert(event.workstationType == WorkstationType.PackStation)

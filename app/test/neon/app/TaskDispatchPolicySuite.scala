@@ -78,10 +78,10 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
       candidates: List[Task.Allocated],
       allTasks: List[Task] = List.empty,
       orders: List[Order] = List.empty,
-      groups: List[ConsolidationGroup] = List.empty,
+      consolidationGroups: List[ConsolidationGroup] = List.empty,
       criteria: List[DispatchCriterion] = List.empty
   ): List[Task.Allocated] =
-    TaskDispatchPolicy(candidates, allTasks, orders, groups, DispatchProfile(criteria))
+    TaskDispatchPolicy(candidates, allTasks, orders, consolidationGroups, DispatchProfile(criteria))
 
   describe("TaskDispatchPolicy"):
     describe("with empty candidates"):
@@ -188,57 +188,57 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
         assert(result.head == tSingle)
 
     describe("GroupCompletion"):
-      it("sorts tasks with higher group completion percentage first"):
+      it("sorts tasks with higher consolidation group completion percentage first"):
         val waveId = WaveId()
         val orderId1 = OrderId()
         val orderId2 = OrderId()
         val tPending1 = allocated(orderId1, Some(waveId))
         val tPending2 = allocated(orderId2, Some(waveId))
         val tCompleted1 = completedTask(orderId1, Some(waveId))
-        val group1 = ConsolidationGroup.Created(GroupId(), waveId, List(orderId1))
-        val group2 = ConsolidationGroup.Created(GroupId(), waveId, List(orderId2))
+        val consolidationGroup1 = ConsolidationGroup.Created(GroupId(), waveId, List(orderId1))
+        val consolidationGroup2 = ConsolidationGroup.Created(GroupId(), waveId, List(orderId2))
         val result = dispatch(
           List(tPending2, tPending1),
           allTasks = List(tCompleted1, tPending1, tPending2),
           orders = List(singleLineOrder(orderId1), singleLineOrder(orderId2)),
-          groups = List(group1, group2),
+          consolidationGroups = List(consolidationGroup1, consolidationGroup2),
           criteria = List(DispatchCriterion.GroupCompletion)
         )
         assert(result.head == tPending1)
 
-      it("treats tasks with no group as 0% completion — places them last"):
+      it("treats tasks with no consolidation group as 0% completion — places them last"):
         val waveId = WaveId()
         val orderId1 = OrderId()
         val orderId2 = OrderId()
-        val tInGroup = allocated(orderId1, Some(waveId))
-        val tNoGroup = allocated(orderId2, Some(waveId))
+        val tWithConsolidationGroup = allocated(orderId1, Some(waveId))
+        val tWithoutConsolidationGroup = allocated(orderId2, Some(waveId))
         val tCompleted = completedTask(orderId1, Some(waveId))
-        val group = ConsolidationGroup.Created(GroupId(), waveId, List(orderId1))
+        val consolidationGroup = ConsolidationGroup.Created(GroupId(), waveId, List(orderId1))
         val result = dispatch(
-          List(tNoGroup, tInGroup),
-          allTasks = List(tCompleted, tInGroup, tNoGroup),
+          List(tWithoutConsolidationGroup, tWithConsolidationGroup),
+          allTasks = List(tCompleted, tWithConsolidationGroup, tWithoutConsolidationGroup),
           orders = List(singleLineOrder(orderId1), singleLineOrder(orderId2)),
-          groups = List(group),
+          consolidationGroups = List(consolidationGroup),
           criteria = List(DispatchCriterion.GroupCompletion)
         )
-        assert(result.head == tInGroup)
-        assert(result.last == tNoGroup)
+        assert(result.head == tWithConsolidationGroup)
+        assert(result.last == tWithoutConsolidationGroup)
 
-      it("treats tasks with waveId=None as 0% completion — groups require a waveId match"):
+      it("treats tasks with waveId=None as 0% — consolidation groups require a waveId match"):
         val waveId = WaveId()
         val orderId = OrderId()
         val tNoWave = allocated(orderId, None)
-        val tInGroup = allocated(orderId, Some(waveId))
+        val tWithConsolidationGroup = allocated(orderId, Some(waveId))
         val tCompleted = completedTask(orderId, Some(waveId))
-        val group = ConsolidationGroup.Created(GroupId(), waveId, List(orderId))
+        val consolidationGroup = ConsolidationGroup.Created(GroupId(), waveId, List(orderId))
         val result = dispatch(
-          List(tNoWave, tInGroup),
-          allTasks = List(tCompleted, tInGroup, tNoWave),
+          List(tNoWave, tWithConsolidationGroup),
+          allTasks = List(tCompleted, tWithConsolidationGroup, tNoWave),
           orders = List(singleLineOrder(orderId)),
-          groups = List(group),
+          consolidationGroups = List(consolidationGroup),
           criteria = List(DispatchCriterion.GroupCompletion)
         )
-        assert(result.head == tInGroup)
+        assert(result.head == tWithConsolidationGroup)
         assert(result.last == tNoWave)
 
     describe("PackagingTier"):

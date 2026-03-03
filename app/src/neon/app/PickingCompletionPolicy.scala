@@ -10,9 +10,9 @@ object PickingCompletionPolicy:
 
   def apply(
       tasks: List[Task],
-      group: ConsolidationGroup.Created,
+      consolidationGroup: ConsolidationGroup.Created,
       at: Instant
   ): Option[(ConsolidationGroup.Picked, ConsolidationGroupEvent.ConsolidationGroupPicked)] =
     if tasks.isEmpty then None
-    else if tasks.forall(isTerminal) then Some(group.pick(at))
+    else if tasks.forall(isTerminal) then Some(consolidationGroup.pick(at))
     else None

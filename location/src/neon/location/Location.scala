@@ -6,5 +6,6 @@ case class Location(
     id: LocationId,
     code: String,
     zoneId: Option[ZoneId],
-    locationType: LocationType
+    locationType: LocationType,
+    pickingSequence: Option[Int] = None
 )

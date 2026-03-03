@@ -15,7 +15,7 @@ class BufferCompletionPolicySuite extends AnyFunSpec with OptionValues:
   val pickFace = LocationId()
   val at = Instant.now()
 
-  def pickedGroup() = ConsolidationGroup.Picked(GroupId(), waveId, orderIds)
+  def pickedConsolidationGroup() = ConsolidationGroup.Picked(GroupId(), waveId, orderIds)
 
   def inBuffer() =
     HandlingUnit.InBuffer(HandlingUnitId(), PackagingLevel.Case, bufferLocation)
@@ -28,35 +28,36 @@ class BufferCompletionPolicySuite extends AnyFunSpec with OptionValues:
 
   describe("BufferCompletionPolicy"):
     describe("when all handling units are in buffer"):
-      it("transitions the group to ready for workstation"):
-        val hus = List(inBuffer(), inBuffer())
-        val group = pickedGroup()
-        val (ready, event) = BufferCompletionPolicy(hus, group, at).value
-        assert(ready.id == group.id)
-        assert(event.groupId == group.id)
+      it("transitions the consolidation group to ready for workstation"):
+        val handlingUnits = List(inBuffer(), inBuffer())
+        val consolidationGroup = pickedConsolidationGroup()
+        val (ready, event) = BufferCompletionPolicy(handlingUnits, consolidationGroup, at).value
+        assert(ready.id == consolidationGroup.id)
+        assert(event.groupId == consolidationGroup.id)
 
       it("carries waveId and occurredAt in the event"):
-        val hus = List(inBuffer())
-        val (_, event) = BufferCompletionPolicy(hus, pickedGroup(), at).value
+        val handlingUnits = List(inBuffer())
+        val (_, event) =
+          BufferCompletionPolicy(handlingUnits, pickedConsolidationGroup(), at).value
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 
-      it("preserves group identity across transition"):
-        val group = pickedGroup()
-        val hus = List(inBuffer())
-        val (ready, _) = BufferCompletionPolicy(hus, group, at).value
+      it("preserves consolidation group identity across transition"):
+        val consolidationGroup = pickedConsolidationGroup()
+        val handlingUnits = List(inBuffer())
+        val (ready, _) = BufferCompletionPolicy(handlingUnits, consolidationGroup, at).value
         assert(ready.waveId == waveId)
         assert(ready.orderIds == orderIds)
 
     describe("when some handling units are not yet in buffer"):
       it("does not transition when pick HUs are still in transit"):
-        val hus = List(inBuffer(), pickCreated())
-        assert(BufferCompletionPolicy(hus, pickedGroup(), at).isEmpty)
+        val handlingUnits = List(inBuffer(), pickCreated())
+        assert(BufferCompletionPolicy(handlingUnits, pickedConsolidationGroup(), at).isEmpty)
 
       it("does not transition when HUs have already been emptied"):
-        val hus = List(inBuffer(), empty())
-        assert(BufferCompletionPolicy(hus, pickedGroup(), at).isEmpty)
+        val handlingUnits = List(inBuffer(), empty())
+        assert(BufferCompletionPolicy(handlingUnits, pickedConsolidationGroup(), at).isEmpty)
 
     describe("when the handling unit list is empty"):
-      it("does not transition the group"):
-        assert(BufferCompletionPolicy(List.empty, pickedGroup(), at).isEmpty)
+      it("does not transition the consolidation group"):
+        assert(BufferCompletionPolicy(List.empty, pickedConsolidationGroup(), at).isEmpty)

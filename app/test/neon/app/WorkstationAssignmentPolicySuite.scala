@@ -3,62 +3,82 @@ package neon.app
 import neon.common.{GroupId, OrderId, WaveId, WorkstationId}
 import neon.consolidationgroup.ConsolidationGroup
 import neon.workstation.{Workstation, WorkstationType}
+import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
 
 import java.time.Instant
 
-class WorkstationAssignmentPolicySuite extends AnyFunSpec:
+class WorkstationAssignmentPolicySuite extends AnyFunSpec with OptionValues:
   val waveId = WaveId()
   val orderIds = List(OrderId(), OrderId())
   val at = Instant.now()
 
-  def readyGroup() =
+  def readyConsolidationGroup() =
     ConsolidationGroup.ReadyForWorkstation(GroupId(), waveId, orderIds)
 
-  def idleWorkstation() =
-    Workstation.Idle(WorkstationId(), WorkstationType.PutWall)
+  def idleWorkstation(slots: Int = 8) =
+    Workstation.Idle(WorkstationId(), WorkstationType.PutWall, slots)
 
   describe("WorkstationAssignmentPolicy"):
-    describe("consolidation group transition"):
-      it("assigns the group to the workstation"):
-        val group = readyGroup()
-        val ws = idleWorkstation()
-        val ((assigned, _), _) = WorkstationAssignmentPolicy(group, ws, at)
-        assert(assigned.id == group.id)
-        assert(assigned.workstationId == ws.id)
+    describe("capacity check"):
+      it("rejects assignment when workstation has fewer slots than orders"):
+        val consolidationGroup = readyConsolidationGroup()
+        val workstation = idleWorkstation(slots = 1)
+        val result = WorkstationAssignmentPolicy(consolidationGroup, workstation, at)
+        assert(result.isEmpty)
 
-      it("group event carries workstationId and occurredAt"):
-        val group = readyGroup()
-        val ws = idleWorkstation()
-        val ((_, cgEvent), _) = WorkstationAssignmentPolicy(group, ws, at)
-        assert(cgEvent.workstationId == ws.id)
-        assert(cgEvent.occurredAt == at)
+      it("accepts assignment when workstation has exactly enough slots"):
+        val consolidationGroup = readyConsolidationGroup()
+        val workstation = idleWorkstation(slots = 2)
+        val result = WorkstationAssignmentPolicy(consolidationGroup, workstation, at)
+        assert(result.isDefined)
+
+    describe("consolidation group transition"):
+      it("assigns the consolidation group to the workstation"):
+        val consolidationGroup = readyConsolidationGroup()
+        val workstation = idleWorkstation()
+        val ((assigned, _), _) =
+          WorkstationAssignmentPolicy(consolidationGroup, workstation, at).value
+        assert(assigned.id == consolidationGroup.id)
+        assert(assigned.workstationId == workstation.id)
+
+      it("consolidation group event carries workstationId and occurredAt"):
+        val consolidationGroup = readyConsolidationGroup()
+        val workstation = idleWorkstation()
+        val ((_, consolidationGroupEvent), _) =
+          WorkstationAssignmentPolicy(consolidationGroup, workstation, at).value
+        assert(consolidationGroupEvent.workstationId == workstation.id)
+        assert(consolidationGroupEvent.occurredAt == at)
 
     describe("workstation transition"):
-      it("activates the workstation with the group"):
-        val group = readyGroup()
-        val ws = idleWorkstation()
-        val (_, (active, _)) = WorkstationAssignmentPolicy(group, ws, at)
-        assert(active.id == ws.id)
-        assert(active.groupId == group.id)
+      it("activates the workstation with the consolidation group"):
+        val consolidationGroup = readyConsolidationGroup()
+        val workstation = idleWorkstation()
+        val (_, (active, _)) =
+          WorkstationAssignmentPolicy(consolidationGroup, workstation, at).value
+        assert(active.id == workstation.id)
+        assert(active.groupId == consolidationGroup.id)
 
       it("workstation event carries groupId and occurredAt"):
-        val group = readyGroup()
-        val ws = idleWorkstation()
-        val (_, (_, wsEvent)) = WorkstationAssignmentPolicy(group, ws, at)
-        assert(wsEvent.groupId == group.id)
-        assert(wsEvent.occurredAt == at)
+        val consolidationGroup = readyConsolidationGroup()
+        val workstation = idleWorkstation()
+        val (_, (_, workstationEvent)) =
+          WorkstationAssignmentPolicy(consolidationGroup, workstation, at).value
+        assert(workstationEvent.groupId == consolidationGroup.id)
+        assert(workstationEvent.occurredAt == at)
 
       it("preserves workstation type after assignment"):
-        val ws = Workstation.Idle(WorkstationId(), WorkstationType.PackStation)
-        val (_, (active, event)) = WorkstationAssignmentPolicy(readyGroup(), ws, at)
+        val workstation = Workstation.Idle(WorkstationId(), WorkstationType.PackStation, 8)
+        val (_, (active, event)) =
+          WorkstationAssignmentPolicy(readyConsolidationGroup(), workstation, at).value
         assert(active.workstationType == WorkstationType.PackStation)
         assert(event.workstationType == WorkstationType.PackStation)
 
     describe("cross-aggregate consistency"):
-      it("group's workstationId matches workstation's id"):
-        val group = readyGroup()
-        val ws = idleWorkstation()
-        val ((assigned, _), (active, _)) = WorkstationAssignmentPolicy(group, ws, at)
+      it("consolidation group's workstationId matches workstation's id"):
+        val consolidationGroup = readyConsolidationGroup()
+        val workstation = idleWorkstation()
+        val ((assigned, _), (active, _)) =
+          WorkstationAssignmentPolicy(consolidationGroup, workstation, at).value
         assert(assigned.workstationId == active.id)
         assert(active.groupId == assigned.id)

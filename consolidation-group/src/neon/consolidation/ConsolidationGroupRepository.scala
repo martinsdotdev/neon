@@ -6,5 +6,5 @@ import neon.common.{GroupId, WaveId}
 trait ConsolidationGroupRepository:
   def findById(id: GroupId): Option[ConsolidationGroup]
   def findByWaveId(waveId: WaveId): List[ConsolidationGroup]
-  def save(group: ConsolidationGroup, event: ConsolidationGroupEvent): Unit
+  def save(consolidationGroup: ConsolidationGroup, event: ConsolidationGroupEvent): Unit
   def saveAll(entries: List[(ConsolidationGroup, ConsolidationGroupEvent)]): Unit
