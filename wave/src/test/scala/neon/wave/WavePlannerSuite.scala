@@ -1,6 +1,6 @@
 package neon.wave
 
-import neon.common.{OrderId, PackagingLevel, Priority, SkuId}
+import neon.common.{OrderId, PackagingLevel, Priority, SkuId, UomHierarchy}
 import neon.order.{Order, OrderLine}
 import neon.sku.Sku
 import org.scalatest.funspec.AnyFunSpec
@@ -89,7 +89,7 @@ class WavePlannerSuite extends AnyFunSpec:
         "SKU-H",
         "Hierarchy SKU",
         lotManaged = false,
-        uomHierarchy = Map(PackagingLevel.Pallet -> 20, PackagingLevel.Case -> 6)
+        uomHierarchy = UomHierarchy(PackagingLevel.Pallet -> 20, PackagingLevel.Case -> 6)
       )
       val orders = List(
         Order(OrderId(), Priority.Normal, List(OrderLine(skuId, PackagingLevel.Each, 28)))
@@ -110,7 +110,7 @@ class WavePlannerSuite extends AnyFunSpec:
         "SKU-K",
         "Known SKU",
         lotManaged = false,
-        uomHierarchy = Map(PackagingLevel.Pallet -> 20)
+        uomHierarchy = UomHierarchy(PackagingLevel.Pallet -> 20)
       )
       val orders = List(
         Order(

@@ -1,11 +1,11 @@
 package neon.sku
 
-import neon.common.{PackagingLevel, SkuId}
+import neon.common.{SkuId, UomHierarchy}
 
 case class Sku(
     id: SkuId,
     code: String,
     description: String,
     lotManaged: Boolean,
-    uomHierarchy: Map[PackagingLevel, Int] = Map.empty
+    uomHierarchy: UomHierarchy = UomHierarchy.empty
 )

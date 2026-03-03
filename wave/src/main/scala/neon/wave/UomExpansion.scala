@@ -1,27 +1,30 @@
 package neon.wave
 
-import neon.common.{OrderId, PackagingLevel, SkuId, WaveId}
+import neon.common.{OrderId, PackagingLevel, SkuId, UomHierarchy, WaveId}
 import neon.order.OrderLine
 
-object UomDecomposition:
+object UomExpansion:
   def apply(
       waveId: WaveId,
       orderId: OrderId,
       line: OrderLine,
-      uomHierarchy: Map[PackagingLevel, Int]
+      uomHierarchy: UomHierarchy
   ): List[TaskRequest] =
-    if line.packagingLevel != PackagingLevel.Each then
-      List(TaskRequest(waveId, orderId, line.skuId, line.packagingLevel, line.quantity))
-    else if uomHierarchy.isEmpty then
-      List(TaskRequest(waveId, orderId, line.skuId, PackagingLevel.Each, line.quantity))
-    else decompose(waveId, orderId, line.skuId, line.quantity, uomHierarchy)
+    val eachesOpt = line.packagingLevel match
+      case PackagingLevel.Each => Some(line.quantity)
+      case level               => uomHierarchy.get(level).map(_ * line.quantity)
+    eachesOpt match
+      case Some(eaches) if uomHierarchy.nonEmpty =>
+        decompose(waveId, orderId, line.skuId, eaches, uomHierarchy)
+      case _ =>
+        List(TaskRequest(waveId, orderId, line.skuId, line.packagingLevel, line.quantity))
 
   private def decompose(
       waveId: WaveId,
       orderId: OrderId,
       skuId: SkuId,
       quantity: Int,
-      uomHierarchy: Map[PackagingLevel, Int]
+      uomHierarchy: UomHierarchy
   ): List[TaskRequest] =
     val levels = PackagingLevel.values.filter(uomHierarchy.contains)
     val (requests, remaining) = levels.foldLeft((List.empty[TaskRequest], quantity)):
