@@ -1,7 +1,7 @@
 package neon.wave
 
-import neon.common.{OrderId, PackagingLevel, SkuId, WaveId}
-import neon.order.{Order, OrderLine}
+import neon.common.WaveId
+import neon.order.Order
 import neon.sku.Sku
 
 import java.time.Instant
@@ -29,40 +29,8 @@ object WavePlanner:
     val taskRequests = for
       order <- orders
       line <- order.lines
-      req <- expand(id, order.id, line, skuMap.get(line.skuId))
+      hierarchy = skuMap.get(line.skuId).map(_.uomHierarchy).getOrElse(Map.empty)
+      req <- UomDecomposition(id, order.id, line, hierarchy)
     yield req
 
     WavePlan(released, event, taskRequests)
-
-  private def expand(
-      waveId: WaveId,
-      orderId: OrderId,
-      line: OrderLine,
-      sku: Option[Sku]
-  ): List[TaskRequest] =
-    if line.packagingLevel != PackagingLevel.Each then
-      List(TaskRequest(waveId, orderId, line.skuId, line.packagingLevel, line.quantity))
-    else
-      val hierarchy = sku.map(_.uomHierarchy).getOrElse(Map.empty)
-      if hierarchy.isEmpty then
-        List(TaskRequest(waveId, orderId, line.skuId, PackagingLevel.Each, line.quantity))
-      else decompose(waveId, orderId, line.skuId, line.quantity, hierarchy)
-
-  private def decompose(
-      waveId: WaveId,
-      orderId: OrderId,
-      skuId: SkuId,
-      quantity: Int,
-      uomHierarchy: Map[PackagingLevel, Int]
-  ): List[TaskRequest] =
-    val levels = PackagingLevel.values.filter(uomHierarchy.contains)
-    val (requests, remaining) = levels.foldLeft((List.empty[TaskRequest], quantity)):
-      case ((acc, rem), level) =>
-        val unitsPerLevel = uomHierarchy(level)
-        val count = rem / unitsPerLevel
-        if count > 0 then
-          (acc :+ TaskRequest(waveId, orderId, skuId, level, count), rem - count * unitsPerLevel)
-        else (acc, rem)
-    if remaining > 0 then
-      requests :+ TaskRequest(waveId, orderId, skuId, PackagingLevel.Each, remaining)
-    else requests

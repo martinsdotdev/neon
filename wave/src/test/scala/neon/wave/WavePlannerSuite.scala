@@ -82,176 +82,44 @@ class WavePlannerSuite extends AnyFunSpec:
       assert(result.event.occurredAt == at)
       assert(result.wave.id == result.event.waveId)
 
-    describe("UOM hierarchy decomposition"):
-      it("decomposes Each line into Pallet + Case + Each when SKU has full hierarchy"):
-        val skuId = SkuId()
-        val orderId = OrderId()
-        val sku = Sku(
-          skuId,
-          "SKU-1",
-          "Test SKU",
-          lotManaged = false,
-          uomHierarchy = Map(PackagingLevel.Pallet -> 20, PackagingLevel.Case -> 6)
+    it("delegates UOM decomposition when SKU hierarchy is provided"):
+      val skuId = SkuId()
+      val sku = Sku(
+        skuId,
+        "SKU-H",
+        "Hierarchy SKU",
+        lotManaged = false,
+        uomHierarchy = Map(PackagingLevel.Pallet -> 20, PackagingLevel.Case -> 6)
+      )
+      val orders = List(
+        Order(OrderId(), Priority.Normal, List(OrderLine(skuId, PackagingLevel.Each, 28)))
+      )
+      val result = WavePlanner.plan(orders, OrderGrouping.Single, at, List(sku))
+      assert(result.taskRequests.length == 3)
+      assert(
+        result.taskRequests.exists(r =>
+          r.packagingLevel == PackagingLevel.Pallet && r.quantity == 1
         )
-        val orders = List(
-          Order(orderId, Priority.Normal, List(OrderLine(skuId, PackagingLevel.Each, 28)))
-        )
-        val result = WavePlanner.plan(orders, OrderGrouping.Single, at, List(sku))
-        assert(result.taskRequests.length == 3)
-        assert(
-          result.taskRequests.exists(r =>
-            r.packagingLevel == PackagingLevel.Pallet && r.quantity == 1
-          )
-        )
-        assert(
-          result.taskRequests.exists(r =>
-            r.packagingLevel == PackagingLevel.Case && r.quantity == 1
-          )
-        )
-        assert(
-          result.taskRequests.exists(r =>
-            r.packagingLevel == PackagingLevel.Each && r.quantity == 2
-          )
-        )
+      )
 
-      it("creates a single Each task for SKU without hierarchy"):
-        val skuId = SkuId()
-        val orderId = OrderId()
-        val sku = Sku(skuId, "SKU-2", "No hierarchy", lotManaged = false)
-        val orders = List(
-          Order(orderId, Priority.Normal, List(OrderLine(skuId, PackagingLevel.Each, 28)))
+    it("treats unknown SKU as having no hierarchy"):
+      val knownSku = SkuId()
+      val unknownSku = SkuId()
+      val sku = Sku(
+        knownSku,
+        "SKU-K",
+        "Known SKU",
+        lotManaged = false,
+        uomHierarchy = Map(PackagingLevel.Pallet -> 20)
+      )
+      val orders = List(
+        Order(
+          OrderId(),
+          Priority.Normal,
+          List(OrderLine(unknownSku, PackagingLevel.Each, 15))
         )
-        val result = WavePlanner.plan(orders, OrderGrouping.Single, at, List(sku))
-        assert(result.taskRequests.length == 1)
-        assert(result.taskRequests.head.packagingLevel == PackagingLevel.Each)
-        assert(result.taskRequests.head.quantity == 28)
-
-      it("decomposes with Case-only hierarchy into Case + Each"):
-        val skuId = SkuId()
-        val orderId = OrderId()
-        val sku = Sku(
-          skuId,
-          "SKU-3",
-          "Case only",
-          lotManaged = false,
-          uomHierarchy = Map(PackagingLevel.Case -> 6)
-        )
-        val orders = List(
-          Order(orderId, Priority.Normal, List(OrderLine(skuId, PackagingLevel.Each, 14)))
-        )
-        val result = WavePlanner.plan(orders, OrderGrouping.Single, at, List(sku))
-        assert(result.taskRequests.length == 2)
-        assert(
-          result.taskRequests.exists(r =>
-            r.packagingLevel == PackagingLevel.Case && r.quantity == 2
-          )
-        )
-        assert(
-          result.taskRequests.exists(r =>
-            r.packagingLevel == PackagingLevel.Each && r.quantity == 2
-          )
-        )
-
-      it("passes through non-Each order lines without decomposition"):
-        val skuId = SkuId()
-        val orderId = OrderId()
-        val sku = Sku(
-          skuId,
-          "SKU-4",
-          "Pallet SKU",
-          lotManaged = false,
-          uomHierarchy = Map(PackagingLevel.Pallet -> 20, PackagingLevel.Case -> 6)
-        )
-        val orders = List(
-          Order(
-            orderId,
-            Priority.Normal,
-            List(
-              OrderLine(skuId, PackagingLevel.Case, 3),
-              OrderLine(skuId, PackagingLevel.Pallet, 2)
-            )
-          )
-        )
-        val result = WavePlanner.plan(orders, OrderGrouping.Single, at, List(sku))
-        assert(result.taskRequests.length == 2)
-        assert(
-          result.taskRequests.exists(r =>
-            r.packagingLevel == PackagingLevel.Case && r.quantity == 3
-          )
-        )
-        assert(
-          result.taskRequests.exists(r =>
-            r.packagingLevel == PackagingLevel.Pallet && r.quantity == 2
-          )
-        )
-
-      it("propagates wave ID in all decomposed task requests"):
-        val skuId = SkuId()
-        val orderId = OrderId()
-        val sku = Sku(
-          skuId,
-          "SKU-5",
-          "Wave ID check",
-          lotManaged = false,
-          uomHierarchy = Map(PackagingLevel.Pallet -> 20, PackagingLevel.Case -> 6)
-        )
-        val orders = List(
-          Order(orderId, Priority.Normal, List(OrderLine(skuId, PackagingLevel.Each, 28)))
-        )
-        val result = WavePlanner.plan(orders, OrderGrouping.Single, at, List(sku))
-        assert(result.taskRequests.forall(_.waveId == result.wave.id))
-
-      it(
-        "produces exactly one Pallet task when quantity is an exact multiple — no zero-Each remainder"
-      ):
-        val skuId = SkuId()
-        val orderId = OrderId()
-        val sku = Sku(
-          skuId,
-          "SKU-6",
-          "Exact multiple",
-          lotManaged = false,
-          uomHierarchy = Map(PackagingLevel.Pallet -> 20)
-        )
-        val orders = List(
-          Order(orderId, Priority.Normal, List(OrderLine(skuId, PackagingLevel.Each, 20)))
-        )
-        val result = WavePlanner.plan(orders, OrderGrouping.Single, at, List(sku))
-        assert(result.taskRequests.length == 1)
-        assert(result.taskRequests.head.packagingLevel == PackagingLevel.Pallet)
-        assert(result.taskRequests.head.quantity == 1)
-
-      it("decomposes with a four-level hierarchy including InnerPack"):
-        val skuId = SkuId()
-        val orderId = OrderId()
-        // 1 Pallet(24) + 1 InnerPack(4) + 2 Each = 30 total
-        val sku = Sku(
-          skuId,
-          "SKU-7",
-          "Full hierarchy",
-          lotManaged = false,
-          uomHierarchy = Map(
-            PackagingLevel.Pallet -> 24,
-            PackagingLevel.InnerPack -> 4
-          )
-        )
-        val orders = List(
-          Order(orderId, Priority.Normal, List(OrderLine(skuId, PackagingLevel.Each, 30)))
-        )
-        val result = WavePlanner.plan(orders, OrderGrouping.Single, at, List(sku))
-        assert(result.taskRequests.length == 3)
-        assert(
-          result.taskRequests.exists(r =>
-            r.packagingLevel == PackagingLevel.Pallet && r.quantity == 1
-          )
-        )
-        assert(
-          result.taskRequests.exists(r =>
-            r.packagingLevel == PackagingLevel.InnerPack && r.quantity == 1
-          )
-        )
-        assert(
-          result.taskRequests.exists(r =>
-            r.packagingLevel == PackagingLevel.Each && r.quantity == 2
-          )
-        )
+      )
+      val result = WavePlanner.plan(orders, OrderGrouping.Single, at, List(sku))
+      assert(result.taskRequests.length == 1)
+      assert(result.taskRequests.head.packagingLevel == PackagingLevel.Each)
+      assert(result.taskRequests.head.quantity == 15)
