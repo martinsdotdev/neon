@@ -115,13 +115,15 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
       waveRepository: WaveRepository = InMemoryWaveRepository(),
       consolidationGroupRepository: ConsolidationGroupRepository =
         InMemoryConsolidationGroupRepository(),
-      transportOrderRepository: TransportOrderRepository = InMemoryTransportOrderRepository()
+      transportOrderRepository: TransportOrderRepository = InMemoryTransportOrderRepository(),
+      verificationProfile: VerificationProfile = VerificationProfile.disabled
   ): TaskCompletionService =
     TaskCompletionService(
       taskRepository,
       waveRepository,
       consolidationGroupRepository,
-      transportOrderRepository
+      transportOrderRepository,
+      verificationProfile
     )
 
   describe("TaskCompletionService"):
@@ -129,7 +131,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
       it("returns TaskNotFound"):
         val missingId = TaskId()
         val service = buildService()
-        val result = service.complete(missingId, 5, at)
+        val result = service.complete(missingId, 5, true, at)
         assert(result.left.value == TaskCompletionError.TaskNotFound(missingId))
 
     describe("when task is not Assigned"):
@@ -149,7 +151,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
         taskRepository.store(planned.id) = planned
         val service = buildService(taskRepository = taskRepository)
         assert(
-          service.complete(planned.id, 5, at).left.value ==
+          service.complete(planned.id, 5, true, at).left.value ==
             TaskCompletionError.TaskNotAssigned(planned.id)
         )
 
@@ -170,7 +172,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
         taskRepository.store(allocated.id) = allocated
         val service = buildService(taskRepository = taskRepository)
         assert(
-          service.complete(allocated.id, 5, at).left.value ==
+          service.complete(allocated.id, 5, true, at).left.value ==
             TaskCompletionError.TaskNotAssigned(allocated.id)
         )
 
@@ -181,7 +183,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
         taskRepository.store(completed.id) = completed
         val service = buildService(taskRepository = taskRepository)
         assert(
-          service.complete(completed.id, 5, at).left.value ==
+          service.complete(completed.id, 5, true, at).left.value ==
             TaskCompletionError.TaskNotAssigned(completed.id)
         )
 
@@ -192,7 +194,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
         taskRepository.store(cancelled.id) = cancelled
         val service = buildService(taskRepository = taskRepository)
         assert(
-          service.complete(cancelled.id, 5, at).left.value ==
+          service.complete(cancelled.id, 5, true, at).left.value ==
             TaskCompletionError.TaskNotAssigned(cancelled.id)
         )
 
@@ -203,7 +205,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
         taskRepository.store(task.id) = task
         val service = buildService(taskRepository = taskRepository)
         assert(
-          service.complete(task.id, -1, at).left.value ==
+          service.complete(task.id, -1, true, at).left.value ==
             TaskCompletionError.InvalidActualQty(task.id, -1)
         )
 
@@ -213,7 +215,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
         val task = assignedTask(requestedQty = 10)
         taskRepository.store(task.id) = task
         val service = buildService(taskRepository = taskRepository)
-        val result = service.complete(task.id, 10, at).value
+        val result = service.complete(task.id, 10, true, at).value
         assert(result.completed.id == task.id)
         assert(result.completed.actualQty == 10)
         assert(result.completed.requestedQty == 10)
@@ -223,7 +225,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
         val task = assignedTask(requestedQty = 10)
         taskRepository.store(task.id) = task
         val service = buildService(taskRepository = taskRepository)
-        val result = service.complete(task.id, 10, at).value
+        val result = service.complete(task.id, 10, true, at).value
         assert(result.completedEvent.taskId == task.id)
         assert(result.completedEvent.actualQty == 10)
         assert(result.completedEvent.requestedQty == 10)
@@ -234,7 +236,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
         val task = assignedTask(requestedQty = 10)
         taskRepository.store(task.id) = task
         val service = buildService(taskRepository = taskRepository)
-        service.complete(task.id, 10, at)
+        service.complete(task.id, 10, true, at)
         assert(taskRepository.store(task.id).isInstanceOf[Task.Completed])
 
     describe("shortpick cascade"):
@@ -244,7 +246,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           val task = assignedTask(requestedQty = 10)
           taskRepository.store(task.id) = task
           val service = buildService(taskRepository = taskRepository)
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.shortpick.isEmpty)
 
       describe("when actual is less than requested"):
@@ -253,7 +255,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           val task = assignedTask(requestedQty = 10)
           taskRepository.store(task.id) = task
           val service = buildService(taskRepository = taskRepository)
-          val result = service.complete(task.id, 7, at).value
+          val result = service.complete(task.id, 7, true, at).value
           val (replacement, event) = result.shortpick.value
           assert(replacement.requestedQty == 3)
           assert(replacement.parentTaskId.value == task.id)
@@ -264,7 +266,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           val task = assignedTask(requestedQty = 10)
           taskRepository.store(task.id) = task
           val service = buildService(taskRepository = taskRepository)
-          val result = service.complete(task.id, 7, at).value
+          val result = service.complete(task.id, 7, true, at).value
           val (replacement, _) = result.shortpick.value
           assert(taskRepository.store.contains(replacement.id))
           assert(taskRepository.store(replacement.id).isInstanceOf[Task.Planned])
@@ -275,7 +277,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           val task = assignedTask(requestedQty = 10)
           taskRepository.store(task.id) = task
           val service = buildService(taskRepository = taskRepository)
-          val result = service.complete(task.id, 0, at).value
+          val result = service.complete(task.id, 0, true, at).value
           val (replacement, _) = result.shortpick.value
           assert(replacement.requestedQty == 10)
 
@@ -286,7 +288,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           val task = assignedTask(handlingUnitId = Some(handlingUnitId))
           taskRepository.store(task.id) = task
           val service = buildService(taskRepository = taskRepository)
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           val (pending, event) = result.transportOrder.value
           assert(pending.handlingUnitId == handlingUnitId)
           assert(pending.destination == destinationLocationId)
@@ -301,7 +303,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
             taskRepository = taskRepository,
             transportOrderRepository = transportOrderRepository
           )
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           val (pending, _) = result.transportOrder.value
           assert(transportOrderRepository.store.contains(pending.id))
 
@@ -311,7 +313,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           val task = assignedTask(handlingUnitId = None)
           taskRepository.store(task.id) = task
           val service = buildService(taskRepository = taskRepository)
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.transportOrder.isEmpty)
 
     describe("wave completion"):
@@ -325,7 +327,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           waveRepository.store(wave.id) = wave
           val service =
             buildService(taskRepository = taskRepository, waveRepository = waveRepository)
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           val (completedWave, waveEvent) = result.waveCompletion.value
           assert(completedWave.id == waveId)
           assert(waveEvent.waveId == waveId)
@@ -339,7 +341,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           waveRepository.store(wave.id) = wave
           val service =
             buildService(taskRepository = taskRepository, waveRepository = waveRepository)
-          service.complete(task.id, 10, at)
+          service.complete(task.id, 10, true, at)
           assert(waveRepository.store(waveId).isInstanceOf[Wave.Completed])
 
       describe("when open wave tasks remain"):
@@ -354,7 +356,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           waveRepository.store(wave.id) = wave
           val service =
             buildService(taskRepository = taskRepository, waveRepository = waveRepository)
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.waveCompletion.isEmpty)
 
       describe("when task has no wave"):
@@ -363,7 +365,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           val task = assignedTask(waveId = None)
           taskRepository.store(task.id) = task
           val service = buildService(taskRepository = taskRepository)
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.waveCompletion.isEmpty)
 
       describe("when wave is already Completed"):
@@ -376,7 +378,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           waveRepository.store(completedWave.id) = completedWave
           val service =
             buildService(taskRepository = taskRepository, waveRepository = waveRepository)
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.waveCompletion.isEmpty)
 
       describe("when wave does not exist"):
@@ -387,7 +389,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           taskRepository.store(task.id) = task
           val service =
             buildService(taskRepository = taskRepository, waveRepository = waveRepository)
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.waveCompletion.isEmpty)
 
       describe("when shortpick creates a replacement"):
@@ -400,7 +402,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           waveRepository.store(wave.id) = wave
           val service =
             buildService(taskRepository = taskRepository, waveRepository = waveRepository)
-          val result = service.complete(task.id, 7, at).value
+          val result = service.complete(task.id, 7, true, at).value
           assert(result.shortpick.isDefined)
           assert(result.waveCompletion.isEmpty)
 
@@ -423,7 +425,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
               waveRepository = waveRepository,
               consolidationGroupRepository = consolidationGroupRepository
             )
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           val (picked, consolidationGroupEvent) = result.pickingCompletion.value
           assert(picked.id == consolidationGroup.id)
           assert(consolidationGroupEvent.groupId == consolidationGroup.id)
@@ -445,7 +447,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
               waveRepository = waveRepository,
               consolidationGroupRepository = consolidationGroupRepository
             )
-          service.complete(task.id, 10, at)
+          service.complete(task.id, 10, true, at)
           assert(
             consolidationGroupRepository
               .store(consolidationGroup.id)
@@ -472,7 +474,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
               waveRepository = waveRepository,
               consolidationGroupRepository = consolidationGroupRepository
             )
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.pickingCompletion.isEmpty)
 
       describe("when task has no wave"):
@@ -481,7 +483,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           val task = assignedTask(waveId = None)
           taskRepository.store(task.id) = task
           val service = buildService(taskRepository = taskRepository)
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.pickingCompletion.isEmpty)
 
       describe("when no consolidation group exists for the wave"):
@@ -499,7 +501,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
               waveRepository = waveRepository,
               consolidationGroupRepository = consolidationGroupRepository
             )
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.pickingCompletion.isEmpty)
 
       describe("when consolidation group is already Picked"):
@@ -521,7 +523,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
               waveRepository = waveRepository,
               consolidationGroupRepository = consolidationGroupRepository
             )
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.pickingCompletion.isEmpty)
 
       describe("when consolidation group does not contain the task's order"):
@@ -543,7 +545,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
               waveRepository = waveRepository,
               consolidationGroupRepository = consolidationGroupRepository
             )
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.pickingCompletion.isEmpty)
 
       describe("when wave has tasks for multiple orders"):
@@ -567,7 +569,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
               waveRepository = waveRepository,
               consolidationGroupRepository = consolidationGroupRepository
             )
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.waveCompletion.isEmpty, "wave should NOT complete — otherTask still open")
           val (picked, _) = result.pickingCompletion.value
           assert(picked.id == consolidationGroup.id)
@@ -597,7 +599,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
               consolidationGroupRepository = consolidationGroupRepository,
               transportOrderRepository = transportOrderRepository
             )
-          val result = service.complete(task.id, 10, at).value
+          val result = service.complete(task.id, 10, true, at).value
           assert(result.completed.actualQty == 10)
           assert(result.shortpick.isEmpty)
           assert(result.transportOrder.isDefined)
@@ -628,8 +630,78 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
               consolidationGroupRepository = consolidationGroupRepository,
               transportOrderRepository = transportOrderRepository
             )
-          val result = service.complete(task.id, 7, at).value
+          val result = service.complete(task.id, 7, true, at).value
           assert(result.shortpick.isDefined)
           assert(result.transportOrder.isDefined)
           assert(result.waveCompletion.isEmpty)
           assert(result.pickingCompletion.isEmpty)
+
+    describe("verification gate"):
+      val eachRequired = VerificationProfile(Set(PackagingLevel.Each))
+
+      describe("when verification is required and provided"):
+        it("completes normally"):
+          val taskRepository = InMemoryTaskRepository()
+          val task = assignedTask(requestedQty = 10)
+          taskRepository.store(task.id) = task
+          val service =
+            buildService(taskRepository = taskRepository, verificationProfile = eachRequired)
+          val result = service.complete(task.id, 10, true, at).value
+          assert(result.completed.id == task.id)
+
+      describe("when verification is required and not provided"):
+        it("returns VerificationRequired"):
+          val taskRepository = InMemoryTaskRepository()
+          val task = assignedTask(requestedQty = 10)
+          taskRepository.store(task.id) = task
+          val service =
+            buildService(taskRepository = taskRepository, verificationProfile = eachRequired)
+          val result = service.complete(task.id, 10, false, at)
+          assert(result.left.value == TaskCompletionError.VerificationRequired(task.id))
+
+        it("does not persist any state change"):
+          val taskRepository = InMemoryTaskRepository()
+          val task = assignedTask(requestedQty = 10)
+          taskRepository.store(task.id) = task
+          val service =
+            buildService(taskRepository = taskRepository, verificationProfile = eachRequired)
+          service.complete(task.id, 10, false, at)
+          assert(taskRepository.store(task.id).isInstanceOf[Task.Assigned])
+
+      describe("when verification is not required"):
+        it("completes regardless of verified flag"):
+          val taskRepository = InMemoryTaskRepository()
+          val task = assignedTask(requestedQty = 10)
+          taskRepository.store(task.id) = task
+          val service = buildService(taskRepository = taskRepository)
+          val result = service.complete(task.id, 10, false, at).value
+          assert(result.completed.id == task.id)
+
+      describe("when profile targets a different packaging level"):
+        it("does not gate tasks with a non-matching level"):
+          val taskRepository = InMemoryTaskRepository()
+          val task = assignedTask(requestedQty = 10)
+          taskRepository.store(task.id) = task
+          val palletOnly = VerificationProfile(Set(PackagingLevel.Pallet))
+          val service =
+            buildService(taskRepository = taskRepository, verificationProfile = palletOnly)
+          val result = service.complete(task.id, 10, false, at).value
+          assert(result.completed.id == task.id)
+
+      describe("interaction with shortpick"):
+        it("rejection prevents the entire cascade"):
+          val taskRepository = InMemoryTaskRepository()
+          val waveRepository = InMemoryWaveRepository()
+          val task = assignedTask(requestedQty = 10, waveId = Some(waveId))
+          taskRepository.store(task.id) = task
+          val wave = releasedWave()
+          waveRepository.store(wave.id) = wave
+          val service = buildService(
+            taskRepository = taskRepository,
+            waveRepository = waveRepository,
+            verificationProfile = eachRequired
+          )
+          val result = service.complete(task.id, 7, false, at)
+          assert(result.left.value == TaskCompletionError.VerificationRequired(task.id))
+          assert(taskRepository.store(task.id).isInstanceOf[Task.Assigned])
+          assert(taskRepository.events.isEmpty)

@@ -14,6 +14,7 @@ object TaskCompletionError:
   case class TaskNotFound(taskId: TaskId) extends TaskCompletionError
   case class TaskNotAssigned(taskId: TaskId) extends TaskCompletionError
   case class InvalidActualQty(taskId: TaskId, actualQty: Int) extends TaskCompletionError
+  case class VerificationRequired(taskId: TaskId) extends TaskCompletionError
 
 case class TaskCompletionResult(
     completed: Task.Completed,
@@ -30,19 +31,24 @@ class TaskCompletionService(
     taskRepository: TaskRepository,
     waveRepository: WaveRepository,
     consolidationGroupRepository: ConsolidationGroupRepository,
-    transportOrderRepository: TransportOrderRepository
+    transportOrderRepository: TransportOrderRepository,
+    verificationProfile: VerificationProfile
 ):
   def complete(
       taskId: TaskId,
       actualQty: Int,
+      verified: Boolean,
       at: Instant
   ): Either[TaskCompletionError, TaskCompletionResult] =
     if actualQty < 0 then return Left(TaskCompletionError.InvalidActualQty(taskId, actualQty))
 
     taskRepository.findById(taskId) match
       case None                          => Left(TaskCompletionError.TaskNotFound(taskId))
-      case Some(assigned: Task.Assigned) => completeAssigned(assigned, actualQty, at)
-      case Some(_)                       => Left(TaskCompletionError.TaskNotAssigned(taskId))
+      case Some(assigned: Task.Assigned) =>
+        if verificationProfile.requiresVerification(assigned.packagingLevel) && !verified
+        then Left(TaskCompletionError.VerificationRequired(taskId))
+        else completeAssigned(assigned, actualQty, at)
+      case Some(_) => Left(TaskCompletionError.TaskNotAssigned(taskId))
 
   private def completeAssigned(
       assigned: Task.Assigned,
