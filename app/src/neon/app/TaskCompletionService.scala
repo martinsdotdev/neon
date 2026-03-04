@@ -8,14 +8,38 @@ import neon.wave.{Wave, WaveEvent, WaveRepository}
 
 import java.time.Instant
 
+/** Errors that can occur during task completion. */
 sealed trait TaskCompletionError
 
 object TaskCompletionError:
+  /** The task was not found in the repository. */
   case class TaskNotFound(taskId: TaskId) extends TaskCompletionError
+
+  /** The task is not in the [[Task.Assigned]] state required for completion. */
   case class TaskNotAssigned(taskId: TaskId) extends TaskCompletionError
+
+  /** The actual quantity is negative. */
   case class InvalidActualQty(taskId: TaskId, actualQty: Int) extends TaskCompletionError
+
+  /** The task's packaging level requires verification and none was provided. */
   case class VerificationRequired(taskId: TaskId) extends TaskCompletionError
 
+/** The result of a successful task completion, containing all state transitions and events produced
+  * by the cascade.
+  *
+  * @param completed
+  *   the completed task
+  * @param completedEvent
+  *   the task completion event
+  * @param shortpick
+  *   replacement task if shortpicked, [[None]] otherwise
+  * @param transportOrder
+  *   routing transport order if the task has a handling unit
+  * @param waveCompletion
+  *   wave completion if all wave tasks are terminal
+  * @param pickingCompletion
+  *   consolidation group picking completion if all group tasks are terminal
+  */
 case class TaskCompletionResult(
     completed: Task.Completed,
     completedEvent: TaskEvent.TaskCompleted,
@@ -27,6 +51,21 @@ case class TaskCompletionResult(
     ]
 )
 
+/** Orchestrates task completion with a 5-step cascade: complete the task, check for shortpick,
+  * create routing transport order, detect wave completion, and detect picking completion for the
+  * consolidation group.
+  *
+  * @param taskRepository
+  *   repository for task lookup and persistence
+  * @param waveRepository
+  *   repository for wave lookup and persistence
+  * @param consolidationGroupRepository
+  *   repository for consolidation group lookup and persistence
+  * @param transportOrderRepository
+  *   repository for transport order persistence
+  * @param verificationProfile
+  *   defines which packaging levels require verification scanning
+  */
 class TaskCompletionService(
     taskRepository: TaskRepository,
     waveRepository: WaveRepository,
@@ -34,6 +73,23 @@ class TaskCompletionService(
     transportOrderRepository: TransportOrderRepository,
     verificationProfile: VerificationProfile
 ):
+  /** Completes a task and runs the post-completion cascade.
+    *
+    * Steps: (1) complete the [[Task.Assigned]] task, (2) create shortpick replacement if partial,
+    * (3) route handling unit via transport order, (4) check wave completion, (5) check picking
+    * completion for the consolidation group.
+    *
+    * @param taskId
+    *   the task to complete
+    * @param actualQty
+    *   the actual quantity picked or handled
+    * @param verified
+    *   whether the pick was verification-scanned
+    * @param at
+    *   instant of the completion
+    * @return
+    *   completion result or error
+    */
   def complete(
       taskId: TaskId,
       actualQty: Int,
@@ -50,6 +106,7 @@ class TaskCompletionService(
         else completeAssigned(assigned, actualQty, at)
       case Some(_) => Left(TaskCompletionError.TaskNotAssigned(taskId))
 
+  /** Runs the full cascade for a validated [[Task.Assigned]] task. */
   private def completeAssigned(
       assigned: Task.Assigned,
       actualQty: Int,

@@ -5,7 +5,29 @@ import neon.consolidationgroup.ConsolidationGroup
 import neon.order.Order
 import neon.task.Task
 
+/** Reorders [[Task.Allocated]] candidates according to a configurable [[DispatchProfile]] composed
+  * of ranked [[DispatchCriterion]] values.
+  *
+  * Criteria are evaluated in order; earlier criteria take precedence. When a criterion produces a
+  * tie, the next criterion breaks it. Returns the original order when the profile has no criteria.
+  */
 object TaskDispatchPolicy:
+
+  /** Sorts allocated tasks by the dispatch profile's criteria.
+    *
+    * @param candidates
+    *   the allocated tasks to reorder
+    * @param allTasks
+    *   all tasks (for group completion ratio)
+    * @param orders
+    *   orders referenced by the candidates
+    * @param consolidationGroups
+    *   groups referenced by the candidates
+    * @param profile
+    *   the dispatch profile with ranked criteria
+    * @return
+    *   candidates sorted by the profile's criteria
+    */
   def apply(
       candidates: List[Task.Allocated],
       allTasks: List[Task],

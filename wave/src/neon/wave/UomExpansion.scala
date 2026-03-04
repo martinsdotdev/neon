@@ -8,6 +8,23 @@ import neon.order.OrderLine
   * is absent from the hierarchy pass through 1:1.
   */
 object UomExpansion:
+  /** Expands a single [[OrderLine]] into task requests at the coarsest possible packaging levels.
+    *
+    * Converts the line quantity to eaches using the hierarchy, then greedily assigns from the
+    * largest tier down. If the line's [[PackagingLevel]] is absent from the hierarchy, or the
+    * hierarchy is empty, the line passes through as a single [[TaskRequest]] unchanged.
+    *
+    * @param waveId
+    *   the wave this expansion belongs to
+    * @param orderId
+    *   the order the line belongs to
+    * @param line
+    *   the order line to expand
+    * @param uomHierarchy
+    *   the packaging-level-to-eaches mapping for the SKU
+    * @return
+    *   one or more task requests covering the full line quantity
+    */
   def apply(
       waveId: WaveId,
       orderId: OrderId,
@@ -23,6 +40,23 @@ object UomExpansion:
       case _ =>
         List(TaskRequest(waveId, orderId, line.skuId, line.packagingLevel, line.quantity))
 
+  /** Greedily decomposes an eaches quantity into task requests from the largest packaging level
+    * down. Any remainder that does not fit the smallest tier produces a final
+    * [[PackagingLevel.Each]] request.
+    *
+    * @param waveId
+    *   the wave identifier
+    * @param orderId
+    *   the order identifier
+    * @param skuId
+    *   the SKU identifier
+    * @param quantity
+    *   the total quantity in eaches to decompose
+    * @param uomHierarchy
+    *   the packaging-level-to-eaches mapping
+    * @return
+    *   task requests covering the full quantity
+    */
   private def expand(
       waveId: WaveId,
       orderId: OrderId,

@@ -5,7 +5,22 @@ import neon.wave.TaskRequest
 
 import java.time.Instant
 
+/** Creates [[Task.Planned]] tasks from [[TaskRequest]] items produced by wave planning.
+  *
+  * Each task request maps to exactly one planned pick task. The wave id is propagated from the
+  * request for downstream completion detection.
+  */
 object TaskCreationPolicy:
+
+  /** Transforms task requests into planned tasks.
+    *
+    * @param taskRequests
+    *   the requests produced by wave release
+    * @param at
+    *   instant of the task creation
+    * @return
+    *   planned tasks paired with their creation events
+    */
   def apply(
       taskRequests: List[TaskRequest],
       at: Instant

@@ -5,6 +5,16 @@ import neon.order.{Order, OrderLine}
 
 import java.time.Instant
 
+/** Output of [[WavePlanner.plan]], bundling the released wave, its domain event, and the resolved
+  * task requests.
+  *
+  * @param wave
+  *   the released wave state
+  * @param event
+  *   the domain event recording the release
+  * @param taskRequests
+  *   the task requests produced by line resolution
+  */
 case class WavePlan(
     wave: Wave.Released,
     event: WaveEvent.WaveReleased,
@@ -20,6 +30,23 @@ object WavePlanner:
     (waveId, orderId, line) =>
       List(TaskRequest(waveId, orderId, line.skuId, line.packagingLevel, line.quantity))
 
+  /** Plans and releases a wave in a single step, resolving order lines into task requests.
+    *
+    * Creates a [[Wave.Planned]], immediately releases it, and expands every [[OrderLine]] into one
+    * or more [[TaskRequest]]s via the provided `lineResolution` strategy. The default strategy
+    * passes each line through 1:1; callers inject [[UomExpansion]] or other strategies as needed.
+    *
+    * @param orders
+    *   the orders to include in the wave (must be non-empty)
+    * @param grouping
+    *   the grouping strategy for consolidation
+    * @param at
+    *   instant of planning and release
+    * @param lineResolution
+    *   strategy for resolving each order line to task requests
+    * @return
+    *   a [[WavePlan]] containing the released wave, its event, and all task requests
+    */
   def plan(
       orders: List[Order],
       grouping: OrderGrouping,
