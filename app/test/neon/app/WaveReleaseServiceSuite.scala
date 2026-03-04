@@ -4,7 +4,7 @@ import neon.common.{GroupId, HandlingUnitId, OrderId, PackagingLevel, SkuId, Tas
 import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
 import neon.order.{Order, OrderLine}
 import neon.task.{Task, TaskEvent, TaskRepository}
-import neon.wave.{OrderGrouping, Wave, WaveEvent, WavePlan, WavePlanner, WaveRepository}
+import neon.wave.{OrderGrouping, Wave, WaveEvent, WavePlanner, WaveRepository}
 import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
 
