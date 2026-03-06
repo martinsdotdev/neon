@@ -1,8 +1,8 @@
 package neon.app
 
-import neon.common.{GroupId, OrderId, WaveId, WorkstationId}
+import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
 import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
-import neon.workstation.{Workstation, WorkstationEvent, WorkstationType, WorkstationRepository}
+import neon.workstation.{Workstation, WorkstationEvent, WorkstationRepository, WorkstationType}
 import org.scalatest.EitherValues
 import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
@@ -13,29 +13,29 @@ import scala.collection.mutable
 class WorkstationAssignmentServiceSuite extends AnyFunSpec with OptionValues with EitherValues:
   val waveId = WaveId()
   val orderId = OrderId()
-  val groupId = GroupId()
+  val consolidationGroupId = ConsolidationGroupId()
   val workstationId = WorkstationId()
   val at = Instant.now()
 
   def readyForWorkstationConsolidationGroup(
-      id: GroupId = groupId,
+      id: ConsolidationGroupId = consolidationGroupId,
       orderIds: List[OrderId] = List(orderId)
   ): ConsolidationGroup.ReadyForWorkstation =
     ConsolidationGroup.ReadyForWorkstation(id, waveId, orderIds)
 
-  def createdConsolidationGroup(id: GroupId = groupId): ConsolidationGroup.Created =
+  def createdConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Created =
     ConsolidationGroup.Created(id, waveId, List(orderId))
 
-  def pickedConsolidationGroup(id: GroupId = groupId): ConsolidationGroup.Picked =
+  def pickedConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Picked =
     ConsolidationGroup.Picked(id, waveId, List(orderId))
 
-  def assignedConsolidationGroup(id: GroupId = groupId): ConsolidationGroup.Assigned =
+  def assignedConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Assigned =
     ConsolidationGroup.Assigned(id, waveId, List(orderId), workstationId)
 
-  def completedConsolidationGroup(id: GroupId = groupId): ConsolidationGroup.Completed =
+  def completedConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Completed =
     ConsolidationGroup.Completed(id, waveId, List(orderId), workstationId)
 
-  def cancelledConsolidationGroup(id: GroupId = groupId): ConsolidationGroup.Cancelled =
+  def cancelledConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Cancelled =
     ConsolidationGroup.Cancelled(id, waveId, List(orderId))
 
   def idleWorkstation(
@@ -45,9 +45,9 @@ class WorkstationAssignmentServiceSuite extends AnyFunSpec with OptionValues wit
     Workstation.Idle(id, WorkstationType.PutWall, slotCount)
 
   class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
-    val store: mutable.Map[GroupId, ConsolidationGroup] = mutable.Map.empty
+    val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty
     val events: mutable.ListBuffer[ConsolidationGroupEvent] = mutable.ListBuffer.empty
-    def findById(id: GroupId): Option[ConsolidationGroup] = store.get(id)
+    def findById(id: ConsolidationGroupId): Option[ConsolidationGroup] = store.get(id)
     def findByWaveId(waveId: WaveId): List[ConsolidationGroup] =
       store.values.filter(_.waveId == waveId).toList
     def save(consolidationGroup: ConsolidationGroup, event: ConsolidationGroupEvent): Unit =
@@ -76,10 +76,30 @@ class WorkstationAssignmentServiceSuite extends AnyFunSpec with OptionValues wit
   ): WorkstationAssignmentService =
     WorkstationAssignmentService(consolidationGroupRepository, workstationRepository)
 
+  private def setupReadyGroup(
+      orderIds: List[OrderId] = List(orderId),
+      workstation: Option[Workstation] = Some(idleWorkstation())
+  ): (
+      InMemoryConsolidationGroupRepository,
+      InMemoryWorkstationRepository,
+      ConsolidationGroup.ReadyForWorkstation,
+      WorkstationAssignmentService
+  ) =
+    val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
+    val workstationRepository = InMemoryWorkstationRepository()
+    val consolidationGroup = readyForWorkstationConsolidationGroup(orderIds = orderIds)
+    consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
+    workstation.foreach(ws => workstationRepository.store(ws.id) = ws)
+    val service = buildService(
+      consolidationGroupRepository = consolidationGroupRepository,
+      workstationRepository = workstationRepository
+    )
+    (consolidationGroupRepository, workstationRepository, consolidationGroup, service)
+
   describe("WorkstationAssignmentService"):
     describe("when consolidation group does not exist"):
       it("returns ConsolidationGroupNotFound"):
-        val missingId = GroupId()
+        val missingId = ConsolidationGroupId()
         val service = buildService()
         assert(
           service.assign(missingId, at).left.value ==
@@ -87,157 +107,88 @@ class WorkstationAssignmentServiceSuite extends AnyFunSpec with OptionValues wit
         )
 
     describe("when consolidation group is not ReadyForWorkstation"):
-      it("rejects Created"):
-        val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
-        val consolidationGroup = createdConsolidationGroup()
-        consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
-        val service =
-          buildService(consolidationGroupRepository = consolidationGroupRepository)
-        assert(
-          service.assign(consolidationGroup.id, at).left.value ==
-            WorkstationAssignmentError.ConsolidationGroupNotReady(consolidationGroup.id)
-        )
+      val nonReadyStates = List(
+        "Created" -> (() => createdConsolidationGroup()),
+        "Picked" -> (() => pickedConsolidationGroup()),
+        "Assigned" -> (() => assignedConsolidationGroup()),
+        "Completed" -> (() => completedConsolidationGroup()),
+        "Cancelled" -> (() => cancelledConsolidationGroup())
+      )
 
-      it("rejects Picked"):
-        val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
-        val consolidationGroup = pickedConsolidationGroup()
-        consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
-        val service =
-          buildService(consolidationGroupRepository = consolidationGroupRepository)
-        assert(
-          service.assign(consolidationGroup.id, at).left.value ==
-            WorkstationAssignmentError.ConsolidationGroupNotReady(consolidationGroup.id)
-        )
-
-      it("rejects Assigned"):
-        val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
-        val consolidationGroup = assignedConsolidationGroup()
-        consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
-        val service =
-          buildService(consolidationGroupRepository = consolidationGroupRepository)
-        assert(
-          service.assign(consolidationGroup.id, at).left.value ==
-            WorkstationAssignmentError.ConsolidationGroupNotReady(consolidationGroup.id)
-        )
-
-      it("rejects Completed"):
-        val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
-        val consolidationGroup = completedConsolidationGroup()
-        consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
-        val service =
-          buildService(consolidationGroupRepository = consolidationGroupRepository)
-        assert(
-          service.assign(consolidationGroup.id, at).left.value ==
-            WorkstationAssignmentError.ConsolidationGroupNotReady(consolidationGroup.id)
-        )
-
-      it("rejects Cancelled"):
-        val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
-        val consolidationGroup = cancelledConsolidationGroup()
-        consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
-        val service =
-          buildService(consolidationGroupRepository = consolidationGroupRepository)
-        assert(
-          service.assign(consolidationGroup.id, at).left.value ==
-            WorkstationAssignmentError.ConsolidationGroupNotReady(consolidationGroup.id)
-        )
+      nonReadyStates.foreach { case (stateName, stateFactory) =>
+        it(s"rejects $stateName with ConsolidationGroupNotReady"):
+          val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
+          val consolidationGroup = stateFactory()
+          consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
+          val service =
+            buildService(consolidationGroupRepository = consolidationGroupRepository)
+          assert(
+            service.assign(consolidationGroup.id, at).left.value ==
+              WorkstationAssignmentError.ConsolidationGroupNotReady(consolidationGroup.id)
+          )
+      }
 
     describe("when no idle workstation is available"):
-      it("returns NoWorkstationAvailable"):
-        val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
-        val consolidationGroup = readyForWorkstationConsolidationGroup()
-        consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
-        val service =
-          buildService(consolidationGroupRepository = consolidationGroupRepository)
+      it("returns NoWorkstationAvailable and leaves state untouched"):
+        val (
+          consolidationGroupRepository,
+          workstationRepository,
+          consolidationGroup,
+          service
+        ) = setupReadyGroup(workstation = None)
+
         assert(
           service.assign(consolidationGroup.id, at).left.value ==
             WorkstationAssignmentError.NoWorkstationAvailable(consolidationGroup.id)
         )
+        assert(
+          consolidationGroupRepository.store(consolidationGroup.id).isInstanceOf[ConsolidationGroup.ReadyForWorkstation]
+        )
+        assert(consolidationGroupRepository.events.isEmpty)
+        assert(workstationRepository.events.isEmpty)
 
     describe("when workstation has insufficient slots"):
-      it("returns NoWorkstationAvailable"):
-        val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
-        val workstationRepository = InMemoryWorkstationRepository()
+      it("returns NoWorkstationAvailable and does not persist partial writes"):
         val threeOrderIds = List(OrderId(), OrderId(), OrderId())
-        val consolidationGroup =
-          readyForWorkstationConsolidationGroup(orderIds = threeOrderIds)
-        consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
-        val workstation = idleWorkstation(slotCount = 2)
-        workstationRepository.store(workstation.id) = workstation
-        val service = buildService(
-          consolidationGroupRepository = consolidationGroupRepository,
-          workstationRepository = workstationRepository
-        )
+        val (
+          consolidationGroupRepository,
+          workstationRepository,
+          consolidationGroup,
+          service
+        ) = setupReadyGroup(orderIds = threeOrderIds, workstation = Some(idleWorkstation(slotCount = 2)))
+
         assert(
           service.assign(consolidationGroup.id, at).left.value ==
             WorkstationAssignmentError.NoWorkstationAvailable(consolidationGroup.id)
         )
+        assert(
+          consolidationGroupRepository.store(consolidationGroup.id).isInstanceOf[ConsolidationGroup.ReadyForWorkstation]
+        )
+        assert(workstationRepository.store(workstationId).isInstanceOf[Workstation.Idle])
+        assert(consolidationGroupRepository.events.isEmpty)
+        assert(workstationRepository.events.isEmpty)
 
     describe("assigning"):
-      it("assigns consolidation group to workstation"):
-        val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
-        val workstationRepository = InMemoryWorkstationRepository()
-        val consolidationGroup = readyForWorkstationConsolidationGroup()
-        consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
-        val workstation = idleWorkstation()
-        workstationRepository.store(workstation.id) = workstation
-        val service = buildService(
-          consolidationGroupRepository = consolidationGroupRepository,
-          workstationRepository = workstationRepository
-        )
+      it("assigns consolidation group to workstation and persists both transitions"):
+        val (
+          consolidationGroupRepository,
+          workstationRepository,
+          consolidationGroup,
+          service
+        ) = setupReadyGroup()
+
         val result = service.assign(consolidationGroup.id, at).value
         assert(result.consolidationGroup.id == consolidationGroup.id)
-        assert(result.consolidationGroup.workstationId == workstation.id)
-        assert(result.workstation.id == workstation.id)
-        assert(result.workstation.groupId == consolidationGroup.id)
-
-      it("persists Assigned consolidation group"):
-        val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
-        val workstationRepository = InMemoryWorkstationRepository()
-        val consolidationGroup = readyForWorkstationConsolidationGroup()
-        consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
-        val workstation = idleWorkstation()
-        workstationRepository.store(workstation.id) = workstation
-        val service = buildService(
-          consolidationGroupRepository = consolidationGroupRepository,
-          workstationRepository = workstationRepository
-        )
-        service.assign(consolidationGroup.id, at)
-        assert(
-          consolidationGroupRepository
-            .store(consolidationGroup.id)
-            .isInstanceOf[ConsolidationGroup.Assigned]
-        )
-
-      it("persists Active workstation"):
-        val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
-        val workstationRepository = InMemoryWorkstationRepository()
-        val consolidationGroup = readyForWorkstationConsolidationGroup()
-        consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
-        val workstation = idleWorkstation()
-        workstationRepository.store(workstation.id) = workstation
-        val service = buildService(
-          consolidationGroupRepository = consolidationGroupRepository,
-          workstationRepository = workstationRepository
-        )
-        service.assign(consolidationGroup.id, at)
-        assert(
-          workstationRepository.store(workstation.id).isInstanceOf[Workstation.Active]
-        )
-
-      it("events carry cross-aggregate references"):
-        val consolidationGroupRepository = InMemoryConsolidationGroupRepository()
-        val workstationRepository = InMemoryWorkstationRepository()
-        val consolidationGroup = readyForWorkstationConsolidationGroup()
-        consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
-        val workstation = idleWorkstation()
-        workstationRepository.store(workstation.id) = workstation
-        val service = buildService(
-          consolidationGroupRepository = consolidationGroupRepository,
-          workstationRepository = workstationRepository
-        )
-        val result = service.assign(consolidationGroup.id, at).value
-        assert(result.consolidationGroupEvent.workstationId == workstation.id)
-        assert(result.workstationEvent.groupId == consolidationGroup.id)
+        assert(result.consolidationGroup.workstationId == workstationId)
+        assert(result.workstation.id == workstationId)
+        assert(result.workstation.consolidationGroupId == consolidationGroup.id)
+        assert(result.consolidationGroupEvent.workstationId == workstationId)
+        assert(result.workstationEvent.consolidationGroupId == consolidationGroup.id)
         assert(result.consolidationGroupEvent.occurredAt == at)
         assert(result.workstationEvent.occurredAt == at)
+        assert(
+          consolidationGroupRepository.store(consolidationGroup.id).isInstanceOf[ConsolidationGroup.Assigned]
+        )
+        assert(workstationRepository.store(workstationId).isInstanceOf[Workstation.Active])
+        assert(consolidationGroupRepository.events.size == 1)
+        assert(workstationRepository.events.size == 1)

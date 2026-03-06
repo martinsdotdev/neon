@@ -1,6 +1,6 @@
 package neon.workstation
 
-import neon.common.{GroupId, WorkstationId}
+import neon.common.{ConsolidationGroupId, WorkstationId}
 
 import java.time.Instant
 
@@ -48,16 +48,16 @@ object Workstation:
   ) extends Workstation:
     /** Assigns a consolidation group, transitioning from [[Idle]] to [[Active]].
       *
-      * @param groupId
+      * @param consolidationGroupId
       *   the consolidation group to assign
       * @param at
       *   instant of the transition
       * @return
       *   active state and assigned event
       */
-    def assign(groupId: GroupId, at: Instant): (Active, WorkstationEvent.WorkstationAssigned) =
-      val active = Active(id, workstationType, slotCount, groupId)
-      val event = WorkstationEvent.WorkstationAssigned(id, workstationType, groupId, at)
+    def assign(consolidationGroupId: ConsolidationGroupId, at: Instant): (Active, WorkstationEvent.WorkstationAssigned) =
+      val active = Active(id, workstationType, slotCount, consolidationGroupId)
+      val event = WorkstationEvent.WorkstationAssigned(id, workstationType, consolidationGroupId, at)
       (active, event)
 
     /** Disables this workstation, transitioning from [[Idle]] to [[Disabled]].
@@ -77,7 +77,7 @@ object Workstation:
       id: WorkstationId,
       workstationType: WorkstationType,
       slotCount: Int,
-      groupId: GroupId
+      consolidationGroupId: ConsolidationGroupId
   ) extends Workstation:
     /** Releases the current consolidation group, transitioning from [[Active]] to [[Idle]].
       *

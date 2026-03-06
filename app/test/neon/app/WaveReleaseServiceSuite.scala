@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{GroupId, HandlingUnitId, OrderId, PackagingLevel, SkuId, TaskId, WaveId}
+import neon.common.{ConsolidationGroupId, HandlingUnitId, OrderId, PackagingLevel, SkuId, TaskId, WaveId}
 import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
 import neon.order.{Order, OrderLine}
 import neon.task.{Task, TaskEvent, TaskRepository}
@@ -56,9 +56,9 @@ class WaveReleaseServiceSuite extends AnyFunSpec with OptionValues:
       entries.foreach { (task, event) => save(task, event) }
 
   class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
-    val store: mutable.Map[GroupId, ConsolidationGroup] = mutable.Map.empty
+    val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty
     val events: mutable.ListBuffer[ConsolidationGroupEvent] = mutable.ListBuffer.empty
-    def findById(id: GroupId): Option[ConsolidationGroup] = store.get(id)
+    def findById(id: ConsolidationGroupId): Option[ConsolidationGroup] = store.get(id)
     def findByWaveId(waveId: WaveId): List[ConsolidationGroup] =
       store.values.filter(_.waveId == waveId).toList
     def save(consolidationGroup: ConsolidationGroup, event: ConsolidationGroupEvent): Unit =

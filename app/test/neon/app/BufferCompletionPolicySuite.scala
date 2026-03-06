@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{GroupId, HandlingUnitId, LocationId, OrderId, PackagingLevel, WaveId}
+import neon.common.{ConsolidationGroupId, HandlingUnitId, LocationId, OrderId, PackagingLevel, WaveId}
 import neon.consolidationgroup.ConsolidationGroup
 import neon.handlingunit.HandlingUnit
 import org.scalatest.OptionValues
@@ -15,7 +15,7 @@ class BufferCompletionPolicySuite extends AnyFunSpec with OptionValues:
   val pickFace = LocationId()
   val at = Instant.now()
 
-  def pickedConsolidationGroup() = ConsolidationGroup.Picked(GroupId(), waveId, orderIds)
+  def pickedConsolidationGroup() = ConsolidationGroup.Picked(ConsolidationGroupId(), waveId, orderIds)
 
   def inBuffer() =
     HandlingUnit.InBuffer(HandlingUnitId(), PackagingLevel.Case, bufferLocation)
@@ -33,7 +33,7 @@ class BufferCompletionPolicySuite extends AnyFunSpec with OptionValues:
         val consolidationGroup = pickedConsolidationGroup()
         val (ready, event) = BufferCompletionPolicy(handlingUnits, consolidationGroup, at).value
         assert(ready.id == consolidationGroup.id)
-        assert(event.groupId == consolidationGroup.id)
+        assert(event.consolidationGroupId == consolidationGroup.id)
 
       it("carries waveId and occurredAt in the event"):
         val handlingUnits = List(inBuffer())
@@ -50,11 +50,11 @@ class BufferCompletionPolicySuite extends AnyFunSpec with OptionValues:
         assert(ready.orderIds == orderIds)
 
     describe("when some handling units are not yet in buffer"):
-      it("does not transition when pick HUs are still in transit"):
+      it("does not transition when pick handling units are still in transit"):
         val handlingUnits = List(inBuffer(), pickCreated())
         assert(BufferCompletionPolicy(handlingUnits, pickedConsolidationGroup(), at).isEmpty)
 
-      it("does not transition when HUs have already been emptied"):
+      it("does not transition when handling units have already been emptied"):
         val handlingUnits = List(inBuffer(), empty())
         assert(BufferCompletionPolicy(handlingUnits, pickedConsolidationGroup(), at).isEmpty)
 

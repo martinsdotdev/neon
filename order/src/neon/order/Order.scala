@@ -1,6 +1,6 @@
 package neon.order
 
-import neon.common.{OrderId, PackagingLevel, Priority, SkuId}
+import neon.common.{CarrierId, OrderId, PackagingLevel, Priority, SkuId}
 
 /** A customer order consisting of one or more lines to be fulfilled.
   *
@@ -10,8 +10,15 @@ import neon.common.{OrderId, PackagingLevel, Priority, SkuId}
   *   fulfillment priority
   * @param lines
   *   the line items to pick
+  * @param carrierId
+  *   optional carrier associated with this order for dispatch validation
   */
-case class Order(id: OrderId, priority: Priority, lines: List[OrderLine])
+case class Order(
+    id: OrderId,
+    priority: Priority,
+    lines: List[OrderLine],
+    carrierId: Option[CarrierId] = None
+)
 
 /** A single line within an [[Order]], specifying a SKU and quantity to fulfill.
   *

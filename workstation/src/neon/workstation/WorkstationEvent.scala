@@ -1,6 +1,6 @@
 package neon.workstation
 
-import neon.common.{GroupId, WorkstationId}
+import neon.common.{ConsolidationGroupId, WorkstationId}
 
 import java.time.Instant
 
@@ -41,7 +41,7 @@ object WorkstationEvent:
     *   the workstation identifier
     * @param workstationType
     *   the physical type of the workstation
-    * @param groupId
+    * @param consolidationGroupId
     *   the assigned consolidation group
     * @param occurredAt
     *   instant of the transition
@@ -49,7 +49,7 @@ object WorkstationEvent:
   case class WorkstationAssigned(
       workstationId: WorkstationId,
       workstationType: WorkstationType,
-      groupId: GroupId,
+      consolidationGroupId: ConsolidationGroupId,
       occurredAt: Instant
   ) extends WorkstationEvent
 

@@ -1,13 +1,13 @@
 package neon.consolidationgroup
 
-import neon.common.{GroupId, OrderId, WaveId, WorkstationId}
+import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
 
 import java.time.Instant
 
 /** Domain events emitted by [[ConsolidationGroup]] state transitions. */
 sealed trait ConsolidationGroupEvent:
   /** The consolidation group that emitted this event. */
-  def groupId: GroupId
+  def consolidationGroupId: ConsolidationGroupId
 
   /** The wave that originated the consolidation group. */
   def waveId: WaveId
@@ -20,7 +20,7 @@ object ConsolidationGroupEvent:
 
   /** Emitted when a consolidation group is created for a set of orders. */
   case class ConsolidationGroupCreated(
-      groupId: GroupId,
+      consolidationGroupId: ConsolidationGroupId,
       waveId: WaveId,
       orderIds: List[OrderId],
       occurredAt: Instant
@@ -28,7 +28,7 @@ object ConsolidationGroupEvent:
 
   /** Emitted when all picks for a consolidation group are complete. */
   case class ConsolidationGroupPicked(
-      groupId: GroupId,
+      consolidationGroupId: ConsolidationGroupId,
       waveId: WaveId,
       occurredAt: Instant
   ) extends ConsolidationGroupEvent
@@ -37,14 +37,14 @@ object ConsolidationGroupEvent:
     * assignment.
     */
   case class ConsolidationGroupReadyForWorkstation(
-      groupId: GroupId,
+      consolidationGroupId: ConsolidationGroupId,
       waveId: WaveId,
       occurredAt: Instant
   ) extends ConsolidationGroupEvent
 
   /** Emitted when a consolidation group is assigned to a workstation. */
   case class ConsolidationGroupAssigned(
-      groupId: GroupId,
+      consolidationGroupId: ConsolidationGroupId,
       waveId: WaveId,
       workstationId: WorkstationId,
       occurredAt: Instant
@@ -53,7 +53,7 @@ object ConsolidationGroupEvent:
   /** Emitted when workstation processing of a consolidation group finishes.
     */
   case class ConsolidationGroupCompleted(
-      groupId: GroupId,
+      consolidationGroupId: ConsolidationGroupId,
       waveId: WaveId,
       workstationId: WorkstationId,
       occurredAt: Instant
@@ -62,7 +62,7 @@ object ConsolidationGroupEvent:
   /** Emitted when a consolidation group is cancelled from any non-terminal state.
     */
   case class ConsolidationGroupCancelled(
-      groupId: GroupId,
+      consolidationGroupId: ConsolidationGroupId,
       waveId: WaveId,
       occurredAt: Instant
   ) extends ConsolidationGroupEvent

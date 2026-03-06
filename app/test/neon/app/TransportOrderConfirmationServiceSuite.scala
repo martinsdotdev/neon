@@ -1,7 +1,7 @@
 package neon.app
 
 import neon.common.{
-  GroupId,
+  ConsolidationGroupId,
   HandlingUnitId,
   LocationId,
   OrderId,
@@ -91,7 +91,7 @@ class TransportOrderConfirmationServiceSuite extends AnyFunSpec with OptionValue
       waveId: WaveId = waveId,
       orderIds: List[OrderId] = List(orderId)
   ): ConsolidationGroup.Picked =
-    ConsolidationGroup.Picked(GroupId(), waveId, orderIds)
+    ConsolidationGroup.Picked(ConsolidationGroupId(), waveId, orderIds)
 
   class InMemoryTransportOrderRepository extends TransportOrderRepository:
     val store: mutable.Map[TransportOrderId, TransportOrder] = mutable.Map.empty
@@ -130,9 +130,9 @@ class TransportOrderConfirmationServiceSuite extends AnyFunSpec with OptionValue
       entries.foreach { (task, event) => save(task, event) }
 
   class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
-    val store: mutable.Map[GroupId, ConsolidationGroup] = mutable.Map.empty
+    val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty
     val events: mutable.ListBuffer[ConsolidationGroupEvent] = mutable.ListBuffer.empty
-    def findById(id: GroupId): Option[ConsolidationGroup] = store.get(id)
+    def findById(id: ConsolidationGroupId): Option[ConsolidationGroup] = store.get(id)
     def findByWaveId(waveId: WaveId): List[ConsolidationGroup] =
       store.values.filter(_.waveId == waveId).toList
     def save(consolidationGroup: ConsolidationGroup, event: ConsolidationGroupEvent): Unit =
@@ -418,7 +418,7 @@ class TransportOrderConfirmationServiceSuite extends AnyFunSpec with OptionValue
           handlingUnitRepository.store(handlingUnitId) = pickCreatedHandlingUnit()
           val task = completedTask()
           taskRepository.store(task.id) = task
-          val consolidationGroup = ConsolidationGroup.Created(GroupId(), waveId, List(orderId))
+          val consolidationGroup = ConsolidationGroup.Created(ConsolidationGroupId(), waveId, List(orderId))
           consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
           val service = buildService(
             transportOrderRepository = transportOrderRepository,

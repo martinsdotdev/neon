@@ -1,12 +1,12 @@
 package neon.consolidationgroup
 
-import neon.common.{GroupId, OrderId, WaveId, WorkstationId}
+import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
 import org.scalatest.funspec.AnyFunSpec
 
 import java.time.Instant
 
 class ConsolidationGroupSuite extends AnyFunSpec:
-  val id = GroupId()
+  val id = ConsolidationGroupId()
   val waveId = WaveId()
   val orderIds = List(OrderId(), OrderId())
   val workstationId = WorkstationId()
@@ -18,7 +18,7 @@ class ConsolidationGroupSuite extends AnyFunSpec:
     describe("creating"):
       it("produces a Created state and a ConsolidationGroupCreated event"):
         val (created, event) = ConsolidationGroup.create(waveId, orderIds, at)
-        assert(created.id == event.groupId)
+        assert(created.id == event.consolidationGroupId)
         assert(created.waveId == waveId)
         assert(created.orderIds == orderIds)
 
@@ -67,14 +67,14 @@ class ConsolidationGroupSuite extends AnyFunSpec:
     describe("events"):
       it("identify the consolidation group and wave for policy routing"):
         val (_, event) = created().pick(at)
-        assert(event.groupId == id)
+        assert(event.consolidationGroupId == id)
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 
       it("readyForWorkstation event carries consolidation group and wave for assignment policy"):
         val (picked, _) = created().pick(at)
         val (_, event) = picked.readyForWorkstation(at)
-        assert(event.groupId == id)
+        assert(event.consolidationGroupId == id)
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 
@@ -118,7 +118,7 @@ class ConsolidationGroupSuite extends AnyFunSpec:
 
       it("cancelled event carries consolidation group ID and wave ID for cascade coordination"):
         val (_, event) = created().cancel(at)
-        assert(event.groupId == id)
+        assert(event.consolidationGroupId == id)
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 

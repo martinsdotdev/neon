@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{GroupId, LocationId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
+import neon.common.{ConsolidationGroupId, LocationId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 import neon.consolidationgroup.ConsolidationGroup
 import neon.task.{Task, TaskType}
 import org.scalatest.OptionValues
@@ -17,7 +17,7 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
   val destinationLocationId = LocationId()
   val at = Instant.now()
 
-  def createdConsolidationGroup() = ConsolidationGroup.Created(GroupId(), waveId, orderIds)
+  def createdConsolidationGroup() = ConsolidationGroup.Created(ConsolidationGroupId(), waveId, orderIds)
 
   def completedTask() =
     Task.Completed(
@@ -102,7 +102,7 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
         val consolidationGroup = createdConsolidationGroup()
         val (picked, event) = PickingCompletionPolicy(tasks, consolidationGroup, at).value
         assert(picked.id == consolidationGroup.id)
-        assert(event.groupId == consolidationGroup.id)
+        assert(event.consolidationGroupId == consolidationGroup.id)
 
       it("considers Cancelled tasks terminal"):
         val tasks = List(completedTask(), cancelledTask())

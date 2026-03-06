@@ -1,7 +1,7 @@
 package neon.app
 
 import neon.common.{
-  GroupId,
+  ConsolidationGroupId,
   HandlingUnitId,
   LocationId,
   OrderId,
@@ -144,10 +144,10 @@ class WaveCancellationServiceSuite extends AnyFunSpec with OptionValues with Eit
     TransportOrder.Confirmed(TransportOrderId(), handlingUnitId, destinationLocationId)
 
   def createdConsolidationGroup(waveId: WaveId = waveId): ConsolidationGroup.Created =
-    ConsolidationGroup.Created(GroupId(), waveId, List(orderId))
+    ConsolidationGroup.Created(ConsolidationGroupId(), waveId, List(orderId))
 
   def pickedConsolidationGroup(waveId: WaveId = waveId): ConsolidationGroup.Picked =
-    ConsolidationGroup.Picked(GroupId(), waveId, List(orderId))
+    ConsolidationGroup.Picked(ConsolidationGroupId(), waveId, List(orderId))
 
   class InMemoryWaveRepository extends WaveRepository:
     val store: mutable.Map[WaveId, Wave] = mutable.Map.empty
@@ -184,9 +184,9 @@ class WaveCancellationServiceSuite extends AnyFunSpec with OptionValues with Eit
       entries.foreach { (transportOrder, event) => save(transportOrder, event) }
 
   class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
-    val store: mutable.Map[GroupId, ConsolidationGroup] = mutable.Map.empty
+    val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty
     val events: mutable.ListBuffer[ConsolidationGroupEvent] = mutable.ListBuffer.empty
-    def findById(id: GroupId): Option[ConsolidationGroup] = store.get(id)
+    def findById(id: ConsolidationGroupId): Option[ConsolidationGroup] = store.get(id)
     def findByWaveId(waveId: WaveId): List[ConsolidationGroup] =
       store.values.filter(_.waveId == waveId).toList
     def save(consolidationGroup: ConsolidationGroup, event: ConsolidationGroupEvent): Unit =

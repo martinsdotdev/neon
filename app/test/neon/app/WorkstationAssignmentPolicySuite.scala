@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{GroupId, OrderId, WaveId, WorkstationId}
+import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
 import neon.consolidationgroup.ConsolidationGroup
 import neon.workstation.{Workstation, WorkstationType}
 import org.scalatest.OptionValues
@@ -14,7 +14,7 @@ class WorkstationAssignmentPolicySuite extends AnyFunSpec with OptionValues:
   val at = Instant.now()
 
   def readyConsolidationGroup() =
-    ConsolidationGroup.ReadyForWorkstation(GroupId(), waveId, orderIds)
+    ConsolidationGroup.ReadyForWorkstation(ConsolidationGroupId(), waveId, orderIds)
 
   def idleWorkstation(slots: Int = 8) =
     Workstation.Idle(WorkstationId(), WorkstationType.PutWall, slots)
@@ -57,14 +57,14 @@ class WorkstationAssignmentPolicySuite extends AnyFunSpec with OptionValues:
         val (_, (active, _)) =
           WorkstationAssignmentPolicy(consolidationGroup, workstation, at).value
         assert(active.id == workstation.id)
-        assert(active.groupId == consolidationGroup.id)
+        assert(active.consolidationGroupId == consolidationGroup.id)
 
-      it("workstation event carries groupId and occurredAt"):
+      it("workstation event carries consolidationGroupId and occurredAt"):
         val consolidationGroup = readyConsolidationGroup()
         val workstation = idleWorkstation()
         val (_, (_, workstationEvent)) =
           WorkstationAssignmentPolicy(consolidationGroup, workstation, at).value
-        assert(workstationEvent.groupId == consolidationGroup.id)
+        assert(workstationEvent.consolidationGroupId == consolidationGroup.id)
         assert(workstationEvent.occurredAt == at)
 
       it("preserves workstation type after assignment"):
@@ -81,4 +81,4 @@ class WorkstationAssignmentPolicySuite extends AnyFunSpec with OptionValues:
         val ((assigned, _), (active, _)) =
           WorkstationAssignmentPolicy(consolidationGroup, workstation, at).value
         assert(assigned.workstationId == active.id)
-        assert(active.groupId == assigned.id)
+        assert(active.consolidationGroupId == assigned.id)

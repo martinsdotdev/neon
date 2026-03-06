@@ -1,6 +1,6 @@
 package neon.consolidationgroup
 
-import neon.common.{GroupId, OrderId, WaveId, WorkstationId}
+import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
 
 import java.time.Instant
 
@@ -15,7 +15,7 @@ import java.time.Instant
   */
 sealed trait ConsolidationGroup:
   /** The unique identifier of this consolidation group. */
-  def id: GroupId
+  def id: ConsolidationGroupId
 
   /** The wave that originated this consolidation group. */
   def waveId: WaveId
@@ -43,7 +43,7 @@ object ConsolidationGroup:
       at: Instant
   ): (Created, ConsolidationGroupEvent.ConsolidationGroupCreated) =
     require(orderIds.nonEmpty, "orderIds must not be empty")
-    val id = GroupId()
+    val id = ConsolidationGroupId()
     val created = Created(id, waveId, orderIds)
     val event = ConsolidationGroupEvent.ConsolidationGroupCreated(id, waveId, orderIds, at)
     (created, event)
@@ -58,7 +58,7 @@ object ConsolidationGroup:
     *   orders included in this group
     */
   case class Created(
-      id: GroupId,
+      id: ConsolidationGroupId,
       waveId: WaveId,
       orderIds: List[OrderId]
   ) extends ConsolidationGroup:
@@ -97,7 +97,7 @@ object ConsolidationGroup:
     *   orders included in this group
     */
   case class Picked(
-      id: GroupId,
+      id: ConsolidationGroupId,
       waveId: WaveId,
       orderIds: List[OrderId]
   ) extends ConsolidationGroup:
@@ -139,7 +139,7 @@ object ConsolidationGroup:
     *   orders included in this group
     */
   case class ReadyForWorkstation(
-      id: GroupId,
+      id: ConsolidationGroupId,
       waveId: WaveId,
       orderIds: List[OrderId]
   ) extends ConsolidationGroup:
@@ -187,7 +187,7 @@ object ConsolidationGroup:
     *   the workstation processing this group
     */
   case class Assigned(
-      id: GroupId,
+      id: ConsolidationGroupId,
       waveId: WaveId,
       orderIds: List[OrderId],
       workstationId: WorkstationId
@@ -230,7 +230,7 @@ object ConsolidationGroup:
     *   the workstation that processed this group
     */
   case class Completed(
-      id: GroupId,
+      id: ConsolidationGroupId,
       waveId: WaveId,
       orderIds: List[OrderId],
       workstationId: WorkstationId
@@ -246,7 +246,7 @@ object ConsolidationGroup:
     *   orders included in this group
     */
   case class Cancelled(
-      id: GroupId,
+      id: ConsolidationGroupId,
       waveId: WaveId,
       orderIds: List[OrderId]
   ) extends ConsolidationGroup

@@ -85,6 +85,12 @@ lazy val user = project
   .settings(flatLayout)
   .settings(name := "neon-user")
 
+lazy val carrier = project
+  .in(file("carrier"))
+  .dependsOn(common)
+  .settings(flatLayout)
+  .settings(name := "neon-carrier")
+
 lazy val workstation = project
   .in(file("workstation"))
   .dependsOn(common)
@@ -99,13 +105,40 @@ lazy val slot = project
 
 lazy val app = project
   .in(file("app"))
-  .dependsOn(common, wave, task, consolidationGroup, handlingUnit, transportOrder, workstation, slot)
+  .dependsOn(
+    common,
+    wave,
+    task,
+    consolidationGroup,
+    handlingUnit,
+    transportOrder,
+    workstation,
+    slot,
+    location,
+    carrier
+  )
   .settings(flatLayout)
   .settings(name := "neon-app")
 
 lazy val root = project
   .in(file("."))
-  .aggregate(common, order, wave, task, location, inventory, consolidationGroup, handlingUnit, transportOrder, sku, user, workstation, slot, app)
+  .aggregate(
+    common,
+    order,
+    wave,
+    task,
+    location,
+    inventory,
+    consolidationGroup,
+    handlingUnit,
+    transportOrder,
+    sku,
+    user,
+    carrier,
+    workstation,
+    slot,
+    app
+  )
   .settings(
     name := "neon-wes",
     publish / skip := true

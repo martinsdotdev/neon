@@ -1,7 +1,7 @@
 package neon.app
 
 import neon.common.{
-  GroupId,
+  ConsolidationGroupId,
   HandlingUnitId,
   LocationId,
   OrderId,
@@ -62,7 +62,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
       waveId: WaveId = waveId,
       orderIds: List[OrderId] = List(orderId)
   ): ConsolidationGroup.Created =
-    ConsolidationGroup.Created(GroupId(), waveId, orderIds)
+    ConsolidationGroup.Created(ConsolidationGroupId(), waveId, orderIds)
 
   class InMemoryTaskRepository extends TaskRepository:
     val store: mutable.Map[TaskId, Task] = mutable.Map.empty
@@ -87,9 +87,9 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
       events += event
 
   class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
-    val store: mutable.Map[GroupId, ConsolidationGroup] = mutable.Map.empty
+    val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty
     val events: mutable.ListBuffer[ConsolidationGroupEvent] = mutable.ListBuffer.empty
-    def findById(id: GroupId): Option[ConsolidationGroup] = store.get(id)
+    def findById(id: ConsolidationGroupId): Option[ConsolidationGroup] = store.get(id)
     def findByWaveId(waveId: WaveId): List[ConsolidationGroup] =
       store.values.filter(_.waveId == waveId).toList
     def save(consolidationGroup: ConsolidationGroup, event: ConsolidationGroupEvent): Unit =
@@ -428,7 +428,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           val result = service.complete(task.id, 10, true, at).value
           val (picked, consolidationGroupEvent) = result.pickingCompletion.value
           assert(picked.id == consolidationGroup.id)
-          assert(consolidationGroupEvent.groupId == consolidationGroup.id)
+          assert(consolidationGroupEvent.consolidationGroupId == consolidationGroup.id)
 
         it("persists Picked consolidation group"):
           val taskRepository = InMemoryTaskRepository()

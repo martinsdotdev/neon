@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{GroupId, WaveId, WorkstationId}
+import neon.common.{ConsolidationGroupId, WaveId, WorkstationId}
 import neon.consolidationgroup.ConsolidationGroupEvent
 import neon.workstation.{Workstation, WorkstationType}
 import org.scalatest.funspec.AnyFunSpec
@@ -9,15 +9,15 @@ import java.time.Instant
 
 class WorkstationReleasePolicySuite extends AnyFunSpec:
   val workstationId = WorkstationId()
-  val groupId = GroupId()
+  val consolidationGroupId = ConsolidationGroupId()
   val waveId = WaveId()
   val at = Instant.now()
 
   def completedEvent() =
-    ConsolidationGroupEvent.ConsolidationGroupCompleted(groupId, waveId, workstationId, at)
+    ConsolidationGroupEvent.ConsolidationGroupCompleted(consolidationGroupId, waveId, workstationId, at)
 
   def activeWorkstation(workstationType: WorkstationType = WorkstationType.PutWall) =
-    Workstation.Active(workstationId, workstationType, 8, groupId)
+    Workstation.Active(workstationId, workstationType, 8, consolidationGroupId)
 
   describe("WorkstationReleasePolicy"):
     it("returns the workstation to idle"):

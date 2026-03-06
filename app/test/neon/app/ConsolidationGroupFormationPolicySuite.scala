@@ -28,7 +28,7 @@ class ConsolidationGroupFormationPolicySuite extends AnyFunSpec:
 
       it("emits a creation event for downstream coordination"):
         val (consolidationGroup, event) = results.head
-        assert(event.groupId == consolidationGroup.id)
+        assert(event.consolidationGroupId == consolidationGroup.id)
         assert(event.orderIds == orderIds)
         assert(event.occurredAt == at)
 

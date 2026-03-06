@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{GroupId, OrderId, WaveId, WorkstationId}
+import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
 import neon.consolidationgroup.ConsolidationGroup
 import org.scalatest.funspec.AnyFunSpec
 
@@ -12,17 +12,17 @@ class ConsolidationGroupCancellationPolicySuite extends AnyFunSpec:
   val workstationId = WorkstationId()
   val at = Instant.now()
 
-  def created() = ConsolidationGroup.Created(GroupId(), waveId, orderIds)
+  def created() = ConsolidationGroup.Created(ConsolidationGroupId(), waveId, orderIds)
 
-  def picked() = ConsolidationGroup.Picked(GroupId(), waveId, orderIds)
+  def picked() = ConsolidationGroup.Picked(ConsolidationGroupId(), waveId, orderIds)
 
-  def readyForWorkstation() = ConsolidationGroup.ReadyForWorkstation(GroupId(), waveId, orderIds)
+  def readyForWorkstation() = ConsolidationGroup.ReadyForWorkstation(ConsolidationGroupId(), waveId, orderIds)
 
-  def assigned() = ConsolidationGroup.Assigned(GroupId(), waveId, orderIds, workstationId)
+  def assigned() = ConsolidationGroup.Assigned(ConsolidationGroupId(), waveId, orderIds, workstationId)
 
-  def completed() = ConsolidationGroup.Completed(GroupId(), waveId, orderIds, workstationId)
+  def completed() = ConsolidationGroup.Completed(ConsolidationGroupId(), waveId, orderIds, workstationId)
 
-  def cancelled() = ConsolidationGroup.Cancelled(GroupId(), waveId, orderIds)
+  def cancelled() = ConsolidationGroup.Cancelled(ConsolidationGroupId(), waveId, orderIds)
 
   describe("ConsolidationGroupCancellationPolicy"):
     describe("when groups include non-terminal states"):
@@ -72,7 +72,7 @@ class ConsolidationGroupCancellationPolicySuite extends AnyFunSpec:
         val groups = List(created())
         val results = ConsolidationGroupCancellationPolicy(groups, at)
         val (cancelled, event) = results.head
-        assert(event.groupId == cancelled.id)
+        assert(event.consolidationGroupId == cancelled.id)
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 

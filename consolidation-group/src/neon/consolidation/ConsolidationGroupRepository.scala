@@ -1,6 +1,6 @@
 package neon.consolidationgroup
 
-import neon.common.{GroupId, WaveId}
+import neon.common.{ConsolidationGroupId, WaveId}
 
 /** Port trait for [[ConsolidationGroup]] aggregate persistence and queries. */
 trait ConsolidationGroupRepository:
@@ -12,7 +12,7 @@ trait ConsolidationGroupRepository:
     * @return
     *   the group if it exists, [[None]] otherwise
     */
-  def findById(id: GroupId): Option[ConsolidationGroup]
+  def findById(id: ConsolidationGroupId): Option[ConsolidationGroup]
 
   /** Finds all consolidation groups belonging to a wave.
     *

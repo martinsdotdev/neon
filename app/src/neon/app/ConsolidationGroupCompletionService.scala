@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.{GroupId, WorkstationId}
+import neon.common.{ConsolidationGroupId, WorkstationId}
 import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
 import neon.workstation.{Workstation, WorkstationEvent, WorkstationRepository}
 
@@ -11,12 +11,12 @@ sealed trait ConsolidationGroupCompletionError
 
 object ConsolidationGroupCompletionError:
   /** The consolidation group was not found in the repository. */
-  case class ConsolidationGroupNotFound(groupId: GroupId) extends ConsolidationGroupCompletionError
+  case class ConsolidationGroupNotFound(consolidationGroupId: ConsolidationGroupId) extends ConsolidationGroupCompletionError
 
   /** The consolidation group is not in the [[ConsolidationGroup.Assigned]] state required for
     * completion.
     */
-  case class ConsolidationGroupNotAssigned(groupId: GroupId)
+  case class ConsolidationGroupNotAssigned(consolidationGroupId: ConsolidationGroupId)
       extends ConsolidationGroupCompletionError
 
   /** The workstation referenced by the consolidation group was not found. */
@@ -64,7 +64,7 @@ class ConsolidationGroupCompletionService(
     * Steps: (1) complete the [[ConsolidationGroup.Assigned]] group, (2) release the
     * [[Workstation.Active]] workstation back to idle via [[WorkstationReleasePolicy]].
     *
-    * @param groupId
+    * @param consolidationGroupId
     *   the consolidation group to complete
     * @param at
     *   instant of the completion
@@ -72,16 +72,16 @@ class ConsolidationGroupCompletionService(
     *   completion result or error
     */
   def complete(
-      groupId: GroupId,
+      consolidationGroupId: ConsolidationGroupId,
       at: Instant
   ): Either[ConsolidationGroupCompletionError, ConsolidationGroupCompletionResult] =
-    consolidationGroupRepository.findById(groupId) match
+    consolidationGroupRepository.findById(consolidationGroupId) match
       case None =>
-        Left(ConsolidationGroupCompletionError.ConsolidationGroupNotFound(groupId))
+        Left(ConsolidationGroupCompletionError.ConsolidationGroupNotFound(consolidationGroupId))
       case Some(assigned: ConsolidationGroup.Assigned) =>
         completeAssigned(assigned, at)
       case Some(_) =>
-        Left(ConsolidationGroupCompletionError.ConsolidationGroupNotAssigned(groupId))
+        Left(ConsolidationGroupCompletionError.ConsolidationGroupNotAssigned(consolidationGroupId))
 
   /** Completes the assigned group and releases the workstation via [[WorkstationReleasePolicy]].
     */
@@ -89,16 +89,15 @@ class ConsolidationGroupCompletionService(
       assigned: ConsolidationGroup.Assigned,
       at: Instant
   ): Either[ConsolidationGroupCompletionError, ConsolidationGroupCompletionResult] =
-    val (completed, completedEvent) = assigned.complete(at)
-    consolidationGroupRepository.save(completed, completedEvent)
-
     workstationRepository.findById(assigned.workstationId) match
       case None =>
         Left(
           ConsolidationGroupCompletionError.WorkstationNotFound(assigned.workstationId)
         )
       case Some(active: Workstation.Active) =>
+        val (completed, completedEvent) = assigned.complete(at)
         val (idle, workstationEvent) = WorkstationReleasePolicy(completedEvent, active, at)
+        consolidationGroupRepository.save(completed, completedEvent)
         workstationRepository.save(idle, workstationEvent)
         Right(
           ConsolidationGroupCompletionResult(

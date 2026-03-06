@@ -1,6 +1,6 @@
 package neon.app
 
-import neon.common.GroupId
+import neon.common.ConsolidationGroupId
 import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
 import neon.workstation.{Workstation, WorkstationEvent, WorkstationType, WorkstationRepository}
 
@@ -11,15 +11,15 @@ sealed trait WorkstationAssignmentError
 
 object WorkstationAssignmentError:
   /** The consolidation group was not found in the repository. */
-  case class ConsolidationGroupNotFound(groupId: GroupId) extends WorkstationAssignmentError
+  case class ConsolidationGroupNotFound(consolidationGroupId: ConsolidationGroupId) extends WorkstationAssignmentError
 
   /** The consolidation group is not in the [[ConsolidationGroup.ReadyForWorkstation]] state
     * required for assignment.
     */
-  case class ConsolidationGroupNotReady(groupId: GroupId) extends WorkstationAssignmentError
+  case class ConsolidationGroupNotReady(consolidationGroupId: ConsolidationGroupId) extends WorkstationAssignmentError
 
   /** No idle put-wall workstation is available for assignment. */
-  case class NoWorkstationAvailable(groupId: GroupId) extends WorkstationAssignmentError
+  case class NoWorkstationAvailable(consolidationGroupId: ConsolidationGroupId) extends WorkstationAssignmentError
 
 /** The result of a successful workstation assignment, containing the assigned consolidation group
   * and the activated workstation.
@@ -59,7 +59,7 @@ class WorkstationAssignmentService(
     * workstation, and delegates to [[WorkstationAssignmentPolicy]] for the cross-aggregate
     * transition.
     *
-    * @param groupId
+    * @param consolidationGroupId
     *   the consolidation group to assign
     * @param at
     *   instant of the assignment
@@ -67,16 +67,16 @@ class WorkstationAssignmentService(
     *   assignment result or error
     */
   def assign(
-      groupId: GroupId,
+      consolidationGroupId: ConsolidationGroupId,
       at: Instant
   ): Either[WorkstationAssignmentError, WorkstationAssignmentResult] =
-    consolidationGroupRepository.findById(groupId) match
+    consolidationGroupRepository.findById(consolidationGroupId) match
       case None =>
-        Left(WorkstationAssignmentError.ConsolidationGroupNotFound(groupId))
+        Left(WorkstationAssignmentError.ConsolidationGroupNotFound(consolidationGroupId))
       case Some(ready: ConsolidationGroup.ReadyForWorkstation) =>
         assignToWorkstation(ready, at)
       case Some(_) =>
-        Left(WorkstationAssignmentError.ConsolidationGroupNotReady(groupId))
+        Left(WorkstationAssignmentError.ConsolidationGroupNotReady(consolidationGroupId))
 
   /** Finds an idle put-wall workstation and performs the cross-aggregate assignment via
     * [[WorkstationAssignmentPolicy]].
