@@ -84,8 +84,8 @@ lazy val slot = project
   .dependsOn(common)
   .settings(name := "neon-slot")
 
-lazy val app = project
-  .in(file("app"))
+lazy val core = project
+  .in(file("core"))
   .dependsOn(
     common,
     wave,
@@ -98,7 +98,7 @@ lazy val app = project
     location,
     carrier
   )
-  .settings(name := "neon-app")
+  .settings(name := "neon-core")
 
 lazy val root = project
   .in(file("."))
@@ -117,7 +117,7 @@ lazy val root = project
     carrier,
     workstation,
     slot,
-    app
+    core
   )
   .settings(
     name := "neon-wes",
