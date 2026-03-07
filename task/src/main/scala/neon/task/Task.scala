@@ -51,7 +51,7 @@ object Task:
     *   the SKU to be handled
     * @param packagingLevel
     *   the packaging level of the SKU
-    * @param requestedQty
+    * @param requestedQuantity
     *   quantity to handle (must be positive)
     * @param orderId
     *   the order this task fulfills
@@ -70,14 +70,14 @@ object Task:
       taskType: TaskType,
       skuId: SkuId,
       packagingLevel: PackagingLevel,
-      requestedQty: Int,
+      requestedQuantity: Int,
       orderId: OrderId,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
       at: Instant
   ): (Planned, TaskEvent.TaskCreated) =
-    require(requestedQty > 0, s"requestedQty must be positive, got $requestedQty")
+    require(requestedQuantity > 0, s"requestedQuantity must be positive, got $requestedQuantity")
     val id = TaskId()
     val planned =
       Planned(
@@ -85,7 +85,7 @@ object Task:
         taskType,
         skuId,
         packagingLevel,
-        requestedQty,
+        requestedQuantity,
         orderId,
         waveId,
         parentTaskId,
@@ -101,7 +101,7 @@ object Task:
         waveId,
         parentTaskId,
         handlingUnitId,
-        requestedQty,
+        requestedQuantity,
         at
       )
     (planned, event)
@@ -115,7 +115,7 @@ object Task:
       taskType: TaskType,
       skuId: SkuId,
       packagingLevel: PackagingLevel,
-      requestedQty: Int,
+      requestedQuantity: Int,
       orderId: OrderId,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
@@ -144,7 +144,7 @@ object Task:
           taskType,
           skuId,
           packagingLevel,
-          requestedQty,
+          requestedQuantity,
           orderId,
           waveId,
           parentTaskId,
@@ -200,7 +200,7 @@ object Task:
       taskType: TaskType,
       skuId: SkuId,
       packagingLevel: PackagingLevel,
-      requestedQty: Int,
+      requestedQuantity: Int,
       orderId: OrderId,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
@@ -225,7 +225,7 @@ object Task:
           taskType,
           skuId,
           packagingLevel,
-          requestedQty,
+          requestedQuantity,
           orderId,
           waveId,
           parentTaskId,
@@ -281,7 +281,7 @@ object Task:
       taskType: TaskType,
       skuId: SkuId,
       packagingLevel: PackagingLevel,
-      requestedQty: Int,
+      requestedQuantity: Int,
       orderId: OrderId,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
@@ -293,26 +293,26 @@ object Task:
 
     /** Completes the task with the actual quantity handled.
       *
-      * When `actualQty` is less than `requestedQty`, downstream policies (e.g. ShortpickPolicy)
-      * create a replacement task for the remainder. A zero `actualQty` is valid (full shortpick).
+      * When `actualQuantity` is less than `requestedQuantity`, downstream policies (e.g. ShortpickPolicy)
+      * create a replacement task for the remainder. A zero `actualQuantity` is valid (full shortpick).
       *
-      * @param actualQty
+      * @param actualQuantity
       *   the quantity actually handled (must be non-negative)
       * @param at
       *   instant of the completion
       * @return
       *   completed state and completion event
       */
-    def complete(actualQty: Int, at: Instant): (Completed, TaskEvent.TaskCompleted) =
-      require(actualQty >= 0, s"actualQty must be non-negative, got $actualQty")
+    def complete(actualQuantity: Int, at: Instant): (Completed, TaskEvent.TaskCompleted) =
+      require(actualQuantity >= 0, s"actualQuantity must be non-negative, got $actualQuantity")
       val completed =
         Completed(
           id,
           taskType,
           skuId,
           packagingLevel,
-          requestedQty,
-          actualQty,
+          requestedQuantity,
+          actualQuantity,
           orderId,
           waveId,
           parentTaskId,
@@ -332,8 +332,8 @@ object Task:
           handlingUnitId,
           sourceLocationId,
           destinationLocationId,
-          requestedQty,
-          actualQty,
+          requestedQuantity,
+          actualQuantity,
           assignedTo,
           at
         )
@@ -380,8 +380,8 @@ object Task:
       taskType: TaskType,
       skuId: SkuId,
       packagingLevel: PackagingLevel,
-      requestedQty: Int,
-      actualQty: Int,
+      requestedQuantity: Int,
+      actualQuantity: Int,
       orderId: OrderId,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],

@@ -27,7 +27,7 @@ object ShortpickPolicy:
       completed: Task.Completed,
       at: Instant
   ): Option[(Task.Planned, TaskEvent.TaskCreated)] =
-    val remainder = completed.requestedQty - completed.actualQty
+    val remainder = completed.requestedQuantity - completed.actualQuantity
     if remainder <= 0 then None
     else
       Some(
@@ -35,7 +35,7 @@ object ShortpickPolicy:
           taskType = completed.taskType,
           skuId = completed.skuId,
           packagingLevel = completed.packagingLevel,
-          requestedQty = remainder,
+          requestedQuantity = remainder,
           orderId = completed.orderId,
           waveId = completed.waveId,
           parentTaskId = Some(completed.id),

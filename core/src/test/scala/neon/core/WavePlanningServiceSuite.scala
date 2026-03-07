@@ -102,7 +102,7 @@ class WavePlanningServiceSuite extends AnyFunSpec:
     def save(consolidationGroup: ConsolidationGroup, event: ConsolidationGroupEvent): Unit =
       store(consolidationGroup.id) = consolidationGroup
     def saveAll(entries: List[(ConsolidationGroup, ConsolidationGroupEvent)]): Unit =
-      entries.foreach((group, event) => save(group, event))
+      entries.foreach((consolidationGroup, event) => save(consolidationGroup, event))
 
   private def buildServices(
       carrierStore: Map[CarrierId, Carrier],
@@ -215,9 +215,9 @@ class WavePlanningServiceSuite extends AnyFunSpec:
       assert(result.isRight)
       val tasks = result.toOption.get.release.tasks.map(_._1)
       assert(tasks.size == 3)
-      assert(tasks.exists(t => t.packagingLevel == PackagingLevel.Pallet && t.requestedQty == 1))
-      assert(tasks.exists(t => t.packagingLevel == PackagingLevel.Case && t.requestedQty == 1))
-      assert(tasks.exists(t => t.packagingLevel == PackagingLevel.Each && t.requestedQty == 2))
+      assert(tasks.exists(t => t.packagingLevel == PackagingLevel.Pallet && t.requestedQuantity == 1))
+      assert(tasks.exists(t => t.packagingLevel == PackagingLevel.Case && t.requestedQuantity == 1))
+      assert(tasks.exists(t => t.packagingLevel == PackagingLevel.Each && t.requestedQuantity == 2))
 
     it("keeps Order compatibility outside WavePlanningService when carrierId is absent"):
       val compatibleOrder =

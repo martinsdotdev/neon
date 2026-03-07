@@ -30,7 +30,7 @@ object TaskCreationPolicy:
         taskType = TaskType.Pick,
         skuId = req.skuId,
         packagingLevel = req.packagingLevel,
-        requestedQty = req.quantity,
+        requestedQuantity = req.quantity,
         orderId = req.orderId,
         waveId = Some(req.waveId),
         parentTaskId = None,

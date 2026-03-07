@@ -187,7 +187,7 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
         )
         assert(result.head == tSingle)
 
-    describe("GroupCompletion"):
+    describe("ConsolidationGroupCompletion"):
       it("sorts tasks with higher consolidation group completion percentage first"):
         val waveId = WaveId()
         val orderId1 = OrderId()
@@ -202,7 +202,7 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
           allTasks = List(tCompleted1, tPending1, tPending2),
           orders = List(singleLineOrder(orderId1), singleLineOrder(orderId2)),
           consolidationGroups = List(consolidationGroup1, consolidationGroup2),
-          criteria = List(DispatchCriterion.GroupCompletion)
+          criteria = List(DispatchCriterion.ConsolidationGroupCompletion)
         )
         assert(result.head == tPending1)
 
@@ -219,7 +219,7 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
           allTasks = List(tCompleted, tWithConsolidationGroup, tWithoutConsolidationGroup),
           orders = List(singleLineOrder(orderId1), singleLineOrder(orderId2)),
           consolidationGroups = List(consolidationGroup),
-          criteria = List(DispatchCriterion.GroupCompletion)
+          criteria = List(DispatchCriterion.ConsolidationGroupCompletion)
         )
         assert(result.head == tWithConsolidationGroup)
         assert(result.last == tWithoutConsolidationGroup)
@@ -236,7 +236,7 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
           allTasks = List(tCompleted, tWithConsolidationGroup, tNoWave),
           orders = List(singleLineOrder(orderId)),
           consolidationGroups = List(consolidationGroup),
-          criteria = List(DispatchCriterion.GroupCompletion)
+          criteria = List(DispatchCriterion.ConsolidationGroupCompletion)
         )
         assert(result.head == tWithConsolidationGroup)
         assert(result.last == tNoWave)

@@ -14,18 +14,18 @@ object ConsolidationGroupCancellationPolicy:
 
   /** Cancels each consolidation group still in a non-terminal state.
     *
-    * @param groups
+    * @param consolidationGroups
     *   the consolidation groups to evaluate
     * @param at
     *   instant of the cancellation
     * @return
-    *   cancelled groups paired with their cancellation events
+    *   cancelled consolidation groups paired with their cancellation events
     */
   def apply(
-      groups: List[ConsolidationGroup],
+      consolidationGroups: List[ConsolidationGroup],
       at: Instant
   ): List[(ConsolidationGroup.Cancelled, ConsolidationGroupEvent.ConsolidationGroupCancelled)] =
-    groups.collect:
+    consolidationGroups.collect:
       case g: ConsolidationGroup.Created             => g.cancel(at)
       case g: ConsolidationGroup.Picked              => g.cancel(at)
       case g: ConsolidationGroup.ReadyForWorkstation => g.cancel(at)

@@ -21,50 +21,50 @@ case class Inventory private (
 
   /** Reserves a quantity from available stock.
     *
-    * @param qty
+    * @param quantity
     *   positive quantity to reserve; must not exceed [[available]]
     * @param at
     *   instant of the reservation
     * @return
     *   updated inventory and reservation event
     */
-  def reserve(qty: Int, at: Instant): (Inventory, InventoryEvent.InventoryReserved) =
-    require(qty > 0, s"qty must be positive, got $qty")
-    require(qty <= available, s"qty $qty exceeds available $available")
-    val updated = copy(reserved = reserved + qty)
-    val event = InventoryEvent.InventoryReserved(id, locationId, skuId, lot, qty, at)
+  def reserve(quantity: Int, at: Instant): (Inventory, InventoryEvent.InventoryReserved) =
+    require(quantity > 0, s"quantity must be positive, got $quantity")
+    require(quantity <= available, s"quantity $quantity exceeds available $available")
+    val updated = copy(reserved = reserved + quantity)
+    val event = InventoryEvent.InventoryReserved(id, locationId, skuId, lot, quantity, at)
     (updated, event)
 
   /** Releases a previously reserved quantity back to available stock.
     *
-    * @param qty
+    * @param quantity
     *   positive quantity to release; must not exceed [[reserved]]
     * @param at
     *   instant of the release
     * @return
     *   updated inventory and release event
     */
-  def release(qty: Int, at: Instant): (Inventory, InventoryEvent.InventoryReleased) =
-    require(qty > 0, s"qty must be positive, got $qty")
-    require(qty <= reserved, s"qty $qty exceeds reserved $reserved")
-    val updated = copy(reserved = reserved - qty)
-    val event = InventoryEvent.InventoryReleased(id, locationId, skuId, lot, qty, at)
+  def release(quantity: Int, at: Instant): (Inventory, InventoryEvent.InventoryReleased) =
+    require(quantity > 0, s"quantity must be positive, got $quantity")
+    require(quantity <= reserved, s"quantity $quantity exceeds reserved $reserved")
+    val updated = copy(reserved = reserved - quantity)
+    val event = InventoryEvent.InventoryReleased(id, locationId, skuId, lot, quantity, at)
     (updated, event)
 
   /** Consumes a reserved quantity, reducing both on-hand and reserved.
     *
-    * @param qty
+    * @param quantity
     *   positive quantity to consume; must not exceed [[reserved]]
     * @param at
     *   instant of consumption
     * @return
     *   updated inventory and consumption event
     */
-  def consume(qty: Int, at: Instant): (Inventory, InventoryEvent.InventoryConsumed) =
-    require(qty > 0, s"qty must be positive, got $qty")
-    require(qty <= reserved, s"qty $qty exceeds reserved $reserved")
-    val updated = copy(onHand = onHand - qty, reserved = reserved - qty)
-    val event = InventoryEvent.InventoryConsumed(id, locationId, skuId, lot, qty, at)
+  def consume(quantity: Int, at: Instant): (Inventory, InventoryEvent.InventoryConsumed) =
+    require(quantity > 0, s"quantity must be positive, got $quantity")
+    require(quantity <= reserved, s"quantity $quantity exceeds reserved $reserved")
+    val updated = copy(onHand = onHand - quantity, reserved = reserved - quantity)
+    val event = InventoryEvent.InventoryConsumed(id, locationId, skuId, lot, quantity, at)
     (updated, event)
 
   /** Corrects the lot identifier for this inventory position. Only allowed when no units are

@@ -25,66 +25,66 @@ class ConsolidationGroupCancellationPolicySuite extends AnyFunSpec:
   def cancelled() = ConsolidationGroup.Cancelled(ConsolidationGroupId(), waveId, orderIds)
 
   describe("ConsolidationGroupCancellationPolicy"):
-    describe("when groups include non-terminal states"):
-      it("cancels Created groups"):
-        val groups = List(created(), completed())
-        val results = ConsolidationGroupCancellationPolicy(groups, at)
+    describe("when consolidation groups include non-terminal states"):
+      it("cancels Created consolidation groups"):
+        val consolidationGroups = List(created(), completed())
+        val results = ConsolidationGroupCancellationPolicy(consolidationGroups, at)
         assert(results.size == 1)
-        assert(results.head._1.id == groups.head.id)
+        assert(results.head._1.id == consolidationGroups.head.id)
 
-      it("cancels Picked groups"):
-        val groups = List(picked(), completed())
-        val results = ConsolidationGroupCancellationPolicy(groups, at)
+      it("cancels Picked consolidation groups"):
+        val consolidationGroups = List(picked(), completed())
+        val results = ConsolidationGroupCancellationPolicy(consolidationGroups, at)
         assert(results.size == 1)
-        assert(results.head._1.id == groups.head.id)
+        assert(results.head._1.id == consolidationGroups.head.id)
 
-      it("cancels ReadyForWorkstation groups"):
-        val groups = List(readyForWorkstation(), completed())
-        val results = ConsolidationGroupCancellationPolicy(groups, at)
+      it("cancels ReadyForWorkstation consolidation groups"):
+        val consolidationGroups = List(readyForWorkstation(), completed())
+        val results = ConsolidationGroupCancellationPolicy(consolidationGroups, at)
         assert(results.size == 1)
-        assert(results.head._1.id == groups.head.id)
+        assert(results.head._1.id == consolidationGroups.head.id)
 
-      it("cancels Assigned groups"):
-        val groups = List(assigned(), completed())
-        val results = ConsolidationGroupCancellationPolicy(groups, at)
+      it("cancels Assigned consolidation groups"):
+        val consolidationGroups = List(assigned(), completed())
+        val results = ConsolidationGroupCancellationPolicy(consolidationGroups, at)
         assert(results.size == 1)
-        assert(results.head._1.id == groups.head.id)
+        assert(results.head._1.id == consolidationGroups.head.id)
 
-      it("skips Completed groups"):
-        val groups = List(completed(), created())
-        val results = ConsolidationGroupCancellationPolicy(groups, at)
+      it("skips Completed consolidation groups"):
+        val consolidationGroups = List(completed(), created())
+        val results = ConsolidationGroupCancellationPolicy(consolidationGroups, at)
         assert(results.size == 1)
-        assert(results.head._1.id == groups.last.id)
+        assert(results.head._1.id == consolidationGroups.last.id)
 
-      it("skips already Cancelled groups"):
-        val groups = List(cancelled(), created())
-        val results = ConsolidationGroupCancellationPolicy(groups, at)
+      it("skips already Cancelled consolidation groups"):
+        val consolidationGroups = List(cancelled(), created())
+        val results = ConsolidationGroupCancellationPolicy(consolidationGroups, at)
         assert(results.size == 1)
-        assert(results.head._1.id == groups.last.id)
+        assert(results.head._1.id == consolidationGroups.last.id)
 
       it("cancels all four non-terminal states in one pass"):
-        val groups =
+        val consolidationGroups =
           List(created(), picked(), readyForWorkstation(), assigned(), completed(), cancelled())
-        val results = ConsolidationGroupCancellationPolicy(groups, at)
+        val results = ConsolidationGroupCancellationPolicy(consolidationGroups, at)
         assert(results.size == 4)
 
       it("emits one event per cancellation with correct fields"):
-        val groups = List(created())
-        val results = ConsolidationGroupCancellationPolicy(groups, at)
+        val consolidationGroups = List(created())
+        val results = ConsolidationGroupCancellationPolicy(consolidationGroups, at)
         val (cancelled, event) = results.head
         assert(event.consolidationGroupId == cancelled.id)
         assert(event.waveId == waveId)
         assert(event.occurredAt == at)
 
       it("preserves orderIds in cancelled state for audit"):
-        val groups = List(created())
-        val (cancelled, _) = ConsolidationGroupCancellationPolicy(groups, at).head
+        val consolidationGroups = List(created())
+        val (cancelled, _) = ConsolidationGroupCancellationPolicy(consolidationGroups, at).head
         assert(cancelled.orderIds == orderIds)
 
-    describe("when all groups are already terminal"):
+    describe("when all consolidation groups are already terminal"):
       it("produces no cancellations"):
-        val groups = List(completed(), cancelled())
-        assert(ConsolidationGroupCancellationPolicy(groups, at).isEmpty)
+        val consolidationGroups = List(completed(), cancelled())
+        assert(ConsolidationGroupCancellationPolicy(consolidationGroups, at).isEmpty)
 
     describe("when the list is empty"):
       it("produces no cancellations"):

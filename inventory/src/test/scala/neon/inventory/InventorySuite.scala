@@ -62,7 +62,7 @@ class InventorySuite extends AnyFunSpec:
         assert(updated.onHand == 100)
         assert(event.quantityReserved == 20)
 
-      it("rejects qty exceeding available"):
+      it("rejects quantity exceeding available"):
         val inventory = anInventory(onHand = 100, reserved = 90)
         assertThrows[IllegalArgumentException]:
           inventory.reserve(11, at)
@@ -72,7 +72,7 @@ class InventorySuite extends AnyFunSpec:
         val (updated, _) = inventory.reserve(10, at)
         assert(updated.available == 0)
 
-      it("rejects qty <= 0"):
+      it("rejects quantity <= 0"):
         assertThrows[IllegalArgumentException]:
           anInventory().reserve(0, at)
         assertThrows[IllegalArgumentException]:
@@ -94,7 +94,7 @@ class InventorySuite extends AnyFunSpec:
         assert(updated.onHand == 100)
         assert(event.quantityReleased == 10)
 
-      it("rejects qty exceeding reserved"):
+      it("rejects quantity exceeding reserved"):
         val inventory = anInventory(onHand = 100, reserved = 10)
         assertThrows[IllegalArgumentException]:
           inventory.release(11, at)
@@ -103,7 +103,7 @@ class InventorySuite extends AnyFunSpec:
         val (updated, _) = anInventory(onHand = 100, reserved = 30).release(30, at)
         assert(updated.reserved == 0)
 
-      it("rejects qty <= 0"):
+      it("rejects quantity <= 0"):
         assertThrows[IllegalArgumentException]:
           anInventory(onHand = 100, reserved = 30).release(0, at)
         assertThrows[IllegalArgumentException]:
@@ -125,7 +125,7 @@ class InventorySuite extends AnyFunSpec:
         assert(updated.reserved == 10)
         assert(event.quantityConsumed == 20)
 
-      it("rejects qty exceeding reserved"):
+      it("rejects quantity exceeding reserved"):
         val inventory = anInventory(onHand = 100, reserved = 10)
         assertThrows[IllegalArgumentException]:
           inventory.consume(11, at)
@@ -135,7 +135,7 @@ class InventorySuite extends AnyFunSpec:
         assert(updated.onHand == 70)
         assert(updated.reserved == 0)
 
-      it("rejects qty <= 0"):
+      it("rejects quantity <= 0"):
         assertThrows[IllegalArgumentException]:
           anInventory(onHand = 100, reserved = 30).consume(0, at)
         assertThrows[IllegalArgumentException]:

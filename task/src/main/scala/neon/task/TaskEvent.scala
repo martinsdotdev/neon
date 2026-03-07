@@ -38,7 +38,7 @@ object TaskEvent:
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
-      requestedQty: Int,
+      requestedQuantity: Int,
       occurredAt: Instant
   ) extends TaskEvent
 
@@ -70,8 +70,8 @@ object TaskEvent:
       handlingUnitId: Option[HandlingUnitId],
       sourceLocationId: LocationId,
       destinationLocationId: LocationId,
-      requestedQty: Int,
-      actualQty: Int,
+      requestedQuantity: Int,
+      actualQuantity: Int,
       assignedTo: UserId,
       occurredAt: Instant
   ) extends TaskEvent

@@ -18,11 +18,11 @@ object TaskDispatchPolicy:
     * @param candidates
     *   the allocated tasks to reorder
     * @param allTasks
-    *   all tasks (for group completion ratio)
+    *   all tasks (for consolidation group completion ratio)
     * @param orders
     *   orders referenced by the candidates
     * @param consolidationGroups
-    *   groups referenced by the candidates
+    *   consolidation groups referenced by the candidates
     * @param profile
     *   the dispatch profile with ranked criteria
     * @return
@@ -39,7 +39,7 @@ object TaskDispatchPolicy:
     else
       val orderMap = orders.map(o => o.id -> o).toMap
       val ratioMap: Map[TaskId, Double] =
-        if profile.criteria.contains(DispatchCriterion.GroupCompletion) then
+        if profile.criteria.contains(DispatchCriterion.ConsolidationGroupCompletion) then
           candidates.map(t => t.id -> completionRatio(t, allTasks, consolidationGroups)).toMap
         else Map.empty
       candidates.sortWith: (a, b) =>
@@ -75,7 +75,7 @@ object TaskDispatchPolicy:
         else if sa then -1
         else 1
 
-      case DispatchCriterion.GroupCompletion =>
+      case DispatchCriterion.ConsolidationGroupCompletion =>
         val ra = ratioMap.getOrElse(a.id, 0.0)
         val rb = ratioMap.getOrElse(b.id, 0.0)
         rb.compareTo(ra)
@@ -91,8 +91,8 @@ object TaskDispatchPolicy:
     consolidationGroups
       .find(g => task.waveId.contains(g.waveId) && g.orderIds.contains(task.orderId))
       .map: g =>
-        val groupTasks =
+        val consolidationGroupTasks =
           allTasks.filter(t => t.waveId.contains(g.waveId) && g.orderIds.contains(t.orderId))
-        if groupTasks.isEmpty then 0.0
-        else groupTasks.count(_.isInstanceOf[Task.Completed]).toDouble / groupTasks.size
+        if consolidationGroupTasks.isEmpty then 0.0
+        else consolidationGroupTasks.count(_.isInstanceOf[Task.Completed]).toDouble / consolidationGroupTasks.size
       .getOrElse(0.0)

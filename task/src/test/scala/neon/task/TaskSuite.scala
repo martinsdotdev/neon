@@ -76,7 +76,7 @@ class TaskSuite extends AnyFunSpec:
           )
         assert(planned.id == event.taskId)
         assert(planned.taskType == TaskType.Pick)
-        assert(planned.requestedQty == 10)
+        assert(planned.requestedQuantity == 10)
 
       it("TaskCreated event includes all fields for event sourcing"):
         val parentId = TaskId()
@@ -98,7 +98,7 @@ class TaskSuite extends AnyFunSpec:
         assert(event.waveId == None)
         assert(event.parentTaskId == Some(parentId))
         assert(event.handlingUnitId == None)
-        assert(event.requestedQty == 5)
+        assert(event.requestedQuantity == 5)
         assert(event.occurredAt == at)
 
       it("rejects zero requested quantity"):
@@ -129,7 +129,7 @@ class TaskSuite extends AnyFunSpec:
         assert(alloc.taskType == TaskType.Pick)
         assert(alloc.skuId == skuId)
         assert(alloc.packagingLevel == PackagingLevel.Each)
-        assert(alloc.requestedQty == 10)
+        assert(alloc.requestedQuantity == 10)
         assert(alloc.orderId == orderId)
         assert(alloc.waveId == Some(waveId))
         assert(alloc.handlingUnitId == Some(handlingUnitId))
@@ -154,8 +154,8 @@ class TaskSuite extends AnyFunSpec:
       it("records both requested and actual quantities"):
         val (assigned, _) = allocated().assign(userId, at)
         val (completed, _) = assigned.complete(8, at)
-        assert(completed.actualQty == 8)
-        assert(completed.requestedQty == 10)
+        assert(completed.actualQuantity == 8)
+        assert(completed.requestedQuantity == 10)
 
       it("TaskCompleted event carries all fields for downstream policies"):
         val (assigned, _) = allocated().assign(userId, at)
@@ -167,8 +167,8 @@ class TaskSuite extends AnyFunSpec:
         assert(event.handlingUnitId == Some(handlingUnitId))
         assert(event.sourceLocationId == sourceLocationId)
         assert(event.destinationLocationId == destinationLocationId)
-        assert(event.requestedQty == 10)
-        assert(event.actualQty == 8)
+        assert(event.requestedQuantity == 10)
+        assert(event.actualQuantity == 8)
         assert(event.assignedTo == userId)
         assert(event.occurredAt == at)
 
@@ -183,13 +183,13 @@ class TaskSuite extends AnyFunSpec:
       it("allows zero actual quantity for full shortpick"):
         val (assigned, _) = allocated().assign(userId, at)
         val (completed, _) = assigned.complete(0, at)
-        assert(completed.actualQty == 0)
+        assert(completed.actualQuantity == 0)
 
       it("allows actual quantity greater than requested for over-pick"):
         val (assigned, _) = allocated().assign(userId, at)
         val (completed, _) = assigned.complete(12, at)
-        assert(completed.actualQty == 12)
-        assert(completed.requestedQty == 10)
+        assert(completed.actualQuantity == 12)
+        assert(completed.requestedQuantity == 10)
 
       it("rejects negative actual quantity"):
         val (assigned, _) = allocated().assign(userId, at)

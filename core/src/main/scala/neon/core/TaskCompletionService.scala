@@ -19,7 +19,7 @@ object TaskCompletionError:
   case class TaskNotAssigned(taskId: TaskId) extends TaskCompletionError
 
   /** The actual quantity is negative. */
-  case class InvalidActualQty(taskId: TaskId, actualQty: Int) extends TaskCompletionError
+  case class InvalidActualQuantity(taskId: TaskId, actualQuantity: Int) extends TaskCompletionError
 
   /** The task's packaging level requires verification and none was provided. */
   case class VerificationRequired(taskId: TaskId) extends TaskCompletionError
@@ -81,7 +81,7 @@ class TaskCompletionService(
     *
     * @param taskId
     *   the task to complete
-    * @param actualQty
+    * @param actualQuantity
     *   the actual quantity picked or handled
     * @param verified
     *   whether the pick was verification-scanned
@@ -92,27 +92,27 @@ class TaskCompletionService(
     */
   def complete(
       taskId: TaskId,
-      actualQty: Int,
+      actualQuantity: Int,
       verified: Boolean,
       at: Instant
   ): Either[TaskCompletionError, TaskCompletionResult] =
-    if actualQty < 0 then return Left(TaskCompletionError.InvalidActualQty(taskId, actualQty))
+    if actualQuantity < 0 then return Left(TaskCompletionError.InvalidActualQuantity(taskId, actualQuantity))
 
     taskRepository.findById(taskId) match
       case None                          => Left(TaskCompletionError.TaskNotFound(taskId))
       case Some(assigned: Task.Assigned) =>
         if verificationProfile.requiresVerification(assigned.packagingLevel) && !verified
         then Left(TaskCompletionError.VerificationRequired(taskId))
-        else completeAssigned(assigned, actualQty, at)
+        else completeAssigned(assigned, actualQuantity, at)
       case Some(_) => Left(TaskCompletionError.TaskNotAssigned(taskId))
 
   /** Runs the full cascade for a validated [[Task.Assigned]] task. */
   private def completeAssigned(
       assigned: Task.Assigned,
-      actualQty: Int,
+      actualQuantity: Int,
       at: Instant
   ): Either[TaskCompletionError, TaskCompletionResult] =
-    val (completed, completedEvent) = assigned.complete(actualQty, at)
+    val (completed, completedEvent) = assigned.complete(actualQuantity, at)
     taskRepository.save(completed, completedEvent)
 
     val shortpick = ShortpickPolicy(completed, at)

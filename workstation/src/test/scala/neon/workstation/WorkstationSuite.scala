@@ -48,14 +48,14 @@ class WorkstationSuite extends AnyFunSpec:
         assert(event.occurredAt == at)
 
     describe("cycling"):
-      it("processes multiple groups in sequence"):
-        val firstGroup = ConsolidationGroupId()
-        val secondGroup = ConsolidationGroupId()
-        val (active1, _) = idle().assign(firstGroup, at)
-        assert(active1.consolidationGroupId == firstGroup)
+      it("processes multiple consolidation groups in sequence"):
+        val firstConsolidationGroup = ConsolidationGroupId()
+        val secondConsolidationGroup = ConsolidationGroupId()
+        val (active1, _) = idle().assign(firstConsolidationGroup, at)
+        assert(active1.consolidationGroupId == firstConsolidationGroup)
         val (backToIdle, _) = active1.release(at)
-        val (active2, _) = backToIdle.assign(secondGroup, at)
-        assert(active2.consolidationGroupId == secondGroup)
+        val (active2, _) = backToIdle.assign(secondConsolidationGroup, at)
+        assert(active2.consolidationGroupId == secondConsolidationGroup)
 
     describe("disabling"):
       it("takes an idle workstation offline"):

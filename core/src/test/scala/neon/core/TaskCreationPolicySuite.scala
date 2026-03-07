@@ -37,8 +37,8 @@ class TaskCreationPolicySuite extends AnyFunSpec:
       it("copies packaging level from request"):
         assert(planned.packagingLevel == PackagingLevel.Each)
 
-      it("assigns request quantity as requestedQty"):
-        assert(planned.requestedQty == 5)
+      it("assigns request quantity as requestedQuantity"):
+        assert(planned.requestedQuantity == 5)
 
       it("copies order ID from request"):
         assert(planned.orderId == orderId)
@@ -57,7 +57,7 @@ class TaskCreationPolicySuite extends AnyFunSpec:
         assert(event.taskType == TaskType.Pick)
         assert(event.skuId == skuId)
         assert(event.packagingLevel == PackagingLevel.Each)
-        assert(event.requestedQty == 5)
+        assert(event.requestedQuantity == 5)
         assert(event.orderId == orderId)
         assert(event.waveId == Some(waveId))
         assert(event.parentTaskId == None)

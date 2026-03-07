@@ -94,7 +94,7 @@ class WaveReleaseServiceSuite extends AnyFunSpec with OptionValues:
         assert(result.tasks.size == 1)
         val (planned, event) = result.tasks.head
         assert(planned.skuId == skuId)
-        assert(planned.requestedQty == 10)
+        assert(planned.requestedQuantity == 10)
         assert(planned.waveId.value == wavePlan.wave.id)
 
       it("creates one task per order line for multi-line orders"):

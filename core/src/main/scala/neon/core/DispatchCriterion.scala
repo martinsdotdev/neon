@@ -18,9 +18,9 @@ enum DispatchCriterion:
   case OrderSimplicity
 
   /** Orders tasks whose consolidation group has the highest completion ratio first, favoring
-    * near-complete groups.
+    * near-complete consolidation groups.
     */
-  case GroupCompletion
+  case ConsolidationGroupCompletion
 
   /** Orders tasks by packaging level ordinal, lowest tier first. */
   case PackagingTier
