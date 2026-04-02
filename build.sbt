@@ -8,7 +8,7 @@ ThisBuild / scalacOptions       ++= Seq("-Wunused:imports")
 val scalatestVersion   = "3.2.19"
 val uuidCreatorVersion = "6.1.1"
 
-val pekkoVersion                 = "1.1.3"
+val pekkoVersion                 = "1.2.0"
 val pekkoHttpVersion             = "1.1.0"
 val pekkoPersistenceR2dbcVersion = "1.1.0"
 val pekkoProjectionVersion       = "1.1.0"
@@ -124,6 +124,7 @@ lazy val infrastructure = project
       "ch.qos.logback"    % "logback-classic"                % logbackVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed"      % pekkoVersion           % Test,
       "org.apache.pekko" %% "pekko-persistence-testkit"      % pekkoVersion           % Test,
+      "org.apache.pekko" %% "pekko-stream-testkit"           % pekkoVersion           % Test,
       "org.apache.pekko" %% "pekko-projection-testkit"       % pekkoProjectionVersion % Test
     )
   )
