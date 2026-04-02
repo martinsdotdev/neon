@@ -9,50 +9,372 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppWorkstationsRouteImport } from './routes/_app/workstations'
+import { Route as AppWavesRouteImport } from './routes/_app/waves'
+import { Route as AppUsersRouteImport } from './routes/_app/users'
+import { Route as AppTransportOrdersRouteImport } from './routes/_app/transport-orders'
+import { Route as AppTasksRouteImport } from './routes/_app/tasks'
+import { Route as AppSlotsRouteImport } from './routes/_app/slots'
+import { Route as AppSkusRouteImport } from './routes/_app/skus'
+import { Route as AppOrdersRouteImport } from './routes/_app/orders'
+import { Route as AppLocationsRouteImport } from './routes/_app/locations'
+import { Route as AppInventoryRouteImport } from './routes/_app/inventory'
+import { Route as AppHandlingUnitsRouteImport } from './routes/_app/handling-units'
+import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
+import { Route as AppConsolidationGroupsRouteImport } from './routes/_app/consolidation-groups'
+import { Route as AppCarriersRouteImport } from './routes/_app/carriers'
 
-const IndexRoute = IndexRouteImport.update({
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkstationsRoute = AppWorkstationsRouteImport.update({
+  id: '/workstations',
+  path: '/workstations',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWavesRoute = AppWavesRouteImport.update({
+  id: '/waves',
+  path: '/waves',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUsersRoute = AppUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTransportOrdersRoute = AppTransportOrdersRouteImport.update({
+  id: '/transport-orders',
+  path: '/transport-orders',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTasksRoute = AppTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSlotsRoute = AppSlotsRouteImport.update({
+  id: '/slots',
+  path: '/slots',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSkusRoute = AppSkusRouteImport.update({
+  id: '/skus',
+  path: '/skus',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrdersRoute = AppOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLocationsRoute = AppLocationsRouteImport.update({
+  id: '/locations',
+  path: '/locations',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInventoryRoute = AppInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHandlingUnitsRoute = AppHandlingUnitsRouteImport.update({
+  id: '/handling-units',
+  path: '/handling-units',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppConsolidationGroupsRoute = AppConsolidationGroupsRouteImport.update({
+  id: '/consolidation-groups',
+  path: '/consolidation-groups',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCarriersRoute = AppCarriersRouteImport.update({
+  id: '/carriers',
+  path: '/carriers',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AppIndexRoute
+  '/carriers': typeof AppCarriersRoute
+  '/consolidation-groups': typeof AppConsolidationGroupsRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/handling-units': typeof AppHandlingUnitsRoute
+  '/inventory': typeof AppInventoryRoute
+  '/locations': typeof AppLocationsRoute
+  '/orders': typeof AppOrdersRoute
+  '/skus': typeof AppSkusRoute
+  '/slots': typeof AppSlotsRoute
+  '/tasks': typeof AppTasksRoute
+  '/transport-orders': typeof AppTransportOrdersRoute
+  '/users': typeof AppUsersRoute
+  '/waves': typeof AppWavesRoute
+  '/workstations': typeof AppWorkstationsRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/carriers': typeof AppCarriersRoute
+  '/consolidation-groups': typeof AppConsolidationGroupsRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/handling-units': typeof AppHandlingUnitsRoute
+  '/inventory': typeof AppInventoryRoute
+  '/locations': typeof AppLocationsRoute
+  '/orders': typeof AppOrdersRoute
+  '/skus': typeof AppSkusRoute
+  '/slots': typeof AppSlotsRoute
+  '/tasks': typeof AppTasksRoute
+  '/transport-orders': typeof AppTransportOrdersRoute
+  '/users': typeof AppUsersRoute
+  '/waves': typeof AppWavesRoute
+  '/workstations': typeof AppWorkstationsRoute
+  '/': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/_app/carriers': typeof AppCarriersRoute
+  '/_app/consolidation-groups': typeof AppConsolidationGroupsRoute
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/handling-units': typeof AppHandlingUnitsRoute
+  '/_app/inventory': typeof AppInventoryRoute
+  '/_app/locations': typeof AppLocationsRoute
+  '/_app/orders': typeof AppOrdersRoute
+  '/_app/skus': typeof AppSkusRoute
+  '/_app/slots': typeof AppSlotsRoute
+  '/_app/tasks': typeof AppTasksRoute
+  '/_app/transport-orders': typeof AppTransportOrdersRoute
+  '/_app/users': typeof AppUsersRoute
+  '/_app/waves': typeof AppWavesRoute
+  '/_app/workstations': typeof AppWorkstationsRoute
+  '/_app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/carriers'
+    | '/consolidation-groups'
+    | '/dashboard'
+    | '/handling-units'
+    | '/inventory'
+    | '/locations'
+    | '/orders'
+    | '/skus'
+    | '/slots'
+    | '/tasks'
+    | '/transport-orders'
+    | '/users'
+    | '/waves'
+    | '/workstations'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/carriers'
+    | '/consolidation-groups'
+    | '/dashboard'
+    | '/handling-units'
+    | '/inventory'
+    | '/locations'
+    | '/orders'
+    | '/skus'
+    | '/slots'
+    | '/tasks'
+    | '/transport-orders'
+    | '/users'
+    | '/waves'
+    | '/workstations'
+    | '/'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/_app/carriers'
+    | '/_app/consolidation-groups'
+    | '/_app/dashboard'
+    | '/_app/handling-units'
+    | '/_app/inventory'
+    | '/_app/locations'
+    | '/_app/orders'
+    | '/_app/skus'
+    | '/_app/slots'
+    | '/_app/tasks'
+    | '/_app/transport-orders'
+    | '/_app/users'
+    | '/_app/waves'
+    | '/_app/workstations'
+    | '/_app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workstations': {
+      id: '/_app/workstations'
+      path: '/workstations'
+      fullPath: '/workstations'
+      preLoaderRoute: typeof AppWorkstationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/waves': {
+      id: '/_app/waves'
+      path: '/waves'
+      fullPath: '/waves'
+      preLoaderRoute: typeof AppWavesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/users': {
+      id: '/_app/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AppUsersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/transport-orders': {
+      id: '/_app/transport-orders'
+      path: '/transport-orders'
+      fullPath: '/transport-orders'
+      preLoaderRoute: typeof AppTransportOrdersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/tasks': {
+      id: '/_app/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof AppTasksRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/slots': {
+      id: '/_app/slots'
+      path: '/slots'
+      fullPath: '/slots'
+      preLoaderRoute: typeof AppSlotsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/skus': {
+      id: '/_app/skus'
+      path: '/skus'
+      fullPath: '/skus'
+      preLoaderRoute: typeof AppSkusRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/orders': {
+      id: '/_app/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof AppOrdersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/locations': {
+      id: '/_app/locations'
+      path: '/locations'
+      fullPath: '/locations'
+      preLoaderRoute: typeof AppLocationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/inventory': {
+      id: '/_app/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof AppInventoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/handling-units': {
+      id: '/_app/handling-units'
+      path: '/handling-units'
+      fullPath: '/handling-units'
+      preLoaderRoute: typeof AppHandlingUnitsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/consolidation-groups': {
+      id: '/_app/consolidation-groups'
+      path: '/consolidation-groups'
+      fullPath: '/consolidation-groups'
+      preLoaderRoute: typeof AppConsolidationGroupsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/carriers': {
+      id: '/_app/carriers'
+      path: '/carriers'
+      fullPath: '/carriers'
+      preLoaderRoute: typeof AppCarriersRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
 
+interface AppRouteChildren {
+  AppCarriersRoute: typeof AppCarriersRoute
+  AppConsolidationGroupsRoute: typeof AppConsolidationGroupsRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppHandlingUnitsRoute: typeof AppHandlingUnitsRoute
+  AppInventoryRoute: typeof AppInventoryRoute
+  AppLocationsRoute: typeof AppLocationsRoute
+  AppOrdersRoute: typeof AppOrdersRoute
+  AppSkusRoute: typeof AppSkusRoute
+  AppSlotsRoute: typeof AppSlotsRoute
+  AppTasksRoute: typeof AppTasksRoute
+  AppTransportOrdersRoute: typeof AppTransportOrdersRoute
+  AppUsersRoute: typeof AppUsersRoute
+  AppWavesRoute: typeof AppWavesRoute
+  AppWorkstationsRoute: typeof AppWorkstationsRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppCarriersRoute: AppCarriersRoute,
+  AppConsolidationGroupsRoute: AppConsolidationGroupsRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppHandlingUnitsRoute: AppHandlingUnitsRoute,
+  AppInventoryRoute: AppInventoryRoute,
+  AppLocationsRoute: AppLocationsRoute,
+  AppOrdersRoute: AppOrdersRoute,
+  AppSkusRoute: AppSkusRoute,
+  AppSlotsRoute: AppSlotsRoute,
+  AppTasksRoute: AppTasksRoute,
+  AppTransportOrdersRoute: AppTransportOrdersRoute,
+  AppUsersRoute: AppUsersRoute,
+  AppWavesRoute: AppWavesRoute,
+  AppWorkstationsRoute: AppWorkstationsRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

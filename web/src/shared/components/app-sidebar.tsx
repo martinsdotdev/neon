@@ -32,17 +32,18 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link to="/">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Warehouse className="size-4" />
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">
-                    {m.app_name()}
-                  </span>
-                </div>
-              </Link>
+            <SidebarMenuButton
+              size="lg"
+              render={<Link to="/" />}
+            >
+              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <Warehouse className="size-4" />
+              </div>
+              <div className="flex flex-col gap-0.5 leading-none">
+                <span className="font-semibold">
+                  {m.app_name()}
+                </span>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -63,13 +64,13 @@ export function AppSidebar() {
                   return (
                     <SidebarMenuItem key={item.href}>
                       <SidebarMenuButton
-                        asChild
                         isActive={!!isActive}
+                        render={
+                          <Link to={item.href} />
+                        }
                       >
-                        <Link to={item.href}>
-                          <item.icon />
-                          <span>{t(item.label)}</span>
-                        </Link>
+                        <item.icon />
+                        <span>{t(item.label)}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   )
