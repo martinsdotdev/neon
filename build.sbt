@@ -8,6 +8,13 @@ ThisBuild / scalacOptions       ++= Seq("-Wunused:imports")
 val scalatestVersion   = "3.2.19"
 val uuidCreatorVersion = "6.1.1"
 
+val pekkoVersion                 = "1.1.3"
+val pekkoHttpVersion             = "1.1.0"
+val pekkoPersistenceR2dbcVersion = "1.1.0"
+val pekkoProjectionVersion       = "1.1.0"
+val circeVersion                 = "0.14.13"
+val logbackVersion               = "1.5.18"
+
 ThisBuild / libraryDependencies += "org.scalatest" %% "scalatest" % scalatestVersion % Test
 
 lazy val common = project
@@ -100,6 +107,41 @@ lazy val core = project
   )
   .settings(name := "neon-core")
 
+lazy val infrastructure = project
+  .in(file("infrastructure"))
+  .dependsOn(core)
+  .settings(
+    name := "neon-infrastructure",
+    libraryDependencies ++= Seq(
+      "org.apache.pekko" %% "pekko-actor-typed"              % pekkoVersion,
+      "org.apache.pekko" %% "pekko-cluster-typed"            % pekkoVersion,
+      "org.apache.pekko" %% "pekko-cluster-sharding-typed"   % pekkoVersion,
+      "org.apache.pekko" %% "pekko-persistence-typed"        % pekkoVersion,
+      "org.apache.pekko" %% "pekko-persistence-r2dbc"        % pekkoPersistenceR2dbcVersion,
+      "org.apache.pekko" %% "pekko-projection-r2dbc"         % pekkoProjectionVersion,
+      "org.apache.pekko" %% "pekko-projection-eventsourced"  % pekkoProjectionVersion,
+      "org.apache.pekko" %% "pekko-serialization-jackson"    % pekkoVersion,
+      "ch.qos.logback"    % "logback-classic"                % logbackVersion,
+      "org.apache.pekko" %% "pekko-actor-testkit-typed"      % pekkoVersion           % Test,
+      "org.apache.pekko" %% "pekko-persistence-testkit"      % pekkoVersion           % Test,
+      "org.apache.pekko" %% "pekko-projection-testkit"       % pekkoProjectionVersion % Test
+    )
+  )
+
+lazy val app = project
+  .in(file("app"))
+  .dependsOn(infrastructure)
+  .settings(
+    name := "neon-app",
+    libraryDependencies ++= Seq(
+      "org.apache.pekko" %% "pekko-http"          % pekkoHttpVersion,
+      "io.circe"         %% "circe-core"           % circeVersion,
+      "io.circe"         %% "circe-generic"        % circeVersion,
+      "io.circe"         %% "circe-parser"         % circeVersion,
+      "org.apache.pekko" %% "pekko-http-testkit"   % pekkoHttpVersion % Test
+    )
+  )
+
 lazy val root = project
   .in(file("."))
   .aggregate(
@@ -117,7 +159,9 @@ lazy val root = project
     carrier,
     workstation,
     slot,
-    core
+    core,
+    infrastructure,
+    app
   )
   .settings(
     name := "neon-wes",
