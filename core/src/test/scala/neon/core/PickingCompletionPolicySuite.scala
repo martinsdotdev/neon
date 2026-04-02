@@ -1,6 +1,15 @@
 package neon.core
 
-import neon.common.{ConsolidationGroupId, LocationId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
+import neon.common.{
+  ConsolidationGroupId,
+  LocationId,
+  OrderId,
+  PackagingLevel,
+  SkuId,
+  TaskId,
+  UserId,
+  WaveId
+}
 import neon.consolidationgroup.ConsolidationGroup
 import neon.task.{Task, TaskType}
 import org.scalatest.OptionValues
@@ -17,7 +26,8 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
   val destinationLocationId = LocationId()
   val at = Instant.now()
 
-  def createdConsolidationGroup() = ConsolidationGroup.Created(ConsolidationGroupId(), waveId, orderIds)
+  def createdConsolidationGroup() =
+    ConsolidationGroup.Created(ConsolidationGroupId(), waveId, orderIds)
 
   def completedTask() =
     Task.Completed(

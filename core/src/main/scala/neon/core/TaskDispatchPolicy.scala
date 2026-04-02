@@ -94,5 +94,8 @@ object TaskDispatchPolicy:
         val consolidationGroupTasks =
           allTasks.filter(t => t.waveId.contains(g.waveId) && g.orderIds.contains(t.orderId))
         if consolidationGroupTasks.isEmpty then 0.0
-        else consolidationGroupTasks.count(_.isInstanceOf[Task.Completed]).toDouble / consolidationGroupTasks.size
+        else
+          consolidationGroupTasks
+            .count(_.isInstanceOf[Task.Completed])
+            .toDouble / consolidationGroupTasks.size
       .getOrElse(0.0)

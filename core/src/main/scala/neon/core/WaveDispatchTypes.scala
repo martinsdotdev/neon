@@ -17,11 +17,10 @@ case class ActiveDockCarrierAssignment(
 /** Rules for dock/carrier validation during wave planning.
   *
   * @param enforceDockCarrierExclusivityAcrossActiveWaves
-  *   if true, a dock in use by one carrier cannot be assigned to a different
-  *   carrier in another active wave
+  *   if true, a dock in use by one carrier cannot be assigned to a different carrier in another
+  *   active wave
   * @param allowCarrierMultipleDocksWithinWave
-  *   if false, the same carrier cannot appear in more than one dock assignment
-  *   within the same wave
+  *   if false, the same carrier cannot appear in more than one dock assignment within the same wave
   */
 case class WaveDispatchRules(
     enforceDockCarrierExclusivityAcrossActiveWaves: Boolean = true,

@@ -94,7 +94,10 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
     it("fails when the same carrier is mapped to multiple docks in the same wave"):
       val orders = List(orderWithCarrier(carrierA.id))
       val assignments =
-        List(DockCarrierAssignment(dockA.id, carrierA.id), DockCarrierAssignment(dockB.id, carrierA.id))
+        List(
+          DockCarrierAssignment(dockA.id, carrierA.id),
+          DockCarrierAssignment(dockB.id, carrierA.id)
+        )
       val result = WaveDispatchValidationPolicy(
         orders,
         assignments,
@@ -108,7 +111,10 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
     it("fails when the same dock appears more than once in the same wave mapping"):
       val orders = List(orderWithCarrier(carrierA.id))
       val assignments =
-        List(DockCarrierAssignment(dockA.id, carrierA.id), DockCarrierAssignment(dockA.id, carrierB.id))
+        List(
+          DockCarrierAssignment(dockA.id, carrierA.id),
+          DockCarrierAssignment(dockA.id, carrierB.id)
+        )
       val result = WaveDispatchValidationPolicy(
         orders,
         assignments,
@@ -132,7 +138,9 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
       )
       assert(result == Left(WavePlanningError.CarrierNotMappedToAnyDock(carrierB.id)))
 
-    it("fails with dock conflict when another active wave uses the same dock with different carrier"):
+    it(
+      "fails with dock conflict when another active wave uses the same dock with different carrier"
+    ):
       val activeWaveId = WaveId()
       val orders = List(orderWithCarrier(carrierA.id))
       val assignments = List(DockCarrierAssignment(dockA.id, carrierA.id))

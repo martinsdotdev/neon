@@ -11,15 +11,18 @@ sealed trait WorkstationAssignmentError
 
 object WorkstationAssignmentError:
   /** The consolidation group was not found in the repository. */
-  case class ConsolidationGroupNotFound(consolidationGroupId: ConsolidationGroupId) extends WorkstationAssignmentError
+  case class ConsolidationGroupNotFound(consolidationGroupId: ConsolidationGroupId)
+      extends WorkstationAssignmentError
 
   /** The consolidation group is not in the [[ConsolidationGroup.ReadyForWorkstation]] state
     * required for assignment.
     */
-  case class ConsolidationGroupNotReady(consolidationGroupId: ConsolidationGroupId) extends WorkstationAssignmentError
+  case class ConsolidationGroupNotReady(consolidationGroupId: ConsolidationGroupId)
+      extends WorkstationAssignmentError
 
   /** No idle put-wall workstation is available for assignment. */
-  case class NoWorkstationAvailable(consolidationGroupId: ConsolidationGroupId) extends WorkstationAssignmentError
+  case class NoWorkstationAvailable(consolidationGroupId: ConsolidationGroupId)
+      extends WorkstationAssignmentError
 
 /** The result of a successful workstation assignment, containing the assigned consolidation group
   * and the activated workstation.

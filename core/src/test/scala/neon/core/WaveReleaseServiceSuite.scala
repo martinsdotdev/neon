@@ -1,6 +1,14 @@
 package neon.core
 
-import neon.common.{ConsolidationGroupId, HandlingUnitId, OrderId, PackagingLevel, SkuId, TaskId, WaveId}
+import neon.common.{
+  ConsolidationGroupId,
+  HandlingUnitId,
+  OrderId,
+  PackagingLevel,
+  SkuId,
+  TaskId,
+  WaveId
+}
 import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
 import neon.order.{Order, OrderLine}
 import neon.task.{Task, TaskEvent, TaskRepository}

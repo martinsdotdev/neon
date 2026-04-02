@@ -96,7 +96,8 @@ class TaskCompletionService(
       verified: Boolean,
       at: Instant
   ): Either[TaskCompletionError, TaskCompletionResult] =
-    if actualQuantity < 0 then return Left(TaskCompletionError.InvalidActualQuantity(taskId, actualQuantity))
+    if actualQuantity < 0 then
+      return Left(TaskCompletionError.InvalidActualQuantity(taskId, actualQuantity))
 
     taskRepository.findById(taskId) match
       case None                          => Left(TaskCompletionError.TaskNotFound(taskId))

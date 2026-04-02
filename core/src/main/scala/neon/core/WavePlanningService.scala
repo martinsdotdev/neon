@@ -49,9 +49,8 @@ class WavePlanningService(
       grouping: OrderGrouping,
       dockAssignments: List[DockCarrierAssignment],
       at: Instant,
-      lineResolution: (WaveId, OrderId, OrderLine) => List[TaskRequest] =
-        (waveId, orderId, line) =>
-          List(TaskRequest(waveId, orderId, line.skuId, line.packagingLevel, line.quantity))
+      lineResolution: (WaveId, OrderId, OrderLine) => List[TaskRequest] = (waveId, orderId, line) =>
+        List(TaskRequest(waveId, orderId, line.skuId, line.packagingLevel, line.quantity))
   ): Either[WavePlanningError, WavePlanningResult] =
     val rules = waveDispatchRulesProvider.current()
 
@@ -73,11 +72,15 @@ class WavePlanningService(
       activeAssignmentsByDock = activeAssignmentsByDock
     ) match
       case Left(error) => Left(error)
-      case Right(_) =>
+      case Right(_)    =>
         val wavePlan = WavePlanner.plan(orders, grouping, at, lineResolution)
-        waveDispatchAssignmentRepository.reserveForWave(wavePlan.wave.id, dockAssignments, rules) match
+        waveDispatchAssignmentRepository.reserveForWave(
+          wavePlan.wave.id,
+          dockAssignments,
+          rules
+        ) match
           case Left(conflict) => Left(conflict)
-          case Right(_) =>
+          case Right(_)       =>
             val release = waveReleaseService.release(wavePlan, at)
             Right(
               WavePlanningResult(

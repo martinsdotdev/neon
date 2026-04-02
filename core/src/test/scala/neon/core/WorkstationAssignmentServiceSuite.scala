@@ -23,19 +23,29 @@ class WorkstationAssignmentServiceSuite extends AnyFunSpec with OptionValues wit
   ): ConsolidationGroup.ReadyForWorkstation =
     ConsolidationGroup.ReadyForWorkstation(id, waveId, orderIds)
 
-  def createdConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Created =
+  def createdConsolidationGroup(
+      id: ConsolidationGroupId = consolidationGroupId
+  ): ConsolidationGroup.Created =
     ConsolidationGroup.Created(id, waveId, List(orderId))
 
-  def pickedConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Picked =
+  def pickedConsolidationGroup(
+      id: ConsolidationGroupId = consolidationGroupId
+  ): ConsolidationGroup.Picked =
     ConsolidationGroup.Picked(id, waveId, List(orderId))
 
-  def assignedConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Assigned =
+  def assignedConsolidationGroup(
+      id: ConsolidationGroupId = consolidationGroupId
+  ): ConsolidationGroup.Assigned =
     ConsolidationGroup.Assigned(id, waveId, List(orderId), workstationId)
 
-  def completedConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Completed =
+  def completedConsolidationGroup(
+      id: ConsolidationGroupId = consolidationGroupId
+  ): ConsolidationGroup.Completed =
     ConsolidationGroup.Completed(id, waveId, List(orderId), workstationId)
 
-  def cancelledConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Cancelled =
+  def cancelledConsolidationGroup(
+      id: ConsolidationGroupId = consolidationGroupId
+  ): ConsolidationGroup.Cancelled =
     ConsolidationGroup.Cancelled(id, waveId, List(orderId))
 
   def idleWorkstation(
@@ -142,7 +152,9 @@ class WorkstationAssignmentServiceSuite extends AnyFunSpec with OptionValues wit
             WorkstationAssignmentError.NoWorkstationAvailable(consolidationGroup.id)
         )
         assert(
-          consolidationGroupRepository.store(consolidationGroup.id).isInstanceOf[ConsolidationGroup.ReadyForWorkstation]
+          consolidationGroupRepository
+            .store(consolidationGroup.id)
+            .isInstanceOf[ConsolidationGroup.ReadyForWorkstation]
         )
         assert(consolidationGroupRepository.events.isEmpty)
         assert(workstationRepository.events.isEmpty)
@@ -155,14 +167,19 @@ class WorkstationAssignmentServiceSuite extends AnyFunSpec with OptionValues wit
           workstationRepository,
           consolidationGroup,
           service
-        ) = setupReadyGroup(orderIds = threeOrderIds, workstation = Some(idleWorkstation(slotCount = 2)))
+        ) = setupReadyGroup(
+          orderIds = threeOrderIds,
+          workstation = Some(idleWorkstation(slotCount = 2))
+        )
 
         assert(
           service.assign(consolidationGroup.id, at).left.value ==
             WorkstationAssignmentError.NoWorkstationAvailable(consolidationGroup.id)
         )
         assert(
-          consolidationGroupRepository.store(consolidationGroup.id).isInstanceOf[ConsolidationGroup.ReadyForWorkstation]
+          consolidationGroupRepository
+            .store(consolidationGroup.id)
+            .isInstanceOf[ConsolidationGroup.ReadyForWorkstation]
         )
         assert(workstationRepository.store(workstationId).isInstanceOf[Workstation.Idle])
         assert(consolidationGroupRepository.events.isEmpty)
@@ -187,7 +204,9 @@ class WorkstationAssignmentServiceSuite extends AnyFunSpec with OptionValues wit
         assert(result.consolidationGroupEvent.occurredAt == at)
         assert(result.workstationEvent.occurredAt == at)
         assert(
-          consolidationGroupRepository.store(consolidationGroup.id).isInstanceOf[ConsolidationGroup.Assigned]
+          consolidationGroupRepository
+            .store(consolidationGroup.id)
+            .isInstanceOf[ConsolidationGroup.Assigned]
         )
         assert(workstationRepository.store(workstationId).isInstanceOf[Workstation.Active])
         assert(consolidationGroupRepository.events.size == 1)

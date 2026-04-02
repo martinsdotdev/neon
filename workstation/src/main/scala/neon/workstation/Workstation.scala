@@ -55,9 +55,13 @@ object Workstation:
       * @return
       *   active state and assigned event
       */
-    def assign(consolidationGroupId: ConsolidationGroupId, at: Instant): (Active, WorkstationEvent.WorkstationAssigned) =
+    def assign(
+        consolidationGroupId: ConsolidationGroupId,
+        at: Instant
+    ): (Active, WorkstationEvent.WorkstationAssigned) =
       val active = Active(id, workstationType, slotCount, consolidationGroupId)
-      val event = WorkstationEvent.WorkstationAssigned(id, workstationType, consolidationGroupId, at)
+      val event =
+        WorkstationEvent.WorkstationAssigned(id, workstationType, consolidationGroupId, at)
       (active, event)
 
     /** Disables this workstation, transitioning from [[Idle]] to [[Disabled]].

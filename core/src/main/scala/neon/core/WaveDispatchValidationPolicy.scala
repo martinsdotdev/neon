@@ -28,13 +28,15 @@ object WaveDispatchValidationPolicy:
           .flatMap(_ => validateCarriers(orderCarrierIds, dockAssignments, carriersById))
           .flatMap(_ => validateDocks(dockAssignments, docksById))
           .flatMap(_ => validateOrderCarrierCoverage(orderCarrierIds, dockAssignments))
-          .flatMap(_ => validateActiveDockConflicts(dockAssignments, rules, activeAssignmentsByDock))
+          .flatMap(_ =>
+            validateActiveDockConflicts(dockAssignments, rules, activeAssignmentsByDock)
+          )
 
   private def resolveOrderCarrierIds(
       orders: List[Order]
   ): Either[WavePlanningError, List[CarrierId]] =
     orders.foldLeft[Either[WavePlanningError, List[CarrierId]]](Right(List.empty)):
-      case (Left(err), _) => Left(err)
+      case (Left(err), _)      => Left(err)
       case (Right(ids), order) =>
         order.carrierId match
           case Some(carrierId) => Right(ids :+ carrierId)
@@ -121,6 +123,6 @@ object WaveDispatchValidationPolicy:
     values
       .foldLeft((Set.empty[A], Option.empty[A])):
         case ((seen, duplicate @ Some(_)), _) => (seen, duplicate)
-        case ((seen, None), value) =>
+        case ((seen, None), value)            =>
           if seen.contains(value) then (seen, Some(value)) else (seen + value, None)
       ._2

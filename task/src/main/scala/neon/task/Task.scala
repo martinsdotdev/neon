@@ -293,8 +293,9 @@ object Task:
 
     /** Completes the task with the actual quantity handled.
       *
-      * When `actualQuantity` is less than `requestedQuantity`, downstream policies (e.g. ShortpickPolicy)
-      * create a replacement task for the remainder. A zero `actualQuantity` is valid (full shortpick).
+      * When `actualQuantity` is less than `requestedQuantity`, downstream policies (e.g.
+      * ShortpickPolicy) create a replacement task for the remainder. A zero `actualQuantity` is
+      * valid (full shortpick).
       *
       * @param actualQuantity
       *   the quantity actually handled (must be non-negative)

@@ -16,11 +16,14 @@ class ConsolidationGroupCancellationPolicySuite extends AnyFunSpec:
 
   def picked() = ConsolidationGroup.Picked(ConsolidationGroupId(), waveId, orderIds)
 
-  def readyForWorkstation() = ConsolidationGroup.ReadyForWorkstation(ConsolidationGroupId(), waveId, orderIds)
+  def readyForWorkstation() =
+    ConsolidationGroup.ReadyForWorkstation(ConsolidationGroupId(), waveId, orderIds)
 
-  def assigned() = ConsolidationGroup.Assigned(ConsolidationGroupId(), waveId, orderIds, workstationId)
+  def assigned() =
+    ConsolidationGroup.Assigned(ConsolidationGroupId(), waveId, orderIds, workstationId)
 
-  def completed() = ConsolidationGroup.Completed(ConsolidationGroupId(), waveId, orderIds, workstationId)
+  def completed() =
+    ConsolidationGroup.Completed(ConsolidationGroupId(), waveId, orderIds, workstationId)
 
   def cancelled() = ConsolidationGroup.Cancelled(ConsolidationGroupId(), waveId, orderIds)
 

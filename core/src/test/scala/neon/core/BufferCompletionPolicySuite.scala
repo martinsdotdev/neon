@@ -1,6 +1,13 @@
 package neon.core
 
-import neon.common.{ConsolidationGroupId, HandlingUnitId, LocationId, OrderId, PackagingLevel, WaveId}
+import neon.common.{
+  ConsolidationGroupId,
+  HandlingUnitId,
+  LocationId,
+  OrderId,
+  PackagingLevel,
+  WaveId
+}
 import neon.consolidationgroup.ConsolidationGroup
 import neon.handlingunit.HandlingUnit
 import org.scalatest.OptionValues
@@ -15,7 +22,8 @@ class BufferCompletionPolicySuite extends AnyFunSpec with OptionValues:
   val pickFace = LocationId()
   val at = Instant.now()
 
-  def pickedConsolidationGroup() = ConsolidationGroup.Picked(ConsolidationGroupId(), waveId, orderIds)
+  def pickedConsolidationGroup() =
+    ConsolidationGroup.Picked(ConsolidationGroupId(), waveId, orderIds)
 
   def inBuffer() =
     HandlingUnit.InBuffer(HandlingUnitId(), PackagingLevel.Case, bufferLocation)

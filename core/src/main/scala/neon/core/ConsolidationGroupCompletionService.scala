@@ -11,7 +11,8 @@ sealed trait ConsolidationGroupCompletionError
 
 object ConsolidationGroupCompletionError:
   /** The consolidation group was not found in the repository. */
-  case class ConsolidationGroupNotFound(consolidationGroupId: ConsolidationGroupId) extends ConsolidationGroupCompletionError
+  case class ConsolidationGroupNotFound(consolidationGroupId: ConsolidationGroupId)
+      extends ConsolidationGroupCompletionError
 
   /** The consolidation group is not in the [[ConsolidationGroup.Assigned]] state required for
     * completion.

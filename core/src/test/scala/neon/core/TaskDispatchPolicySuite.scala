@@ -195,8 +195,10 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
         val tPending1 = allocated(orderId1, Some(waveId))
         val tPending2 = allocated(orderId2, Some(waveId))
         val tCompleted1 = completedTask(orderId1, Some(waveId))
-        val consolidationGroup1 = ConsolidationGroup.Created(ConsolidationGroupId(), waveId, List(orderId1))
-        val consolidationGroup2 = ConsolidationGroup.Created(ConsolidationGroupId(), waveId, List(orderId2))
+        val consolidationGroup1 =
+          ConsolidationGroup.Created(ConsolidationGroupId(), waveId, List(orderId1))
+        val consolidationGroup2 =
+          ConsolidationGroup.Created(ConsolidationGroupId(), waveId, List(orderId2))
         val result = dispatch(
           List(tPending2, tPending1),
           allTasks = List(tCompleted1, tPending1, tPending2),
@@ -213,7 +215,8 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
         val tWithConsolidationGroup = allocated(orderId1, Some(waveId))
         val tWithoutConsolidationGroup = allocated(orderId2, Some(waveId))
         val tCompleted = completedTask(orderId1, Some(waveId))
-        val consolidationGroup = ConsolidationGroup.Created(ConsolidationGroupId(), waveId, List(orderId1))
+        val consolidationGroup =
+          ConsolidationGroup.Created(ConsolidationGroupId(), waveId, List(orderId1))
         val result = dispatch(
           List(tWithoutConsolidationGroup, tWithConsolidationGroup),
           allTasks = List(tCompleted, tWithConsolidationGroup, tWithoutConsolidationGroup),
@@ -230,7 +233,8 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
         val tNoWave = allocated(orderId, None)
         val tWithConsolidationGroup = allocated(orderId, Some(waveId))
         val tCompleted = completedTask(orderId, Some(waveId))
-        val consolidationGroup = ConsolidationGroup.Created(ConsolidationGroupId(), waveId, List(orderId))
+        val consolidationGroup =
+          ConsolidationGroup.Created(ConsolidationGroupId(), waveId, List(orderId))
         val result = dispatch(
           List(tNoWave, tWithConsolidationGroup),
           allTasks = List(tCompleted, tWithConsolidationGroup, tNoWave),

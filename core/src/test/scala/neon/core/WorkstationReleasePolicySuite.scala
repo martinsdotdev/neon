@@ -14,7 +14,12 @@ class WorkstationReleasePolicySuite extends AnyFunSpec:
   val at = Instant.now()
 
   def completedEvent() =
-    ConsolidationGroupEvent.ConsolidationGroupCompleted(consolidationGroupId, waveId, workstationId, at)
+    ConsolidationGroupEvent.ConsolidationGroupCompleted(
+      consolidationGroupId,
+      waveId,
+      workstationId,
+      at
+    )
 
   def activeWorkstation(workstationType: WorkstationType = WorkstationType.PutWall) =
     Workstation.Active(workstationId, workstationType, 8, consolidationGroupId)

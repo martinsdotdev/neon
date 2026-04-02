@@ -26,10 +26,14 @@ class ConsolidationGroupCompletionServiceSuite
   ): ConsolidationGroup.Assigned =
     ConsolidationGroup.Assigned(id, waveId, List(orderId), workstationId)
 
-  def createdConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Created =
+  def createdConsolidationGroup(
+      id: ConsolidationGroupId = consolidationGroupId
+  ): ConsolidationGroup.Created =
     ConsolidationGroup.Created(id, waveId, List(orderId))
 
-  def pickedConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Picked =
+  def pickedConsolidationGroup(
+      id: ConsolidationGroupId = consolidationGroupId
+  ): ConsolidationGroup.Picked =
     ConsolidationGroup.Picked(id, waveId, List(orderId))
 
   def readyForWorkstationConsolidationGroup(
@@ -37,10 +41,14 @@ class ConsolidationGroupCompletionServiceSuite
   ): ConsolidationGroup.ReadyForWorkstation =
     ConsolidationGroup.ReadyForWorkstation(id, waveId, List(orderId))
 
-  def completedConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Completed =
+  def completedConsolidationGroup(
+      id: ConsolidationGroupId = consolidationGroupId
+  ): ConsolidationGroup.Completed =
     ConsolidationGroup.Completed(id, waveId, List(orderId), workstationId)
 
-  def cancelledConsolidationGroup(id: ConsolidationGroupId = consolidationGroupId): ConsolidationGroup.Cancelled =
+  def cancelledConsolidationGroup(
+      id: ConsolidationGroupId = consolidationGroupId
+  ): ConsolidationGroup.Cancelled =
     ConsolidationGroup.Cancelled(id, waveId, List(orderId))
 
   def activeWorkstation(
@@ -149,7 +157,9 @@ class ConsolidationGroupCompletionServiceSuite
             ConsolidationGroupCompletionError.WorkstationNotFound(workstationId)
         )
         assert(
-          consolidationGroupRepository.store(consolidationGroup.id).isInstanceOf[ConsolidationGroup.Assigned]
+          consolidationGroupRepository
+            .store(consolidationGroup.id)
+            .isInstanceOf[ConsolidationGroup.Assigned]
         )
         assert(consolidationGroupRepository.events.isEmpty)
         assert(workstationRepository.events.isEmpty)
@@ -168,7 +178,9 @@ class ConsolidationGroupCompletionServiceSuite
             ConsolidationGroupCompletionError.WorkstationNotActive(workstationId)
         )
         assert(
-          consolidationGroupRepository.store(consolidationGroup.id).isInstanceOf[ConsolidationGroup.Assigned]
+          consolidationGroupRepository
+            .store(consolidationGroup.id)
+            .isInstanceOf[ConsolidationGroup.Assigned]
         )
         assert(workstationRepository.store(workstationId).isInstanceOf[Workstation.Idle])
         assert(consolidationGroupRepository.events.isEmpty)
@@ -191,7 +203,9 @@ class ConsolidationGroupCompletionServiceSuite
         assert(result.completedEvent.occurredAt == at)
         assert(result.workstationEvent.occurredAt == at)
         assert(
-          consolidationGroupRepository.store(consolidationGroup.id).isInstanceOf[ConsolidationGroup.Completed]
+          consolidationGroupRepository
+            .store(consolidationGroup.id)
+            .isInstanceOf[ConsolidationGroup.Completed]
         )
         assert(workstationRepository.store(workstationId).isInstanceOf[Workstation.Idle])
         assert(consolidationGroupRepository.events.size == 1)

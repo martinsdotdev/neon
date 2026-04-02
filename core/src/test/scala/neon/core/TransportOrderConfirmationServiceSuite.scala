@@ -418,7 +418,8 @@ class TransportOrderConfirmationServiceSuite extends AnyFunSpec with OptionValue
           handlingUnitRepository.store(handlingUnitId) = pickCreatedHandlingUnit()
           val task = completedTask()
           taskRepository.store(task.id) = task
-          val consolidationGroup = ConsolidationGroup.Created(ConsolidationGroupId(), waveId, List(orderId))
+          val consolidationGroup =
+            ConsolidationGroup.Created(ConsolidationGroupId(), waveId, List(orderId))
           consolidationGroupRepository.store(consolidationGroup.id) = consolidationGroup
           val service = buildService(
             transportOrderRepository = transportOrderRepository,
