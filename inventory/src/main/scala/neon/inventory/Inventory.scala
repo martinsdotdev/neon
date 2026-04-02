@@ -7,7 +7,7 @@ import java.time.Instant
 /** Inventory position identified by the (location, SKU, lot) triad, tracking on-hand and reserved
   * quantities. Supports reserve/release/consume lifecycle and lot correction.
   */
-case class Inventory private (
+case class Inventory private[neon] (
     id: InventoryId,
     locationId: LocationId,
     skuId: SkuId,

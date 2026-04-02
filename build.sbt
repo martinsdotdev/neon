@@ -109,7 +109,7 @@ lazy val core = project
 
 lazy val infrastructure = project
   .in(file("infrastructure"))
-  .dependsOn(core)
+  .dependsOn(core, inventory, order, sku, user)
   .settings(
     name := "neon-infrastructure",
     libraryDependencies ++= Seq(
