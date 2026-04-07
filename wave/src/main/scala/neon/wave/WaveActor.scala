@@ -1,7 +1,6 @@
-package neon.infrastructure.actor
+package neon.wave
 
-import neon.infrastructure.serialization.CborSerializable
-import neon.wave.{Wave, WaveEvent}
+import neon.common.serialization.CborSerializable
 
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}

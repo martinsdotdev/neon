@@ -1,8 +1,7 @@
-package neon.infrastructure.actor
+package neon.handlingunit
 
 import neon.common.LocationId
-import neon.handlingunit.{HandlingUnit, HandlingUnitEvent}
-import neon.infrastructure.serialization.CborSerializable
+import neon.common.serialization.CborSerializable
 
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}

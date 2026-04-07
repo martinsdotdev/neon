@@ -1,8 +1,7 @@
-package neon.infrastructure.actor
+package neon.slot
 
 import neon.common.{HandlingUnitId, OrderId}
-import neon.infrastructure.serialization.CborSerializable
-import neon.slot.{Slot, SlotEvent}
+import neon.common.serialization.CborSerializable
 
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}

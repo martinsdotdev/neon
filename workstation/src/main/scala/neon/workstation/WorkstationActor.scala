@@ -1,8 +1,7 @@
-package neon.infrastructure.actor
+package neon.workstation
 
 import neon.common.ConsolidationGroupId
-import neon.infrastructure.serialization.CborSerializable
-import neon.workstation.{Workstation, WorkstationEvent}
+import neon.common.serialization.CborSerializable
 
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}

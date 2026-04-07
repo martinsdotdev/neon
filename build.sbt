@@ -17,6 +17,17 @@ val logbackVersion               = "1.5.18"
 
 ThisBuild / libraryDependencies += "org.scalatest" %% "scalatest" % scalatestVersion % Test
 
+// Shared Pekko dependencies for event-sourced aggregate modules
+val pekkoActorDependencies = Seq(
+  "org.apache.pekko" %% "pekko-actor-typed"            % pekkoVersion,
+  "org.apache.pekko" %% "pekko-cluster-sharding-typed" % pekkoVersion,
+  "org.apache.pekko" %% "pekko-persistence-typed"      % pekkoVersion,
+  "org.apache.pekko" %% "pekko-serialization-jackson"  % pekkoVersion,
+  "org.apache.pekko" %% "pekko-actor-testkit-typed"    % pekkoVersion % Test,
+  "org.apache.pekko" %% "pekko-persistence-testkit"    % pekkoVersion % Test,
+  "org.apache.pekko" %% "pekko-stream-testkit"         % pekkoVersion % Test
+)
+
 lazy val common = project
   .in(file("common"))
   .settings(
@@ -26,45 +37,17 @@ lazy val common = project
     )
   )
 
+// --- Reference data modules (no Pekko, read-only) ---
+
 lazy val order = project
   .in(file("order"))
   .dependsOn(common)
   .settings(name := "neon-order")
 
-lazy val wave = project
-  .in(file("wave"))
-  .dependsOn(common, order, sku)
-  .settings(name := "neon-wave")
-
-lazy val task = project
-  .in(file("task"))
-  .dependsOn(common)
-  .settings(name := "neon-task")
-
-lazy val consolidationGroup = project
-  .in(file("consolidation-group"))
-  .dependsOn(common)
-  .settings(name := "neon-consolidation-group")
-
-lazy val handlingUnit = project
-  .in(file("handling-unit"))
-  .dependsOn(common)
-  .settings(name := "neon-handling-unit")
-
-lazy val transportOrder = project
-  .in(file("transport-order"))
-  .dependsOn(common)
-  .settings(name := "neon-transport-order")
-
 lazy val location = project
   .in(file("location"))
   .dependsOn(common)
   .settings(name := "neon-location")
-
-lazy val inventory = project
-  .in(file("inventory"))
-  .dependsOn(common)
-  .settings(name := "neon-inventory")
 
 lazy val sku = project
   .in(file("sku"))
@@ -81,15 +64,73 @@ lazy val carrier = project
   .dependsOn(common)
   .settings(name := "neon-carrier")
 
+// --- Event-sourced aggregate modules (with Pekko actors) ---
+
+lazy val wave = project
+  .in(file("wave"))
+  .dependsOn(common, order, sku)
+  .settings(
+    name := "neon-wave",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
+lazy val task = project
+  .in(file("task"))
+  .dependsOn(common)
+  .settings(
+    name := "neon-task",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
+lazy val consolidationGroup = project
+  .in(file("consolidation-group"))
+  .dependsOn(common)
+  .settings(
+    name := "neon-consolidation-group",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
+lazy val handlingUnit = project
+  .in(file("handling-unit"))
+  .dependsOn(common)
+  .settings(
+    name := "neon-handling-unit",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
+lazy val transportOrder = project
+  .in(file("transport-order"))
+  .dependsOn(common)
+  .settings(
+    name := "neon-transport-order",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
 lazy val workstation = project
   .in(file("workstation"))
   .dependsOn(common)
-  .settings(name := "neon-workstation")
+  .settings(
+    name := "neon-workstation",
+    libraryDependencies ++= pekkoActorDependencies
+  )
 
 lazy val slot = project
   .in(file("slot"))
   .dependsOn(common)
-  .settings(name := "neon-slot")
+  .settings(
+    name := "neon-slot",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
+lazy val inventory = project
+  .in(file("inventory"))
+  .dependsOn(common)
+  .settings(
+    name := "neon-inventory",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
+// --- Orchestration module ---
 
 lazy val core = project
   .in(file("core"))
@@ -107,39 +148,25 @@ lazy val core = project
   )
   .settings(name := "neon-core")
 
-lazy val infrastructure = project
-  .in(file("infrastructure"))
-  .dependsOn(core, inventory, order, sku, user)
-  .settings(
-    name := "neon-infrastructure",
-    libraryDependencies ++= Seq(
-      "org.apache.pekko" %% "pekko-actor-typed"              % pekkoVersion,
-      "org.apache.pekko" %% "pekko-cluster-typed"            % pekkoVersion,
-      "org.apache.pekko" %% "pekko-cluster-sharding-typed"   % pekkoVersion,
-      "org.apache.pekko" %% "pekko-persistence-typed"        % pekkoVersion,
-      "org.apache.pekko" %% "pekko-persistence-r2dbc"        % pekkoPersistenceR2dbcVersion,
-      "org.apache.pekko" %% "pekko-projection-r2dbc"         % pekkoProjectionVersion,
-      "org.apache.pekko" %% "pekko-projection-eventsourced"  % pekkoProjectionVersion,
-      "org.apache.pekko" %% "pekko-serialization-jackson"    % pekkoVersion,
-      "ch.qos.logback"    % "logback-classic"                % logbackVersion,
-      "org.apache.pekko" %% "pekko-actor-testkit-typed"      % pekkoVersion           % Test,
-      "org.apache.pekko" %% "pekko-persistence-testkit"      % pekkoVersion           % Test,
-      "org.apache.pekko" %% "pekko-stream-testkit"           % pekkoVersion           % Test,
-      "org.apache.pekko" %% "pekko-projection-testkit"       % pekkoProjectionVersion % Test
-    )
-  )
+// --- Application module (routes, bootstrap) ---
 
 lazy val app = project
   .in(file("app"))
-  .dependsOn(infrastructure)
+  .dependsOn(core, inventory, order, sku, user)
   .settings(
     name := "neon-app",
     libraryDependencies ++= Seq(
-      "org.apache.pekko" %% "pekko-http"          % pekkoHttpVersion,
-      "io.circe"         %% "circe-core"           % circeVersion,
-      "io.circe"         %% "circe-generic"        % circeVersion,
-      "io.circe"         %% "circe-parser"         % circeVersion,
-      "org.apache.pekko" %% "pekko-http-testkit"   % pekkoHttpVersion % Test
+      "org.apache.pekko" %% "pekko-http"                    % pekkoHttpVersion,
+      "org.apache.pekko" %% "pekko-cluster-typed"           % pekkoVersion,
+      "org.apache.pekko" %% "pekko-persistence-r2dbc"       % pekkoPersistenceR2dbcVersion,
+      "org.apache.pekko" %% "pekko-projection-r2dbc"        % pekkoProjectionVersion,
+      "org.apache.pekko" %% "pekko-projection-eventsourced" % pekkoProjectionVersion,
+      "ch.qos.logback"    % "logback-classic"               % logbackVersion,
+      "io.circe"         %% "circe-core"                    % circeVersion,
+      "io.circe"         %% "circe-generic"                 % circeVersion,
+      "io.circe"         %% "circe-parser"                  % circeVersion,
+      "org.apache.pekko" %% "pekko-http-testkit"            % pekkoHttpVersion % Test,
+      "org.apache.pekko" %% "pekko-projection-testkit"      % pekkoProjectionVersion % Test
     )
   )
 
@@ -161,7 +188,6 @@ lazy val root = project
     workstation,
     slot,
     core,
-    infrastructure,
     app
   )
   .settings(

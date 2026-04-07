@@ -1,8 +1,7 @@
-package neon.infrastructure.actor
+package neon.task
 
 import neon.common.{LocationId, UserId}
-import neon.infrastructure.serialization.CborSerializable
-import neon.task.{Task, TaskEvent}
+import neon.common.serialization.CborSerializable
 
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}

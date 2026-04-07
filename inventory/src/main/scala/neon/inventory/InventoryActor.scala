@@ -1,8 +1,7 @@
-package neon.infrastructure.actor
+package neon.inventory
 
 import neon.common.Lot
-import neon.infrastructure.serialization.CborSerializable
-import neon.inventory.{Inventory, InventoryEvent}
+import neon.common.serialization.CborSerializable
 
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}

@@ -1,7 +1,6 @@
-package neon.infrastructure.actor
+package neon.task
 
 import neon.common.{LocationId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
-import neon.task.{Task, TaskEvent, TaskType}
 
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko.Done

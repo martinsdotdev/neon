@@ -1,7 +1,6 @@
-package neon.infrastructure.actor
+package neon.transportorder
 
-import neon.infrastructure.serialization.CborSerializable
-import neon.transportorder.{TransportOrder, TransportOrderEvent}
+import neon.common.serialization.CborSerializable
 
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}

@@ -1,7 +1,6 @@
-package neon.infrastructure.actor
+package neon.wave
 
 import neon.common.{OrderId, WaveId}
-import neon.wave.{OrderGrouping, Wave, WaveEvent}
 
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
