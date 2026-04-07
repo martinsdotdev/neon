@@ -54,6 +54,25 @@ object R2dbcHelper:
       }
     }
 
+  /** Executes a block within an R2DBC transaction. Commits on success, rolls back on failure.
+    */
+  def withTransaction[T](connectionFactory: ConnectionFactory)(
+      f: Connection => Future[T]
+  )(using ExecutionContext): Future[T] =
+    toFuture(connectionFactory.create()).flatMap { connection =>
+      toFuture(connection.beginTransaction())
+        .flatMap(_ => f(connection))
+        .flatMap { result =>
+          toFuture(connection.commitTransaction())
+            .flatMap(_ => toFuture(connection.close()).map(_ => result))
+        }
+        .recoverWith { case ex =>
+          toFuture(connection.rollbackTransaction())
+            .flatMap(_ => toFuture(connection.close()))
+            .flatMap(_ => Future.failed(ex))
+        }
+    }
+
   private def bindParams(statement: Statement, params: Seq[Any]): Statement =
     params.zipWithIndex.foldLeft(statement) { case (stmt, (param, idx)) =>
       param match
