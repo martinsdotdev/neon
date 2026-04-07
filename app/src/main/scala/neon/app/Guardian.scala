@@ -19,10 +19,9 @@ object Guardian:
 
       val registry = ServiceRegistry(context.system)
 
-      context.log.info("Neon WES Guardian started")
+      http.HttpServer.start(registry, context.system)
 
-      // HTTP server would be started here once routes are wired
-      // HttpServer.start(registry, context.system)
+      context.log.info("Neon WES Guardian started")
 
       Behaviors.empty
     }
