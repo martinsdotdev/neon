@@ -47,6 +47,5 @@ class R2dbcOrderRepository(connectionFactory: ConnectionFactory)(using
       id = OrderId(row.get("id", classOf[UUID])),
       priority = Priority.valueOf(row.get("priority", classOf[String])),
       lines = lines,
-      carrierId =
-        Option(row.get("carrier_id", classOf[UUID])).map(CarrierId(_))
+      carrierId = Option(row.get("carrier_id", classOf[UUID])).map(CarrierId(_))
     )

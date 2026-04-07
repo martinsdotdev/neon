@@ -11,8 +11,8 @@ import neon.core.{
 import neon.order.AsyncOrderRepository
 import neon.wave.OrderGrouping
 
-import io.circe.{Decoder, Json}
-import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
+import io.circe.{Decoder, Encoder}
+import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -33,6 +33,21 @@ object WaveRoutes:
       grouping: String,
       dockAssignments: List[DockAssignmentDto]
   ) derives Decoder
+
+  case class WaveReleaseResponse(
+      status: String,
+      waveId: String,
+      tasksCreated: Int,
+      consolidationGroupsCreated: Int
+  ) derives Encoder.AsObject
+
+  case class WaveCancellationResponse(
+      status: String,
+      waveId: String,
+      cancelledTasks: Int,
+      cancelledTransportOrders: Int,
+      cancelledConsolidationGroups: Int
+  ) derives Encoder.AsObject
 
   def apply(
       waveCancellationService: AsyncWaveCancellationService,
@@ -65,30 +80,18 @@ object WaveRoutes:
                 }
               ):
                 case Right(result) =>
-                  val json = Json.obj(
-                    "status" -> Json.fromString("released"),
-                    "waveId" -> Json.fromString(
-                      result.wavePlan.wave.id.value.toString
-                    ),
-                    "tasksCreated" -> Json.fromInt(
-                      result.release.tasks.size
-                    ),
-                    "consolidationGroupsCreated" -> Json.fromInt(
-                      result.release.consolidationGroups.size
-                    )
-                  )
                   complete(
-                    HttpEntity(
-                      ContentTypes.`application/json`,
-                      json.noSpaces
+                    WaveReleaseResponse(
+                      status = "released",
+                      waveId = result.wavePlan.wave.id.value.toString,
+                      tasksCreated = result.release.tasks.size,
+                      consolidationGroupsCreated = result.release.consolidationGroups.size
                     )
                   )
-                case Left(error) =>
-                  error match
-                    case _: WavePlanningError.DockConflict =>
-                      complete(StatusCodes.Conflict)
-                    case _ =>
-                      complete(StatusCodes.UnprocessableEntity)
+                case Left(_: WavePlanningError.DockConflict) =>
+                  complete(StatusCodes.Conflict)
+                case Left(_) =>
+                  complete(StatusCodes.UnprocessableEntity)
         ,
         path(Segment): waveIdStr =>
           delete:
@@ -97,31 +100,17 @@ object WaveRoutes:
               waveCancellationService.cancel(waveId, Instant.now())
             ):
               case Right(result) =>
-                val json = Json.obj(
-                  "status" -> Json.fromString("cancelled"),
-                  "waveId" -> Json.fromString(
-                    result.cancelled.id.value.toString
-                  ),
-                  "cancelledTasks" -> Json.fromInt(
-                    result.cancelledTasks.size
-                  ),
-                  "cancelledTransportOrders" -> Json.fromInt(
-                    result.cancelledTransportOrders.size
-                  ),
-                  "cancelledConsolidationGroups" -> Json.fromInt(
-                    result.cancelledConsolidationGroups.size
-                  )
-                )
                 complete(
-                  HttpEntity(
-                    ContentTypes.`application/json`,
-                    json.noSpaces
+                  WaveCancellationResponse(
+                    status = "cancelled",
+                    waveId = result.cancelled.id.value.toString,
+                    cancelledTasks = result.cancelledTasks.size,
+                    cancelledTransportOrders = result.cancelledTransportOrders.size,
+                    cancelledConsolidationGroups = result.cancelledConsolidationGroups.size
                   )
                 )
-              case Left(error) =>
-                error match
-                  case _: WaveCancellationError.WaveNotFound =>
-                    complete(StatusCodes.NotFound)
-                  case _: WaveCancellationError.WaveAlreadyTerminal =>
-                    complete(StatusCodes.Conflict)
+              case Left(_: WaveCancellationError.WaveNotFound) =>
+                complete(StatusCodes.NotFound)
+              case Left(_: WaveCancellationError.WaveAlreadyTerminal) =>
+                complete(StatusCodes.Conflict)
       )

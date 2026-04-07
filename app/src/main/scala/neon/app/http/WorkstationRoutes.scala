@@ -2,8 +2,9 @@ package neon.app.http
 
 import neon.common.ConsolidationGroupId
 import neon.core.{AsyncWorkstationAssignmentService, WorkstationAssignmentError}
-import io.circe.{Decoder, Json}
-import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
+
+import io.circe.{Decoder, Encoder}
+import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -18,6 +19,12 @@ object WorkstationRoutes:
       consolidationGroupId: String
   ) derives Decoder
 
+  case class WorkstationAssignmentResponse(
+      status: String,
+      consolidationGroupId: String,
+      workstationId: String
+  ) derives Encoder.AsObject
+
   def apply(
       assignmentService: AsyncWorkstationAssignmentService
   ): Route =
@@ -30,19 +37,11 @@ object WorkstationRoutes:
             )
             onSuccess(assignmentService.assign(cgId, Instant.now())):
               case Right(result) =>
-                val json = Json.obj(
-                  "status" -> Json.fromString("assigned"),
-                  "consolidationGroupId" -> Json.fromString(
-                    result.consolidationGroup.id.value.toString
-                  ),
-                  "workstationId" -> Json.fromString(
-                    result.workstation.id.value.toString
-                  )
-                )
                 complete(
-                  HttpEntity(
-                    ContentTypes.`application/json`,
-                    json.noSpaces
+                  WorkstationAssignmentResponse(
+                    status = "assigned",
+                    consolidationGroupId = result.consolidationGroup.id.value.toString,
+                    workstationId = result.workstation.id.value.toString
                   )
                 )
               case Left(error) =>

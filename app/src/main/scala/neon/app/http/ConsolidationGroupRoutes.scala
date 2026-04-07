@@ -2,15 +2,24 @@ package neon.app.http
 
 import neon.common.ConsolidationGroupId
 import neon.core.{AsyncConsolidationGroupCompletionService, ConsolidationGroupCompletionError}
-import io.circe.Json
-import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
+
+import io.circe.Encoder
+import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
 import java.time.Instant
 import java.util.UUID
 
+import CirceSupport.given
+
 object ConsolidationGroupRoutes:
+
+  case class ConsolidationGroupCompletionResponse(
+      status: String,
+      consolidationGroupId: String,
+      workstationReleased: String
+  ) derives Encoder.AsObject
 
   def apply(
       completionService: AsyncConsolidationGroupCompletionService
@@ -22,19 +31,11 @@ object ConsolidationGroupRoutes:
             ConsolidationGroupId(UUID.fromString(consolidationGroupIdStr))
           onSuccess(completionService.complete(id, Instant.now())):
             case Right(result) =>
-              val json = Json.obj(
-                "status" -> Json.fromString("completed"),
-                "consolidationGroupId" -> Json.fromString(
-                  result.completed.id.value.toString
-                ),
-                "workstationReleased" -> Json.fromString(
-                  result.workstation.id.value.toString
-                )
-              )
               complete(
-                HttpEntity(
-                  ContentTypes.`application/json`,
-                  json.noSpaces
+                ConsolidationGroupCompletionResponse(
+                  status = "completed",
+                  consolidationGroupId = result.completed.id.value.toString,
+                  workstationReleased = result.workstation.id.value.toString
                 )
               )
             case Left(error) =>

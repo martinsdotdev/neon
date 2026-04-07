@@ -2,15 +2,25 @@ package neon.app.http
 
 import neon.common.TransportOrderId
 import neon.core.{AsyncTransportOrderConfirmationService, TransportOrderConfirmationError}
-import io.circe.Json
-import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
+
+import io.circe.Encoder
+import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
 import java.time.Instant
 import java.util.UUID
 
+import CirceSupport.given
+
 object TransportOrderRoutes:
+
+  case class TransportOrderConfirmationResponse(
+      status: String,
+      transportOrderId: String,
+      handlingUnitInBuffer: Boolean,
+      bufferCompletion: Boolean
+  ) derives Encoder.AsObject
 
   def apply(
       confirmationService: AsyncTransportOrderConfirmationService
@@ -21,20 +31,12 @@ object TransportOrderRoutes:
           val id = TransportOrderId(UUID.fromString(transportOrderIdStr))
           onSuccess(confirmationService.confirm(id, Instant.now())):
             case Right(result) =>
-              val json = Json.obj(
-                "status" -> Json.fromString("confirmed"),
-                "transportOrderId" -> Json.fromString(
-                  result.confirmed.id.value.toString
-                ),
-                "handlingUnitInBuffer" -> Json.fromBoolean(true),
-                "bufferCompletion" -> Json.fromBoolean(
-                  result.bufferCompletion.isDefined
-                )
-              )
               complete(
-                HttpEntity(
-                  ContentTypes.`application/json`,
-                  json.noSpaces
+                TransportOrderConfirmationResponse(
+                  status = "confirmed",
+                  transportOrderId = result.confirmed.id.value.toString,
+                  handlingUnitInBuffer = true,
+                  bufferCompletion = result.bufferCompletion.isDefined
                 )
               )
             case Left(error) =>

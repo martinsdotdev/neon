@@ -2,8 +2,9 @@ package neon.app.http
 
 import neon.common.TaskId
 import neon.core.{AsyncTaskCompletionService, TaskCompletionError}
-import io.circe.{Decoder, Json}
-import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
+
+import io.circe.{Decoder, Encoder}
+import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -18,6 +19,15 @@ object TaskRoutes:
       actualQuantity: Int,
       verified: Boolean
   ) derives Decoder
+
+  case class TaskCompletionResponse(
+      status: String,
+      taskId: String,
+      actualQuantity: Int,
+      requestedQuantity: Int,
+      hasShortpick: Boolean,
+      hasTransportOrder: Boolean
+  ) derives Encoder.AsObject
 
   def apply(
       taskCompletionService: AsyncTaskCompletionService
@@ -36,29 +46,14 @@ object TaskRoutes:
               )
             ):
               case Right(result) =>
-                val json = Json
-                  .obj(
-                    "status" -> Json.fromString("completed"),
-                    "taskId" -> Json.fromString(
-                      result.completed.id.value.toString
-                    ),
-                    "actualQuantity" -> Json.fromInt(
-                      result.completed.actualQuantity
-                    ),
-                    "requestedQuantity" -> Json.fromInt(
-                      result.completed.requestedQuantity
-                    ),
-                    "hasShortpick" -> Json.fromBoolean(
-                      result.shortpick.isDefined
-                    ),
-                    "hasTransportOrder" -> Json.fromBoolean(
-                      result.transportOrder.isDefined
-                    )
-                  )
                 complete(
-                  HttpEntity(
-                    ContentTypes.`application/json`,
-                    json.noSpaces
+                  TaskCompletionResponse(
+                    status = "completed",
+                    taskId = result.completed.id.value.toString,
+                    actualQuantity = result.completed.actualQuantity,
+                    requestedQuantity = result.completed.requestedQuantity,
+                    hasShortpick = result.shortpick.isDefined,
+                    hasTransportOrder = result.transportOrder.isDefined
                   )
                 )
               case Left(error) =>
