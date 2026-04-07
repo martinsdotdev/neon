@@ -1,17 +1,25 @@
 package neon.inventory
 
-import neon.common.{InventoryId, LocationId, Lot, SkuId}
+import neon.common.{InventoryId, LocationId, Lot, R2dbcProjectionQueries, SkuId}
+
+import io.r2dbc.spi.ConnectionFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
+import org.apache.pekko.stream.scaladsl.{Sink, Source}
 import org.apache.pekko.util.Timeout
 
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
-/** Actor-backed implementation of [[AsyncInventoryRepository]]. */
-class PekkoInventoryRepository(system: ActorSystem[?])(using Timeout)
-    extends AsyncInventoryRepository:
+class PekkoInventoryRepository(
+    actorSystem: ActorSystem[?],
+    val connectionFactory: ConnectionFactory
+)(using Timeout)
+    extends AsyncInventoryRepository
+    with R2dbcProjectionQueries:
 
-  private given ExecutionContext = system.executionContext
+  protected given system: ActorSystem[?] = actorSystem
+  protected given ec: ExecutionContext = actorSystem.executionContext
   private val sharding = ClusterSharding(system)
 
   sharding.init(
@@ -28,8 +36,35 @@ class PekkoInventoryRepository(system: ActorSystem[?])(using Timeout)
       skuId: SkuId,
       lot: Option[Lot]
   ): Future[Option[Inventory]] =
-    // TODO: query inventory_by_location_sku_lot projection table
-    Future.successful(None)
+    val lotValue = lot.map(_.value).orNull
+    Source
+      .fromPublisher(connectionFactory.create())
+      .runWith(Sink.head)
+      .flatMap { connection =>
+        val stmt = connection
+          .createStatement(
+            "SELECT inventory_id FROM inventory_by_location_sku_lot WHERE location_id = $1 AND sku_id = $2 AND lot IS NOT DISTINCT FROM $3"
+          )
+          .bind(0, locationId.value)
+          .bind(1, skuId.value)
+        if lotValue != null then stmt.bind(2, lotValue)
+        else stmt.bindNull(2, classOf[String])
+        Source
+          .fromPublisher(stmt.execute())
+          .flatMapConcat(result =>
+            Source.fromPublisher(
+              result.map((row, _) => row.get("inventory_id", classOf[UUID]))
+            )
+          )
+          .runWith(Sink.headOption)
+          .flatMap {
+            case Some(id) => findById(InventoryId(id))
+            case None     => Future.successful(None)
+          }
+          .andThen { case _ =>
+            Source.fromPublisher(connection.close()).runWith(Sink.ignore)
+          }
+      }
 
   def save(inventory: Inventory, event: InventoryEvent): Future[Unit] =
     val entityRef = sharding.entityRefFor(

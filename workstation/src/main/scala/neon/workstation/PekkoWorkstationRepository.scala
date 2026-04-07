@@ -1,17 +1,24 @@
 package neon.workstation
 
-import neon.common.WorkstationId
+import neon.common.{R2dbcProjectionQueries, WorkstationId}
+
+import io.r2dbc.spi.ConnectionFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
-/** Actor-backed implementation of [[AsyncWorkstationRepository]]. */
-class PekkoWorkstationRepository(system: ActorSystem[?])(using Timeout)
-    extends AsyncWorkstationRepository:
+class PekkoWorkstationRepository(
+    actorSystem: ActorSystem[?],
+    val connectionFactory: ConnectionFactory
+)(using Timeout)
+    extends AsyncWorkstationRepository
+    with R2dbcProjectionQueries:
 
-  private given ExecutionContext = system.executionContext
+  protected given system: ActorSystem[?] = actorSystem
+  protected given ec: ExecutionContext = actorSystem.executionContext
   private val sharding = ClusterSharding(system)
 
   sharding.init(
@@ -26,8 +33,18 @@ class PekkoWorkstationRepository(system: ActorSystem[?])(using Timeout)
   def findIdleByType(
       workstationType: WorkstationType
   ): Future[Option[Workstation.Idle]] =
-    // TODO: query workstation_by_type_and_state projection table
-    Future.successful(None)
+    queryProjectionIds(
+      "SELECT workstation_id FROM workstation_by_type_and_state WHERE workstation_type = $1 AND state = 'Idle' LIMIT 1",
+      workstationType.toString,
+      "workstation_id"
+    ).flatMap(ids =>
+      ids.headOption match
+        case None     => Future.successful(None)
+        case Some(id) =>
+          findById(WorkstationId(id)).map(_.collect { case idle: Workstation.Idle =>
+            idle
+          })
+    )
 
   def save(
       workstation: Workstation,

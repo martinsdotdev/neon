@@ -1,16 +1,24 @@
 package neon.slot
 
-import neon.common.{SlotId, WorkstationId}
+import neon.common.{R2dbcProjectionQueries, SlotId, WorkstationId}
+
+import io.r2dbc.spi.ConnectionFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
-/** Actor-backed implementation of [[AsyncSlotRepository]]. */
-class PekkoSlotRepository(system: ActorSystem[?])(using Timeout) extends AsyncSlotRepository:
+class PekkoSlotRepository(
+    actorSystem: ActorSystem[?],
+    val connectionFactory: ConnectionFactory
+)(using Timeout)
+    extends AsyncSlotRepository
+    with R2dbcProjectionQueries:
 
-  private given ExecutionContext = system.executionContext
+  protected given system: ActorSystem[?] = actorSystem
+  protected given ec: ExecutionContext = actorSystem.executionContext
   private val sharding = ClusterSharding(system)
 
   sharding.init(
@@ -25,8 +33,11 @@ class PekkoSlotRepository(system: ActorSystem[?])(using Timeout) extends AsyncSl
   def findByWorkstationId(
       workstationId: WorkstationId
   ): Future[List[Slot]] =
-    // TODO: query slot_by_workstation projection table
-    Future.successful(Nil)
+    queryProjectionIds(
+      "SELECT slot_id FROM slot_by_workstation WHERE workstation_id = $1",
+      workstationId.value,
+      "slot_id"
+    ).flatMap(ids => Future.sequence(ids.map(id => findById(SlotId(id)))).map(_.flatten))
 
   def save(slot: Slot, event: SlotEvent): Future[Unit] =
     val entityRef = sharding.entityRefFor(

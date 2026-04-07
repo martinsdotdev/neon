@@ -1,17 +1,24 @@
 package neon.transportorder
 
-import neon.common.{HandlingUnitId, TransportOrderId}
+import neon.common.{HandlingUnitId, R2dbcProjectionQueries, TransportOrderId}
+
+import io.r2dbc.spi.ConnectionFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
-/** Actor-backed implementation of [[AsyncTransportOrderRepository]]. */
-class PekkoTransportOrderRepository(system: ActorSystem[?])(using Timeout)
-    extends AsyncTransportOrderRepository:
+class PekkoTransportOrderRepository(
+    actorSystem: ActorSystem[?],
+    val connectionFactory: ConnectionFactory
+)(using Timeout)
+    extends AsyncTransportOrderRepository
+    with R2dbcProjectionQueries:
 
-  private given ExecutionContext = system.executionContext
+  protected given system: ActorSystem[?] = actorSystem
+  protected given ec: ExecutionContext = actorSystem.executionContext
   private val sharding = ClusterSharding(system)
 
   sharding.init(
@@ -26,8 +33,15 @@ class PekkoTransportOrderRepository(system: ActorSystem[?])(using Timeout)
   def findByHandlingUnitId(
       handlingUnitId: HandlingUnitId
   ): Future[List[TransportOrder]] =
-    // TODO: query transport_order_by_handling_unit projection table
-    Future.successful(Nil)
+    queryProjectionIds(
+      "SELECT transport_order_id FROM transport_order_by_handling_unit WHERE handling_unit_id = $1",
+      handlingUnitId.value,
+      "transport_order_id"
+    ).flatMap(ids =>
+      Future
+        .sequence(ids.map(id => findById(TransportOrderId(id))))
+        .map(_.flatten)
+    )
 
   def save(
       transportOrder: TransportOrder,

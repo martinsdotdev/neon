@@ -1,17 +1,24 @@
 package neon.consolidationgroup
 
-import neon.common.{ConsolidationGroupId, WaveId}
+import neon.common.{ConsolidationGroupId, R2dbcProjectionQueries, WaveId}
+
+import io.r2dbc.spi.ConnectionFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
-/** Actor-backed implementation of [[AsyncConsolidationGroupRepository]]. */
-class PekkoConsolidationGroupRepository(system: ActorSystem[?])(using Timeout)
-    extends AsyncConsolidationGroupRepository:
+class PekkoConsolidationGroupRepository(
+    actorSystem: ActorSystem[?],
+    val connectionFactory: ConnectionFactory
+)(using Timeout)
+    extends AsyncConsolidationGroupRepository
+    with R2dbcProjectionQueries:
 
-  private given ExecutionContext = system.executionContext
+  protected given system: ActorSystem[?] = actorSystem
+  protected given ec: ExecutionContext = actorSystem.executionContext
   private val sharding = ClusterSharding(system)
 
   sharding.init(
@@ -24,8 +31,15 @@ class PekkoConsolidationGroupRepository(system: ActorSystem[?])(using Timeout)
       .ask(ConsolidationGroupActor.GetState(_))
 
   def findByWaveId(waveId: WaveId): Future[List[ConsolidationGroup]] =
-    // TODO: query consolidation_group_by_wave projection table
-    Future.successful(Nil)
+    queryProjectionIds(
+      "SELECT consolidation_group_id FROM consolidation_group_by_wave WHERE wave_id = $1",
+      waveId.value,
+      "consolidation_group_id"
+    ).flatMap(ids =>
+      Future
+        .sequence(ids.map(id => findById(ConsolidationGroupId(id))))
+        .map(_.flatten)
+    )
 
   def save(
       consolidationGroup: ConsolidationGroup,

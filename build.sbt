@@ -18,11 +18,14 @@ val logbackVersion               = "1.5.18"
 ThisBuild / libraryDependencies += "org.scalatest" %% "scalatest" % scalatestVersion % Test
 
 // Shared Pekko dependencies for event-sourced aggregate modules
+val r2dbcSpiVersion = "1.0.0.RELEASE"
+
 val pekkoActorDependencies = Seq(
   "org.apache.pekko" %% "pekko-actor-typed"            % pekkoVersion,
   "org.apache.pekko" %% "pekko-cluster-sharding-typed" % pekkoVersion,
   "org.apache.pekko" %% "pekko-persistence-typed"      % pekkoVersion,
   "org.apache.pekko" %% "pekko-serialization-jackson"  % pekkoVersion,
+  "io.r2dbc"          % "r2dbc-spi"                    % r2dbcSpiVersion,
   "org.apache.pekko" %% "pekko-actor-testkit-typed"    % pekkoVersion % Test,
   "org.apache.pekko" %% "pekko-persistence-testkit"    % pekkoVersion % Test,
   "org.apache.pekko" %% "pekko-stream-testkit"         % pekkoVersion % Test
@@ -33,7 +36,10 @@ lazy val common = project
   .settings(
     name := "neon-common",
     libraryDependencies ++= Seq(
-      "com.github.f4b6a3" % "uuid-creator" % uuidCreatorVersion
+      "com.github.f4b6a3"  % "uuid-creator" % uuidCreatorVersion,
+      "io.r2dbc"           % "r2dbc-spi"    % r2dbcSpiVersion,
+      "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
+      "org.apache.pekko" %% "pekko-stream"      % pekkoVersion
     )
   )
 

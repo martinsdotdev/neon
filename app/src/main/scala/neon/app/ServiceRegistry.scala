@@ -30,14 +30,17 @@ class ServiceRegistry(
   // --- Actor-backed repositories ---
 
   val waveRepository = PekkoWaveRepository(system)
-  val taskRepository = PekkoTaskRepository(system)
+  val taskRepository = PekkoTaskRepository(system, connectionFactory)
   val consolidationGroupRepository =
-    PekkoConsolidationGroupRepository(system)
-  val transportOrderRepository = PekkoTransportOrderRepository(system)
+    PekkoConsolidationGroupRepository(system, connectionFactory)
+  val transportOrderRepository =
+    PekkoTransportOrderRepository(system, connectionFactory)
   val handlingUnitRepository = PekkoHandlingUnitRepository(system)
-  val workstationRepository = PekkoWorkstationRepository(system)
-  val slotRepository = PekkoSlotRepository(system)
-  val inventoryRepository = PekkoInventoryRepository(system)
+  val workstationRepository =
+    PekkoWorkstationRepository(system, connectionFactory)
+  val slotRepository = PekkoSlotRepository(system, connectionFactory)
+  val inventoryRepository =
+    PekkoInventoryRepository(system, connectionFactory)
 
   // --- Reference data repositories (R2DBC) ---
 
