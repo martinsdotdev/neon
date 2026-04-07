@@ -2,6 +2,7 @@ package neon.app
 
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorSystem, Behavior}
+import org.apache.pekko.persistence.r2dbc.ConnectionFactoryProvider
 import org.apache.pekko.util.Timeout
 
 import scala.concurrent.duration.*
@@ -17,7 +18,11 @@ object Guardian:
       given ActorSystem[Nothing] = context.system
       given Timeout = 5.seconds
 
-      val registry = ServiceRegistry(context.system)
+      val connectionFactory =
+        ConnectionFactoryProvider(context.system)
+          .connectionFactoryFor("pekko.persistence.r2dbc.connection-factory")
+
+      val registry = ServiceRegistry(context.system, connectionFactory)
 
       http.HttpServer.start(registry, context.system)
 

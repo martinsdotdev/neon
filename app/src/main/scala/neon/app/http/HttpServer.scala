@@ -14,7 +14,11 @@ object HttpServer:
   def routes(registry: ServiceRegistry): Route =
     concat(
       TaskRoutes(registry.taskCompletionService),
-      WaveRoutes(registry.waveCancellationService),
+      WaveRoutes(
+        registry.waveCancellationService,
+        registry.wavePlanningService,
+        registry.orderRepository
+      ),
       TransportOrderRoutes(
         registry.transportOrderConfirmationService
       ),
