@@ -1,5 +1,6 @@
 package neon.workstation
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import neon.common.{ConsolidationGroupId, WorkstationId}
 
 import java.time.Instant
@@ -10,6 +11,7 @@ import java.time.Instant
   * Lifecycle: [[Disabled]] -> [[Idle]] -> [[Active]] -> [[Idle]], with [[Disabled]] reachable from
   * both [[Idle]] and [[Active]]. One consolidation group at a time.
   */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 sealed trait Workstation:
   /** The workstation identifier. */
   def id: WorkstationId

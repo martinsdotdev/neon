@@ -104,6 +104,9 @@ object SlotActor:
             .persist(Initialized(slot))
             .thenReply(replyTo)(_ => StatusReply.ack())
 
+        case (ActiveState(_), Create(_, replyTo)) =>
+          Effect.reply(replyTo)(StatusReply.ack())
+
         case (
               ActiveState(a: Slot.Available),
               Reserve(orderId, handlingUnitId, at, replyTo)

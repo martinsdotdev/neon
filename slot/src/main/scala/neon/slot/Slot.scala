@@ -1,5 +1,6 @@
 package neon.slot
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import neon.common.{HandlingUnitId, OrderId, SlotId, WorkstationId}
 
 import java.time.Instant
@@ -9,6 +10,7 @@ import java.time.Instant
   * Lifecycle: [[Available]] -> [[Reserved]] -> [[Completed]], with `release()` on [[Reserved]]
   * returning to [[Available]] for pre-placement cancellation. One slot per order.
   */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 sealed trait Slot:
   /** The slot identifier. */
   def id: SlotId

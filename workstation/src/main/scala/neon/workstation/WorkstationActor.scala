@@ -113,6 +113,9 @@ object WorkstationActor:
             .persist(Initialized(workstation))
             .thenReply(replyTo)(_ => StatusReply.ack())
 
+        case (ActiveState(_), Create(_, replyTo)) =>
+          Effect.reply(replyTo)(StatusReply.ack())
+
         case (
               ActiveState(d: Workstation.Disabled),
               Enable(at, replyTo)

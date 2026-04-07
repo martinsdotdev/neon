@@ -1,5 +1,6 @@
 package neon.handlingunit
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import neon.common.{HandlingUnitId, LocationId, OrderId, PackagingLevel}
 
 import java.time.Instant
@@ -16,6 +17,7 @@ import java.time.Instant
   *
   * Transitions are only available on valid source states, enforced at compile time.
   */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 sealed trait HandlingUnit:
   /** The unique identifier of this handling unit. */
   def id: HandlingUnitId

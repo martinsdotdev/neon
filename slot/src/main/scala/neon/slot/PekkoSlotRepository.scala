@@ -44,25 +44,29 @@ class PekkoSlotRepository(
       SlotActor.EntityKey,
       slot.id.value.toString
     )
-    event match
-      case e: SlotEvent.SlotReserved =>
-        entityRef
-          .askWithStatus[SlotActor.ReserveResponse](
-            SlotActor.Reserve(e.orderId, e.handlingUnitId, e.occurredAt, _)
-          )
-          .map(_ => ())
-      case e: SlotEvent.SlotCompleted =>
-        entityRef
-          .askWithStatus[SlotActor.CompleteResponse](
-            SlotActor.Complete(e.occurredAt, _)
-          )
-          .map(_ => ())
-      case e: SlotEvent.SlotReleased =>
-        entityRef
-          .askWithStatus[SlotActor.ReleaseResponse](
-            SlotActor.Release(e.occurredAt, _)
-          )
-          .map(_ => ())
+    val ensureInitialized =
+      entityRef.askWithStatus(SlotActor.Create(slot, _))
+    ensureInitialized.flatMap { _ =>
+      event match
+        case e: SlotEvent.SlotReserved =>
+          entityRef
+            .askWithStatus[SlotActor.ReserveResponse](
+              SlotActor.Reserve(e.orderId, e.handlingUnitId, e.occurredAt, _)
+            )
+            .map(_ => ())
+        case e: SlotEvent.SlotCompleted =>
+          entityRef
+            .askWithStatus[SlotActor.CompleteResponse](
+              SlotActor.Complete(e.occurredAt, _)
+            )
+            .map(_ => ())
+        case e: SlotEvent.SlotReleased =>
+          entityRef
+            .askWithStatus[SlotActor.ReleaseResponse](
+              SlotActor.Release(e.occurredAt, _)
+            )
+            .map(_ => ())
+    }
 
   def saveAll(entries: List[(Slot, SlotEvent)]): Future[Unit] =
     Future.sequence(entries.map((slot, event) => save(slot, event))).map(_ => ())

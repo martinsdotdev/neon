@@ -36,34 +36,38 @@ class PekkoHandlingUnitRepository(system: ActorSystem[?])(using Timeout)
       HandlingUnitActor.EntityKey,
       handlingUnit.id.value.toString
     )
-    event match
-      case e: HandlingUnitEvent.HandlingUnitMovedToBuffer =>
-        entityRef
-          .askWithStatus[HandlingUnitActor.MoveToBufferResponse](
-            HandlingUnitActor.MoveToBuffer(e.locationId, e.occurredAt, _)
-          )
-          .map(_ => ())
-      case e: HandlingUnitEvent.HandlingUnitEmptied =>
-        entityRef
-          .askWithStatus[HandlingUnitActor.EmptyResponse](
-            HandlingUnitActor.Empty(e.occurredAt, _)
-          )
-          .map(_ => ())
-      case e: HandlingUnitEvent.HandlingUnitPacked =>
-        entityRef
-          .askWithStatus[HandlingUnitActor.PackResponse](
-            HandlingUnitActor.Pack(e.occurredAt, _)
-          )
-          .map(_ => ())
-      case e: HandlingUnitEvent.HandlingUnitReadyToShip =>
-        entityRef
-          .askWithStatus[HandlingUnitActor.ReadyToShipResponse](
-            HandlingUnitActor.ReadyToShip(e.occurredAt, _)
-          )
-          .map(_ => ())
-      case e: HandlingUnitEvent.HandlingUnitShipped =>
-        entityRef
-          .askWithStatus[HandlingUnitActor.ShipResponse](
-            HandlingUnitActor.Ship(e.occurredAt, _)
-          )
-          .map(_ => ())
+    val ensureInitialized =
+      entityRef.askWithStatus(HandlingUnitActor.Create(handlingUnit, _))
+    ensureInitialized.flatMap { _ =>
+      event match
+        case e: HandlingUnitEvent.HandlingUnitMovedToBuffer =>
+          entityRef
+            .askWithStatus[HandlingUnitActor.MoveToBufferResponse](
+              HandlingUnitActor.MoveToBuffer(e.locationId, e.occurredAt, _)
+            )
+            .map(_ => ())
+        case e: HandlingUnitEvent.HandlingUnitEmptied =>
+          entityRef
+            .askWithStatus[HandlingUnitActor.EmptyResponse](
+              HandlingUnitActor.Empty(e.occurredAt, _)
+            )
+            .map(_ => ())
+        case e: HandlingUnitEvent.HandlingUnitPacked =>
+          entityRef
+            .askWithStatus[HandlingUnitActor.PackResponse](
+              HandlingUnitActor.Pack(e.occurredAt, _)
+            )
+            .map(_ => ())
+        case e: HandlingUnitEvent.HandlingUnitReadyToShip =>
+          entityRef
+            .askWithStatus[HandlingUnitActor.ReadyToShipResponse](
+              HandlingUnitActor.ReadyToShip(e.occurredAt, _)
+            )
+            .map(_ => ())
+        case e: HandlingUnitEvent.HandlingUnitShipped =>
+          entityRef
+            .askWithStatus[HandlingUnitActor.ShipResponse](
+              HandlingUnitActor.Ship(e.occurredAt, _)
+            )
+            .map(_ => ())
+    }

@@ -54,32 +54,32 @@ class PekkoWorkstationRepository(
       WorkstationActor.EntityKey,
       workstation.id.value.toString
     )
-    event match
-      case e: WorkstationEvent.WorkstationEnabled =>
-        entityRef
-          .askWithStatus[WorkstationActor.EnableResponse](
-            WorkstationActor.Enable(e.occurredAt, _)
-          )
-          .map(_ => ())
-      case e: WorkstationEvent.WorkstationAssigned =>
-        entityRef
-          .askWithStatus[WorkstationActor.AssignResponse](
-            WorkstationActor.Assign(
-              e.consolidationGroupId,
-              e.occurredAt,
-              _
+    val ensureInitialized =
+      entityRef.askWithStatus(WorkstationActor.Create(workstation, _))
+    ensureInitialized.flatMap { _ =>
+      event match
+        case e: WorkstationEvent.WorkstationEnabled =>
+          entityRef
+            .askWithStatus[WorkstationActor.EnableResponse](
+              WorkstationActor.Enable(e.occurredAt, _)
             )
-          )
-          .map(_ => ())
-      case e: WorkstationEvent.WorkstationReleased =>
-        entityRef
-          .askWithStatus[WorkstationActor.ReleaseResponse](
-            WorkstationActor.Release(e.occurredAt, _)
-          )
-          .map(_ => ())
-      case e: WorkstationEvent.WorkstationDisabled =>
-        entityRef
-          .askWithStatus[WorkstationActor.DisableResponse](
-            WorkstationActor.Disable(e.occurredAt, _)
-          )
-          .map(_ => ())
+            .map(_ => ())
+        case e: WorkstationEvent.WorkstationAssigned =>
+          entityRef
+            .askWithStatus[WorkstationActor.AssignResponse](
+              WorkstationActor.Assign(e.consolidationGroupId, e.occurredAt, _)
+            )
+            .map(_ => ())
+        case e: WorkstationEvent.WorkstationReleased =>
+          entityRef
+            .askWithStatus[WorkstationActor.ReleaseResponse](
+              WorkstationActor.Release(e.occurredAt, _)
+            )
+            .map(_ => ())
+        case e: WorkstationEvent.WorkstationDisabled =>
+          entityRef
+            .askWithStatus[WorkstationActor.DisableResponse](
+              WorkstationActor.Disable(e.occurredAt, _)
+            )
+            .map(_ => ())
+    }

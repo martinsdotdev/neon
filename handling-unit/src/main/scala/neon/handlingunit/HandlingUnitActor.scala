@@ -124,6 +124,9 @@ object HandlingUnitActor:
             .persist(Initialized(handlingUnit))
             .thenReply(replyTo)(_ => StatusReply.ack())
 
+        case (ActiveState(_), Create(_, replyTo)) =>
+          Effect.reply(replyTo)(StatusReply.ack())
+
         case (
               ActiveState(pc: HandlingUnit.PickCreated),
               MoveToBuffer(locationId, at, replyTo)

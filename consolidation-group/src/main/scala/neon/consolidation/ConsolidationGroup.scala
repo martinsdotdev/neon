@@ -1,5 +1,6 @@
 package neon.consolidationgroup
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
 
 import java.time.Instant
@@ -13,6 +14,7 @@ import java.time.Instant
   * non-terminal state. Transitions are only available on valid source states, enforced at compile
   * time.
   */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 sealed trait ConsolidationGroup:
   /** The unique identifier of this consolidation group. */
   def id: ConsolidationGroupId
