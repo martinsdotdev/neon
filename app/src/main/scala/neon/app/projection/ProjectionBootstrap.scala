@@ -1,17 +1,16 @@
 package neon.app.projection
 
-import neon.consolidationgroup.{ConsolidationGroupActor, ConsolidationGroupEvent}
+import neon.consolidationgroup.ConsolidationGroupEvent
 import neon.handlingunit.HandlingUnitActor
-import neon.inventory.{InventoryActor, InventoryEvent}
+import neon.inventory.InventoryEvent
 import neon.slot.SlotActor
-import neon.task.{TaskActor, TaskEvent}
-import neon.transportorder.{TransportOrderActor, TransportOrderEvent}
+import neon.task.TaskEvent
+import neon.transportorder.TransportOrderEvent
 import neon.workstation.WorkstationActor
-
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.ShardedDaemonProcess
-import org.apache.pekko.projection.eventsourced.EventEnvelope
 import org.apache.pekko.persistence.r2dbc.query.scaladsl.R2dbcReadJournal
+import org.apache.pekko.projection.eventsourced.EventEnvelope
 import org.apache.pekko.projection.eventsourced.scaladsl.EventSourcedProvider
 import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcProjection
 import org.apache.pekko.projection.scaladsl.SourceProvider
@@ -95,7 +94,7 @@ object ProjectionBootstrap:
         ProjectionBehavior(
           R2dbcProjection.exactlyOnce(
             projectionId = ProjectionId(name, tag),
-            settings = None.orNull,
+            settings = null,
             sourceProvider = sourceProvider,
             handler = handlerFactory
           )

@@ -2,7 +2,6 @@ package neon.app.http
 
 import neon.common.ConsolidationGroupId
 import neon.core.{AsyncWorkstationAssignmentService, WorkstationAssignmentError}
-
 import io.circe.{Decoder, Encoder}
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*

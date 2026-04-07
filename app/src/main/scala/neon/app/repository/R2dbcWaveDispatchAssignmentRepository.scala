@@ -8,7 +8,6 @@ import neon.core.{
   WaveDispatchRules,
   WavePlanningError
 }
-
 import io.r2dbc.spi.{Connection, ConnectionFactory, Row}
 import org.reactivestreams.{Publisher, Subscriber, Subscription}
 

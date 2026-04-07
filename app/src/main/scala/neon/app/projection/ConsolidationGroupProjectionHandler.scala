@@ -1,7 +1,6 @@
 package neon.app.projection
 
 import neon.consolidationgroup.ConsolidationGroupEvent
-
 import org.apache.pekko.projection.eventsourced.EventEnvelope
 import org.apache.pekko.projection.r2dbc.scaladsl.{R2dbcHandler, R2dbcSession}
 
@@ -32,18 +31,13 @@ class ConsolidationGroupProjectionHandler(using ExecutionContext)
 
       case e =>
         val state = e match
-          case _: ConsolidationGroupEvent.ConsolidationGroupPicked =>
-            "Picked"
+          case _: ConsolidationGroupEvent.ConsolidationGroupPicked              => "Picked"
           case _: ConsolidationGroupEvent.ConsolidationGroupReadyForWorkstation =>
             "ReadyForWorkstation"
-          case _: ConsolidationGroupEvent.ConsolidationGroupAssigned =>
-            "Assigned"
-          case _: ConsolidationGroupEvent.ConsolidationGroupCompleted =>
-            "Completed"
-          case _: ConsolidationGroupEvent.ConsolidationGroupCancelled =>
-            "Cancelled"
-          case _: ConsolidationGroupEvent.ConsolidationGroupCreated =>
-            "Created"
+          case _: ConsolidationGroupEvent.ConsolidationGroupAssigned  => "Assigned"
+          case _: ConsolidationGroupEvent.ConsolidationGroupCompleted => "Completed"
+          case _: ConsolidationGroupEvent.ConsolidationGroupCancelled => "Cancelled"
+          case _: ConsolidationGroupEvent.ConsolidationGroupCreated   => "Created"
         val stmt = session
           .createStatement(
             "UPDATE consolidation_group_by_wave SET state = $1 WHERE consolidation_group_id = $2"

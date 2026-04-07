@@ -64,4 +64,4 @@ class PekkoTransportOrderRepository(system: ActorSystem[?])(using Timeout)
   def saveAll(
       entries: List[(TransportOrder, TransportOrderEvent)]
   ): Future[Unit] =
-    Future.traverse(entries)((to, event) => save(to, event)).map(_ => ())
+    Future.sequence(entries.map((to, event) => save(to, event))).map(_ => ())

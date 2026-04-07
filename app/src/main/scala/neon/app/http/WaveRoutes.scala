@@ -10,7 +10,6 @@ import neon.core.{
 }
 import neon.order.AsyncOrderRepository
 import neon.wave.OrderGrouping
-
 import io.circe.{Decoder, Encoder}
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
@@ -18,6 +17,7 @@ import org.apache.pekko.http.scaladsl.server.Route
 
 import java.time.Instant
 import java.util.UUID
+import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
 
@@ -53,13 +53,12 @@ object WaveRoutes:
       waveCancellationService: AsyncWaveCancellationService,
       wavePlanningService: AsyncWavePlanningService,
       orderRepository: AsyncOrderRepository
-  ): Route =
+  )(using ExecutionContext): Route =
     pathPrefix("waves"):
       concat(
         path("plan-and-release"):
           post:
             entity(as[PlanAndReleaseRequest]): request =>
-              import scala.concurrent.ExecutionContext.Implicits.global
               val orderIds =
                 request.orderIds.map(s => OrderId(UUID.fromString(s)))
               val grouping = OrderGrouping.valueOf(request.grouping)

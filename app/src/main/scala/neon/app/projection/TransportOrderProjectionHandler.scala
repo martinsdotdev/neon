@@ -1,7 +1,6 @@
 package neon.app.projection
 
 import neon.transportorder.TransportOrderEvent
-
 import org.apache.pekko.projection.eventsourced.EventEnvelope
 import org.apache.pekko.projection.r2dbc.scaladsl.{R2dbcHandler, R2dbcSession}
 

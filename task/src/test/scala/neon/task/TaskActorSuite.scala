@@ -13,9 +13,17 @@ import java.time.Instant
 
 class TaskActorSuite
     extends ScalaTestWithActorTestKit(
-      EventSourcedBehaviorTestKit.config.withFallback(
-        ConfigFactory.parseString("pekko.actor.provider = local")
-      )
+      ConfigFactory
+        .parseString("""
+          pekko.actor {
+            provider = local
+            serialization-bindings {
+              "neon.common.serialization.CborSerializable" = jackson-cbor
+            }
+          }
+        """)
+        .withFallback(EventSourcedBehaviorTestKit.config)
+        .resolve()
     )
     with AnyFunSpecLike
     with BeforeAndAfterEach:
@@ -29,6 +37,11 @@ class TaskActorSuite
   private val dstLoc = LocationId()
   private val at = Instant.now()
 
+  private val serializationSettings =
+    EventSourcedBehaviorTestKit.SerializationSettings.disabled
+      .withVerifyEvents(true)
+      .withVerifyState(true)
+
   private val esTestKit = EventSourcedBehaviorTestKit[
     TaskActor.Command,
     TaskEvent,
@@ -36,7 +49,7 @@ class TaskActorSuite
   ](
     system,
     TaskActor(taskId.value.toString),
-    EventSourcedBehaviorTestKit.SerializationSettings.disabled
+    serializationSettings
   )
 
   override def beforeEach(): Unit =

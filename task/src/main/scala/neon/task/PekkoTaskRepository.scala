@@ -78,4 +78,4 @@ class PekkoTaskRepository(system: ActorSystem[?])(using Timeout) extends AsyncTa
           .map(_ => ())
 
   def saveAll(entries: List[(Task, TaskEvent)]): Future[Unit] =
-    Future.traverse(entries)((task, event) => save(task, event)).map(_ => ())
+    Future.sequence(entries.map((task, event) => save(task, event))).map(_ => ())

@@ -1,11 +1,8 @@
 package neon.app.projection
 
 import neon.task.TaskEvent
-
-import io.r2dbc.spi.{ConnectionFactory, Statement}
-import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcHandler
-import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
 import org.apache.pekko.projection.eventsourced.EventEnvelope
+import org.apache.pekko.projection.r2dbc.scaladsl.{R2dbcHandler, R2dbcSession}
 
 import scala.concurrent.{ExecutionContext, Future}
 

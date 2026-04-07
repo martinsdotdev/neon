@@ -6,12 +6,12 @@ import org.apache.pekko.http.scaladsl.Http
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 /** Binds the HTTP route tree and starts the Pekko HTTP server. */
 object HttpServer:
 
-  def routes(registry: ServiceRegistry): Route =
+  def routes(registry: ServiceRegistry)(using ExecutionContext): Route =
     concat(
       TaskRoutes(registry.taskCompletionService),
       WaveRoutes(
@@ -33,6 +33,7 @@ object HttpServer:
       system: ActorSystem[?]
   ): Future[Http.ServerBinding] =
     given ActorSystem[?] = system
+    given ExecutionContext = system.executionContext
     val config = system.settings.config.getConfig("neon.http")
     val host = config.getString("host")
     val port = config.getInt("port")
@@ -45,4 +46,4 @@ object HttpServer:
           s"Neon WES HTTP server bound to ${binding.localAddress}"
         )
         binding
-      }(using system.executionContext)
+      }

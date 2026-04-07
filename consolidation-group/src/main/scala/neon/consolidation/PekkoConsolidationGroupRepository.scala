@@ -81,5 +81,5 @@ class PekkoConsolidationGroupRepository(system: ActorSystem[?])(using Timeout)
       entries: List[(ConsolidationGroup, ConsolidationGroupEvent)]
   ): Future[Unit] =
     Future
-      .traverse(entries)((cg, event) => save(cg, event))
+      .sequence(entries.map((cg, event) => save(cg, event)))
       .map(_ => ())

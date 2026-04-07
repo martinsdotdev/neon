@@ -1,5 +1,6 @@
 package neon.task
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import neon.common.{
   HandlingUnitId,
   LocationId,
@@ -20,6 +21,7 @@ import java.time.Instant
   * with [[Cancelled]] reachable from any non-terminal state. Transitions are enforced at compile
   * time — only valid source states expose the corresponding method.
   */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 sealed trait Task:
 
   /** The unique identifier of this task. */

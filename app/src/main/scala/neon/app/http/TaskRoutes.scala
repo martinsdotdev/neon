@@ -2,7 +2,6 @@ package neon.app.http
 
 import neon.common.TaskId
 import neon.core.{AsyncTaskCompletionService, TaskCompletionError}
-
 import io.circe.{Decoder, Encoder}
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*

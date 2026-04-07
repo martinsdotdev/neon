@@ -133,18 +133,14 @@ object WaveActor:
           Effect.reply(replyTo)(wave)
 
         case (_, cmd) =>
-          val replyTo = cmd match
-            case c: Create   => c.replyTo
-            case c: Release  => c.replyTo
-            case c: Complete => c.replyTo
-            case c: Cancel   => c.replyTo
-            case _: GetState => throw IllegalStateException("unreachable")
-          Effect.reply(replyTo)(
-            StatusReply.error(
-              s"Invalid command ${cmd.getClass.getSimpleName} " +
-                s"in state ${state.getClass.getSimpleName}"
-            )
-          )
+          val msg = s"Invalid command ${cmd.getClass.getSimpleName} " +
+            s"in state ${state.getClass.getSimpleName}"
+          cmd match
+            case c: Create   => Effect.reply(c.replyTo)(StatusReply.error(msg))
+            case c: Release  => Effect.reply(c.replyTo)(StatusReply.error(msg))
+            case c: Complete => Effect.reply(c.replyTo)(StatusReply.error(msg))
+            case c: Cancel   => Effect.reply(c.replyTo)(StatusReply.error(msg))
+            case c: GetState => Effect.reply(c.replyTo)(None)
 
   // --- Event handler (state recovery) ---
 

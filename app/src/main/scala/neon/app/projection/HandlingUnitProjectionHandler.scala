@@ -1,7 +1,6 @@
 package neon.app.projection
 
 import neon.handlingunit.{HandlingUnitActor, HandlingUnitEvent}
-
 import org.apache.pekko.projection.eventsourced.EventEnvelope
 import org.apache.pekko.projection.r2dbc.scaladsl.{R2dbcHandler, R2dbcSession}
 

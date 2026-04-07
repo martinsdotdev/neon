@@ -54,4 +54,4 @@ class PekkoSlotRepository(system: ActorSystem[?])(using Timeout) extends AsyncSl
           .map(_ => ())
 
   def saveAll(entries: List[(Slot, SlotEvent)]): Future[Unit] =
-    Future.traverse(entries)((slot, event) => save(slot, event)).map(_ => ())
+    Future.sequence(entries.map((slot, event) => save(slot, event))).map(_ => ())
