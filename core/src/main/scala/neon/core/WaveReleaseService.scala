@@ -1,6 +1,10 @@
 package neon.core
 
-import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
+import neon.consolidationgroup.{
+  ConsolidationGroup,
+  ConsolidationGroupEvent,
+  ConsolidationGroupRepository
+}
 import neon.task.{Task, TaskEvent, TaskRepository}
 import neon.wave.{Wave, WaveEvent, WavePlan, WaveRepository}
 

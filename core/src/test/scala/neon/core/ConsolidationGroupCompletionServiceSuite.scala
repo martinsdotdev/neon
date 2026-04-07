@@ -1,7 +1,11 @@
 package neon.core
 
 import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
-import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
+import neon.consolidationgroup.{
+  ConsolidationGroup,
+  ConsolidationGroupEvent,
+  ConsolidationGroupRepository
+}
 import neon.workstation.{Workstation, WorkstationEvent, WorkstationRepository, WorkstationType}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.{EitherValues, OptionValues}

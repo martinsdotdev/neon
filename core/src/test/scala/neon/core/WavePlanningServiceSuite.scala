@@ -14,7 +14,11 @@ import neon.common.{
   UomHierarchy,
   WaveId
 }
-import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
+import neon.consolidationgroup.{
+  ConsolidationGroup,
+  ConsolidationGroupEvent,
+  ConsolidationGroupRepository
+}
 import neon.location.{Location, LocationRepository, LocationType}
 import neon.order.{Order, OrderLine}
 import neon.task.{Task, TaskEvent, TaskRepository}

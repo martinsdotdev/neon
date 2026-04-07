@@ -12,7 +12,11 @@ import neon.common.{
   UserId,
   WaveId
 }
-import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
+import neon.consolidationgroup.{
+  ConsolidationGroup,
+  ConsolidationGroupEvent,
+  ConsolidationGroupRepository
+}
 import neon.handlingunit.{HandlingUnit, HandlingUnitEvent, HandlingUnitRepository}
 import neon.task.{Task, TaskEvent, TaskRepository, TaskType}
 import neon.transportorder.{TransportOrder, TransportOrderEvent, TransportOrderRepository}

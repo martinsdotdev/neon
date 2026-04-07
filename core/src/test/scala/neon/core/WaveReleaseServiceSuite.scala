@@ -9,7 +9,11 @@ import neon.common.{
   TaskId,
   WaveId
 }
-import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
+import neon.consolidationgroup.{
+  ConsolidationGroup,
+  ConsolidationGroupEvent,
+  ConsolidationGroupRepository
+}
 import neon.order.{Order, OrderLine}
 import neon.task.{Task, TaskEvent, TaskRepository}
 import neon.wave.{OrderGrouping, Wave, WaveEvent, WavePlanner, WaveRepository}

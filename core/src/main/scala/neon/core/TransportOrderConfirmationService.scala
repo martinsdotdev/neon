@@ -1,7 +1,11 @@
 package neon.core
 
 import neon.common.{HandlingUnitId, TransportOrderId}
-import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
+import neon.consolidationgroup.{
+  ConsolidationGroup,
+  ConsolidationGroupEvent,
+  ConsolidationGroupRepository
+}
 import neon.handlingunit.{HandlingUnit, HandlingUnitEvent, HandlingUnitRepository}
 import neon.task.TaskRepository
 import neon.transportorder.{TransportOrder, TransportOrderEvent, TransportOrderRepository}

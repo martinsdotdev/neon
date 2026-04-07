@@ -4,8 +4,8 @@ import com.github.f4b6a3.uuid.UuidCreator
 
 import java.util.UUID
 
-/** Unique identifier for a [[neon.consolidationgroup.ConsolidationGroup]]. Backed by a time-ordered UUID
-  * v7.
+/** Unique identifier for a [[neon.consolidationgroup.ConsolidationGroup]]. Backed by a time-ordered
+  * UUID v7.
   */
 opaque type ConsolidationGroupId = UUID
 

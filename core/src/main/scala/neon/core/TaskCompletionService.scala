@@ -1,7 +1,11 @@
 package neon.core
 
 import neon.common.TaskId
-import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
+import neon.consolidationgroup.{
+  ConsolidationGroup,
+  ConsolidationGroupEvent,
+  ConsolidationGroupRepository
+}
 import neon.task.{Task, TaskEvent, TaskRepository}
 import neon.transportorder.{TransportOrder, TransportOrderEvent, TransportOrderRepository}
 import neon.wave.{Wave, WaveEvent, WaveRepository}
