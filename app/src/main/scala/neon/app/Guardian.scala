@@ -24,6 +24,7 @@ object Guardian:
 
       val registry = ServiceRegistry(context.system, connectionFactory)
 
+      projection.ProjectionBootstrap.start(context.system)
       http.HttpServer.start(registry, context.system)
 
       context.log.info("Neon WES Guardian started")
