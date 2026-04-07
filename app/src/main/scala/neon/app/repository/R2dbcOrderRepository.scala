@@ -18,7 +18,7 @@ class R2dbcOrderRepository(connectionFactory: ConnectionFactory)(using
     R2dbcHelper
       .queryOne(
         connectionFactory,
-        "SELECT id, carrier_id, lines FROM orders WHERE id = $1",
+        "SELECT id, priority, carrier_id, lines FROM orders WHERE id = $1",
         id.value
       )(mapRow)
 
@@ -29,7 +29,7 @@ class R2dbcOrderRepository(connectionFactory: ConnectionFactory)(using
       R2dbcHelper
         .queryList(
           connectionFactory,
-          s"SELECT id, carrier_id, lines FROM orders WHERE id IN ($placeholders)",
+          s"SELECT id, priority, carrier_id, lines FROM orders WHERE id IN ($placeholders)",
           ids.map(_.value)*
         )(mapRow)
 
@@ -45,7 +45,8 @@ class R2dbcOrderRepository(connectionFactory: ConnectionFactory)(using
     val lines = jsonDecode[List[OrderLine]](linesJson).getOrElse(Nil)
     Order(
       id = OrderId(row.get("id", classOf[UUID])),
-      priority = Priority.Normal,
+      priority = Priority.valueOf(row.get("priority", classOf[String])),
       lines = lines,
-      carrierId = Option(row.get("carrier_id", classOf[UUID])).map(CarrierId(_))
+      carrierId =
+        Option(row.get("carrier_id", classOf[UUID])).map(CarrierId(_))
     )

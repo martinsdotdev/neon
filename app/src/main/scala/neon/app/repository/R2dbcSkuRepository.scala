@@ -16,14 +16,14 @@ class R2dbcSkuRepository(connectionFactory: ConnectionFactory)(using
     R2dbcHelper
       .queryOne(
         connectionFactory,
-        "SELECT id, name, uom_hierarchy FROM sku WHERE id = $1",
+        "SELECT id, code, description, lot_managed, uom_hierarchy FROM sku WHERE id = $1",
         id.value
       )(mapRow)
 
   private def mapRow(row: Row): Sku =
     Sku(
       id = SkuId(row.get("id", classOf[UUID])),
-      code = row.get("name", classOf[String]),
-      description = row.get("name", classOf[String]),
-      lotManaged = false
+      code = row.get("code", classOf[String]),
+      description = row.get("description", classOf[String]),
+      lotManaged = row.get("lot_managed", classOf[java.lang.Boolean]).booleanValue
     )

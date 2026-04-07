@@ -16,14 +16,14 @@ class R2dbcUserRepository(connectionFactory: ConnectionFactory)(using
     R2dbcHelper
       .queryOne(
         connectionFactory,
-        "SELECT id, name FROM users WHERE id = $1",
+        "SELECT id, login, name, active FROM users WHERE id = $1",
         id.value
       )(mapRow)
 
   private def mapRow(row: Row): User =
     User(
       id = UserId(row.get("id", classOf[UUID])),
-      login = row.get("name", classOf[String]),
+      login = row.get("login", classOf[String]),
       name = row.get("name", classOf[String]),
-      active = true
+      active = row.get("active", classOf[java.lang.Boolean]).booleanValue
     )
