@@ -9,7 +9,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 /** R2DBC-backed implementation of [[AsyncSkuRepository]]. */
 class R2dbcSkuRepository(connectionFactory: ConnectionFactory)(using
-    ExecutionContext
+    system: org.apache.pekko.actor.typed.ActorSystem[?],
+    ec: ExecutionContext
 ) extends AsyncSkuRepository:
 
   def findById(id: SkuId): Future[Option[Sku]] =

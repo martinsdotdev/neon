@@ -9,7 +9,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 /** R2DBC-backed implementation of [[AsyncUserRepository]]. */
 class R2dbcUserRepository(connectionFactory: ConnectionFactory)(using
-    ExecutionContext
+    system: org.apache.pekko.actor.typed.ActorSystem[?],
+    ec: ExecutionContext
 ) extends AsyncUserRepository:
 
   def findById(id: UserId): Future[Option[User]] =

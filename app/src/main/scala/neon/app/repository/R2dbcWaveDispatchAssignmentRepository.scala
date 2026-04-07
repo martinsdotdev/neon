@@ -19,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
   */
 class R2dbcWaveDispatchAssignmentRepository(
     connectionFactory: ConnectionFactory
-)(using ExecutionContext)
+)(using system: org.apache.pekko.actor.typed.ActorSystem[?], ec: ExecutionContext)
     extends AsyncWaveDispatchAssignmentRepository:
 
   def findActiveByDock(

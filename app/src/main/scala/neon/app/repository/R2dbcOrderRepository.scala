@@ -11,7 +11,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 /** R2DBC-backed implementation of [[AsyncOrderRepository]]. */
 class R2dbcOrderRepository(connectionFactory: ConnectionFactory)(using
-    ExecutionContext
+    system: org.apache.pekko.actor.typed.ActorSystem[?],
+    ec: ExecutionContext
 ) extends AsyncOrderRepository:
 
   def findById(id: OrderId): Future[Option[Order]] =

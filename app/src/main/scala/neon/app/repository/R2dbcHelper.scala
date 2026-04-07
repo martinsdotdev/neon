@@ -1,12 +1,15 @@
 package neon.app.repository
 
-import io.r2dbc.spi.{Connection, ConnectionFactory, Result, Row, Statement}
-import org.reactivestreams.{Publisher, Subscriber, Subscription}
+import io.r2dbc.spi.{Connection, ConnectionFactory, Row}
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
+import org.apache.pekko.stream.scaladsl.{Sink, Source}
 
 import java.util.UUID
-import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.concurrent.{ExecutionContext, Future}
 
-/** Minimal R2DBC query utilities wrapping the reactive streams API into Scala Futures.
+/** Thin wrapper around Pekko's [[R2dbcSession]] managing connection lifecycle. Delegates actual
+  * query execution to the session's `selectOne`, `select`, and `updateOne` methods.
   */
 object R2dbcHelper:
 
@@ -15,10 +18,10 @@ object R2dbcHelper:
       connectionFactory: ConnectionFactory,
       sql: String,
       params: Any*
-  )(mapRow: Row => T)(using ExecutionContext): Future[Option[T]] =
-    withConnection(connectionFactory) { connection =>
-      val statement = bindParams(connection.createStatement(sql), params)
-      collectRows(statement.execute(), mapRow).map(_.headOption)
+  )(mapRow: Row => T)(using ActorSystem[?], ExecutionContext): Future[Option[T]] =
+    withSession(connectionFactory) { session =>
+      val stmt = bindParams(session.createStatement(sql), params)
+      session.selectOne(stmt)(mapRow)
     }
 
   /** Executes a parameterized query returning all matching rows. */
@@ -26,10 +29,9 @@ object R2dbcHelper:
       connectionFactory: ConnectionFactory,
       sql: String,
       params: Any*
-  )(mapRow: Row => T)(using ExecutionContext): Future[List[T]] =
-    withConnection(connectionFactory) { connection =>
-      val statement = bindParams(connection.createStatement(sql), params)
-      collectRows(statement.execute(), mapRow)
+  )(mapRow: Row => T)(using ActorSystem[?], ExecutionContext): Future[List[T]] =
+    withSession(connectionFactory) { session =>
+      session.select(bindParams(session.createStatement(sql), params))(mapRow).map(_.toList)
     }
 
   /** Executes an update/insert statement returning the affected row count. */
@@ -37,29 +39,18 @@ object R2dbcHelper:
       connectionFactory: ConnectionFactory,
       sql: String,
       params: Any*
-  )(using ExecutionContext): Future[Long] =
-    withConnection(connectionFactory) { connection =>
-      val statement = bindParams(connection.createStatement(sql), params)
-      toFuture(statement.execute()).flatMap { result =>
-        toFuture(result.getRowsUpdated).map(_.longValue)
-      }
-    }
-
-  private def withConnection[T](connectionFactory: ConnectionFactory)(
-      f: Connection => Future[T]
-  )(using ExecutionContext): Future[T] =
-    toFuture(connectionFactory.create()).flatMap { connection =>
-      f(connection).andThen { case _ =>
-        toFuture(connection.close())
-      }
+  )(using ActorSystem[?], ExecutionContext): Future[Long] =
+    withSession(connectionFactory) { session =>
+      val stmt = bindParams(session.createStatement(sql), params)
+      session.updateOne(stmt).map(_.toLong)
     }
 
   /** Executes a block within an R2DBC transaction. Commits on success, rolls back on failure.
     */
   def withTransaction[T](connectionFactory: ConnectionFactory)(
       f: Connection => Future[T]
-  )(using ExecutionContext): Future[T] =
-    toFuture(connectionFactory.create()).flatMap { connection =>
+  )(using system: ActorSystem[?], ec: ExecutionContext): Future[T] =
+    acquireConnection(connectionFactory).flatMap { connection =>
       toFuture(connection.beginTransaction())
         .flatMap(_ => f(connection))
         .flatMap { result =>
@@ -73,65 +64,37 @@ object R2dbcHelper:
         }
     }
 
-  private def bindParams(statement: Statement, params: Seq[Any]): Statement =
+  private def withSession[T](connectionFactory: ConnectionFactory)(
+      f: R2dbcSession => Future[T]
+  )(using system: ActorSystem[?], ec: ExecutionContext): Future[T] =
+    acquireConnection(connectionFactory).flatMap { connection =>
+      val session = new R2dbcSession(connection)(using ec, system)
+      f(session).andThen { case _ =>
+        toFuture(connection.close())
+      }
+    }
+
+  private def bindParams(
+      statement: io.r2dbc.spi.Statement,
+      params: Seq[Any]
+  ): io.r2dbc.spi.Statement =
     params.zipWithIndex.foldLeft(statement) { case (stmt, (param, idx)) =>
       param match
         case v: UUID    => stmt.bind(idx, v)
         case v: String  => stmt.bind(idx, v)
-        case v: Int     => stmt.bind(idx, v)
-        case v: Long    => stmt.bind(idx, v)
-        case v: Boolean => stmt.bind(idx, v)
+        case v: Int     => stmt.bind(idx, v: java.lang.Integer)
+        case v: Long    => stmt.bind(idx, v: java.lang.Long)
+        case v: Boolean => stmt.bind(idx, v: java.lang.Boolean)
         case null       => stmt.bindNull(idx, classOf[Object])
         case other      => stmt.bind(idx, other)
     }
 
-  private def collectRows[T](
-      resultPublisher: Publisher[? <: Result],
-      mapRow: Row => T
-  )(using ExecutionContext): Future[List[T]] =
-    val promise = Promise[List[T]]()
-    val rows = scala.collection.mutable.ListBuffer[T]()
+  private def acquireConnection(
+      connectionFactory: ConnectionFactory
+  )(using system: ActorSystem[?], ec: ExecutionContext): Future[Connection] =
+    Source.fromPublisher(connectionFactory.create()).runWith(Sink.head)
 
-    resultPublisher.subscribe(new Subscriber[Result]:
-      private var subscription: Subscription = scala.compiletime.uninitialized
-
-      override def onSubscribe(s: Subscription): Unit =
-        subscription = s
-        s.request(Long.MaxValue)
-
-      override def onNext(result: Result): Unit =
-        result
-          .map((row, _) => rows += mapRow(row))
-          .subscribe(new Subscriber[Object]:
-            override def onSubscribe(s: Subscription): Unit =
-              s.request(Long.MaxValue)
-            override def onNext(t: Object): Unit = ()
-            override def onError(t: Throwable): Unit =
-              promise.tryFailure(t)
-            override def onComplete(): Unit = ())
-
-      override def onError(t: Throwable): Unit =
-        promise.tryFailure(t)
-
-      override def onComplete(): Unit =
-        promise.trySuccess(rows.toList))
-
-    promise.future
-
-  private def toFuture[T](publisher: Publisher[T])(using
-      ExecutionContext
-  ): Future[T] =
-    val promise = Promise[T]()
-    publisher.subscribe(new Subscriber[T]:
-      override def onSubscribe(s: Subscription): Unit =
-        s.request(1)
-      override def onNext(t: T): Unit =
-        promise.trySuccess(t)
-      override def onError(t: Throwable): Unit =
-        promise.tryFailure(t)
-      override def onComplete(): Unit =
-        if !promise.isCompleted then
-          promise.tryFailure(
-            java.util.NoSuchElementException("Publisher completed without emitting")
-          ))
-    promise.future
+  private def toFuture[T](
+      publisher: org.reactivestreams.Publisher[T]
+  )(using system: ActorSystem[?], ec: ExecutionContext): Future[T] =
+    Source.fromPublisher(publisher).runWith(Sink.head)

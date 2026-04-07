@@ -9,7 +9,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 /** R2DBC-backed implementation of [[AsyncLocationRepository]]. */
 class R2dbcLocationRepository(connectionFactory: ConnectionFactory)(using
-    ExecutionContext
+    system: org.apache.pekko.actor.typed.ActorSystem[?],
+    ec: ExecutionContext
 ) extends AsyncLocationRepository:
 
   def findById(id: LocationId): Future[Option[Location]] =

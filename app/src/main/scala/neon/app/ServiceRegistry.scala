@@ -24,6 +24,7 @@ class ServiceRegistry(
     connectionFactory: ConnectionFactory
 )(using Timeout):
 
+  private given ActorSystem[?] = system
   private given ExecutionContext = system.executionContext
 
   // --- Actor-backed repositories ---
