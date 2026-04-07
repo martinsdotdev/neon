@@ -33,8 +33,8 @@ class TaskActorSuite
   private val orderId = OrderId()
   private val waveId = WaveId()
   private val userId = UserId()
-  private val srcLoc = LocationId()
-  private val dstLoc = LocationId()
+  private val sourceLocationId = LocationId()
+  private val destinationLocationId = LocationId()
   private val at = Instant.now()
 
   private val serializationSettings =
@@ -82,7 +82,7 @@ class TaskActorSuite
 
         val allocResult =
           esTestKit.runCommand[StatusReply[TaskActor.AllocateResponse]](
-            TaskActor.Allocate(srcLoc, dstLoc, at, _)
+            TaskActor.Allocate(sourceLocationId, destinationLocationId, at, _)
           )
         assert(allocResult.reply.isSuccess)
         assert(
@@ -122,7 +122,7 @@ class TaskActorSuite
       it("cancels from Assigned state"):
         createPlanned()
         esTestKit.runCommand[StatusReply[TaskActor.AllocateResponse]](
-          TaskActor.Allocate(srcLoc, dstLoc, at, _)
+          TaskActor.Allocate(sourceLocationId, destinationLocationId, at, _)
         )
         esTestKit.runCommand[StatusReply[TaskActor.AssignResponse]](
           TaskActor.Assign(userId, at, _)
@@ -138,7 +138,7 @@ class TaskActorSuite
       it("rejects Cancel on Completed task"):
         createPlanned()
         esTestKit.runCommand[StatusReply[TaskActor.AllocateResponse]](
-          TaskActor.Allocate(srcLoc, dstLoc, at, _)
+          TaskActor.Allocate(sourceLocationId, destinationLocationId, at, _)
         )
         esTestKit.runCommand[StatusReply[TaskActor.AssignResponse]](
           TaskActor.Assign(userId, at, _)
@@ -165,7 +165,7 @@ class TaskActorSuite
       it("rejects Complete on Allocated task"):
         createPlanned()
         esTestKit.runCommand[StatusReply[TaskActor.AllocateResponse]](
-          TaskActor.Allocate(srcLoc, dstLoc, at, _)
+          TaskActor.Allocate(sourceLocationId, destinationLocationId, at, _)
         )
         val result =
           esTestKit.runCommand[StatusReply[TaskActor.CompleteResponse]](
@@ -178,7 +178,7 @@ class TaskActorSuite
       it("recovers Assigned state from journal"):
         createPlanned()
         esTestKit.runCommand[StatusReply[TaskActor.AllocateResponse]](
-          TaskActor.Allocate(srcLoc, dstLoc, at, _)
+          TaskActor.Allocate(sourceLocationId, destinationLocationId, at, _)
         )
         esTestKit.runCommand[StatusReply[TaskActor.AssignResponse]](
           TaskActor.Assign(userId, at, _)
@@ -190,4 +190,4 @@ class TaskActorSuite
         assert(result.reply.get.isInstanceOf[Task.Assigned])
         val assigned = result.reply.get.asInstanceOf[Task.Assigned]
         assert(assigned.assignedTo == userId)
-        assert(assigned.sourceLocationId == srcLoc)
+        assert(assigned.sourceLocationId == sourceLocationId)

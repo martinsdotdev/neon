@@ -33,8 +33,8 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
   private val orderId = OrderId()
   private val waveId = WaveId()
   private val userId = UserId()
-  private val srcLoc = LocationId()
-  private val dstLoc = LocationId()
+  private val sourceLocationId = LocationId()
+  private val destinationLocationId = LocationId()
   private val at = Instant.now()
 
   private val completedTask = Task.Completed(
@@ -48,8 +48,8 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
     Some(waveId),
     None,
     None,
-    srcLoc,
-    dstLoc,
+    sourceLocationId,
+    destinationLocationId,
     userId
   )
 
@@ -61,8 +61,8 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
     Some(waveId),
     None,
     None,
-    srcLoc,
-    dstLoc,
+    sourceLocationId,
+    destinationLocationId,
     10,
     10,
     userId,

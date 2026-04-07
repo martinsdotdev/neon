@@ -119,16 +119,16 @@ object HandlingUnitActor:
     (state, command) =>
       (state, command) match
 
-        case (EmptyState, Create(hu, replyTo)) =>
+        case (EmptyState, Create(handlingUnit, replyTo)) =>
           Effect
-            .persist(Initialized(hu))
+            .persist(Initialized(handlingUnit))
             .thenReply(replyTo)(_ => StatusReply.ack())
 
         case (
               ActiveState(pc: HandlingUnit.PickCreated),
-              MoveToBuffer(locId, at, replyTo)
+              MoveToBuffer(locationId, at, replyTo)
             ) =>
-          val (inBuffer, event) = pc.moveToBuffer(locId, at)
+          val (inBuffer, event) = pc.moveToBuffer(locationId, at)
           Effect
             .persist(DomainEvent(event))
             .thenReply(replyTo)(_ => StatusReply.success(MoveToBufferResponse(inBuffer, event)))
@@ -170,10 +170,10 @@ object HandlingUnitActor:
             .thenReply(replyTo)(_ => StatusReply.success(ShipResponse(shipped, event)))
 
         case (_, GetState(replyTo)) =>
-          val hu = state match
-            case EmptyState      => None
-            case ActiveState(hu) => Some(hu)
-          Effect.reply(replyTo)(hu)
+          val result = state match
+            case EmptyState                => None
+            case ActiveState(handlingUnit) => Some(handlingUnit)
+          Effect.reply(replyTo)(result)
 
         case (_, cmd) =>
           val msg = s"Invalid command ${cmd.getClass.getSimpleName} " +
@@ -192,8 +192,8 @@ object HandlingUnitActor:
   private val eventHandler: (State, ActorEvent) => State =
     (state, event) =>
       event match
-        case Initialized(hu)          => ActiveState(hu)
-        case DomainEvent(domainEvent) =>
+        case Initialized(handlingUnit) => ActiveState(handlingUnit)
+        case DomainEvent(domainEvent)  =>
           (state, domainEvent) match
             case (
                   ActiveState(pc: HandlingUnit.PickCreated),

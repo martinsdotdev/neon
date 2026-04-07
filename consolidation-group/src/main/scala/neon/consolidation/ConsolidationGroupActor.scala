@@ -137,9 +137,9 @@ object ConsolidationGroupActor:
 
         case (
               ActiveState(r: ConsolidationGroup.ReadyForWorkstation),
-              Assign(wsId, at, replyTo)
+              Assign(workstationId, at, replyTo)
             ) =>
-          val (assigned, event) = r.assign(wsId, at)
+          val (assigned, event) = r.assign(workstationId, at)
           Effect
             .persist(event)
             .thenReply(replyTo)(_ => StatusReply.success(AssignResponse(assigned, event)))

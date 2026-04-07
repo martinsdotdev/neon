@@ -31,10 +31,10 @@ object WorkstationRoutes:
       path("assign"):
         post:
           entity(as[AssignWorkstationRequest]): request =>
-            val cgId = ConsolidationGroupId(
+            val consolidationGroupId = ConsolidationGroupId(
               UUID.fromString(request.consolidationGroupId)
             )
-            onSuccess(assignmentService.assign(cgId, Instant.now())):
+            onSuccess(assignmentService.assign(consolidationGroupId, Instant.now())):
               case Right(result) =>
                 complete(
                   WorkstationAssignmentResponse(

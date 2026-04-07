@@ -93,35 +93,35 @@ object InventoryActor:
         case (EmptyState, Create(_, event, replyTo)) =>
           Effect.persist(event).thenReply(replyTo)(_ => StatusReply.ack())
 
-        case (ActiveState(inv), Reserve(qty, at, replyTo)) =>
-          val (updated, event) = inv.reserve(qty, at)
+        case (ActiveState(inventory), Reserve(quantity, at, replyTo)) =>
+          val (updated, event) = inventory.reserve(quantity, at)
           Effect
             .persist(event)
             .thenReply(replyTo)(_ => StatusReply.success(MutationResponse(updated)))
 
-        case (ActiveState(inv), Release(qty, at, replyTo)) =>
-          val (updated, event) = inv.release(qty, at)
+        case (ActiveState(inventory), Release(quantity, at, replyTo)) =>
+          val (updated, event) = inventory.release(quantity, at)
           Effect
             .persist(event)
             .thenReply(replyTo)(_ => StatusReply.success(MutationResponse(updated)))
 
-        case (ActiveState(inv), Consume(qty, at, replyTo)) =>
-          val (updated, event) = inv.consume(qty, at)
+        case (ActiveState(inventory), Consume(quantity, at, replyTo)) =>
+          val (updated, event) = inventory.consume(quantity, at)
           Effect
             .persist(event)
             .thenReply(replyTo)(_ => StatusReply.success(MutationResponse(updated)))
 
-        case (ActiveState(inv), CorrectLot(newLot, at, replyTo)) =>
-          val (updated, event) = inv.correctLot(newLot, at)
+        case (ActiveState(inventory), CorrectLot(newLot, at, replyTo)) =>
+          val (updated, event) = inventory.correctLot(newLot, at)
           Effect
             .persist(event)
             .thenReply(replyTo)(_ => StatusReply.success(MutationResponse(updated)))
 
         case (_, GetState(replyTo)) =>
-          val inv = state match
-            case EmptyState       => None
-            case ActiveState(inv) => Some(inv)
-          Effect.reply(replyTo)(inv)
+          val inventory = state match
+            case EmptyState             => None
+            case ActiveState(inventory) => Some(inventory)
+          Effect.reply(replyTo)(inventory)
 
         case (_, cmd) =>
           val msg = s"Invalid command ${cmd.getClass.getSimpleName} " +
@@ -152,22 +152,26 @@ object InventoryActor:
             )
           )
         case e: InventoryEvent.InventoryReserved =>
-          applyToInventory(state)(inv => inv.copy(reserved = inv.reserved + e.quantityReserved))
+          applyToInventory(state)(inventory =>
+            inventory.copy(reserved = inventory.reserved + e.quantityReserved)
+          )
         case e: InventoryEvent.InventoryReleased =>
-          applyToInventory(state)(inv => inv.copy(reserved = inv.reserved - e.quantityReleased))
+          applyToInventory(state)(inventory =>
+            inventory.copy(reserved = inventory.reserved - e.quantityReleased)
+          )
         case e: InventoryEvent.InventoryConsumed =>
-          applyToInventory(state)(inv =>
-            inv.copy(
-              onHand = inv.onHand - e.quantityConsumed,
-              reserved = inv.reserved - e.quantityConsumed
+          applyToInventory(state)(inventory =>
+            inventory.copy(
+              onHand = inventory.onHand - e.quantityConsumed,
+              reserved = inventory.reserved - e.quantityConsumed
             )
           )
         case e: InventoryEvent.LotCorrected =>
-          applyToInventory(state)(inv => inv.copy(lot = e.newLot))
+          applyToInventory(state)(inventory => inventory.copy(lot = e.newLot))
 
   private def applyToInventory(state: State)(
       f: Inventory => Inventory
   ): State =
     state match
-      case ActiveState(inv) => ActiveState(f(inv))
-      case _                => state
+      case ActiveState(inventory) => ActiveState(f(inventory))
+      case _                      => state

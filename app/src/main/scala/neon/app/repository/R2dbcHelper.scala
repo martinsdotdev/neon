@@ -52,7 +52,10 @@ object R2dbcHelper:
   )(using system: ActorSystem[?], ec: ExecutionContext): Future[T] =
     acquireConnection(connectionFactory).flatMap { connection =>
       toFuture(connection.beginTransaction())
-        .flatMap(_ => f(connection))
+        .flatMap { _ =>
+          try f(connection)
+          catch case ex: Throwable => Future.failed(ex)
+        }
         .flatMap { result =>
           toFuture(connection.commitTransaction())
             .flatMap(_ => toFuture(connection.close()).map(_ => result))

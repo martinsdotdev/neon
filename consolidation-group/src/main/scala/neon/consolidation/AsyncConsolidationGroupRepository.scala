@@ -12,6 +12,8 @@ trait AsyncConsolidationGroupRepository:
       consolidationGroup: ConsolidationGroup,
       event: ConsolidationGroupEvent
   ): Future[Unit]
+
+  /** Not transactional: individual entries may succeed or fail independently. */
   def saveAll(
       entries: List[(ConsolidationGroup, ConsolidationGroupEvent)]
   ): Future[Unit]

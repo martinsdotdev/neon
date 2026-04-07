@@ -9,17 +9,18 @@ import neon.core.{
   WavePlanningError
 }
 import io.r2dbc.spi.{Connection, ConnectionFactory, Row}
-import org.reactivestreams.{Publisher, Subscriber, Subscription}
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.stream.scaladsl.{Sink, Source}
 
 import java.util.UUID
-import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.concurrent.{ExecutionContext, Future}
 
 /** R2DBC-backed implementation of [[AsyncWaveDispatchAssignmentRepository]]. Uses database-level
   * transactions for atomic dock/carrier reservation.
   */
 class R2dbcWaveDispatchAssignmentRepository(
     connectionFactory: ConnectionFactory
-)(using system: org.apache.pekko.actor.typed.ActorSystem[?], ec: ExecutionContext)
+)(using system: ActorSystem[?], ec: ExecutionContext)
     extends AsyncWaveDispatchAssignmentRepository:
 
   def findActiveByDock(
@@ -69,12 +70,11 @@ class R2dbcWaveDispatchAssignmentRepository(
   ): Future[Option[WavePlanningError.DockConflict]] =
     Future
       .traverse(assignments) { assignment =>
-        val stmt = connection
-          .createStatement(
-            "SELECT wave_id, dock_id, carrier_id FROM wave_dispatch_assignment WHERE dock_id = $1 AND active = true FOR UPDATE"
-          )
-          .bind(0, assignment.dockId.value)
-        collectRows(stmt.execute()) { row =>
+        queryRows(
+          connection,
+          "SELECT wave_id, dock_id, carrier_id FROM wave_dispatch_assignment WHERE dock_id = $1 AND active = true FOR UPDATE",
+          assignment.dockId.value
+        ) { row =>
           ActiveDockCarrierAssignment(
             waveId = WaveId(row.get("wave_id", classOf[UUID])),
             dockId = LocationId(row.get("dock_id", classOf[UUID])),
@@ -101,7 +101,7 @@ class R2dbcWaveDispatchAssignmentRepository(
       assignments: List[DockCarrierAssignment]
   ): Future[Unit] =
     Future
-      .traverse(assignments) { assignment =>
+      .sequence(assignments.map { assignment =>
         val stmt = connection
           .createStatement(
             "INSERT INTO wave_dispatch_assignment (wave_id, dock_id, carrier_id, active) VALUES ($1, $2, $3, true)"
@@ -109,35 +109,20 @@ class R2dbcWaveDispatchAssignmentRepository(
           .bind(0, waveId.value)
           .bind(1, assignment.dockId.value)
           .bind(2, assignment.carrierId.value)
-        toFuture(stmt.execute()).map(_ => ())
-      }
+        Source.fromPublisher(stmt.execute()).runWith(Sink.head).map(_ => ())
+      })
       .map(_ => ())
 
-  private def collectRows[T](
-      resultPublisher: Publisher[? <: io.r2dbc.spi.Result]
+  private def queryRows[T](
+      connection: Connection,
+      sql: String,
+      param: Any
   )(mapRow: Row => T): Future[List[T]] =
-    val promise = Promise[List[T]]()
-    val rows = scala.collection.mutable.ListBuffer[T]()
-    resultPublisher.subscribe(new Subscriber[io.r2dbc.spi.Result]:
-      override def onSubscribe(s: Subscription): Unit = s.request(Long.MaxValue)
-      override def onNext(result: io.r2dbc.spi.Result): Unit =
-        result
-          .map((row, _) => rows += mapRow(row))
-          .subscribe(new Subscriber[Object]:
-            override def onSubscribe(s: Subscription): Unit =
-              s.request(Long.MaxValue)
-            override def onNext(t: Object): Unit = ()
-            override def onError(t: Throwable): Unit = promise.tryFailure(t)
-            override def onComplete(): Unit = ())
-      override def onError(t: Throwable): Unit = promise.tryFailure(t)
-      override def onComplete(): Unit = promise.trySuccess(rows.toList))
-    promise.future
-
-  private def toFuture[T](publisher: Publisher[T]): Future[T] =
-    val promise = Promise[T]()
-    publisher.subscribe(new Subscriber[T]:
-      override def onSubscribe(s: Subscription): Unit = s.request(1)
-      override def onNext(t: T): Unit = promise.trySuccess(t)
-      override def onError(t: Throwable): Unit = promise.tryFailure(t)
-      override def onComplete(): Unit = ())
-    promise.future
+    val stmt = connection.createStatement(sql).bind(0, param)
+    Source
+      .fromPublisher(stmt.execute())
+      .flatMapConcat { result =>
+        Source.fromPublisher(result.map((row, _) => mapRow(row)))
+      }
+      .runWith(Sink.seq)
+      .map(_.toList)

@@ -111,9 +111,9 @@ object TaskActor:
 
         case (
               ActiveState(planned: Task.Planned),
-              Allocate(srcLoc, dstLoc, at, replyTo)
+              Allocate(sourceLocationId, destinationLocationId, at, replyTo)
             ) =>
-          val (allocated, event) = planned.allocate(srcLoc, dstLoc, at)
+          val (allocated, event) = planned.allocate(sourceLocationId, destinationLocationId, at)
           Effect
             .persist(event)
             .thenReply(replyTo)(_ => StatusReply.success(AllocateResponse(allocated, event)))
@@ -129,9 +129,9 @@ object TaskActor:
 
         case (
               ActiveState(assigned: Task.Assigned),
-              Complete(actualQty, at, replyTo)
+              Complete(actualQuantity, at, replyTo)
             ) =>
-          val (completed, event) = assigned.complete(actualQty, at)
+          val (completed, event) = assigned.complete(actualQuantity, at)
           Effect
             .persist(event)
             .thenReply(replyTo)(_ => StatusReply.success(CompleteResponse(completed, event)))

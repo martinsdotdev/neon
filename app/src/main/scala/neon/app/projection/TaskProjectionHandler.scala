@@ -30,7 +30,7 @@ class TaskProjectionHandler(using ExecutionContext) extends R2dbcHandler[EventEn
           .bind(4, "Planned")
 
         val stmt2 = e.handlingUnitId match
-          case Some(huId) =>
+          case Some(handlingUnitId) =>
             Some(
               session
                 .createStatement(
@@ -39,7 +39,7 @@ class TaskProjectionHandler(using ExecutionContext) extends R2dbcHandler[EventEn
                     |ON CONFLICT (task_id) DO UPDATE SET state = $5""".stripMargin
                 )
                 .bind(0, e.taskId.value)
-                .bind(1, huId.value)
+                .bind(1, handlingUnitId.value)
                 .bind(2, e.waveId.map(_.value).orNull)
                 .bind(3, e.orderId.value)
                 .bind(4, "Planned")

@@ -10,4 +10,8 @@ trait AsyncTaskRepository:
   def findByWaveId(waveId: WaveId): Future[List[Task]]
   def findByHandlingUnitId(handlingUnitId: HandlingUnitId): Future[List[Task]]
   def save(task: Task, event: TaskEvent): Future[Unit]
+
+  /** Persists multiple entries by fanning out to individual entity actors. Not transactional:
+    * individual entries may succeed or fail independently.
+    */
   def saveAll(entries: List[(Task, TaskEvent)]): Future[Unit]

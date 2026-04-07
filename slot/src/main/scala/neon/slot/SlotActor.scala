@@ -106,9 +106,9 @@ object SlotActor:
 
         case (
               ActiveState(a: Slot.Available),
-              Reserve(orderId, huId, at, replyTo)
+              Reserve(orderId, handlingUnitId, at, replyTo)
             ) =>
-          val (reserved, event) = a.reserve(orderId, huId, at)
+          val (reserved, event) = a.reserve(orderId, handlingUnitId, at)
           Effect
             .persist(DomainEvent(event))
             .thenReply(replyTo)(_ => StatusReply.success(ReserveResponse(reserved, event)))

@@ -14,6 +14,8 @@ trait AsyncTransportOrderRepository:
       transportOrder: TransportOrder,
       event: TransportOrderEvent
   ): Future[Unit]
+
+  /** Not transactional: individual entries may succeed or fail independently. */
   def saveAll(
       entries: List[(TransportOrder, TransportOrderEvent)]
   ): Future[Unit]

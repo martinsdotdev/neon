@@ -108,9 +108,9 @@ object WorkstationActor:
     (state, command) =>
       (state, command) match
 
-        case (EmptyState, Create(ws, replyTo)) =>
+        case (EmptyState, Create(workstation, replyTo)) =>
           Effect
-            .persist(Initialized(ws))
+            .persist(Initialized(workstation))
             .thenReply(replyTo)(_ => StatusReply.ack())
 
         case (
@@ -124,9 +124,9 @@ object WorkstationActor:
 
         case (
               ActiveState(i: Workstation.Idle),
-              Assign(cgId, at, replyTo)
+              Assign(consolidationGroupId, at, replyTo)
             ) =>
-          val (active, event) = i.assign(cgId, at)
+          val (active, event) = i.assign(consolidationGroupId, at)
           Effect
             .persist(DomainEvent(event))
             .thenReply(replyTo)(_ => StatusReply.success(AssignResponse(active, event)))
@@ -159,10 +159,10 @@ object WorkstationActor:
             .thenReply(replyTo)(_ => StatusReply.success(DisableResponse(disabled, event)))
 
         case (_, GetState(replyTo)) =>
-          val ws = state match
-            case EmptyState      => None
-            case ActiveState(ws) => Some(ws)
-          Effect.reply(replyTo)(ws)
+          val result = state match
+            case EmptyState               => None
+            case ActiveState(workstation) => Some(workstation)
+          Effect.reply(replyTo)(result)
 
         case (_, cmd) =>
           val msg = s"Invalid command ${cmd.getClass.getSimpleName} " +
@@ -180,7 +180,7 @@ object WorkstationActor:
   private val eventHandler: (State, ActorEvent) => State =
     (state, event) =>
       event match
-        case Initialized(ws)          => ActiveState(ws)
+        case Initialized(workstation) => ActiveState(workstation)
         case DomainEvent(domainEvent) =>
           (state, domainEvent) match
             case (ActiveState(d: Workstation.Disabled), e: WorkstationEvent.WorkstationEnabled) =>
@@ -196,8 +196,12 @@ object WorkstationActor:
               )
             case (ActiveState(a: Workstation.Active), _: WorkstationEvent.WorkstationReleased) =>
               ActiveState(Workstation.Idle(a.id, a.workstationType, a.slotCount))
-            case (ActiveState(ws), _: WorkstationEvent.WorkstationDisabled) =>
+            case (ActiveState(workstation), _: WorkstationEvent.WorkstationDisabled) =>
               ActiveState(
-                Workstation.Disabled(ws.id, ws.workstationType, ws.slotCount)
+                Workstation.Disabled(
+                  workstation.id,
+                  workstation.workstationType,
+                  workstation.slotCount
+                )
               )
             case _ => state
