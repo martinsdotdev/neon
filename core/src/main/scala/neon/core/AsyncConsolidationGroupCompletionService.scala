@@ -1,6 +1,6 @@
 package neon.core
 
-import neon.common.{ConsolidationGroupId, WorkstationId}
+import neon.common.ConsolidationGroupId
 import neon.consolidationgroup.{AsyncConsolidationGroupRepository, ConsolidationGroup}
 import neon.workstation.{AsyncWorkstationRepository, Workstation}
 

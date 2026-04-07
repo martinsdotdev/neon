@@ -1,8 +1,7 @@
 package neon.wave
 
-import neon.common.{OrderId, WaveId}
-
 import com.typesafe.config.ConfigFactory
+import neon.common.{OrderId, WaveId}
 import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.apache.pekko.pattern.StatusReply
 import org.apache.pekko.persistence.testkit.scaladsl.EventSourcedBehaviorTestKit

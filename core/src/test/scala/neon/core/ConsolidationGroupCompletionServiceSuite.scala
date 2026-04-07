@@ -3,9 +3,8 @@ package neon.core
 import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
 import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
 import neon.workstation.{Workstation, WorkstationEvent, WorkstationRepository, WorkstationType}
-import org.scalatest.EitherValues
-import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.{EitherValues, OptionValues}
 
 import java.time.Instant
 import scala.collection.mutable

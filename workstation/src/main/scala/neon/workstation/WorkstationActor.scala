@@ -2,7 +2,6 @@ package neon.workstation
 
 import neon.common.ConsolidationGroupId
 import neon.common.serialization.CborSerializable
-
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.cluster.sharding.typed.scaladsl.EntityTypeKey

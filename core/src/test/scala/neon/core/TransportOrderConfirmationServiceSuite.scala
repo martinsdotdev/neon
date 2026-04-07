@@ -16,9 +16,8 @@ import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, Con
 import neon.handlingunit.{HandlingUnit, HandlingUnitEvent, HandlingUnitRepository}
 import neon.task.{Task, TaskEvent, TaskRepository, TaskType}
 import neon.transportorder.{TransportOrder, TransportOrderEvent, TransportOrderRepository}
-import org.scalatest.EitherValues
-import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.{EitherValues, OptionValues}
 
 import java.time.Instant
 import scala.collection.mutable

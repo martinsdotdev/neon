@@ -2,7 +2,7 @@ package neon.core
 
 import neon.common.ConsolidationGroupId
 import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent, ConsolidationGroupRepository}
-import neon.workstation.{Workstation, WorkstationEvent, WorkstationType, WorkstationRepository}
+import neon.workstation.{Workstation, WorkstationEvent, WorkstationRepository, WorkstationType}
 
 import java.time.Instant
 

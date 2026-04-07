@@ -1,7 +1,6 @@
 package neon.handlingunit
 
 import neon.common.HandlingUnitId
-
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout

@@ -1,8 +1,7 @@
 package neon.task
 
-import neon.common.{LocationId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
-
 import com.typesafe.config.ConfigFactory
+import neon.common.{LocationId, OrderId, PackagingLevel, SkuId, TaskId, UserId, WaveId}
 import org.apache.pekko.Done
 import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.apache.pekko.pattern.StatusReply

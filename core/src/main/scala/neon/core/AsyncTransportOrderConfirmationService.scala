@@ -1,7 +1,6 @@
 package neon.core
 
-import neon.common.HandlingUnitId
-import neon.common.TransportOrderId
+import neon.common.{HandlingUnitId, TransportOrderId}
 import neon.consolidationgroup.{
   AsyncConsolidationGroupRepository,
   ConsolidationGroup,
