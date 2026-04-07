@@ -12,9 +12,17 @@ import java.time.Instant
 
 class WaveActorSuite
     extends ScalaTestWithActorTestKit(
-      EventSourcedBehaviorTestKit.config.withFallback(
-        ConfigFactory.parseString("pekko.actor.provider = local")
-      )
+      ConfigFactory
+        .parseString("""
+          pekko.actor {
+            provider = local
+            serialization-bindings {
+              "neon.common.serialization.CborSerializable" = jackson-cbor
+            }
+          }
+        """)
+        .withFallback(EventSourcedBehaviorTestKit.config)
+        .resolve()
     )
     with AnyFunSpecLike
     with BeforeAndAfterEach:
@@ -23,6 +31,10 @@ class WaveActorSuite
   private val orderIds = List(OrderId(), OrderId())
   private val at = Instant.now()
 
+  private val serializationSettings = EventSourcedBehaviorTestKit.SerializationSettings.disabled
+    .withVerifyEvents(true)
+    .withVerifyState(true)
+
   private val esTestKit = EventSourcedBehaviorTestKit[
     WaveActor.Command,
     WaveEvent,
@@ -30,7 +42,7 @@ class WaveActorSuite
   ](
     system,
     WaveActor(waveId.value.toString),
-    EventSourcedBehaviorTestKit.SerializationSettings.disabled
+    serializationSettings
   )
 
   override def beforeEach(): Unit =

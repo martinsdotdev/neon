@@ -1,11 +1,12 @@
 package neon.handlingunit
 
+import neon.common.serialization.CborSerializable
 import neon.common.{HandlingUnitId, LocationId, OrderId}
 
 import java.time.Instant
 
 /** Domain events emitted by [[HandlingUnit]] state transitions. */
-sealed trait HandlingUnitEvent:
+sealed trait HandlingUnitEvent extends CborSerializable:
   /** The handling unit that emitted this event. */
   def handlingUnitId: HandlingUnitId
 

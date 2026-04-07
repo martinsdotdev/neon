@@ -2,7 +2,6 @@ package neon.app.http
 
 import neon.common.ConsolidationGroupId
 import neon.core.{AsyncConsolidationGroupCompletionService, ConsolidationGroupCompletionError}
-
 import io.circe.Json
 import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import org.apache.pekko.http.scaladsl.server.Directives.*

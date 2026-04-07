@@ -1,11 +1,12 @@
 package neon.inventory
 
+import neon.common.serialization.CborSerializable
 import neon.common.{InventoryId, LocationId, Lot, PackagingLevel, SkuId}
 
 import java.time.Instant
 
 /** Domain events emitted by [[Inventory]] state changes. */
-sealed trait InventoryEvent:
+sealed trait InventoryEvent extends CborSerializable:
   /** The inventory position that emitted this event. */
   def inventoryId: InventoryId
 

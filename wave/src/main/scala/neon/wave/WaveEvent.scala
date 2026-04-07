@@ -1,11 +1,12 @@
 package neon.wave
 
+import neon.common.serialization.CborSerializable
 import neon.common.{OrderId, WaveId}
 
 import java.time.Instant
 
 /** Domain events emitted by [[Wave]] state transitions. */
-sealed trait WaveEvent:
+sealed trait WaveEvent extends CborSerializable:
   /** The wave that emitted this event. */
   def waveId: WaveId
 

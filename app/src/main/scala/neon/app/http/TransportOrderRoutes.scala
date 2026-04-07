@@ -2,7 +2,6 @@ package neon.app.http
 
 import neon.common.TransportOrderId
 import neon.core.{AsyncTransportOrderConfirmationService, TransportOrderConfirmationError}
-
 import io.circe.Json
 import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import org.apache.pekko.http.scaladsl.server.Directives.*

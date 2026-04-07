@@ -1,11 +1,12 @@
 package neon.transportorder
 
+import neon.common.serialization.CborSerializable
 import neon.common.{HandlingUnitId, LocationId, TransportOrderId}
 
 import java.time.Instant
 
 /** Domain events emitted by [[TransportOrder]] state transitions. */
-sealed trait TransportOrderEvent:
+sealed trait TransportOrderEvent extends CborSerializable:
   /** The transport order that emitted this event. */
   def transportOrderId: TransportOrderId
 

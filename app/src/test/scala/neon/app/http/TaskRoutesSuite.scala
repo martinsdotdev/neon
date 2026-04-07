@@ -17,9 +17,8 @@ import neon.core.{
   VerificationProfile
 }
 import neon.task.{AsyncTaskRepository, Task, TaskEvent, TaskType}
-
-import io.circe.{Decoder, Json}
 import io.circe.parser.parse
+import io.circe.{Decoder, Json}
 import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import org.apache.pekko.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.funspec.AnyFunSpec

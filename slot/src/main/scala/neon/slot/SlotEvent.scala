@@ -1,11 +1,12 @@
 package neon.slot
 
+import neon.common.serialization.CborSerializable
 import neon.common.{HandlingUnitId, OrderId, SlotId, WorkstationId}
 
 import java.time.Instant
 
 /** Domain events emitted by [[Slot]] state transitions. */
-sealed trait SlotEvent:
+sealed trait SlotEvent extends CborSerializable:
   /** The slot that emitted this event. */
   def slotId: SlotId
 

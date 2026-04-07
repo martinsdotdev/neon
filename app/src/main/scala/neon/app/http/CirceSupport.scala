@@ -1,8 +1,8 @@
 package neon.app.http
 
-import io.circe.{Decoder, Encoder, Printer}
 import io.circe.parser.decode
 import io.circe.syntax.*
+import io.circe.{Decoder, Encoder, Printer}
 import org.apache.pekko.http.scaladsl.marshalling.{Marshaller, ToEntityMarshaller}
 import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, MediaTypes}
 import org.apache.pekko.http.scaladsl.unmarshalling.{FromEntityUnmarshaller, Unmarshaller}

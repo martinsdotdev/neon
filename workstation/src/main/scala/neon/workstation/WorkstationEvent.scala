@@ -1,11 +1,12 @@
 package neon.workstation
 
+import neon.common.serialization.CborSerializable
 import neon.common.{ConsolidationGroupId, WorkstationId}
 
 import java.time.Instant
 
 /** Domain events emitted by [[Workstation]] state transitions. */
-sealed trait WorkstationEvent:
+sealed trait WorkstationEvent extends CborSerializable:
   /** The workstation that emitted this event. */
   def workstationId: WorkstationId
 

@@ -1,7 +1,6 @@
 package neon.app.http
 
 import neon.app.ServiceRegistry
-
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.http.scaladsl.Http
 import org.apache.pekko.http.scaladsl.server.Directives.*

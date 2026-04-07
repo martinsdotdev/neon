@@ -1,11 +1,12 @@
 package neon.consolidationgroup
 
+import neon.common.serialization.CborSerializable
 import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
 
 import java.time.Instant
 
 /** Domain events emitted by [[ConsolidationGroup]] state transitions. */
-sealed trait ConsolidationGroupEvent:
+sealed trait ConsolidationGroupEvent extends CborSerializable:
   /** The consolidation group that emitted this event. */
   def consolidationGroupId: ConsolidationGroupId
 

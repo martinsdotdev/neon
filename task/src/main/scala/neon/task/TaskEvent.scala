@@ -1,5 +1,6 @@
 package neon.task
 
+import neon.common.serialization.CborSerializable
 import neon.common.{
   HandlingUnitId,
   LocationId,
@@ -14,7 +15,7 @@ import neon.common.{
 import java.time.Instant
 
 /** Domain events emitted by [[Task]] state transitions. */
-sealed trait TaskEvent:
+sealed trait TaskEvent extends CborSerializable:
 
   /** The task that emitted this event. */
   def taskId: TaskId
