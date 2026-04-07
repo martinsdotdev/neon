@@ -165,8 +165,10 @@ lazy val app = project
       "io.circe"         %% "circe-core"                    % circeVersion,
       "io.circe"         %% "circe-generic"                 % circeVersion,
       "io.circe"         %% "circe-parser"                  % circeVersion,
-      "org.apache.pekko" %% "pekko-http-testkit"            % pekkoHttpVersion % Test,
-      "org.apache.pekko" %% "pekko-projection-testkit"      % pekkoProjectionVersion % Test
+      "org.apache.pekko" %% "pekko-http-testkit"             % pekkoHttpVersion       % Test,
+      "org.apache.pekko" %% "pekko-actor-testkit-typed"      % pekkoVersion           % Test,
+      "org.apache.pekko" %% "pekko-stream-testkit"           % pekkoVersion           % Test,
+      "org.apache.pekko" %% "pekko-projection-testkit"       % pekkoProjectionVersion % Test
     )
   )
 
