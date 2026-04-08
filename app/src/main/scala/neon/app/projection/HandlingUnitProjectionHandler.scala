@@ -1,21 +1,24 @@
 package neon.app.projection
 
 import neon.handlingunit.{HandlingUnitActor, HandlingUnitEvent}
+import org.apache.pekko.Done
 import org.apache.pekko.projection.eventsourced.EventEnvelope
-import org.apache.pekko.projection.r2dbc.scaladsl.{R2dbcHandler, R2dbcSession}
+import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
 
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Populates `handling_unit_lookup` from handling unit events. */
 class HandlingUnitProjectionHandler(using ExecutionContext)
-    extends R2dbcHandler[EventEnvelope[HandlingUnitActor.ActorEvent]]:
+    extends LoggingProjectionHandler[
+      HandlingUnitActor.ActorEvent
+    ]:
 
-  override def process(
+  override protected def processEvent(
       session: R2dbcSession,
       envelope: EventEnvelope[HandlingUnitActor.ActorEvent]
-  ): Future[org.apache.pekko.Done] =
+  ): Future[Done] =
     envelope.event match
-      case HandlingUnitActor.Initialized(hu) =>
+      case HandlingUnitActor.Initialized(handlingUnit) =>
         val stmt = session
           .createStatement(
             """INSERT INTO handling_unit_lookup
@@ -24,11 +27,11 @@ class HandlingUnitProjectionHandler(using ExecutionContext)
               |ON CONFLICT (handling_unit_id) DO UPDATE
               |  SET state = $4, current_location = $3""".stripMargin
           )
-          .bind(0, hu.id.value)
-          .bind(1, hu.packagingLevel.toString)
+          .bind(0, handlingUnit.id.value)
+          .bind(1, handlingUnit.packagingLevel.toString)
           .bindNull(2, classOf[java.util.UUID])
-          .bind(3, hu.getClass.getSimpleName)
-        session.updateOne(stmt).map(_ => org.apache.pekko.Done)
+          .bind(3, handlingUnit.getClass.getSimpleName)
+        session.updateOne(stmt).map(_ => Done)
 
       case HandlingUnitActor.DomainEvent(e) =>
         val (state, location) = e match
@@ -51,4 +54,4 @@ class HandlingUnitProjectionHandler(using ExecutionContext)
           case Some(loc) => stmt.bind(1, loc)
           case None      => stmt.bindNull(1, classOf[java.util.UUID])
         stmt.bind(2, e.handlingUnitId.value)
-        session.updateOne(stmt).map(_ => org.apache.pekko.Done)
+        session.updateOne(stmt).map(_ => Done)

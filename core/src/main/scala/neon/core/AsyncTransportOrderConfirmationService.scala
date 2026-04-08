@@ -1,5 +1,6 @@
 package neon.core
 
+import com.typesafe.scalalogging.LazyLogging
 import neon.common.{HandlingUnitId, TransportOrderId}
 import neon.consolidationgroup.{
   AsyncConsolidationGroupRepository,
@@ -19,7 +20,8 @@ class AsyncTransportOrderConfirmationService(
     handlingUnitRepository: AsyncHandlingUnitRepository,
     taskRepository: AsyncTaskRepository,
     consolidationGroupRepository: AsyncConsolidationGroupRepository
-)(using ExecutionContext):
+)(using ExecutionContext)
+    extends LazyLogging:
 
   def confirm(
       transportOrderId: TransportOrderId,
@@ -30,6 +32,10 @@ class AsyncTransportOrderConfirmationService(
       TransportOrderConfirmationResult
     ]
   ] =
+    logger.debug(
+      "Starting transport order confirmation for {}",
+      transportOrderId.value
+    )
     transportOrderRepository
       .findById(transportOrderId)
       .flatMap:

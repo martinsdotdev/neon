@@ -1,5 +1,6 @@
 package neon.core
 
+import com.typesafe.scalalogging.LazyLogging
 import neon.common.ConsolidationGroupId
 import neon.consolidationgroup.{AsyncConsolidationGroupRepository, ConsolidationGroup}
 import neon.workstation.{AsyncWorkstationRepository, Workstation}
@@ -11,7 +12,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class AsyncConsolidationGroupCompletionService(
     consolidationGroupRepository: AsyncConsolidationGroupRepository,
     workstationRepository: AsyncWorkstationRepository
-)(using ExecutionContext):
+)(using ExecutionContext)
+    extends LazyLogging:
 
   def complete(
       consolidationGroupId: ConsolidationGroupId,
@@ -22,6 +24,10 @@ class AsyncConsolidationGroupCompletionService(
       ConsolidationGroupCompletionResult
     ]
   ] =
+    logger.debug(
+      "Starting consolidation group completion for {}",
+      consolidationGroupId.value
+    )
     consolidationGroupRepository
       .findById(consolidationGroupId)
       .flatMap:

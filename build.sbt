@@ -14,6 +14,8 @@ val pekkoPersistenceR2dbcVersion = "1.1.0"
 val pekkoProjectionVersion       = "1.1.0"
 val circeVersion                 = "0.14.13"
 val logbackVersion               = "1.5.18"
+val scalaLoggingVersion          = "4.0.0-RC1"
+val logstashEncoderVersion       = "8.1"
 
 ThisBuild / libraryDependencies += "org.scalatest" %% "scalatest" % scalatestVersion % Test
 
@@ -152,7 +154,10 @@ lazy val core = project
     location,
     carrier
   )
-  .settings(name := "neon-core")
+  .settings(
+    name := "neon-core",
+    libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion
+  )
 
 // --- Application module (routes, bootstrap) ---
 
@@ -167,7 +172,9 @@ lazy val app = project
       "org.apache.pekko" %% "pekko-persistence-r2dbc"       % pekkoPersistenceR2dbcVersion,
       "org.apache.pekko" %% "pekko-projection-r2dbc"        % pekkoProjectionVersion,
       "org.apache.pekko" %% "pekko-projection-eventsourced" % pekkoProjectionVersion,
-      "ch.qos.logback"    % "logback-classic"               % logbackVersion,
+      "ch.qos.logback"             % "logback-classic"               % logbackVersion,
+      "net.logstash.logback"       % "logstash-logback-encoder"      % logstashEncoderVersion,
+      "com.typesafe.scala-logging" %% "scala-logging"                % scalaLoggingVersion,
       "de.mkammerer"      % "argon2-jvm"                    % "2.12",
       "io.circe"         %% "circe-core"                    % circeVersion,
       "io.circe"         %% "circe-generic"                 % circeVersion,

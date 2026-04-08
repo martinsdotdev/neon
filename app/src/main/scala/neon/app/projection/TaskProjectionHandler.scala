@@ -3,7 +3,7 @@ package neon.app.projection
 import neon.task.TaskEvent
 import org.apache.pekko.Done
 import org.apache.pekko.projection.eventsourced.EventEnvelope
-import org.apache.pekko.projection.r2dbc.scaladsl.{R2dbcHandler, R2dbcSession}
+import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
 
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
@@ -11,9 +11,9 @@ import scala.concurrent.{ExecutionContext, Future}
 /** Projection handler that consumes task events and populates the `task_by_wave` and
   * `task_by_handling_unit` read-side tables.
   */
-class TaskProjectionHandler(using ExecutionContext) extends R2dbcHandler[EventEnvelope[TaskEvent]]:
+class TaskProjectionHandler(using ExecutionContext) extends LoggingProjectionHandler[TaskEvent]:
 
-  override def process(
+  override protected def processEvent(
       session: R2dbcSession,
       envelope: EventEnvelope[TaskEvent]
   ): Future[Done] =

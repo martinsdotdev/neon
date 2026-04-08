@@ -2,6 +2,7 @@ package neon.transportorder
 
 import neon.common.serialization.CborSerializable
 import org.apache.pekko.Done
+import org.apache.pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.cluster.sharding.typed.scaladsl.EntityTypeKey
 import org.apache.pekko.pattern.StatusReply
@@ -65,20 +66,43 @@ object TransportOrderActor:
   // --- Behavior ---
 
   def apply(entityId: String): Behavior[Command] =
-    EventSourcedBehavior
-      .withEnforcedReplies[Command, TransportOrderEvent, State](
-        persistenceId = PersistenceId(EntityKey.name, entityId),
-        emptyState = EmptyState,
-        commandHandler = commandHandler,
-        eventHandler = eventHandler
+    Behaviors.withMdc[Command](
+      Map(
+        "entityType" -> "TransportOrder",
+        "entityId" -> entityId
       )
-      .withTagger(_ => Set("transport-order"))
-      .withRetention(RetentionCriteria.snapshotEvery(100, 2))
+    ):
+      Behaviors.setup: context =>
+        EventSourcedBehavior
+          .withEnforcedReplies[
+            Command,
+            TransportOrderEvent,
+            State
+          ](
+            persistenceId = PersistenceId(EntityKey.name, entityId),
+            emptyState = EmptyState,
+            commandHandler = commandHandler(context),
+            eventHandler = eventHandler
+          )
+          .withTagger(_ => Set("transport-order"))
+          .withRetention(
+            RetentionCriteria.snapshotEvery(100, 2)
+          )
 
   // --- Command handler ---
 
-  private val commandHandler: (State, Command) => ReplyEffect[TransportOrderEvent, State] =
+  private def commandHandler(
+      context: ActorContext[Command]
+  ): (State, Command) => ReplyEffect[
+    TransportOrderEvent,
+    State
+  ] =
     (state, command) =>
+      context.log.debug(
+        "Received {} in state {}",
+        command.getClass.getSimpleName,
+        state.getClass.getSimpleName
+      )
       (state, command) match
 
         case (EmptyState, Create(_, event, replyTo)) =>
@@ -109,8 +133,11 @@ object TransportOrderActor:
           Effect.reply(replyTo)(order)
 
         case (_, cmd) =>
-          val msg = s"Invalid command ${cmd.getClass.getSimpleName} " +
-            s"in state ${state.getClass.getSimpleName}"
+          val msg =
+            s"Invalid command " +
+              s"${cmd.getClass.getSimpleName} " +
+              s"in state ${state.getClass.getSimpleName}"
+          context.log.warn(msg)
           cmd match
             case c: Create   => Effect.reply(c.replyTo)(StatusReply.error(msg))
             case c: Confirm  => Effect.reply(c.replyTo)(StatusReply.error(msg))

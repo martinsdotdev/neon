@@ -1,5 +1,6 @@
 package neon.core
 
+import com.typesafe.scalalogging.LazyLogging
 import neon.consolidationgroup.AsyncConsolidationGroupRepository
 import neon.task.AsyncTaskRepository
 import neon.wave.{AsyncWaveRepository, WavePlan}
@@ -14,9 +15,14 @@ class AsyncWaveReleaseService(
     waveRepository: AsyncWaveRepository,
     taskRepository: AsyncTaskRepository,
     consolidationGroupRepository: AsyncConsolidationGroupRepository
-)(using ExecutionContext):
+)(using ExecutionContext)
+    extends LazyLogging:
 
   def release(wavePlan: WavePlan, at: Instant): Future[WaveReleaseResult] =
+    logger.debug(
+      "Releasing wave {}",
+      wavePlan.wave.id.value
+    )
     for
       _ <- waveRepository.save(wavePlan.wave, wavePlan.event)
       tasks = TaskCreationPolicy(wavePlan.taskRequests, at)

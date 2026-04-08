@@ -1,19 +1,22 @@
 package neon.app.projection
 
 import neon.consolidationgroup.ConsolidationGroupEvent
+import org.apache.pekko.Done
 import org.apache.pekko.projection.eventsourced.EventEnvelope
-import org.apache.pekko.projection.r2dbc.scaladsl.{R2dbcHandler, R2dbcSession}
+import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
 
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Populates `consolidation_group_by_wave` from consolidation group events. */
 class ConsolidationGroupProjectionHandler(using ExecutionContext)
-    extends R2dbcHandler[EventEnvelope[ConsolidationGroupEvent]]:
+    extends LoggingProjectionHandler[
+      ConsolidationGroupEvent
+    ]:
 
-  override def process(
+  override protected def processEvent(
       session: R2dbcSession,
       envelope: EventEnvelope[ConsolidationGroupEvent]
-  ): Future[org.apache.pekko.Done] =
+  ): Future[Done] =
     envelope.event match
       case e: ConsolidationGroupEvent.ConsolidationGroupCreated =>
         val stmt = session
@@ -27,7 +30,7 @@ class ConsolidationGroupProjectionHandler(using ExecutionContext)
           .bind(1, e.waveId.value)
           .bind(2, e.orderIds.map(_.value).toArray)
           .bind(3, "Created")
-        session.updateOne(stmt).map(_ => org.apache.pekko.Done)
+        session.updateOne(stmt).map(_ => Done)
 
       case e =>
         val state = e match
@@ -44,4 +47,4 @@ class ConsolidationGroupProjectionHandler(using ExecutionContext)
           )
           .bind(0, state)
           .bind(1, e.consolidationGroupId.value)
-        session.updateOne(stmt).map(_ => org.apache.pekko.Done)
+        session.updateOne(stmt).map(_ => Done)

@@ -1,5 +1,6 @@
 package neon.core
 
+import com.typesafe.scalalogging.LazyLogging
 import neon.common.WaveId
 import neon.consolidationgroup.AsyncConsolidationGroupRepository
 import neon.task.AsyncTaskRepository
@@ -15,12 +16,14 @@ class AsyncWaveCancellationService(
     taskRepository: AsyncTaskRepository,
     transportOrderRepository: AsyncTransportOrderRepository,
     consolidationGroupRepository: AsyncConsolidationGroupRepository
-)(using ExecutionContext):
+)(using ExecutionContext)
+    extends LazyLogging:
 
   def cancel(
       waveId: WaveId,
       at: Instant
   ): Future[Either[WaveCancellationError, WaveCancellationResult]] =
+    logger.debug("Starting wave cancellation for {}", waveId.value)
     waveRepository
       .findById(waveId)
       .flatMap:

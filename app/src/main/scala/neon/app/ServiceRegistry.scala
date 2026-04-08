@@ -23,10 +23,9 @@ import scala.concurrent.ExecutionContext
 class ServiceRegistry(
     system: ActorSystem[?],
     connectionFactory: ConnectionFactory
-)(using Timeout):
+)(using Timeout, ExecutionContext):
 
   private given ActorSystem[?] = system
-  private given ExecutionContext = system.executionContext
 
   // --- Actor-backed repositories ---
 

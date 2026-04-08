@@ -1,5 +1,6 @@
 package neon.core
 
+import com.typesafe.scalalogging.LazyLogging
 import neon.common.TaskId
 import neon.consolidationgroup.{
   AsyncConsolidationGroupRepository,
@@ -22,7 +23,8 @@ class AsyncTaskCompletionService(
     consolidationGroupRepository: AsyncConsolidationGroupRepository,
     transportOrderRepository: AsyncTransportOrderRepository,
     verificationProfile: VerificationProfile
-)(using ExecutionContext):
+)(using ExecutionContext)
+    extends LazyLogging:
 
   def complete(
       taskId: TaskId,
@@ -35,6 +37,7 @@ class AsyncTaskCompletionService(
         Left(TaskCompletionError.InvalidActualQuantity(taskId, actualQuantity))
       )
 
+    logger.debug("Starting task completion for {}", taskId.value)
     taskRepository
       .findById(taskId)
       .flatMap:
@@ -66,16 +69,27 @@ class AsyncTaskCompletionService(
         completed,
         at
       )
-    yield Right(
-      TaskCompletionResult(
-        completed = completed,
-        completedEvent = completedEvent,
-        shortpick = shortpick,
-        transportOrder = routing,
-        waveCompletion = waveCompletion,
-        pickingCompletion = pickingCompletion
+    yield
+      logger.info(
+        "Task completed {} shortpick={} " +
+          "transportOrder={} waveCompleted={} " +
+          "pickingCompleted={}",
+        completed.id.value,
+        shortpick.isDefined: java.lang.Boolean,
+        routing.isDefined: java.lang.Boolean,
+        waveCompletion.isDefined: java.lang.Boolean,
+        pickingCompletion.isDefined: java.lang.Boolean
       )
-    )
+      Right(
+        TaskCompletionResult(
+          completed = completed,
+          completedEvent = completedEvent,
+          shortpick = shortpick,
+          transportOrder = routing,
+          waveCompletion = waveCompletion,
+          pickingCompletion = pickingCompletion
+        )
+      )
 
   private def persistShortpick(
       completed: Task.Completed,

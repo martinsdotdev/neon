@@ -1,5 +1,6 @@
 package neon.core
 
+import com.typesafe.scalalogging.LazyLogging
 import neon.carrier.AsyncCarrierRepository
 import neon.common.{OrderId, WaveId}
 import neon.location.AsyncLocationRepository
@@ -16,7 +17,8 @@ class AsyncWavePlanningService(
     waveDispatchAssignmentRepository: AsyncWaveDispatchAssignmentRepository,
     waveDispatchRulesProvider: WaveDispatchRulesProvider,
     waveReleaseService: AsyncWaveReleaseService
-)(using ExecutionContext):
+)(using ExecutionContext)
+    extends LazyLogging:
 
   def planAndRelease(
       orders: List[Order],
@@ -34,6 +36,10 @@ class AsyncWavePlanningService(
           )
         )
   ): Future[Either[WavePlanningError, WavePlanningResult]] =
+    logger.debug(
+      "Planning wave for {} orders",
+      orders.size: java.lang.Integer
+    )
     val rules = waveDispatchRulesProvider.current()
 
     val carrierIds =

@@ -1,19 +1,20 @@
 package neon.app.projection
 
 import neon.slot.{SlotActor, SlotEvent}
+import org.apache.pekko.Done
 import org.apache.pekko.projection.eventsourced.EventEnvelope
-import org.apache.pekko.projection.r2dbc.scaladsl.{R2dbcHandler, R2dbcSession}
+import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
 
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Populates `slot_by_workstation` from slot events. */
 class SlotProjectionHandler(using ExecutionContext)
-    extends R2dbcHandler[EventEnvelope[SlotActor.ActorEvent]]:
+    extends LoggingProjectionHandler[SlotActor.ActorEvent]:
 
-  override def process(
+  override protected def processEvent(
       session: R2dbcSession,
       envelope: EventEnvelope[SlotActor.ActorEvent]
-  ): Future[org.apache.pekko.Done] =
+  ): Future[Done] =
     envelope.event match
       case SlotActor.Initialized(slot) =>
         val stmt = session
@@ -27,7 +28,7 @@ class SlotProjectionHandler(using ExecutionContext)
           .bind(1, slot.workstationId.value)
           .bindNull(2, classOf[java.util.UUID])
           .bind(3, "Available")
-        session.updateOne(stmt).map(_ => org.apache.pekko.Done)
+        session.updateOne(stmt).map(_ => Done)
 
       case SlotActor.DomainEvent(e) =>
         e match
@@ -39,7 +40,7 @@ class SlotProjectionHandler(using ExecutionContext)
               .bind(0, e.orderId.value)
               .bind(1, "Reserved")
               .bind(2, e.slotId.value)
-            session.updateOne(stmt).map(_ => org.apache.pekko.Done)
+            session.updateOne(stmt).map(_ => Done)
 
           case e: SlotEvent.SlotCompleted =>
             val stmt = session
@@ -48,7 +49,7 @@ class SlotProjectionHandler(using ExecutionContext)
               )
               .bind(0, "Completed")
               .bind(1, e.slotId.value)
-            session.updateOne(stmt).map(_ => org.apache.pekko.Done)
+            session.updateOne(stmt).map(_ => Done)
 
           case e: SlotEvent.SlotReleased =>
             val stmt = session
@@ -57,4 +58,4 @@ class SlotProjectionHandler(using ExecutionContext)
               )
               .bind(0, "Available")
               .bind(1, e.slotId.value)
-            session.updateOne(stmt).map(_ => org.apache.pekko.Done)
+            session.updateOne(stmt).map(_ => Done)

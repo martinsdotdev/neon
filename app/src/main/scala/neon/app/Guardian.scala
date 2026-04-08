@@ -1,10 +1,12 @@
 package neon.app
 
+import neon.app.logging.MdcExecutionContext
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorSystem, Behavior}
 import org.apache.pekko.persistence.r2dbc.ConnectionFactoryProvider
 import org.apache.pekko.util.Timeout
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.*
 
 /** Root actor that bootstraps the Neon WES application: initializes cluster sharding for all
@@ -17,6 +19,8 @@ object Guardian:
     Behaviors.setup[Nothing] { context =>
       given ActorSystem[Nothing] = context.system
       given Timeout = 5.seconds
+      given ExecutionContext =
+        MdcExecutionContext(context.system.executionContext)
 
       val connectionFactory =
         ConnectionFactoryProvider(context.system)

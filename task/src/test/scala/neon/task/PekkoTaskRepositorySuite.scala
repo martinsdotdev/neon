@@ -46,7 +46,8 @@ class PekkoTaskRepositorySuite
     assert(cluster.selfMember.status == MemberStatus.Up)
   }
 
-  private lazy val repository = PekkoTaskRepository(system)
+  private lazy val repository =
+    PekkoTaskRepository(system, connectionFactory = null)
 
   private def createTask(): (Task.Planned, TaskEvent.TaskCreated) =
     Task.create(

@@ -12,38 +12,38 @@ import scala.concurrent.{ExecutionContext, Future}
 object HttpServer:
 
   def routes(registry: ServiceRegistry)(using ExecutionContext): Route =
-    concat(
-      AuthRoutes(registry.authenticationService),
-      TaskRoutes(
-        registry.taskCompletionService,
-        registry.authenticationService
-      ),
-      WaveRoutes(
-        registry.waveCancellationService,
-        registry.wavePlanningService,
-        registry.orderRepository,
-        registry.authenticationService
-      ),
-      TransportOrderRoutes(
-        registry.transportOrderConfirmationService,
-        registry.authenticationService
-      ),
-      ConsolidationGroupRoutes(
-        registry.consolidationGroupCompletionService,
-        registry.authenticationService
-      ),
-      WorkstationRoutes(
-        registry.workstationAssignmentService,
-        registry.authenticationService
+    RequestLoggingDirective.withRequestLogging:
+      concat(
+        AuthRoutes(registry.authenticationService),
+        TaskRoutes(
+          registry.taskCompletionService,
+          registry.authenticationService
+        ),
+        WaveRoutes(
+          registry.waveCancellationService,
+          registry.wavePlanningService,
+          registry.orderRepository,
+          registry.authenticationService
+        ),
+        TransportOrderRoutes(
+          registry.transportOrderConfirmationService,
+          registry.authenticationService
+        ),
+        ConsolidationGroupRoutes(
+          registry.consolidationGroupCompletionService,
+          registry.authenticationService
+        ),
+        WorkstationRoutes(
+          registry.workstationAssignmentService,
+          registry.authenticationService
+        )
       )
-    )
 
   def start(
       registry: ServiceRegistry,
       system: ActorSystem[?]
-  ): Future[Http.ServerBinding] =
+  )(using ExecutionContext): Future[Http.ServerBinding] =
     given ActorSystem[?] = system
-    given ExecutionContext = system.executionContext
     val config = system.settings.config.getConfig("neon.http")
     val host = config.getString("host")
     val port = config.getInt("port")

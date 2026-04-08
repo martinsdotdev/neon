@@ -3,6 +3,7 @@ package neon.task
 import neon.common.serialization.CborSerializable
 import neon.common.{LocationId, UserId}
 import org.apache.pekko.Done
+import org.apache.pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.cluster.sharding.typed.scaladsl.EntityTypeKey
 import org.apache.pekko.pattern.StatusReply
@@ -88,20 +89,33 @@ object TaskActor:
   // --- Behavior ---
 
   def apply(entityId: String): Behavior[Command] =
-    EventSourcedBehavior
-      .withEnforcedReplies[Command, TaskEvent, State](
-        persistenceId = PersistenceId(EntityKey.name, entityId),
-        emptyState = EmptyState,
-        commandHandler = commandHandler,
-        eventHandler = eventHandler
-      )
-      .withTagger(_ => Set("task"))
-      .withRetention(RetentionCriteria.snapshotEvery(100, 2))
+    Behaviors.withMdc[Command](
+      Map("entityType" -> "Task", "entityId" -> entityId)
+    ):
+      Behaviors.setup: context =>
+        EventSourcedBehavior
+          .withEnforcedReplies[Command, TaskEvent, State](
+            persistenceId = PersistenceId(EntityKey.name, entityId),
+            emptyState = EmptyState,
+            commandHandler = commandHandler(context),
+            eventHandler = eventHandler
+          )
+          .withTagger(_ => Set("task"))
+          .withRetention(
+            RetentionCriteria.snapshotEvery(100, 2)
+          )
 
   // --- Command handler ---
 
-  private val commandHandler: (State, Command) => ReplyEffect[TaskEvent, State] =
+  private def commandHandler(
+      context: ActorContext[Command]
+  ): (State, Command) => ReplyEffect[TaskEvent, State] =
     (state, command) =>
+      context.log.debug(
+        "Received {} in state {}",
+        command.getClass.getSimpleName,
+        state.getClass.getSimpleName
+      )
       (state, command) match
 
         case (EmptyState, Create(_, event, replyTo)) =>
@@ -167,14 +181,17 @@ object TaskActor:
           Effect.reply(replyTo)(task)
 
         case (_, cmd) =>
-          rejectCommand(state, cmd)
+          rejectCommand(context, state, cmd)
 
   private def rejectCommand(
+      context: ActorContext[Command],
       state: State,
       cmd: Command
   ): ReplyEffect[TaskEvent, State] =
     val msg =
-      s"Invalid command ${cmd.getClass.getSimpleName} in state ${state.getClass.getSimpleName}"
+      s"Invalid command ${cmd.getClass.getSimpleName} " +
+        s"in state ${state.getClass.getSimpleName}"
+    context.log.warn(msg)
     cmd match
       case c: Create   => Effect.reply(c.replyTo)(StatusReply.error(msg))
       case c: Allocate => Effect.reply(c.replyTo)(StatusReply.error(msg))

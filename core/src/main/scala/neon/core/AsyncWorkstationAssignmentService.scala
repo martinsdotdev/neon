@@ -1,5 +1,6 @@
 package neon.core
 
+import com.typesafe.scalalogging.LazyLogging
 import neon.common.ConsolidationGroupId
 import neon.consolidationgroup.{AsyncConsolidationGroupRepository, ConsolidationGroup}
 import neon.workstation.{AsyncWorkstationRepository, WorkstationType}
@@ -11,12 +12,17 @@ import scala.concurrent.{ExecutionContext, Future}
 class AsyncWorkstationAssignmentService(
     consolidationGroupRepository: AsyncConsolidationGroupRepository,
     workstationRepository: AsyncWorkstationRepository
-)(using ExecutionContext):
+)(using ExecutionContext)
+    extends LazyLogging:
 
   def assign(
       consolidationGroupId: ConsolidationGroupId,
       at: Instant
   ): Future[Either[WorkstationAssignmentError, WorkstationAssignmentResult]] =
+    logger.debug(
+      "Starting workstation assignment for {}",
+      consolidationGroupId.value
+    )
     consolidationGroupRepository
       .findById(consolidationGroupId)
       .flatMap:
