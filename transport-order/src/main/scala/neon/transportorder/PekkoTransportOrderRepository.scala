@@ -1,13 +1,11 @@
 package neon.transportorder
 
 import neon.common.{HandlingUnitId, R2dbcProjectionQueries, TransportOrderId}
-
 import io.r2dbc.spi.ConnectionFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
-import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 class PekkoTransportOrderRepository(

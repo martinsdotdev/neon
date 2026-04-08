@@ -1,7 +1,6 @@
 package neon.inventory
 
 import neon.common.{InventoryId, LocationId, Lot, R2dbcProjectionQueries, SkuId}
-
 import io.r2dbc.spi.ConnectionFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}

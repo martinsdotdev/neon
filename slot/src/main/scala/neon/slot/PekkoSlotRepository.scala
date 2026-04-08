@@ -1,13 +1,11 @@
 package neon.slot
 
 import neon.common.{R2dbcProjectionQueries, SlotId, WorkstationId}
-
 import io.r2dbc.spi.ConnectionFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
-import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 class PekkoSlotRepository(
