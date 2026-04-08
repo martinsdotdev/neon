@@ -1,5 +1,6 @@
 package neon.app
 
+import neon.app.auth.*
 import neon.app.repository.*
 import neon.consolidationgroup.PekkoConsolidationGroupRepository
 import neon.core.*
@@ -100,4 +101,18 @@ class ServiceRegistry(
     waveDispatchAssignmentRepository,
     DefaultWaveDispatchRulesProvider(),
     waveReleaseService
+  )
+
+  // --- Authentication ---
+
+  val passwordHasher = PasswordHasher()
+  val sessionRepository =
+    R2dbcSessionRepository(connectionFactory)
+  val permissionRepository =
+    R2dbcPermissionRepository(connectionFactory)
+  val authenticationService = AuthenticationService(
+    userRepository,
+    sessionRepository,
+    permissionRepository,
+    passwordHasher
   )

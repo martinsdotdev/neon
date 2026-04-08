@@ -1,6 +1,7 @@
 package neon.app.http
 
-import neon.common.{CarrierId, LocationId, OrderId, WaveId}
+import neon.app.auth.{AuthDirectives, AuthenticationService}
+import neon.common.{CarrierId, LocationId, OrderId, Permission, WaveId}
 import neon.core.{
   AsyncWaveCancellationService,
   AsyncWavePlanningService,
@@ -52,64 +53,91 @@ object WaveRoutes:
   def apply(
       waveCancellationService: AsyncWaveCancellationService,
       wavePlanningService: AsyncWavePlanningService,
-      orderRepository: AsyncOrderRepository
+      orderRepository: AsyncOrderRepository,
+      authService: AuthenticationService
   )(using ExecutionContext): Route =
     pathPrefix("waves"):
       concat(
         path("plan-and-release"):
-          post:
-            entity(as[PlanAndReleaseRequest]): request =>
-              val orderIds =
-                request.orderIds.map(s => OrderId(UUID.fromString(s)))
-              val grouping = OrderGrouping.valueOf(request.grouping)
-              val dockAssignments = request.dockAssignments.map { dto =>
-                DockCarrierAssignment(
-                  dockId = LocationId(UUID.fromString(dto.dockId)),
-                  carrierId = CarrierId(UUID.fromString(dto.carrierId))
-                )
-              }
+          AuthDirectives.requirePermission(
+            Permission.WavePlan,
+            authService
+          ): _ =>
+            post:
+              entity(as[PlanAndReleaseRequest]): request =>
+                val orderIds = request.orderIds
+                  .map(s => OrderId(UUID.fromString(s)))
+                val grouping =
+                  OrderGrouping.valueOf(request.grouping)
+                val dockAssignments =
+                  request.dockAssignments.map { dto =>
+                    DockCarrierAssignment(
+                      dockId = LocationId(
+                        UUID.fromString(dto.dockId)
+                      ),
+                      carrierId = CarrierId(
+                        UUID.fromString(dto.carrierId)
+                      )
+                    )
+                  }
+                onSuccess(
+                  orderRepository
+                    .findByIds(orderIds)
+                    .flatMap { orders =>
+                      wavePlanningService.planAndRelease(
+                        orders,
+                        grouping,
+                        dockAssignments,
+                        Instant.now()
+                      )
+                    }
+                ):
+                  case Right(result) =>
+                    complete(
+                      WaveReleaseResponse(
+                        status = "released",
+                        waveId = result.wavePlan.wave.id.value.toString,
+                        tasksCreated = result.release.tasks.size,
+                        consolidationGroupsCreated = result.release.consolidationGroups.size
+                      )
+                    )
+                  case Left(
+                        _: WavePlanningError.DockConflict
+                      ) =>
+                    complete(StatusCodes.Conflict)
+                  case Left(_) =>
+                    complete(
+                      StatusCodes.UnprocessableEntity
+                    )
+        ,
+        path(Segment): waveIdStr =>
+          AuthDirectives.requirePermission(
+            Permission.WaveCancel,
+            authService
+          ): _ =>
+            delete:
+              val waveId =
+                WaveId(UUID.fromString(waveIdStr))
               onSuccess(
-                orderRepository.findByIds(orderIds).flatMap { orders =>
-                  wavePlanningService.planAndRelease(
-                    orders,
-                    grouping,
-                    dockAssignments,
-                    Instant.now()
-                  )
-                }
+                waveCancellationService
+                  .cancel(waveId, Instant.now())
               ):
                 case Right(result) =>
                   complete(
-                    WaveReleaseResponse(
-                      status = "released",
-                      waveId = result.wavePlan.wave.id.value.toString,
-                      tasksCreated = result.release.tasks.size,
-                      consolidationGroupsCreated = result.release.consolidationGroups.size
+                    WaveCancellationResponse(
+                      status = "cancelled",
+                      waveId = result.cancelled.id.value.toString,
+                      cancelledTasks = result.cancelledTasks.size,
+                      cancelledTransportOrders = result.cancelledTransportOrders.size,
+                      cancelledConsolidationGroups = result.cancelledConsolidationGroups.size
                     )
                   )
-                case Left(_: WavePlanningError.DockConflict) =>
+                case Left(
+                      _: WaveCancellationError.WaveNotFound
+                    ) =>
+                  complete(StatusCodes.NotFound)
+                case Left(
+                      _: WaveCancellationError.WaveAlreadyTerminal
+                    ) =>
                   complete(StatusCodes.Conflict)
-                case Left(_) =>
-                  complete(StatusCodes.UnprocessableEntity)
-        ,
-        path(Segment): waveIdStr =>
-          delete:
-            val waveId = WaveId(UUID.fromString(waveIdStr))
-            onSuccess(
-              waveCancellationService.cancel(waveId, Instant.now())
-            ):
-              case Right(result) =>
-                complete(
-                  WaveCancellationResponse(
-                    status = "cancelled",
-                    waveId = result.cancelled.id.value.toString,
-                    cancelledTasks = result.cancelledTasks.size,
-                    cancelledTransportOrders = result.cancelledTransportOrders.size,
-                    cancelledConsolidationGroups = result.cancelledConsolidationGroups.size
-                  )
-                )
-              case Left(_: WaveCancellationError.WaveNotFound) =>
-                complete(StatusCodes.NotFound)
-              case Left(_: WaveCancellationError.WaveAlreadyTerminal) =>
-                complete(StatusCodes.Conflict)
       )

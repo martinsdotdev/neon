@@ -1,6 +1,7 @@
 package neon.app.http
 
-import neon.common.TaskId
+import neon.app.auth.{AuthDirectives, AuthenticationService}
+import neon.common.{Permission, TaskId}
 import neon.core.{AsyncTaskCompletionService, TaskCompletionError}
 import io.circe.{Decoder, Encoder}
 import org.apache.pekko.http.scaladsl.model.StatusCodes
@@ -9,6 +10,7 @@ import org.apache.pekko.http.scaladsl.server.Route
 
 import java.time.Instant
 import java.util.UUID
+import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
 
@@ -29,39 +31,48 @@ object TaskRoutes:
   ) derives Encoder.AsObject
 
   def apply(
-      taskCompletionService: AsyncTaskCompletionService
-  ): Route =
+      taskCompletionService: AsyncTaskCompletionService,
+      authService: AuthenticationService
+  )(using ExecutionContext): Route =
     pathPrefix("tasks"):
-      path(Segment / "complete"): taskIdStr =>
-        post:
-          entity(as[CompleteTaskRequest]): request =>
-            val taskId = TaskId(UUID.fromString(taskIdStr))
-            onSuccess(
-              taskCompletionService.complete(
-                taskId,
-                request.actualQuantity,
-                request.verified,
-                Instant.now()
-              )
-            ):
-              case Right(result) =>
-                complete(
-                  TaskCompletionResponse(
-                    status = "completed",
-                    taskId = result.completed.id.value.toString,
-                    actualQuantity = result.completed.actualQuantity,
-                    requestedQuantity = result.completed.requestedQuantity,
-                    hasShortpick = result.shortpick.isDefined,
-                    hasTransportOrder = result.transportOrder.isDefined
-                  )
+      AuthDirectives.requirePermission(
+        Permission.TaskComplete,
+        authService
+      ): _ =>
+        path(Segment / "complete"): taskIdStr =>
+          post:
+            entity(as[CompleteTaskRequest]): request =>
+              val taskId = TaskId(UUID.fromString(taskIdStr))
+              onSuccess(
+                taskCompletionService.complete(
+                  taskId,
+                  request.actualQuantity,
+                  request.verified,
+                  Instant.now()
                 )
-              case Left(error) =>
-                error match
-                  case _: TaskCompletionError.TaskNotFound =>
-                    complete(StatusCodes.NotFound)
-                  case _: TaskCompletionError.TaskNotAssigned =>
-                    complete(StatusCodes.Conflict)
-                  case _: TaskCompletionError.InvalidActualQuantity =>
-                    complete(StatusCodes.UnprocessableEntity)
-                  case _: TaskCompletionError.VerificationRequired =>
-                    complete(StatusCodes.PreconditionRequired)
+              ):
+                case Right(result) =>
+                  complete(
+                    TaskCompletionResponse(
+                      status = "completed",
+                      taskId = result.completed.id.value.toString,
+                      actualQuantity = result.completed.actualQuantity,
+                      requestedQuantity = result.completed.requestedQuantity,
+                      hasShortpick = result.shortpick.isDefined,
+                      hasTransportOrder = result.transportOrder.isDefined
+                    )
+                  )
+                case Left(error) =>
+                  error match
+                    case _: TaskCompletionError.TaskNotFound =>
+                      complete(StatusCodes.NotFound)
+                    case _: TaskCompletionError.TaskNotAssigned =>
+                      complete(StatusCodes.Conflict)
+                    case _: TaskCompletionError.InvalidActualQuantity =>
+                      complete(
+                        StatusCodes.UnprocessableEntity
+                      )
+                    case _: TaskCompletionError.VerificationRequired =>
+                      complete(
+                        StatusCodes.PreconditionRequired
+                      )

@@ -13,19 +13,29 @@ object HttpServer:
 
   def routes(registry: ServiceRegistry)(using ExecutionContext): Route =
     concat(
-      TaskRoutes(registry.taskCompletionService),
+      AuthRoutes(registry.authenticationService),
+      TaskRoutes(
+        registry.taskCompletionService,
+        registry.authenticationService
+      ),
       WaveRoutes(
         registry.waveCancellationService,
         registry.wavePlanningService,
-        registry.orderRepository
+        registry.orderRepository,
+        registry.authenticationService
       ),
       TransportOrderRoutes(
-        registry.transportOrderConfirmationService
+        registry.transportOrderConfirmationService,
+        registry.authenticationService
       ),
       ConsolidationGroupRoutes(
-        registry.consolidationGroupCompletionService
+        registry.consolidationGroupCompletionService,
+        registry.authenticationService
       ),
-      WorkstationRoutes(registry.workstationAssignmentService)
+      WorkstationRoutes(
+        registry.workstationAssignmentService,
+        registry.authenticationService
+      )
     )
 
   def start(
