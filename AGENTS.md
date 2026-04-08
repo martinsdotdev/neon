@@ -38,9 +38,11 @@ bun run format           # Prettier (no semicolons, double quotes, trailing comm
 
 Each top-level directory is an sbt subproject representing a domain aggregate. All depend on `common`; `core` depends on all domain modules.
 
-**Dependency graph:** `core` → `{wave, task, consolidation-group, handling-unit, transport-order, workstation, slot, location, carrier}` → `common`
+**Dependency graph:** `app` → `core` → `{wave, task, consolidation-group, handling-unit, transport-order, workstation, slot, location, carrier}` → `common`
 
-Standalone modules (no cross-domain dependencies): `order`, `sku`, `user`, `inventory`.
+**Event-sourced modules** (8, with Pekko actors): `wave`, `task`, `consolidation-group`, `handling-unit`, `transport-order`, `workstation`, `slot`, `inventory`.
+
+**Reference data modules** (5, no Pekko): `order`, `sku`, `user`, `location`, `carrier`.
 
 ### Domain Aggregates Use Typestate Encoding
 
@@ -65,8 +67,37 @@ Key state machines:
 ### Core Module: Policy-Service-Repository Pattern
 
 - **Policies**: stateless decision objects returning `Option[(State, Event)]`. Pure business rules, easily testable in isolation.
-- **Services**: orchestrators that inject repositories and policies, return `Either[Error, Result]`. Manage cascading state transitions across aggregates (e.g., task completion triggers shortpick check → routing → wave completion → consolidation group completion).
-- **Repositories**: abstract trait ports (`findById`, `save`, etc.). No concrete implementations in this codebase; tests use in-memory mutable map implementations.
+- **Services**: orchestrators that inject repositories and policies, return `Either[Error, Result]` (sync) or `Future` (async). Manage cascading state transitions across aggregates (e.g., task completion triggers shortpick check, routing, wave completion, consolidation group completion).
+- **Repositories**: abstract trait ports (`findById`, `save`, etc.). Sync traits use in-memory implementations in tests; async traits (`AsyncXxxRepository`) are implemented by `PekkoXxxRepository` classes backed by Cluster Sharding.
+
+### Pekko Infrastructure Layer (Vertical Slice Architecture)
+
+Each event-sourced domain module contains its own actor, async repository trait, and Pekko repository implementation. The `app` module contains routes, projections, reference data repos, and bootstrap wiring.
+
+```
+wave/
+  Wave.scala, WaveEvent.scala          # Domain
+  WaveActor.scala                       # Event-sourced actor
+  AsyncWaveRepository.scala             # Async port trait
+  PekkoWaveRepository.scala             # Cluster Sharding implementation
+app/
+  http/WaveRoutes.scala                 # HTTP API
+  projection/WaveProjectionHandler.scala # CQRS read-side handler
+```
+
+**Event-Sourced Actors** (`XxxActor.scala`): `EventSourcedBehavior.withEnforcedReplies` with `Command`/`ActorEvent`/`State` type parameters. Commands are sealed traits extending `CborSerializable`. State is `EmptyState | ActiveState(aggregate)`. Command handlers return `ReplyEffect`, event handlers reconstruct state for recovery. Tagged for projection consumption (`.withTagger`), snapshots every 100 events (`.withRetention`).
+
+**Pekko Repositories** (`PekkoXxxRepository.scala`): Single-entity operations use `sharding.entityRefFor(...).ask(...)`. Cross-entity queries use `R2dbcProjectionQueries` trait (from `common`) to query CQRS projection tables, then fan out to individual actors. `saveAll` is non-transactional: individual entity operations may succeed or fail independently.
+
+**CQRS Projections** (`app/projection/`): `ProjectionBootstrap` initializes all projections via `ShardedDaemonProcess` with `R2dbcProjection.exactlyOnce`. Each handler consumes tagged events and upserts into read-side PostgreSQL tables (e.g., `task_by_wave`, `workstation_by_type_and_state`).
+
+**HTTP Routes** (`app/http/`): Pekko HTTP directives with circe JSON marshalling (`derives Encoder.AsObject` / `derives Decoder`). `CirceSupport` provides implicit marshallers. Domain error ADTs map to HTTP status codes.
+
+**Bootstrap**: `Guardian` is the root actor. It obtains the R2DBC `ConnectionFactory`, creates `ServiceRegistry` (wires all repos and services), starts `ProjectionBootstrap`, and launches `HttpServer`.
+
+### Serialization
+
+Jackson CBOR via `pekko-serialization-jackson`. All commands, responses, state wrappers, and event envelopes extend `CborSerializable` (marker trait in `common`). Aggregate sealed traits (e.g., `Wave`, `Task`) require `@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)` for polymorphic snapshot deserialization. Java serialization is disabled.
 
 ### Error Handling
 
@@ -74,7 +105,7 @@ Sealed trait ADTs for errors, `Either[Error, Result]` return types. No exception
 
 ### Common Module
 
-Provides opaque type ID wrappers (UUID v7 via uuid-creator) for all entities, shared enums (`Priority`, `PackagingLevel`), and utility types (`UomHierarchy`, `Lot`).
+Provides opaque type ID wrappers (UUID v7 via uuid-creator) for all entities, shared enums (`Priority`, `PackagingLevel`), utility types (`UomHierarchy`, `Lot`), `CborSerializable` marker trait, and `R2dbcProjectionQueries` trait for cross-entity queries.
 
 ### Frontend (web/)
 
@@ -96,7 +127,10 @@ TanStack Start + React 19 + TypeScript. UI with shadcn/ui (Base UI primitives + 
 - Suite naming: `<ComponentName>Suite` (e.g., `TaskCompletionServiceSuite`)
 - Mix-in traits: `OptionValues`, `EitherValues`
 - Factory methods for test data setup (`def assignedTask(...)`, `def releasedWave(...)`)
-- In-memory repository implementations with mutable maps and event tracking
+- In-memory repository implementations with mutable maps and event tracking for domain tests
+- `EventSourcedBehaviorTestKit` for actor tests (no cluster needed, serialization verification enabled)
+- `ScalaTestWithActorTestKit` with single-node cluster for Pekko repository integration tests
+- `ScalatestRouteTest` with stub services for HTTP route tests
 
 ### Frontend
 - No semicolons, double quotes, 80-char line width
