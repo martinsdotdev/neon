@@ -168,6 +168,7 @@ lazy val app = project
       "org.apache.pekko" %% "pekko-projection-r2dbc"        % pekkoProjectionVersion,
       "org.apache.pekko" %% "pekko-projection-eventsourced" % pekkoProjectionVersion,
       "ch.qos.logback"    % "logback-classic"               % logbackVersion,
+      "de.mkammerer"      % "argon2-jvm"                    % "2.12",
       "io.circe"         %% "circe-core"                    % circeVersion,
       "io.circe"         %% "circe-generic"                 % circeVersion,
       "io.circe"         %% "circe-parser"                  % circeVersion,
