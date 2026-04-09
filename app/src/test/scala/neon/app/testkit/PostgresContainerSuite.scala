@@ -17,10 +17,9 @@ import org.testcontainers.containers.PostgreSQLContainer as JavaPostgreSQLContai
 import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
-/** Companion object that starts a PostgreSQL Testcontainer and runs Flyway
-  * migrations before any test class body executes. This ensures the container
-  * is available when ScalaTestWithActorTestKit reads the config at
-  * construction time.
+/** Companion object that starts a PostgreSQL Testcontainer and runs Flyway migrations before any
+  * test class body executes. This ensures the container is available when ScalaTestWithActorTestKit
+  * reads the config at construction time.
   */
 object PostgresContainerSuite:
 
@@ -67,16 +66,15 @@ object PostgresContainerSuite:
             user = "${container.getUsername}"
             password = "${container.getPassword}"
             initial-size = 2
-            max-size = 5
+            max-size = 10
           }
         }
       }
     """)
     .resolve()
 
-/** Base trait for integration tests that require a real PostgreSQL database.
-  * Provides a running Testcontainer, Flyway-migrated schema, R2DBC
-  * ConnectionFactory, and a single-node Pekko cluster.
+/** Base trait for integration tests that require a real PostgreSQL database. Provides a running
+  * Testcontainer, Flyway-migrated schema, R2DBC ConnectionFactory, and a single-node Pekko cluster.
   */
 abstract class PostgresContainerSuite
     extends ScalaTestWithActorTestKit(PostgresContainerSuite.testConfig)
@@ -139,9 +137,7 @@ abstract class PostgresContainerSuite
           )
           .flatMapConcat { result =>
             Source.fromPublisher(
-              result.map((row, _) =>
-                row.get(0, classOf[java.lang.Long]).longValue()
-              )
+              result.map((row, _) => row.get(0, classOf[java.lang.Long]).longValue())
             )
           }
           .runWith(Sink.head)
