@@ -19,7 +19,7 @@ class R2dbcOrderRepository(connectionFactory: ConnectionFactory)(using
     R2dbcHelper
       .queryOne(
         connectionFactory,
-        "SELECT id, priority, carrier_id, lines FROM orders WHERE id = $1",
+        "SELECT id, priority, carrier_id, lines::text FROM orders WHERE id = $1",
         id.value
       )(mapRow)
 
@@ -30,7 +30,7 @@ class R2dbcOrderRepository(connectionFactory: ConnectionFactory)(using
       R2dbcHelper
         .queryList(
           connectionFactory,
-          s"SELECT id, priority, carrier_id, lines FROM orders WHERE id IN ($placeholders)",
+          s"SELECT id, priority, carrier_id, lines::text FROM orders WHERE id IN ($placeholders)",
           ids.map(_.value)*
         )(mapRow)
 

@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS event_journal (
   meta_ser_id    INT,
   meta_ser_manifest VARCHAR(255),
   meta_payload   BYTEA,
+  deleted        BOOLEAN     DEFAULT false,
   tags           TEXT[],
   PRIMARY KEY (persistence_id, seq_nr)
 );
@@ -35,6 +36,7 @@ CREATE TABLE IF NOT EXISTS snapshot (
   meta_ser_id    INT,
   meta_ser_manifest VARCHAR(255),
   meta_payload   BYTEA,
+  deleted        BOOLEAN     DEFAULT false,
   PRIMARY KEY (persistence_id)
 );
 

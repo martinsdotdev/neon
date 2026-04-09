@@ -22,6 +22,8 @@ object Guardian:
       given ExecutionContext =
         MdcExecutionContext(context.system.executionContext)
 
+      FlywayMigration.migrate(context.system.settings.config)
+
       val connectionFactory =
         ConnectionFactoryProvider(context.system)
           .connectionFactoryFor(

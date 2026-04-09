@@ -16,6 +16,8 @@ val circeVersion                 = "0.14.13"
 val logbackVersion               = "1.5.18"
 val scalaLoggingVersion          = "4.0.0-RC1"
 val logstashEncoderVersion       = "8.1"
+val flywayVersion                = "11.8.2"
+val postgresqlJdbcVersion        = "42.7.6"
 
 ThisBuild / libraryDependencies += "org.scalatest" %% "scalatest" % scalatestVersion % Test
 
@@ -172,6 +174,9 @@ lazy val app = project
       "org.apache.pekko" %% "pekko-persistence-r2dbc"       % pekkoPersistenceR2dbcVersion,
       "org.apache.pekko" %% "pekko-projection-r2dbc"        % pekkoProjectionVersion,
       "org.postgresql"    % "r2dbc-postgresql"               % "1.0.7.RELEASE",
+      "org.flywaydb"      % "flyway-core"                    % flywayVersion,
+      "org.flywaydb"      % "flyway-database-postgresql"     % flywayVersion,
+      "org.postgresql"    % "postgresql"                     % postgresqlJdbcVersion  % Runtime,
       "org.apache.pekko" %% "pekko-projection-eventsourced" % pekkoProjectionVersion,
       "ch.qos.logback"             % "logback-classic"               % logbackVersion,
       "net.logstash.logback"       % "logstash-logback-encoder"      % logstashEncoderVersion,
