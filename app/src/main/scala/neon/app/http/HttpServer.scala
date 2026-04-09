@@ -11,10 +11,13 @@ import scala.concurrent.{ExecutionContext, Future}
 /** Binds the HTTP route tree and starts the Pekko HTTP server. */
 object HttpServer:
 
-  def routes(registry: ServiceRegistry)(using ExecutionContext): Route =
+  def routes(
+      registry: ServiceRegistry,
+      secureCookies: Boolean = true
+  )(using ExecutionContext): Route =
     RequestLoggingDirective.withRequestLogging:
       concat(
-        AuthRoutes(registry.authenticationService),
+        AuthRoutes(registry.authenticationService, secureCookies),
         TaskRoutes(
           registry.taskCompletionService,
           registry.authenticationService
@@ -44,13 +47,15 @@ object HttpServer:
       system: ActorSystem[?]
   )(using ExecutionContext): Future[Http.ServerBinding] =
     given ActorSystem[?] = system
-    val config = system.settings.config.getConfig("neon.http")
-    val host = config.getString("host")
-    val port = config.getInt("port")
+    val httpConfig = system.settings.config.getConfig("neon.http")
+    val host = httpConfig.getString("host")
+    val port = httpConfig.getInt("port")
+    val secureCookies =
+      system.settings.config.getBoolean("neon.auth.secure-cookies")
 
     Http()
       .newServerAt(host, port)
-      .bind(routes(registry))
+      .bind(routes(registry, secureCookies))
       .map { binding =>
         system.log.info(
           s"Neon WES HTTP server bound to ${binding.localAddress}"
