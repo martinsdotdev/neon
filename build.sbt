@@ -171,6 +171,7 @@ lazy val app = project
       "org.apache.pekko" %% "pekko-cluster-typed"           % pekkoVersion,
       "org.apache.pekko" %% "pekko-persistence-r2dbc"       % pekkoPersistenceR2dbcVersion,
       "org.apache.pekko" %% "pekko-projection-r2dbc"        % pekkoProjectionVersion,
+      "org.postgresql"    % "r2dbc-postgresql"               % "1.0.7.RELEASE",
       "org.apache.pekko" %% "pekko-projection-eventsourced" % pekkoProjectionVersion,
       "ch.qos.logback"             % "logback-classic"               % logbackVersion,
       "net.logstash.logback"       % "logstash-logback-encoder"      % logstashEncoderVersion,
