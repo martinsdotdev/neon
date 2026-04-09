@@ -93,7 +93,6 @@ object InventoryActor:
             commandHandler = commandHandler(context),
             eventHandler = eventHandler
           )
-          .withTagger(_ => Set("inventory"))
           .withRetention(
             RetentionCriteria.snapshotEvery(100, 2)
           )

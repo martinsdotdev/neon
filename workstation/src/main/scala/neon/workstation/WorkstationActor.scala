@@ -107,7 +107,6 @@ object WorkstationActor:
             commandHandler = commandHandler(context),
             eventHandler = eventHandler
           )
-          .withTagger(_ => Set("workstation"))
           .withRetention(
             RetentionCriteria.snapshotEvery(100, 2)
           )

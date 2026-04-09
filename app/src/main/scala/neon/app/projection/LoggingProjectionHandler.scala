@@ -2,7 +2,7 @@ package neon.app.projection
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.pekko.Done
-import org.apache.pekko.projection.eventsourced.EventEnvelope
+import org.apache.pekko.persistence.query.typed.EventEnvelope
 import org.apache.pekko.projection.r2dbc.scaladsl.{R2dbcHandler, R2dbcSession}
 
 import scala.concurrent.{ExecutionContext, Future}

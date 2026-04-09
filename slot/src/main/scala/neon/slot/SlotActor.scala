@@ -95,7 +95,6 @@ object SlotActor:
             commandHandler = commandHandler(context),
             eventHandler = eventHandler
           )
-          .withTagger(_ => Set("slot"))
           .withRetention(
             RetentionCriteria.snapshotEvery(100, 2)
           )

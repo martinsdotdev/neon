@@ -100,7 +100,6 @@ object TaskActor:
             commandHandler = commandHandler(context),
             eventHandler = eventHandler
           )
-          .withTagger(_ => Set("task"))
           .withRetention(
             RetentionCriteria.snapshotEvery(100, 2)
           )

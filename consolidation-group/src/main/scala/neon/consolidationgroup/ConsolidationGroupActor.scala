@@ -116,7 +116,6 @@ object ConsolidationGroupActor:
             commandHandler = commandHandler(context),
             eventHandler = eventHandler
           )
-          .withTagger(_ => Set("consolidation-group"))
           .withRetention(
             RetentionCriteria.snapshotEvery(100, 2)
           )

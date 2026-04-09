@@ -118,7 +118,6 @@ object HandlingUnitActor:
             commandHandler = commandHandler(context),
             eventHandler = eventHandler
           )
-          .withTagger(_ => Set("handling-unit"))
           .withRetention(
             RetentionCriteria.snapshotEvery(100, 2)
           )

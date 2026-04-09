@@ -84,7 +84,6 @@ object TransportOrderActor:
             commandHandler = commandHandler(context),
             eventHandler = eventHandler
           )
-          .withTagger(_ => Set("transport-order"))
           .withRetention(
             RetentionCriteria.snapshotEvery(100, 2)
           )

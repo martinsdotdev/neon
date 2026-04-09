@@ -1,4 +1,4 @@
--- Pekko Projection R2DBC: offset tracking for CQRS projections.
+-- Pekko Projection R2DBC 1.1.x: offset tracking for CQRS projections.
 
 CREATE TABLE IF NOT EXISTS projection_offset_store (
   projection_name VARCHAR(255) NOT NULL,
@@ -11,12 +11,13 @@ CREATE TABLE IF NOT EXISTS projection_offset_store (
 );
 
 CREATE TABLE IF NOT EXISTS projection_timestamp_offset_store (
-  projection_name VARCHAR(255) NOT NULL,
-  projection_key  VARCHAR(255) NOT NULL,
-  slice           INT          NOT NULL,
-  persistence_id  VARCHAR(255) NOT NULL,
-  seq_nr          BIGINT       NOT NULL,
-  db_timestamp    TIMESTAMP WITH TIME ZONE NOT NULL,
+  projection_name    VARCHAR(255) NOT NULL,
+  projection_key     VARCHAR(255) NOT NULL,
+  slice              INT          NOT NULL,
+  persistence_id     VARCHAR(255) NOT NULL,
+  seq_nr             BIGINT       NOT NULL,
+  timestamp_offset   TIMESTAMP WITH TIME ZONE NOT NULL,
+  timestamp_consumed TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (projection_name, projection_key, slice, persistence_id)
 );
 
