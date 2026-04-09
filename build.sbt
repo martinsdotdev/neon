@@ -18,6 +18,7 @@ val scalaLoggingVersion          = "4.0.0-RC1"
 val logstashEncoderVersion       = "8.1"
 val flywayVersion                = "11.8.2"
 val postgresqlJdbcVersion        = "42.7.6"
+val testcontainersScalaVersion   = "0.44.1"
 
 ThisBuild / libraryDependencies += "org.scalatest" %% "scalatest" % scalatestVersion % Test
 
@@ -187,10 +188,12 @@ lazy val app = project
       "io.circe"         %% "circe-core"                    % circeVersion,
       "io.circe"         %% "circe-generic"                 % circeVersion,
       "io.circe"         %% "circe-parser"                  % circeVersion,
-      "org.apache.pekko" %% "pekko-http-testkit"             % pekkoHttpVersion       % Test,
-      "org.apache.pekko" %% "pekko-actor-testkit-typed"      % pekkoVersion           % Test,
-      "org.apache.pekko" %% "pekko-stream-testkit"           % pekkoVersion           % Test,
-      "org.apache.pekko" %% "pekko-projection-testkit"       % pekkoProjectionVersion % Test
+      "org.apache.pekko" %% "pekko-http-testkit"             % pekkoHttpVersion             % Test,
+      "org.apache.pekko" %% "pekko-actor-testkit-typed"      % pekkoVersion                 % Test,
+      "org.apache.pekko" %% "pekko-stream-testkit"           % pekkoVersion                 % Test,
+      "org.apache.pekko" %% "pekko-projection-testkit"       % pekkoProjectionVersion       % Test,
+      "com.dimafeng"     %% "testcontainers-scala-scalatest" % testcontainersScalaVersion   % Test,
+      "com.dimafeng"     %% "testcontainers-scala-postgresql" % testcontainersScalaVersion  % Test
     )
   )
 
