@@ -18,7 +18,7 @@ object Guardian:
   def apply(): Behavior[Nothing] =
     Behaviors.setup[Nothing] { context =>
       given ActorSystem[Nothing] = context.system
-      given Timeout = 5.seconds
+      given Timeout = 15.seconds
       given ExecutionContext =
         MdcExecutionContext(context.system.executionContext)
 
