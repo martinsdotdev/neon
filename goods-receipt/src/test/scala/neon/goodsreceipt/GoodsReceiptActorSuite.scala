@@ -1,14 +1,7 @@
 package neon.goodsreceipt
 
 import com.typesafe.config.ConfigFactory
-import neon.common.{
-  ContainerId,
-  GoodsReceiptId,
-  InboundDeliveryId,
-  LotAttributes,
-  PackagingLevel,
-  SkuId
-}
+import neon.common.{GoodsReceiptId, InboundDeliveryId, LotAttributes, PackagingLevel, SkuId}
 import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.apache.pekko.pattern.StatusReply
 import org.apache.pekko.persistence.testkit.scaladsl.EventSourcedBehaviorTestKit

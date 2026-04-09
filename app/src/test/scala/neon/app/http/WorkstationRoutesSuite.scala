@@ -1,7 +1,15 @@
 package neon.app.http
 
 import neon.app.auth.*
-import neon.common.{ConsolidationGroupId, Permission, Role, UserId, WaveId, WorkstationId}
+import neon.common.{
+  ConsolidationGroupId,
+  Permission,
+  Role,
+  UserId,
+  WaveId,
+  WorkstationId,
+  WorkstationMode
+}
 import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent}
 import neon.core.{
   AsyncWorkstationAssignmentService,
@@ -14,7 +22,6 @@ import neon.core.{
   WorkstationLifecycleError
 }
 import neon.user.User
-import neon.common.WorkstationMode
 import neon.workstation.{Workstation, WorkstationEvent, WorkstationType}
 import io.circe.Json
 import io.circe.parser.parse

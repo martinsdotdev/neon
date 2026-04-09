@@ -9,7 +9,7 @@ import neon.common.{
   SkuId,
   WarehouseAreaId
 }
-import neon.counttask.{CountTask, CountTaskEvent}
+import neon.counttask.CountTask
 import neon.cyclecount.CycleCount
 import org.scalatest.funspec.AnyFunSpec
 

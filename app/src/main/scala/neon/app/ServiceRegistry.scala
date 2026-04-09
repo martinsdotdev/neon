@@ -4,9 +4,15 @@ import neon.app.auth.*
 import neon.app.repository.*
 import neon.consolidationgroup.PekkoConsolidationGroupRepository
 import neon.core.*
+import neon.counttask.PekkoCountTaskRepository
+import neon.cyclecount.PekkoCycleCountRepository
+import neon.goodsreceipt.PekkoGoodsReceiptRepository
 import neon.handlingunit.PekkoHandlingUnitRepository
+import neon.handlingunit.PekkoHandlingUnitStockRepository
+import neon.inbounddelivery.PekkoInboundDeliveryRepository
 import neon.inventory.PekkoInventoryRepository
 import neon.slot.PekkoSlotRepository
+import neon.stockposition.PekkoStockPositionRepository
 import neon.task.PekkoTaskRepository
 import neon.transportorder.PekkoTransportOrderRepository
 import neon.wave.PekkoWaveRepository
@@ -41,6 +47,18 @@ class ServiceRegistry(
   val slotRepository = PekkoSlotRepository(system, connectionFactory)
   val inventoryRepository =
     PekkoInventoryRepository(system, connectionFactory)
+  val stockPositionRepository =
+    PekkoStockPositionRepository(system, connectionFactory)
+  val handlingUnitStockRepository =
+    PekkoHandlingUnitStockRepository(system, connectionFactory)
+  val inboundDeliveryRepository =
+    PekkoInboundDeliveryRepository(system)
+  val goodsReceiptRepository =
+    PekkoGoodsReceiptRepository(system)
+  val cycleCountRepository =
+    PekkoCycleCountRepository(system)
+  val countTaskRepository =
+    PekkoCountTaskRepository(system, connectionFactory)
 
   // --- Reference data repositories (R2DBC) ---
 
@@ -127,6 +145,19 @@ class ServiceRegistry(
 
   val inventoryService =
     AsyncInventoryService(inventoryRepository)
+
+  val stockPositionService =
+    AsyncStockPositionService(stockPositionRepository)
+
+  val inboundDeliveryService = AsyncInboundDeliveryService(
+    inboundDeliveryRepository,
+    goodsReceiptRepository
+  )
+
+  val cycleCountService = AsyncCycleCountService(
+    cycleCountRepository,
+    countTaskRepository
+  )
 
   // --- Authentication ---
 

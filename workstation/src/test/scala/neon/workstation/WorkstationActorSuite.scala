@@ -1,7 +1,7 @@
 package neon.workstation
 
 import com.typesafe.config.ConfigFactory
-import neon.common.{ConsolidationGroupId, WorkstationMode, WorkstationId}
+import neon.common.{ConsolidationGroupId, WorkstationId, WorkstationMode}
 import org.apache.pekko.Done
 import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.apache.pekko.pattern.StatusReply

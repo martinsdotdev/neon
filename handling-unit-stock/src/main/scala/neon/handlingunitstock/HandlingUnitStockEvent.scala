@@ -1,5 +1,6 @@
 package neon.handlingunit
 
+import neon.common.serialization.CborSerializable
 import neon.common.{
   AdjustmentReasonCode,
   ContainerId,
@@ -9,7 +10,6 @@ import neon.common.{
   StockLockType,
   StockPositionId
 }
-import neon.common.serialization.CborSerializable
 
 import java.time.Instant
 

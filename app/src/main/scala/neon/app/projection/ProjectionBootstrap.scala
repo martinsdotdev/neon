@@ -1,9 +1,15 @@
 package neon.app.projection
 
 import neon.consolidationgroup.ConsolidationGroupEvent
+import neon.counttask.CountTaskEvent
+import neon.cyclecount.CycleCountEvent
+import neon.goodsreceipt.GoodsReceiptEvent
 import neon.handlingunit.HandlingUnitActor
+import neon.handlingunit.HandlingUnitStockEvent
+import neon.inbounddelivery.InboundDeliveryEvent
 import neon.inventory.InventoryEvent
 import neon.slot.SlotActor
+import neon.stockposition.StockPositionEvent
 import neon.task.TaskEvent
 import neon.transportorder.TransportOrderEvent
 import neon.workstation.WorkstationActor
@@ -69,6 +75,42 @@ object ProjectionBootstrap:
       "inventory-projection",
       "Inventory",
       () => InventoryProjectionHandler()
+    )
+
+    initProjection[StockPositionEvent](
+      "stock-position-projection",
+      "StockPosition",
+      () => StockPositionProjectionHandler()
+    )
+
+    initProjection[HandlingUnitStockEvent](
+      "handling-unit-stock-projection",
+      "HandlingUnitStock",
+      () => HandlingUnitStockProjectionHandler()
+    )
+
+    initProjection[InboundDeliveryEvent](
+      "inbound-delivery-projection",
+      "InboundDelivery",
+      () => InboundDeliveryProjectionHandler()
+    )
+
+    initProjection[GoodsReceiptEvent](
+      "goods-receipt-projection",
+      "GoodsReceipt",
+      () => GoodsReceiptProjectionHandler()
+    )
+
+    initProjection[CycleCountEvent](
+      "cycle-count-projection",
+      "CycleCount",
+      () => CycleCountProjectionHandler()
+    )
+
+    initProjection[CountTaskEvent](
+      "count-task-projection",
+      "CountTask",
+      () => CountTaskProjectionHandler()
     )
 
   private def initProjection[E](

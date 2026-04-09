@@ -1,6 +1,6 @@
 package neon.workstation
 
-import neon.common.{ConsolidationGroupId, WorkstationMode, WorkstationId}
+import neon.common.{ConsolidationGroupId, WorkstationId, WorkstationMode}
 import org.scalatest.funspec.AnyFunSpec
 
 import java.time.Instant

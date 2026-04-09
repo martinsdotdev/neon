@@ -1,5 +1,6 @@
 package neon.stockposition
 
+import neon.common.serialization.CborSerializable
 import neon.common.{
   AdjustmentReasonCode,
   InventoryStatus,
@@ -9,7 +10,6 @@ import neon.common.{
   StockPositionId,
   WarehouseAreaId
 }
-import neon.common.serialization.CborSerializable
 
 import java.time.Instant
 

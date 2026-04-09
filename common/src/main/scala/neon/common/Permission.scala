@@ -16,6 +16,9 @@ enum Permission(val key: String):
   case HandlingUnitManage extends Permission("handling-unit:manage")
   case SlotManage extends Permission("slot:manage")
   case InventoryManage extends Permission("inventory:manage")
+  case StockManage extends Permission("stock:manage")
+  case InboundManage extends Permission("inbound:manage")
+  case CycleCountManage extends Permission("cycle-count:manage")
   case UserManage extends Permission("user:manage")
 
 object Permission:

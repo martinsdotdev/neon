@@ -248,7 +248,8 @@ lazy val app = project
       "org.apache.pekko" %% "pekko-projection-testkit"       % pekkoProjectionVersion       % Test,
       "com.dimafeng"     %% "testcontainers-scala-scalatest" % testcontainersScalaVersion   % Test,
       "com.dimafeng"     %% "testcontainers-scala-postgresql" % testcontainersScalaVersion  % Test
-    )
+    ),
+    Test / parallelExecution := false
   )
 
 lazy val root = project

@@ -55,6 +55,18 @@ object HttpServer:
         InventoryRoutes(
           registry.inventoryService,
           registry.authenticationService
+        ),
+        StockPositionRoutes(
+          registry.stockPositionService,
+          registry.authenticationService
+        ),
+        InboundRoutes(
+          registry.inboundDeliveryService,
+          registry.authenticationService
+        ),
+        CycleCountRoutes(
+          registry.cycleCountService,
+          registry.authenticationService
         )
       )
 

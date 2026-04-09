@@ -1,7 +1,7 @@
 package neon.handlingunit
 
-import neon.common.{AdjustmentReasonCode, InventoryStatus, StockLockType}
 import neon.common.serialization.CborSerializable
+import neon.common.{AdjustmentReasonCode, InventoryStatus, StockLockType}
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
