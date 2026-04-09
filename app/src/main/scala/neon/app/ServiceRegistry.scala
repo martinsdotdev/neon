@@ -102,6 +102,32 @@ class ServiceRegistry(
     waveReleaseService
   )
 
+  val taskLifecycleService = AsyncTaskLifecycleService(
+    taskRepository,
+    userRepository
+  )
+
+  val workstationLifecycleService =
+    AsyncWorkstationLifecycleService(workstationRepository)
+
+  val transportOrderCancellationService =
+    AsyncTransportOrderCancellationService(
+      transportOrderRepository
+    )
+
+  val consolidationGroupCancellationService =
+    AsyncConsolidationGroupCancellationService(
+      consolidationGroupRepository
+    )
+
+  val handlingUnitLifecycleService =
+    AsyncHandlingUnitLifecycleService(handlingUnitRepository)
+
+  val slotService = AsyncSlotService(slotRepository)
+
+  val inventoryService =
+    AsyncInventoryService(inventoryRepository)
+
   // --- Authentication ---
 
   val passwordHasher = PasswordHasher()

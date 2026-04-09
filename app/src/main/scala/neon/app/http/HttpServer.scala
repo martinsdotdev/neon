@@ -20,6 +20,7 @@ object HttpServer:
         AuthRoutes(registry.authenticationService, secureCookies),
         TaskRoutes(
           registry.taskCompletionService,
+          registry.taskLifecycleService,
           registry.authenticationService
         ),
         WaveRoutes(
@@ -30,14 +31,29 @@ object HttpServer:
         ),
         TransportOrderRoutes(
           registry.transportOrderConfirmationService,
+          registry.transportOrderCancellationService,
           registry.authenticationService
         ),
         ConsolidationGroupRoutes(
           registry.consolidationGroupCompletionService,
+          registry.consolidationGroupCancellationService,
           registry.authenticationService
         ),
         WorkstationRoutes(
           registry.workstationAssignmentService,
+          registry.workstationLifecycleService,
+          registry.authenticationService
+        ),
+        HandlingUnitRoutes(
+          registry.handlingUnitLifecycleService,
+          registry.authenticationService
+        ),
+        SlotRoutes(
+          registry.slotService,
+          registry.authenticationService
+        ),
+        InventoryRoutes(
+          registry.inventoryService,
           registry.authenticationService
         )
       )
