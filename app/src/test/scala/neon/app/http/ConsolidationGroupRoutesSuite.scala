@@ -1,18 +1,8 @@
 package neon.app.http
 
 import neon.app.auth.*
-import neon.common.{
-  ConsolidationGroupId,
-  Permission,
-  Role,
-  UserId,
-  WaveId,
-  WorkstationId
-}
-import neon.consolidationgroup.{
-  ConsolidationGroup,
-  ConsolidationGroupEvent
-}
+import neon.common.{ConsolidationGroupId, Permission, Role, UserId, WaveId, WorkstationId}
+import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent}
 import neon.core.{
   AsyncConsolidationGroupCancellationService,
   AsyncConsolidationGroupCompletionService,
@@ -34,9 +24,7 @@ import java.time.Instant
 import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
-class ConsolidationGroupRoutesSuite
-    extends AnyFunSpec
-    with ScalatestRouteTest:
+class ConsolidationGroupRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
   private val consolidationGroupId = ConsolidationGroupId()
   private val workstationId = WorkstationId()

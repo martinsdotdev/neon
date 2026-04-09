@@ -32,9 +32,7 @@ import java.time.Instant
 import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
-class TransportOrderRoutesSuite
-    extends AnyFunSpec
-    with ScalatestRouteTest:
+class TransportOrderRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
   private val transportOrderId = TransportOrderId()
   private val handlingUnitId = HandlingUnitId()
@@ -267,8 +265,8 @@ class TransportOrderRoutesSuite
           authService
         )
 
-        Post(
-          s"/transport-orders/${transportOrderId.value}/confirm"
+        Delete(
+          s"/transport-orders/${transportOrderId.value}"
         ) ~> routes ~> check {
           assert(status == StatusCodes.Unauthorized)
         }

@@ -1,13 +1,7 @@
 package neon.app.http
 
 import neon.app.auth.*
-import neon.common.{
-  OrderId,
-  Permission,
-  Role,
-  UserId,
-  WaveId
-}
+import neon.common.{OrderId, Permission, Role, UserId, WaveId}
 import neon.core.{
   AsyncWaveCancellationService,
   AsyncWavePlanningService,
@@ -97,11 +91,7 @@ class WaveRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
       result: Either[WavePlanningError, WavePlanningResult]
   ): AsyncWavePlanningService =
     new AsyncWavePlanningService(
-      null,
-      null,
-      null,
-      null,
-      null
+      null, null, null, null, null
     ):
       override def planAndRelease(
           orders: List[Order],

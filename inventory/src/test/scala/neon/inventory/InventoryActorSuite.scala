@@ -76,9 +76,9 @@ class InventoryActorSuite
             InventoryActor.Reserve(20, at, _)
           )
         assert(result.reply.isSuccess)
-        val inv = result.reply.getValue.inventory
-        assert(inv.reserved == 20)
-        assert(inv.available == 80)
+        val inventory = result.reply.getValue.inventory
+        assert(inventory.reserved == 20)
+        assert(inventory.available == 80)
 
     describe("Release"):
       it("releases reserved quantity back to available"):
@@ -95,9 +95,9 @@ class InventoryActorSuite
             InventoryActor.Release(10, at, _)
           )
         assert(result.reply.isSuccess)
-        val inv = result.reply.getValue.inventory
-        assert(inv.reserved == 20)
-        assert(inv.available == 80)
+        val inventory = result.reply.getValue.inventory
+        assert(inventory.reserved == 20)
+        assert(inventory.available == 80)
 
     describe("Consume"):
       it("reduces both on-hand and reserved"):
@@ -114,9 +114,9 @@ class InventoryActorSuite
             InventoryActor.Consume(20, at, _)
           )
         assert(result.reply.isSuccess)
-        val inv = result.reply.getValue.inventory
-        assert(inv.onHand == 80)
-        assert(inv.reserved == 10)
+        val inventory = result.reply.getValue.inventory
+        assert(inventory.onHand == 80)
+        assert(inventory.reserved == 10)
 
     describe("CorrectLot"):
       it("corrects lot when reserved is zero"):
@@ -166,7 +166,7 @@ class InventoryActorSuite
             InventoryActor.GetState(_)
           )
         assert(result.reply.isDefined)
-        val inv = result.reply.get
-        assert(inv.onHand == 100)
-        assert(inv.reserved == 25)
-        assert(inv.available == 75)
+        val inventory = result.reply.get
+        assert(inventory.onHand == 100)
+        assert(inventory.reserved == 25)
+        assert(inventory.available == 75)

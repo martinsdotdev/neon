@@ -49,15 +49,15 @@ class PekkoWorkstationRepositorySuite
   describe("PekkoWorkstationRepository"):
     describe("create and findById"):
       it("persists a Disabled workstation via create and retrieves it"):
-        val wsId = WorkstationId()
+        val workstationId = WorkstationId()
         val disabled =
-          Workstation.Disabled(wsId, WorkstationType.PutWall, 8)
+          Workstation.Disabled(workstationId, WorkstationType.PutWall, 8)
         repository.create(disabled).futureValue
 
-        val found = repository.findById(wsId).futureValue
+        val found = repository.findById(workstationId).futureValue
         assert(found.isDefined)
         assert(found.get.isInstanceOf[Workstation.Disabled])
-        assert(found.get.id == wsId)
+        assert(found.get.id == workstationId)
 
       it("returns None for a non-existent workstation"):
         val result =
@@ -66,14 +66,14 @@ class PekkoWorkstationRepositorySuite
 
     describe("save with enable"):
       it("transitions Disabled to Idle"):
-        val wsId = WorkstationId()
+        val workstationId = WorkstationId()
         val disabled =
-          Workstation.Disabled(wsId, WorkstationType.PutWall, 8)
+          Workstation.Disabled(workstationId, WorkstationType.PutWall, 8)
         repository.create(disabled).futureValue
 
         val (idle, event) = disabled.enable(at)
         repository.save(idle, event).futureValue
 
-        val found = repository.findById(wsId).futureValue
+        val found = repository.findById(workstationId).futureValue
         assert(found.isDefined)
         assert(found.get.isInstanceOf[Workstation.Idle])

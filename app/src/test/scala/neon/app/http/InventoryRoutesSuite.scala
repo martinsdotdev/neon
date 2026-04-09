@@ -1,16 +1,7 @@
 package neon.app.http
 
 import neon.app.auth.*
-import neon.common.{
-  InventoryId,
-  LocationId,
-  Lot,
-  PackagingLevel,
-  Permission,
-  Role,
-  SkuId,
-  UserId
-}
+import neon.common.{InventoryId, LocationId, Lot, PackagingLevel, Permission, Role, SkuId, UserId}
 import neon.core.{
   AsyncInventoryService,
   InventoryCreateResult,
@@ -22,11 +13,7 @@ import neon.user.User
 import io.circe.Json
 import io.circe.parser.parse
 import org.apache.pekko.http.scaladsl.model.headers.Cookie
-import org.apache.pekko.http.scaladsl.model.{
-  ContentTypes,
-  HttpEntity,
-  StatusCodes
-}
+import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import org.apache.pekko.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.funspec.AnyFunSpec
 
@@ -34,9 +21,7 @@ import java.time.Instant
 import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
-class InventoryRoutesSuite
-    extends AnyFunSpec
-    with ScalatestRouteTest:
+class InventoryRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
   private val inventoryId = InventoryId()
   private val locationId = LocationId()

@@ -5,8 +5,12 @@ import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.apache.pekko.cluster.MemberStatus
 import org.apache.pekko.stream.{Materializer, SystemMaterializer}
 import org.apache.pekko.cluster.typed.{Cluster, Join}
+import org.apache.pekko.persistence.query.TimestampOffset
+import org.apache.pekko.persistence.query.typed.EventEnvelope
 import org.apache.pekko.persistence.r2dbc.ConnectionFactoryProvider
+import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
 import org.apache.pekko.stream.scaladsl.{Sink, Source}
+import reactor.core.publisher.Mono
 import org.flywaydb.core.Flyway
 import org.scalatest.concurrent.{Eventually, ScalaFutures}
 import org.scalatest.funspec.AnyFunSpecLike
@@ -125,6 +129,38 @@ abstract class PostgresContainerSuite
       }(using system.executionContext)
     Await.result(future, 10.seconds)
 
+  /** Acquires an R2DBC connection, creates an R2dbcSession, runs
+    * the given block, then closes the connection.
+    */
+  protected def withSession(
+      f: R2dbcSession => Unit
+  ): Unit =
+    val connection =
+      Mono.from(connectionFactory.create()).block()
+    try
+      val session = new R2dbcSession(connection)(using
+        system.executionContext,
+        system
+      )
+      f(session)
+    finally Mono.from(connection.close()).block()
+
+  /** Creates an EventEnvelope for projection handler tests. */
+  protected def envelope[E](
+      event: E,
+      persistenceId: String,
+      entityType: String
+  ): EventEnvelope[E] =
+    new EventEnvelope[E](
+      offset = TimestampOffset.Zero,
+      persistenceId = persistenceId,
+      sequenceNr = 1L,
+      eventOption = Some(event),
+      timestamp = System.currentTimeMillis(),
+      eventMetadata = None,
+      entityType = entityType,
+      slice = 0
+    )
   /** Queries a single integer count from the test database. */
   protected def queryCount(sql: String): Long =
     val future = Source

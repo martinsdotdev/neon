@@ -3,62 +3,32 @@ package neon.app.projection
 import neon.app.testkit.PostgresContainerSuite
 import neon.common.*
 import neon.workstation.{Workstation, WorkstationActor, WorkstationEvent, WorkstationType}
-import org.apache.pekko.persistence.query.TimestampOffset
-import org.apache.pekko.persistence.query.typed.EventEnvelope
-import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
-import reactor.core.publisher.Mono
-
-import scala.concurrent.ExecutionContext
 
 import java.time.Instant
 
-class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
+class WorkstationProjectionHandlerSuite
+    extends PostgresContainerSuite:
 
-  private given ExecutionContext = system.executionContext
+  private given scala.concurrent.ExecutionContext =
+    system.executionContext
 
   private val handler = WorkstationProjectionHandler()
 
-  private def withSession(
-      f: R2dbcSession => Unit
-  ): Unit =
-    val connection =
-      Mono.from(connectionFactory.create()).block()
-    try
-      val session = new R2dbcSession(connection)(using
-        system.executionContext,
-        system
-      )
-      f(session)
-    finally Mono.from(connection.close()).block()
-
-  private def envelope[E](
-      event: E,
-      persistenceId: String
-  ): EventEnvelope[E] =
-    new EventEnvelope[E](
-      offset = TimestampOffset.Zero,
-      persistenceId = persistenceId,
-      sequenceNr = 1L,
-      eventOption = Some(event),
-      timestamp = System.currentTimeMillis(),
-      eventMetadata = None,
-      entityType = "Workstation",
-      slice = 0
-    )
-
-  describe("WorkstationProjectionHandler") {
+  describe("WorkstationProjectionHandler"):
 
     it(
-      "should insert into workstation_by_type_and_state on Initialized"
-    ) {
-      val wsId = WorkstationId()
+      "inserts into workstation_by_type_and_state " +
+        "on Initialized"
+    ):
+      val workstationId = WorkstationId()
       val workstation = Workstation.Disabled(
-        id = wsId,
+        id = workstationId,
         workstationType = WorkstationType.PutWall,
         slotCount = 8
       )
 
-      val event = WorkstationActor.Initialized(workstation)
+      val event =
+        WorkstationActor.Initialized(workstation)
 
       withSession { session =>
         handler
@@ -66,24 +36,25 @@ class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               event,
-              s"Workstation|${wsId.value}"
+              s"Workstation|${workstationId.value}",
+              "Workstation"
             )
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM workstation_by_type_and_state WHERE workstation_id = '${wsId.value}'"
+        "SELECT COUNT(*) " +
+          "FROM workstation_by_type_and_state " +
+          "WHERE workstation_id = " +
+          s"'${workstationId.value}'"
       )
       assert(count == 1L)
-    }
 
-    it(
-      "should update state to Idle on WorkstationEnabled"
-    ) {
-      val wsId = WorkstationId()
+    it("updates state to Idle on WorkstationEnabled"):
+      val workstationId = WorkstationId()
       val workstation = Workstation.Disabled(
-        id = wsId,
+        id = workstationId,
         workstationType = WorkstationType.PackStation,
         slotCount = 4
       )
@@ -92,7 +63,7 @@ class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
         WorkstationActor.Initialized(workstation)
       val enabled = WorkstationActor.DomainEvent(
         WorkstationEvent.WorkstationEnabled(
-          workstationId = wsId,
+          workstationId = workstationId,
           workstationType = WorkstationType.PackStation,
           slotCount = 4,
           occurredAt = Instant.now()
@@ -105,7 +76,8 @@ class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               initialized,
-              s"Workstation|${wsId.value}"
+              s"Workstation|${workstationId.value}",
+              "Workstation"
             )
           )
           .futureValue
@@ -114,24 +86,28 @@ class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               enabled,
-              s"Workstation|${wsId.value}"
+              s"Workstation|${workstationId.value}",
+              "Workstation"
             )
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM workstation_by_type_and_state WHERE workstation_id = '${wsId.value}' AND state = 'Idle'"
+        "SELECT COUNT(*) " +
+          "FROM workstation_by_type_and_state " +
+          "WHERE workstation_id = " +
+          s"'${workstationId.value}' " +
+          "AND state = 'Idle'"
       )
       assert(count == 1L)
-    }
 
     it(
-      "should update state to Active on WorkstationAssigned"
-    ) {
-      val wsId = WorkstationId()
+      "updates state to Active on WorkstationAssigned"
+    ):
+      val workstationId = WorkstationId()
       val workstation = Workstation.Disabled(
-        id = wsId,
+        id = workstationId,
         workstationType = WorkstationType.PutWall,
         slotCount = 6
       )
@@ -140,7 +116,7 @@ class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
         WorkstationActor.Initialized(workstation)
       val assigned = WorkstationActor.DomainEvent(
         WorkstationEvent.WorkstationAssigned(
-          workstationId = wsId,
+          workstationId = workstationId,
           workstationType = WorkstationType.PutWall,
           consolidationGroupId = ConsolidationGroupId(),
           occurredAt = Instant.now()
@@ -153,7 +129,8 @@ class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               initialized,
-              s"Workstation|${wsId.value}"
+              s"Workstation|${workstationId.value}",
+              "Workstation"
             )
           )
           .futureValue
@@ -162,15 +139,18 @@ class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               assigned,
-              s"Workstation|${wsId.value}"
+              s"Workstation|${workstationId.value}",
+              "Workstation"
             )
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM workstation_by_type_and_state WHERE workstation_id = '${wsId.value}' AND state = 'Active'"
+        "SELECT COUNT(*) " +
+          "FROM workstation_by_type_and_state " +
+          "WHERE workstation_id = " +
+          s"'${workstationId.value}' " +
+          "AND state = 'Active'"
       )
       assert(count == 1L)
-    }
-  }

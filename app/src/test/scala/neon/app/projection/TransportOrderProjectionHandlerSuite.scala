@@ -3,62 +3,31 @@ package neon.app.projection
 import neon.app.testkit.PostgresContainerSuite
 import neon.common.*
 import neon.transportorder.TransportOrderEvent
-import org.apache.pekko.persistence.query.TimestampOffset
-import org.apache.pekko.persistence.query.typed.EventEnvelope
-import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
-import reactor.core.publisher.Mono
-
-import scala.concurrent.ExecutionContext
 
 import java.time.Instant
 
-class TransportOrderProjectionHandlerSuite extends PostgresContainerSuite:
+class TransportOrderProjectionHandlerSuite
+    extends PostgresContainerSuite:
 
-  private given ExecutionContext = system.executionContext
+  private given scala.concurrent.ExecutionContext =
+    system.executionContext
 
   private val handler = TransportOrderProjectionHandler()
 
-  private def withSession(
-      f: R2dbcSession => Unit
-  ): Unit =
-    val connection =
-      Mono.from(connectionFactory.create()).block()
-    try
-      val session = new R2dbcSession(connection)(using
-        system.executionContext,
-        system
-      )
-      f(session)
-    finally Mono.from(connection.close()).block()
-
-  private def envelope[E](
-      event: E,
-      persistenceId: String
-  ): EventEnvelope[E] =
-    new EventEnvelope[E](
-      offset = TimestampOffset.Zero,
-      persistenceId = persistenceId,
-      sequenceNr = 1L,
-      eventOption = Some(event),
-      timestamp = System.currentTimeMillis(),
-      eventMetadata = None,
-      entityType = "TransportOrder",
-      slice = 0
-    )
-
-  describe("TransportOrderProjectionHandler") {
+  describe("TransportOrderProjectionHandler"):
 
     it(
-      "should insert into transport_order_by_handling_unit on TransportOrderCreated"
-    ) {
-      val toId = TransportOrderId()
-      val huId = HandlingUnitId()
+      "inserts into transport_order_by_handling_unit " +
+        "on TransportOrderCreated"
+    ):
+      val transportOrderId = TransportOrderId()
+      val handlingUnitId = HandlingUnitId()
       val destination = LocationId()
 
       val event =
         TransportOrderEvent.TransportOrderCreated(
-          transportOrderId = toId,
-          handlingUnitId = huId,
+          transportOrderId = transportOrderId,
+          handlingUnitId = handlingUnitId,
           destination = destination,
           occurredAt = Instant.now()
         )
@@ -69,37 +38,41 @@ class TransportOrderProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               event,
-              s"TransportOrder|${toId.value}"
+              s"TransportOrder|${transportOrderId.value}",
+              "TransportOrder"
             )
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM transport_order_by_handling_unit WHERE transport_order_id = '${toId.value}'"
+        "SELECT COUNT(*) " +
+          "FROM transport_order_by_handling_unit " +
+          "WHERE transport_order_id = " +
+          s"'${transportOrderId.value}'"
       )
       assert(count == 1L)
-    }
 
     it(
-      "should update state to Confirmed on TransportOrderConfirmed"
-    ) {
-      val toId = TransportOrderId()
-      val huId = HandlingUnitId()
+      "updates state to Confirmed " +
+        "on TransportOrderConfirmed"
+    ):
+      val transportOrderId = TransportOrderId()
+      val handlingUnitId = HandlingUnitId()
       val destination = LocationId()
 
       val created =
         TransportOrderEvent.TransportOrderCreated(
-          transportOrderId = toId,
-          handlingUnitId = huId,
+          transportOrderId = transportOrderId,
+          handlingUnitId = handlingUnitId,
           destination = destination,
           occurredAt = Instant.now()
         )
 
       val confirmed =
         TransportOrderEvent.TransportOrderConfirmed(
-          transportOrderId = toId,
-          handlingUnitId = huId,
+          transportOrderId = transportOrderId,
+          handlingUnitId = handlingUnitId,
           destination = destination,
           occurredAt = Instant.now()
         )
@@ -110,7 +83,8 @@ class TransportOrderProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               created,
-              s"TransportOrder|${toId.value}"
+              s"TransportOrder|${transportOrderId.value}",
+              "TransportOrder"
             )
           )
           .futureValue
@@ -119,37 +93,42 @@ class TransportOrderProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               confirmed,
-              s"TransportOrder|${toId.value}"
+              s"TransportOrder|${transportOrderId.value}",
+              "TransportOrder"
             )
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM transport_order_by_handling_unit WHERE transport_order_id = '${toId.value}' AND state = 'Confirmed'"
+        "SELECT COUNT(*) " +
+          "FROM transport_order_by_handling_unit " +
+          "WHERE transport_order_id = " +
+          s"'${transportOrderId.value}' " +
+          "AND state = 'Confirmed'"
       )
       assert(count == 1L)
-    }
 
     it(
-      "should update state to Cancelled on TransportOrderCancelled"
-    ) {
-      val toId = TransportOrderId()
-      val huId = HandlingUnitId()
+      "updates state to Cancelled " +
+        "on TransportOrderCancelled"
+    ):
+      val transportOrderId = TransportOrderId()
+      val handlingUnitId = HandlingUnitId()
       val destination = LocationId()
 
       val created =
         TransportOrderEvent.TransportOrderCreated(
-          transportOrderId = toId,
-          handlingUnitId = huId,
+          transportOrderId = transportOrderId,
+          handlingUnitId = handlingUnitId,
           destination = destination,
           occurredAt = Instant.now()
         )
 
       val cancelled =
         TransportOrderEvent.TransportOrderCancelled(
-          transportOrderId = toId,
-          handlingUnitId = huId,
+          transportOrderId = transportOrderId,
+          handlingUnitId = handlingUnitId,
           destination = destination,
           occurredAt = Instant.now()
         )
@@ -160,7 +139,8 @@ class TransportOrderProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               created,
-              s"TransportOrder|${toId.value}"
+              s"TransportOrder|${transportOrderId.value}",
+              "TransportOrder"
             )
           )
           .futureValue
@@ -169,15 +149,18 @@ class TransportOrderProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               cancelled,
-              s"TransportOrder|${toId.value}"
+              s"TransportOrder|${transportOrderId.value}",
+              "TransportOrder"
             )
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM transport_order_by_handling_unit WHERE transport_order_id = '${toId.value}' AND state = 'Cancelled'"
+        "SELECT COUNT(*) " +
+          "FROM transport_order_by_handling_unit " +
+          "WHERE transport_order_id = " +
+          s"'${transportOrderId.value}' " +
+          "AND state = 'Cancelled'"
       )
       assert(count == 1L)
-    }
-  }

@@ -3,52 +3,19 @@ package neon.app.projection
 import neon.app.testkit.PostgresContainerSuite
 import neon.common.*
 import neon.task.{TaskEvent, TaskType}
-import org.apache.pekko.persistence.query.TimestampOffset
-import org.apache.pekko.persistence.query.typed.EventEnvelope
-import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
-import reactor.core.publisher.Mono
-
-import scala.concurrent.ExecutionContext
 
 import java.time.Instant
 
 class TaskProjectionHandlerSuite extends PostgresContainerSuite:
 
-  private given ExecutionContext = system.executionContext
+  private given scala.concurrent.ExecutionContext =
+    system.executionContext
 
   private val handler = TaskProjectionHandler()
 
-  private def withSession(
-      f: R2dbcSession => Unit
-  ): Unit =
-    val connection =
-      Mono.from(connectionFactory.create()).block()
-    try
-      val session = new R2dbcSession(connection)(using
-        system.executionContext,
-        system
-      )
-      f(session)
-    finally Mono.from(connection.close()).block()
+  describe("TaskProjectionHandler"):
 
-  private def envelope[E](
-      event: E,
-      persistenceId: String
-  ): EventEnvelope[E] =
-    new EventEnvelope[E](
-      offset = TimestampOffset.Zero,
-      persistenceId = persistenceId,
-      sequenceNr = 1L,
-      eventOption = Some(event),
-      timestamp = System.currentTimeMillis(),
-      eventMetadata = None,
-      entityType = "Task",
-      slice = 0
-    )
-
-  describe("TaskProjectionHandler") {
-
-    it("should insert into task_by_wave on TaskCreated") {
+    it("inserts into task_by_wave on TaskCreated"):
       val taskId = TaskId()
       val waveId = WaveId()
       val orderId = OrderId()
@@ -71,20 +38,18 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
         handler
           .process(
             session,
-            envelope(event, s"Task|${taskId.value}")
+            envelope(event, s"Task|${taskId.value}", "Task")
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM task_by_wave WHERE task_id = '${taskId.value}'"
+        "SELECT COUNT(*) FROM task_by_wave " +
+          s"WHERE task_id = '${taskId.value}'"
       )
       assert(count == 1L)
-    }
 
-    it(
-      "should insert into task_by_handling_unit on TaskCreated"
-    ) {
+    it("inserts into task_by_handling_unit on TaskCreated"):
       val taskId = TaskId()
       val waveId = WaveId()
       val orderId = OrderId()
@@ -107,18 +72,18 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
         handler
           .process(
             session,
-            envelope(event, s"Task|${taskId.value}")
+            envelope(event, s"Task|${taskId.value}", "Task")
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM task_by_handling_unit WHERE task_id = '${taskId.value}'"
+        "SELECT COUNT(*) FROM task_by_handling_unit " +
+          s"WHERE task_id = '${taskId.value}'"
       )
       assert(count == 1L)
-    }
 
-    it("should update state to Allocated on TaskAllocated") {
+    it("updates state to Allocated on TaskAllocated"):
       val taskId = TaskId()
       val waveId = WaveId()
       val orderId = OrderId()
@@ -148,7 +113,11 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
         handler
           .process(
             session,
-            envelope(created, s"Task|${taskId.value}")
+            envelope(
+              created,
+              s"Task|${taskId.value}",
+              "Task"
+            )
           )
           .futureValue
         handler
@@ -156,19 +125,21 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               allocated,
-              s"Task|${taskId.value}"
+              s"Task|${taskId.value}",
+              "Task"
             )
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM task_by_wave WHERE task_id = '${taskId.value}' AND state = 'Allocated'"
+        "SELECT COUNT(*) FROM task_by_wave " +
+          s"WHERE task_id = '${taskId.value}' " +
+          "AND state = 'Allocated'"
       )
       assert(count == 1L)
-    }
 
-    it("should update state to Completed on TaskCompleted") {
+    it("updates state to Completed on TaskCompleted"):
       val taskId = TaskId()
       val waveId = WaveId()
       val orderId = OrderId()
@@ -206,7 +177,11 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
         handler
           .process(
             session,
-            envelope(created, s"Task|${taskId.value}")
+            envelope(
+              created,
+              s"Task|${taskId.value}",
+              "Task"
+            )
           )
           .futureValue
         handler
@@ -214,15 +189,16 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               completed,
-              s"Task|${taskId.value}"
+              s"Task|${taskId.value}",
+              "Task"
             )
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM task_by_wave WHERE task_id = '${taskId.value}' AND state = 'Completed'"
+        "SELECT COUNT(*) FROM task_by_wave " +
+          s"WHERE task_id = '${taskId.value}' " +
+          "AND state = 'Completed'"
       )
       assert(count == 1L)
-    }
-  }

@@ -1,15 +1,7 @@
 package neon.app.http
 
 import neon.app.auth.*
-import neon.common.{
-  HandlingUnitId,
-  OrderId,
-  Permission,
-  Role,
-  SlotId,
-  UserId,
-  WorkstationId
-}
+import neon.common.{HandlingUnitId, OrderId, Permission, Role, SlotId, UserId, WorkstationId}
 import neon.core.{
   AsyncSlotService,
   SlotCompleteResult,
@@ -22,11 +14,7 @@ import neon.user.User
 import io.circe.Json
 import io.circe.parser.parse
 import org.apache.pekko.http.scaladsl.model.headers.Cookie
-import org.apache.pekko.http.scaladsl.model.{
-  ContentTypes,
-  HttpEntity,
-  StatusCodes
-}
+import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import org.apache.pekko.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.funspec.AnyFunSpec
 
@@ -34,9 +22,7 @@ import java.time.Instant
 import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
-class SlotRoutesSuite
-    extends AnyFunSpec
-    with ScalatestRouteTest:
+class SlotRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
   private val slotId = SlotId()
   private val workstationId = WorkstationId()
@@ -75,10 +61,10 @@ class SlotRoutesSuite
 
   private def stubService(
       reserveResult: Either[SlotError, SlotReserveResult],
-      completeResult: Either[SlotError, SlotCompleteResult] =
-        Left(SlotError.SlotNotFound(SlotId())),
-      releaseResult: Either[SlotError, SlotReleaseResult] =
-        Left(SlotError.SlotNotFound(SlotId()))
+      completeResult: Either[SlotError, SlotCompleteResult] = Left(
+        SlotError.SlotNotFound(SlotId())
+      ),
+      releaseResult: Either[SlotError, SlotReleaseResult] = Left(SlotError.SlotNotFound(SlotId()))
   ): AsyncSlotService =
     new AsyncSlotService(null):
       override def reserve(

@@ -3,59 +3,27 @@ package neon.app.projection
 import neon.app.testkit.PostgresContainerSuite
 import neon.common.*
 import neon.slot.{Slot, SlotActor, SlotEvent}
-import org.apache.pekko.persistence.query.TimestampOffset
-import org.apache.pekko.persistence.query.typed.EventEnvelope
-import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
-import reactor.core.publisher.Mono
-
-import scala.concurrent.ExecutionContext
 
 import java.time.Instant
 
-class SlotProjectionHandlerSuite extends PostgresContainerSuite:
+class SlotProjectionHandlerSuite
+    extends PostgresContainerSuite:
 
-  private given ExecutionContext = system.executionContext
+  private given scala.concurrent.ExecutionContext =
+    system.executionContext
 
   private val handler = SlotProjectionHandler()
 
-  private def withSession(
-      f: R2dbcSession => Unit
-  ): Unit =
-    val connection =
-      Mono.from(connectionFactory.create()).block()
-    try
-      val session = new R2dbcSession(connection)(using
-        system.executionContext,
-        system
-      )
-      f(session)
-    finally Mono.from(connection.close()).block()
-
-  private def envelope[E](
-      event: E,
-      persistenceId: String
-  ): EventEnvelope[E] =
-    new EventEnvelope[E](
-      offset = TimestampOffset.Zero,
-      persistenceId = persistenceId,
-      sequenceNr = 1L,
-      eventOption = Some(event),
-      timestamp = System.currentTimeMillis(),
-      eventMetadata = None,
-      entityType = "Slot",
-      slice = 0
-    )
-
-  describe("SlotProjectionHandler") {
+  describe("SlotProjectionHandler"):
 
     it(
-      "should insert into slot_by_workstation on Initialized"
-    ) {
+      "inserts into slot_by_workstation on Initialized"
+    ):
       val slotId = SlotId()
-      val wsId = WorkstationId()
+      val workstationId = WorkstationId()
       val slot = Slot.Available(
         id = slotId,
-        workstationId = wsId
+        workstationId = workstationId
       )
 
       val event = SlotActor.Initialized(slot)
@@ -66,35 +34,34 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               event,
-              s"Slot|${slotId.value}"
+              s"Slot|${slotId.value}",
+              "Slot"
             )
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM slot_by_workstation WHERE slot_id = '${slotId.value}'"
+        "SELECT COUNT(*) FROM slot_by_workstation " +
+          s"WHERE slot_id = '${slotId.value}'"
       )
       assert(count == 1L)
-    }
 
-    it(
-      "should update state to Reserved on SlotReserved"
-    ) {
+    it("updates state to Reserved on SlotReserved"):
       val slotId = SlotId()
-      val wsId = WorkstationId()
+      val workstationId = WorkstationId()
       val orderId = OrderId()
 
       val slot = Slot.Available(
         id = slotId,
-        workstationId = wsId
+        workstationId = workstationId
       )
 
       val initialized = SlotActor.Initialized(slot)
       val reserved = SlotActor.DomainEvent(
         SlotEvent.SlotReserved(
           slotId = slotId,
-          workstationId = wsId,
+          workstationId = workstationId,
           orderId = orderId,
           handlingUnitId = HandlingUnitId(),
           occurredAt = Instant.now()
@@ -107,7 +74,8 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               initialized,
-              s"Slot|${slotId.value}"
+              s"Slot|${slotId.value}",
+              "Slot"
             )
           )
           .futureValue
@@ -116,35 +84,35 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               reserved,
-              s"Slot|${slotId.value}"
+              s"Slot|${slotId.value}",
+              "Slot"
             )
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM slot_by_workstation WHERE slot_id = '${slotId.value}' AND state = 'Reserved'"
+        "SELECT COUNT(*) FROM slot_by_workstation " +
+          s"WHERE slot_id = '${slotId.value}' " +
+          "AND state = 'Reserved'"
       )
       assert(count == 1L)
-    }
 
-    it(
-      "should update state to Available on SlotReleased"
-    ) {
+    it("updates state to Available on SlotReleased"):
       val slotId = SlotId()
-      val wsId = WorkstationId()
+      val workstationId = WorkstationId()
       val orderId = OrderId()
 
       val slot = Slot.Available(
         id = slotId,
-        workstationId = wsId
+        workstationId = workstationId
       )
 
       val initialized = SlotActor.Initialized(slot)
       val reserved = SlotActor.DomainEvent(
         SlotEvent.SlotReserved(
           slotId = slotId,
-          workstationId = wsId,
+          workstationId = workstationId,
           orderId = orderId,
           handlingUnitId = HandlingUnitId(),
           occurredAt = Instant.now()
@@ -153,7 +121,7 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
       val released = SlotActor.DomainEvent(
         SlotEvent.SlotReleased(
           slotId = slotId,
-          workstationId = wsId,
+          workstationId = workstationId,
           orderId = orderId,
           occurredAt = Instant.now()
         )
@@ -165,7 +133,8 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               initialized,
-              s"Slot|${slotId.value}"
+              s"Slot|${slotId.value}",
+              "Slot"
             )
           )
           .futureValue
@@ -174,7 +143,8 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               reserved,
-              s"Slot|${slotId.value}"
+              s"Slot|${slotId.value}",
+              "Slot"
             )
           )
           .futureValue
@@ -183,15 +153,16 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
             session,
             envelope(
               released,
-              s"Slot|${slotId.value}"
+              s"Slot|${slotId.value}",
+              "Slot"
             )
           )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM slot_by_workstation WHERE slot_id = '${slotId.value}' AND state = 'Available'"
+        "SELECT COUNT(*) FROM slot_by_workstation " +
+          s"WHERE slot_id = '${slotId.value}' " +
+          "AND state = 'Available'"
       )
       assert(count == 1L)
-    }
-  }

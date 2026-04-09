@@ -6,8 +6,7 @@ import neon.core.{DockCarrierAssignment, WaveDispatchRules}
 
 import java.util.UUID
 
-class R2dbcWaveDispatchAssignmentRepositorySuite
-    extends PostgresContainerSuite:
+class R2dbcWaveDispatchAssignmentRepositorySuite extends PostgresContainerSuite:
 
   private given org.apache.pekko.actor.typed.ActorSystem[?] =
     system

@@ -53,9 +53,9 @@ class PekkoSlotRepositorySuite
         val slotId = SlotId()
         val available = Slot.Available(slotId, workstationId)
         val orderId = OrderId()
-        val huId = HandlingUnitId()
+        val handlingUnitId = HandlingUnitId()
         val (reserved, event) =
-          available.reserve(orderId, huId, at)
+          available.reserve(orderId, handlingUnitId, at)
         repository.save(available, event).futureValue
 
         val found = repository.findById(slotId).futureValue

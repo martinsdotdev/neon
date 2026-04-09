@@ -1,15 +1,7 @@
 package neon.app.http
 
 import neon.app.auth.*
-import neon.common.{
-  HandlingUnitId,
-  LocationId,
-  OrderId,
-  PackagingLevel,
-  Permission,
-  Role,
-  UserId
-}
+import neon.common.{HandlingUnitId, LocationId, OrderId, PackagingLevel, Permission, Role, UserId}
 import neon.core.{
   AsyncHandlingUnitLifecycleService,
   HandlingUnitEmptyResult,
@@ -31,9 +23,7 @@ import java.time.Instant
 import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
-class HandlingUnitRoutesSuite
-    extends AnyFunSpec
-    with ScalatestRouteTest:
+class HandlingUnitRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
   private val handlingUnitId = HandlingUnitId()
   private val locationId = LocationId()

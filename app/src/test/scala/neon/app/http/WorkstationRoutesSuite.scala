@@ -1,18 +1,8 @@
 package neon.app.http
 
 import neon.app.auth.*
-import neon.common.{
-  ConsolidationGroupId,
-  Permission,
-  Role,
-  UserId,
-  WaveId,
-  WorkstationId
-}
-import neon.consolidationgroup.{
-  ConsolidationGroup,
-  ConsolidationGroupEvent
-}
+import neon.common.{ConsolidationGroupId, Permission, Role, UserId, WaveId, WorkstationId}
+import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent}
 import neon.core.{
   AsyncWorkstationAssignmentService,
   AsyncWorkstationLifecycleService,
@@ -28,11 +18,7 @@ import neon.workstation.{Workstation, WorkstationEvent, WorkstationType}
 import io.circe.Json
 import io.circe.parser.parse
 import org.apache.pekko.http.scaladsl.model.headers.Cookie
-import org.apache.pekko.http.scaladsl.model.{
-  ContentTypes,
-  HttpEntity,
-  StatusCodes
-}
+import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import org.apache.pekko.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.funspec.AnyFunSpec
 
@@ -40,9 +26,7 @@ import java.time.Instant
 import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
-class WorkstationRoutesSuite
-    extends AnyFunSpec
-    with ScalatestRouteTest:
+class WorkstationRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
   private val workstationId = WorkstationId()
   private val consolidationGroupId = ConsolidationGroupId()

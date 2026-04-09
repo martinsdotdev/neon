@@ -50,33 +50,33 @@ class PekkoHandlingUnitRepositorySuite
   describe("PekkoHandlingUnitRepository"):
     describe("save and findById"):
       it("persists a PickCreated handling unit and retrieves it"):
-        val huId = HandlingUnitId()
+        val handlingUnitId = HandlingUnitId()
         val pickCreated =
-          HandlingUnit.PickCreated(huId, PackagingLevel.Each, locationId)
+          HandlingUnit.PickCreated(handlingUnitId, PackagingLevel.Each, locationId)
         val event = HandlingUnitEvent.HandlingUnitMovedToBuffer(
-          huId,
+          handlingUnitId,
           LocationId(),
           at
         )
         repository.save(pickCreated, event).futureValue
 
-        val found = repository.findById(huId).futureValue
+        val found = repository.findById(handlingUnitId).futureValue
         assert(found.isDefined)
         assert(found.get.isInstanceOf[HandlingUnit.InBuffer])
 
       it("persists a ShipCreated handling unit"):
-        val huId = HandlingUnitId()
+        val handlingUnitId = HandlingUnitId()
         val shipCreated = HandlingUnit.ShipCreated(
-          huId,
+          handlingUnitId,
           PackagingLevel.Each,
           locationId,
           OrderId()
         )
         val event =
-          HandlingUnitEvent.HandlingUnitPacked(huId, OrderId(), at)
+          HandlingUnitEvent.HandlingUnitPacked(handlingUnitId, OrderId(), at)
         repository.save(shipCreated, event).futureValue
 
-        val found = repository.findById(huId).futureValue
+        val found = repository.findById(handlingUnitId).futureValue
         assert(found.isDefined)
         assert(found.get.isInstanceOf[HandlingUnit.Packed])
 
@@ -87,19 +87,19 @@ class PekkoHandlingUnitRepositorySuite
 
     describe("findByIds"):
       it("returns multiple handling units"):
-        val huId1 = HandlingUnitId()
-        val huId2 = HandlingUnitId()
+        val handlingUnitId1 = HandlingUnitId()
+        val handlingUnitId2 = HandlingUnitId()
         val pc1 =
-          HandlingUnit.PickCreated(huId1, PackagingLevel.Each, locationId)
+          HandlingUnit.PickCreated(handlingUnitId1, PackagingLevel.Each, locationId)
         val pc2 =
-          HandlingUnit.PickCreated(huId2, PackagingLevel.Each, locationId)
+          HandlingUnit.PickCreated(handlingUnitId2, PackagingLevel.Each, locationId)
         val event1 = HandlingUnitEvent.HandlingUnitMovedToBuffer(
-          huId1,
+          handlingUnitId1,
           LocationId(),
           at
         )
         val event2 = HandlingUnitEvent.HandlingUnitMovedToBuffer(
-          huId2,
+          handlingUnitId2,
           LocationId(),
           at
         )
@@ -108,5 +108,5 @@ class PekkoHandlingUnitRepositorySuite
         repository.save(pc2, event2).futureValue
 
         val found =
-          repository.findByIds(List(huId1, huId2)).futureValue
+          repository.findByIds(List(handlingUnitId1, handlingUnitId2)).futureValue
         assert(found.size == 2)
