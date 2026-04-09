@@ -15,10 +15,12 @@ import neon.common.{
 }
 import neon.core.{
   AsyncTaskCompletionService,
+  AsyncTaskLifecycleService,
   TaskCompletionError,
   TaskCompletionResult,
   VerificationProfile
 }
+import neon.user.AsyncUserRepository
 import neon.task.{AsyncTaskRepository, Task, TaskEvent, TaskType}
 import neon.user.User
 import io.circe.parser.parse
@@ -134,6 +136,23 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
       ] =
         Future.successful(result)
 
+  private val stubLifecycleService =
+    val stubRepo = new AsyncTaskRepository:
+      def findById(id: TaskId) = Future.successful(None)
+      def findByWaveId(waveId: WaveId) =
+        Future.successful(Nil)
+      def findByHandlingUnitId(id: HandlingUnitId) =
+        Future.successful(Nil)
+      def save(task: Task, event: TaskEvent) =
+        Future.successful(())
+      def saveAll(entries: List[(Task, TaskEvent)]) =
+        Future.successful(())
+    val stubUserRepo = new AsyncUserRepository:
+      def findById(id: UserId) = Future.successful(None)
+      def findByLogin(login: String) =
+        Future.successful(None)
+    AsyncTaskLifecycleService(stubRepo, stubUserRepo)
+
   describe("TaskRoutes"):
     describe("POST /tasks/:id/complete"):
       it("returns 200 with completed task on success"):
@@ -146,7 +165,7 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
           pickingCompletion = None
         )
         val routes =
-          TaskRoutes(stubService(Right(result)), authService)
+          TaskRoutes(stubService(Right(result)), stubLifecycleService, authService)
         val body =
           s"""{"actualQuantity": 10, "verified": true}"""
 
@@ -165,6 +184,7 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
           stubService(
             Left(TaskCompletionError.TaskNotFound(taskId))
           ),
+          stubLifecycleService,
           authService
         )
         val body =
@@ -185,6 +205,7 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
               TaskCompletionError.TaskNotAssigned(taskId)
             )
           ),
+          stubLifecycleService,
           authService
         )
         val body =
@@ -200,7 +221,7 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
       it("returns 401 without session cookie"):
         val routes =
-          TaskRoutes(stubService(Right(null)), authService)
+          TaskRoutes(stubService(Right(null)), stubLifecycleService, authService)
         val body =
           s"""{"actualQuantity": 10, "verified": true}"""
         Post(
