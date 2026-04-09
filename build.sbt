@@ -153,8 +153,10 @@ lazy val core = project
     transportOrder,
     workstation,
     slot,
+    inventory,
     location,
-    carrier
+    carrier,
+    user
   )
   .settings(
     name := "neon-core",
