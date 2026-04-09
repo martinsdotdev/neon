@@ -97,7 +97,7 @@ object ProjectionBootstrap:
             maxSlice = sliceRange.max
           )
         ProjectionBehavior(
-          R2dbcProjection.exactlyOnce(
+          R2dbcProjection.atLeastOnce(
             projectionId = ProjectionId(
               name,
               sliceRange.min.toString
