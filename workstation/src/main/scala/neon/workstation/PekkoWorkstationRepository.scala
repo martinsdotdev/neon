@@ -44,6 +44,15 @@ class PekkoWorkstationRepository(
           })
     )
 
+  def create(workstation: Workstation.Disabled): Future[Unit] =
+    sharding
+      .entityRefFor(
+        WorkstationActor.EntityKey,
+        workstation.id.value.toString
+      )
+      .askWithStatus(WorkstationActor.Create(workstation, _))
+      .map(_ => ())
+
   def save(
       workstation: Workstation,
       event: WorkstationEvent

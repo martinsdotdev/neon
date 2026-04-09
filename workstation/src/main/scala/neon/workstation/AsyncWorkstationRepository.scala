@@ -10,4 +10,5 @@ trait AsyncWorkstationRepository:
   def findIdleByType(
       workstationType: WorkstationType
   ): Future[Option[Workstation.Idle]]
+  def create(workstation: Workstation.Disabled): Future[Unit]
   def save(workstation: Workstation, event: WorkstationEvent): Future[Unit]
