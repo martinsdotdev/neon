@@ -95,9 +95,24 @@ object R2dbcHelper:
   private def acquireConnection(
       connectionFactory: ConnectionFactory
   )(using system: ActorSystem[?], ec: ExecutionContext): Future[Connection] =
-    Source.fromPublisher(connectionFactory.create()).runWith(Sink.head)
+    Source
+      .fromPublisher(connectionFactory.create())
+      .runWith(Sink.headOption)
+      .flatMap {
+        case Some(connection) => Future.successful(connection)
+        case None             =>
+          Future.failed(
+            new IllegalStateException(
+              "Failed to acquire R2DBC connection: " +
+                "pool returned empty publisher"
+            )
+          )
+      }
 
-  private def toFuture[T](
-      publisher: org.reactivestreams.Publisher[T]
-  )(using system: ActorSystem[?], ec: ExecutionContext): Future[T] =
-    Source.fromPublisher(publisher).runWith(Sink.head)
+  private def toFuture(
+      publisher: org.reactivestreams.Publisher[Void]
+  )(using system: ActorSystem[?], ec: ExecutionContext): Future[Unit] =
+    Source
+      .fromPublisher(publisher)
+      .runWith(Sink.ignore)
+      .map(_ => ())

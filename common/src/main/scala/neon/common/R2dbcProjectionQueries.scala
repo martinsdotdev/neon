@@ -23,21 +23,29 @@ trait R2dbcProjectionQueries:
   ): Future[List[UUID]] =
     Source
       .fromPublisher(connectionFactory.create())
-      .runWith(Sink.head)
-      .flatMap { connection =>
-        val stmt = connection.createStatement(sql).bind(0, param)
-        Source
-          .fromPublisher(stmt.execute())
-          .flatMapConcat { result =>
-            Source.fromPublisher(
-              result.map((row, _) => row.get(idColumn, classOf[UUID]))
+      .runWith(Sink.headOption)
+      .flatMap {
+        case None =>
+          Future.failed(
+            new IllegalStateException(
+              "Failed to acquire R2DBC connection"
             )
-          }
-          .runWith(Sink.seq)
-          .map(_.toList)
-          .andThen { case _ =>
-            Source
-              .fromPublisher(connection.close())
-              .runWith(Sink.ignore)
-          }
+          )
+        case Some(connection) =>
+          val stmt =
+            connection.createStatement(sql).bind(0, param)
+          Source
+            .fromPublisher(stmt.execute())
+            .flatMapConcat { result =>
+              Source.fromPublisher(
+                result.map((row, _) => row.get(idColumn, classOf[UUID]))
+              )
+            }
+            .runWith(Sink.seq)
+            .map(_.toList)
+            .andThen { case _ =>
+              Source
+                .fromPublisher(connection.close())
+                .runWith(Sink.ignore)
+            }
       }
