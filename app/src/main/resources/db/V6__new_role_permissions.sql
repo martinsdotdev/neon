@@ -1,0 +1,20 @@
+-- New permissions for full pipeline API coverage.
+INSERT INTO role_permissions (role, permission) VALUES
+  ('Admin', 'task:allocate'),
+  ('Admin', 'task:assign'),
+  ('Admin', 'task:cancel'),
+  ('Admin', 'workstation:manage'),
+  ('Admin', 'transport-order:cancel'),
+  ('Admin', 'consolidation-group:cancel'),
+  ('Admin', 'handling-unit:manage'),
+  ('Admin', 'slot:manage'),
+  ('Admin', 'inventory:manage'),
+  ('Supervisor', 'task:allocate'),
+  ('Supervisor', 'task:assign'),
+  ('Supervisor', 'task:cancel'),
+  ('Supervisor', 'workstation:manage'),
+  ('Supervisor', 'transport-order:cancel'),
+  ('Supervisor', 'consolidation-group:cancel'),
+  ('Supervisor', 'handling-unit:manage'),
+  ('Supervisor', 'slot:manage'),
+  ('Supervisor', 'inventory:manage');
