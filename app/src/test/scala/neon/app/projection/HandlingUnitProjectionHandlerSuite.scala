@@ -6,8 +6,7 @@ import neon.handlingunit.{HandlingUnit, HandlingUnitActor, HandlingUnitEvent}
 
 import java.time.Instant
 
-class HandlingUnitProjectionHandlerSuite
-    extends PostgresContainerSuite:
+class HandlingUnitProjectionHandlerSuite extends PostgresContainerSuite:
 
   private given scala.concurrent.ExecutionContext =
     system.executionContext

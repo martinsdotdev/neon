@@ -78,6 +78,7 @@ class WaveCancellationServiceSuite extends AnyFunSpec with OptionValues with Eit
       Some(waveId),
       None,
       handlingUnitId,
+      None,
       sourceLocationId,
       destinationLocationId
     )
@@ -96,6 +97,7 @@ class WaveCancellationServiceSuite extends AnyFunSpec with OptionValues with Eit
       Some(waveId),
       None,
       handlingUnitId,
+      None,
       sourceLocationId,
       destinationLocationId,
       userId
@@ -116,6 +118,7 @@ class WaveCancellationServiceSuite extends AnyFunSpec with OptionValues with Eit
       Some(waveId),
       None,
       handlingUnitId,
+      None,
       sourceLocationId,
       destinationLocationId,
       userId
@@ -129,6 +132,7 @@ class WaveCancellationServiceSuite extends AnyFunSpec with OptionValues with Eit
       PackagingLevel.Each,
       orderId,
       Some(waveId),
+      None,
       None,
       None,
       None,

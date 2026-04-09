@@ -1,6 +1,6 @@
 package neon.core
 
-import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
+import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId, WorkstationMode}
 import neon.consolidationgroup.ConsolidationGroup
 import neon.workstation.{Workstation, WorkstationType}
 import org.scalatest.OptionValues
@@ -17,7 +17,7 @@ class WorkstationAssignmentPolicySuite extends AnyFunSpec with OptionValues:
     ConsolidationGroup.ReadyForWorkstation(ConsolidationGroupId(), waveId, orderIds)
 
   def idleWorkstation(slots: Int = 8) =
-    Workstation.Idle(WorkstationId(), WorkstationType.PutWall, slots)
+    Workstation.Idle(WorkstationId(), WorkstationType.PutWall, slots, WorkstationMode.Picking)
 
   describe("WorkstationAssignmentPolicy"):
     describe("capacity check"):
@@ -51,24 +51,25 @@ class WorkstationAssignmentPolicySuite extends AnyFunSpec with OptionValues:
         assert(consolidationGroupEvent.occurredAt == at)
 
     describe("workstation transition"):
-      it("activates the workstation with the consolidation group"):
+      it("activates the workstation with the assignment"):
         val consolidationGroup = readyConsolidationGroup()
         val workstation = idleWorkstation()
         val (_, (active, _)) =
           WorkstationAssignmentPolicy(consolidationGroup, workstation, at).value
         assert(active.id == workstation.id)
-        assert(active.consolidationGroupId == consolidationGroup.id)
+        assert(active.assignmentId == consolidationGroup.id.value)
 
-      it("workstation event carries consolidationGroupId and occurredAt"):
+      it("workstation event carries assignmentId and occurredAt"):
         val consolidationGroup = readyConsolidationGroup()
         val workstation = idleWorkstation()
         val (_, (_, workstationEvent)) =
           WorkstationAssignmentPolicy(consolidationGroup, workstation, at).value
-        assert(workstationEvent.consolidationGroupId == consolidationGroup.id)
+        assert(workstationEvent.assignmentId == consolidationGroup.id.value)
         assert(workstationEvent.occurredAt == at)
 
       it("preserves workstation type after assignment"):
-        val workstation = Workstation.Idle(WorkstationId(), WorkstationType.PackStation, 8)
+        val workstation =
+          Workstation.Idle(WorkstationId(), WorkstationType.PackStation, 8, WorkstationMode.Picking)
         val (_, (active, event)) =
           WorkstationAssignmentPolicy(readyConsolidationGroup(), workstation, at).value
         assert(active.workstationType == WorkstationType.PackStation)
@@ -81,4 +82,4 @@ class WorkstationAssignmentPolicySuite extends AnyFunSpec with OptionValues:
         val ((assigned, _), (active, _)) =
           WorkstationAssignmentPolicy(consolidationGroup, workstation, at).value
         assert(assigned.workstationId == active.id)
-        assert(active.consolidationGroupId == assigned.id)
+        assert(active.assignmentId == assigned.id.value)

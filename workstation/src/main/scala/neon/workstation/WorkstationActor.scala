@@ -1,6 +1,6 @@
 package neon.workstation
 
-import neon.common.ConsolidationGroupId
+import neon.common.WorkstationMode
 import neon.common.serialization.CborSerializable
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
@@ -16,6 +16,7 @@ import org.apache.pekko.persistence.typed.scaladsl.{
 }
 
 import java.time.Instant
+import java.util.UUID
 
 object WorkstationActor:
 
@@ -43,9 +44,15 @@ object WorkstationActor:
   ) extends Command
 
   case class Assign(
-      consolidationGroupId: ConsolidationGroupId,
+      assignmentId: UUID,
       at: Instant,
       replyTo: ActorRef[StatusReply[AssignResponse]]
+  ) extends Command
+
+  case class SwitchMode(
+      newMode: WorkstationMode,
+      at: Instant,
+      replyTo: ActorRef[StatusReply[SwitchModeResponse]]
   ) extends Command
 
   case class Release(
@@ -67,6 +74,11 @@ object WorkstationActor:
   case class EnableResponse(
       idle: Workstation.Idle,
       event: WorkstationEvent.WorkstationEnabled
+  ) extends CborSerializable
+
+  case class SwitchModeResponse(
+      idle: Workstation.Idle,
+      event: WorkstationEvent.ModeSwitched
   ) extends CborSerializable
 
   case class AssignResponse(
@@ -143,9 +155,18 @@ object WorkstationActor:
 
         case (
               ActiveState(i: Workstation.Idle),
-              Assign(consolidationGroupId, at, replyTo)
+              SwitchMode(newMode, at, replyTo)
             ) =>
-          val (active, event) = i.assign(consolidationGroupId, at)
+          val (idle, event) = i.switchMode(newMode, at)
+          Effect
+            .persist(DomainEvent(event))
+            .thenReply(replyTo)(_ => StatusReply.success(SwitchModeResponse(idle, event)))
+
+        case (
+              ActiveState(i: Workstation.Idle),
+              Assign(assignmentId, at, replyTo)
+            ) =>
+          val (active, event) = i.assign(assignmentId, at)
           Effect
             .persist(DomainEvent(event))
             .thenReply(replyTo)(_ => StatusReply.success(AssignResponse(active, event)))
@@ -190,12 +211,13 @@ object WorkstationActor:
               s"in state ${state.getClass.getSimpleName}"
           context.log.warn(msg)
           cmd match
-            case c: Create   => Effect.reply(c.replyTo)(StatusReply.error(msg))
-            case c: Enable   => Effect.reply(c.replyTo)(StatusReply.error(msg))
-            case c: Assign   => Effect.reply(c.replyTo)(StatusReply.error(msg))
-            case c: Release  => Effect.reply(c.replyTo)(StatusReply.error(msg))
-            case c: Disable  => Effect.reply(c.replyTo)(StatusReply.error(msg))
-            case c: GetState => Effect.reply(c.replyTo)(None)
+            case c: Create     => Effect.reply(c.replyTo)(StatusReply.error(msg))
+            case c: Enable     => Effect.reply(c.replyTo)(StatusReply.error(msg))
+            case c: SwitchMode => Effect.reply(c.replyTo)(StatusReply.error(msg))
+            case c: Assign     => Effect.reply(c.replyTo)(StatusReply.error(msg))
+            case c: Release    => Effect.reply(c.replyTo)(StatusReply.error(msg))
+            case c: Disable    => Effect.reply(c.replyTo)(StatusReply.error(msg))
+            case c: GetState   => Effect.reply(c.replyTo)(None)
 
   // --- Event handler ---
 
@@ -206,18 +228,21 @@ object WorkstationActor:
         case DomainEvent(domainEvent) =>
           (state, domainEvent) match
             case (ActiveState(d: Workstation.Disabled), e: WorkstationEvent.WorkstationEnabled) =>
-              ActiveState(Workstation.Idle(d.id, d.workstationType, e.slotCount))
+              ActiveState(Workstation.Idle(d.id, d.workstationType, e.slotCount, e.mode))
+            case (ActiveState(i: Workstation.Idle), e: WorkstationEvent.ModeSwitched) =>
+              ActiveState(i.copy(mode = e.newMode))
             case (ActiveState(i: Workstation.Idle), e: WorkstationEvent.WorkstationAssigned) =>
               ActiveState(
                 Workstation.Active(
                   i.id,
                   i.workstationType,
                   i.slotCount,
-                  e.consolidationGroupId
+                  e.mode,
+                  e.assignmentId
                 )
               )
             case (ActiveState(a: Workstation.Active), _: WorkstationEvent.WorkstationReleased) =>
-              ActiveState(Workstation.Idle(a.id, a.workstationType, a.slotCount))
+              ActiveState(Workstation.Idle(a.id, a.workstationType, a.slotCount, a.mode))
             case (ActiveState(workstation), _: WorkstationEvent.WorkstationDisabled) =>
               ActiveState(
                 Workstation.Disabled(

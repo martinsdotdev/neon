@@ -48,6 +48,7 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
       Some(waveId),
       None,
       Some(handlingUnitId),
+      None,
       sourceLocationId,
       destinationLocationId
     )
@@ -63,6 +64,7 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
       Some(waveId),
       None,
       Some(handlingUnitId),
+      None,
       sourceLocationId,
       destinationLocationId,
       UserId()
@@ -80,6 +82,7 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
       Some(waveId),
       None,
       Some(handlingUnitId),
+      None,
       sourceLocationId,
       destinationLocationId,
       UserId()
@@ -95,6 +98,7 @@ class TaskCancellationPolicySuite extends AnyFunSpec:
       Some(waveId),
       None,
       Some(handlingUnitId),
+      None,
       Some(sourceLocationId),
       Some(destinationLocationId),
       None

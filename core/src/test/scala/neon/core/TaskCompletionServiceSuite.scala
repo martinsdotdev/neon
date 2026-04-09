@@ -4,12 +4,15 @@ import neon.common.{
   ConsolidationGroupId,
   HandlingUnitId,
   LocationId,
+  LotAttributes,
   OrderId,
   PackagingLevel,
   SkuId,
+  StockPositionId,
   TaskId,
   TransportOrderId,
   UserId,
+  WarehouseAreaId,
   WaveId
 }
 import neon.consolidationgroup.{
@@ -17,6 +20,7 @@ import neon.consolidationgroup.{
   ConsolidationGroupEvent,
   ConsolidationGroupRepository
 }
+import neon.stockposition.{StockPosition, StockPositionEvent, StockPositionRepository}
 import neon.task.{Task, TaskEvent, TaskRepository, TaskType}
 import neon.transportorder.{TransportOrder, TransportOrderEvent, TransportOrderRepository}
 import neon.wave.{OrderGrouping, Wave, WaveEvent, WaveRepository}
@@ -34,6 +38,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
   val handlingUnitId = HandlingUnitId()
   val sourceLocationId = LocationId()
   val destinationLocationId = LocationId()
+  val warehouseAreaId = WarehouseAreaId()
   val at = Instant.now()
 
   def assignedTask(
@@ -41,7 +46,8 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
       requestedQuantity: Int = 10,
       orderId: OrderId = orderId,
       waveId: Option[WaveId] = Some(waveId),
-      handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId)
+      handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId),
+      stockPositionId: Option[StockPositionId] = None
   ): Task.Assigned =
     Task.Assigned(
       id,
@@ -53,6 +59,7 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
       waveId,
       None,
       handlingUnitId,
+      stockPositionId,
       sourceLocationId,
       destinationLocationId,
       userId
@@ -113,20 +120,51 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
     def saveAll(entries: List[(TransportOrder, TransportOrderEvent)]): Unit =
       entries.foreach { (order, event) => save(order, event) }
 
+  class InMemoryStockPositionRepository extends StockPositionRepository:
+    val store: mutable.Map[StockPositionId, StockPosition] = mutable.Map.empty
+    val events: mutable.ListBuffer[StockPositionEvent] = mutable.ListBuffer.empty
+    def findById(id: StockPositionId): Option[StockPosition] = store.get(id)
+    def findBySkuAndArea(
+        skuId: SkuId,
+        warehouseAreaId: WarehouseAreaId
+    ): List[StockPosition] =
+      store.values
+        .filter(sp => sp.skuId == skuId && sp.warehouseAreaId == warehouseAreaId)
+        .toList
+    def save(stockPosition: StockPosition, event: StockPositionEvent): Unit =
+      store(stockPosition.id) = stockPosition
+      events += event
+
+  def allocatedStockPosition(
+      allocatedQuantity: Int = 10,
+      availableQuantity: Int = 90
+  ): StockPosition =
+    val (sp, _) = StockPosition.create(
+      skuId,
+      warehouseAreaId,
+      LotAttributes(),
+      allocatedQuantity + availableQuantity,
+      at
+    )
+    val (allocated, _) = sp.allocate(allocatedQuantity, at)
+    allocated
+
   def buildService(
       taskRepository: TaskRepository = InMemoryTaskRepository(),
       waveRepository: WaveRepository = InMemoryWaveRepository(),
       consolidationGroupRepository: ConsolidationGroupRepository =
         InMemoryConsolidationGroupRepository(),
       transportOrderRepository: TransportOrderRepository = InMemoryTransportOrderRepository(),
-      verificationProfile: VerificationProfile = VerificationProfile.disabled
+      verificationProfile: VerificationProfile = VerificationProfile.disabled,
+      stockPositionRepository: Option[StockPositionRepository] = None
   ): TaskCompletionService =
     TaskCompletionService(
       taskRepository,
       waveRepository,
       consolidationGroupRepository,
       transportOrderRepository,
-      verificationProfile
+      verificationProfile,
+      stockPositionRepository
     )
 
   describe("TaskCompletionService"):
@@ -638,6 +676,87 @@ class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with Eithe
           assert(result.transportOrder.isDefined)
           assert(result.waveCompletion.isEmpty)
           assert(result.pickingCompletion.isEmpty)
+
+    describe("stock consumption"):
+      it("consumes allocated stock on task completion"):
+        val taskRepository = InMemoryTaskRepository()
+        val stockPositionRepository = InMemoryStockPositionRepository()
+        val sp = allocatedStockPosition(allocatedQuantity = 10, availableQuantity = 90)
+        stockPositionRepository.store(sp.id) = sp
+        val task =
+          assignedTask(requestedQuantity = 10, stockPositionId = Some(sp.id))
+        taskRepository.store(task.id) = task
+        val service = buildService(
+          taskRepository = taskRepository,
+          stockPositionRepository = Some(stockPositionRepository)
+        )
+        val result = service.complete(task.id, 10, true, at).value
+        val updatedPosition = stockPositionRepository.store(sp.id)
+        assert(updatedPosition.allocatedQuantity == 0)
+        assert(updatedPosition.onHandQuantity == 90)
+        assert(result.stockConsumption.isDefined)
+
+      it("consumes actual and deallocates remainder on partial pick"):
+        val taskRepository = InMemoryTaskRepository()
+        val stockPositionRepository = InMemoryStockPositionRepository()
+        val sp = allocatedStockPosition(allocatedQuantity = 10, availableQuantity = 90)
+        stockPositionRepository.store(sp.id) = sp
+        val task =
+          assignedTask(requestedQuantity = 10, stockPositionId = Some(sp.id))
+        taskRepository.store(task.id) = task
+        val service = buildService(
+          taskRepository = taskRepository,
+          stockPositionRepository = Some(stockPositionRepository)
+        )
+        val result = service.complete(task.id, 7, true, at).value
+        val updatedPosition = stockPositionRepository.store(sp.id)
+        // 7 consumed from allocated, 3 deallocated back to available
+        assert(updatedPosition.allocatedQuantity == 0)
+        assert(updatedPosition.onHandQuantity == 93)
+        assert(updatedPosition.availableQuantity == 93)
+
+      it("skips consumption when task has no stockPositionId"):
+        val taskRepository = InMemoryTaskRepository()
+        val stockPositionRepository = InMemoryStockPositionRepository()
+        val task = assignedTask(requestedQuantity = 10, stockPositionId = None)
+        taskRepository.store(task.id) = task
+        val service = buildService(
+          taskRepository = taskRepository,
+          stockPositionRepository = Some(stockPositionRepository)
+        )
+        val result = service.complete(task.id, 10, true, at).value
+        assert(result.stockConsumption.isEmpty)
+
+      it("skips consumption when stock repository is not provided"):
+        val taskRepository = InMemoryTaskRepository()
+        val sp = allocatedStockPosition(allocatedQuantity = 10, availableQuantity = 90)
+        val task =
+          assignedTask(requestedQuantity = 10, stockPositionId = Some(sp.id))
+        taskRepository.store(task.id) = task
+        val service =
+          buildService(taskRepository = taskRepository, stockPositionRepository = None)
+        val result = service.complete(task.id, 10, true, at).value
+        assert(result.stockConsumption.isEmpty)
+
+      it("deallocates full quantity when actual quantity is zero"):
+        val taskRepository = InMemoryTaskRepository()
+        val stockPositionRepository = InMemoryStockPositionRepository()
+        val sp = allocatedStockPosition(allocatedQuantity = 10, availableQuantity = 90)
+        stockPositionRepository.store(sp.id) = sp
+        val task =
+          assignedTask(requestedQuantity = 10, stockPositionId = Some(sp.id))
+        taskRepository.store(task.id) = task
+        val service = buildService(
+          taskRepository = taskRepository,
+          stockPositionRepository = Some(stockPositionRepository)
+        )
+        val result = service.complete(task.id, 0, true, at).value
+        val updatedPosition = stockPositionRepository.store(sp.id)
+        // All 10 deallocated back to available, nothing consumed
+        assert(updatedPosition.allocatedQuantity == 0)
+        assert(updatedPosition.onHandQuantity == 100)
+        assert(updatedPosition.availableQuantity == 100)
+        assert(result.stockConsumption.isDefined)
 
     describe("verification gate"):
       val eachRequired = VerificationProfile(Set(PackagingLevel.Each))

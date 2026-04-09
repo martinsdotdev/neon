@@ -7,6 +7,7 @@ import neon.common.{
   OrderId,
   PackagingLevel,
   SkuId,
+  StockPositionId,
   TaskId,
   UserId,
   WaveId
@@ -41,6 +42,9 @@ sealed trait Task:
 
   /** The handling unit associated with this task, if any. */
   def handlingUnitId: Option[HandlingUnitId]
+
+  /** The stock position allocated for this task, if any. */
+  def stockPositionId: Option[StockPositionId]
 
 /** Factory and state definitions for the [[Task]] aggregate. */
 object Task:
@@ -77,7 +81,8 @@ object Task:
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
-      at: Instant
+      at: Instant,
+      stockPositionId: Option[StockPositionId] = None
   ): (Planned, TaskEvent.TaskCreated) =
     require(requestedQuantity > 0, s"requestedQuantity must be positive, got $requestedQuantity")
     val id = TaskId()
@@ -91,7 +96,8 @@ object Task:
         orderId,
         waveId,
         parentTaskId,
-        handlingUnitId
+        handlingUnitId,
+        stockPositionId
       )
     val event =
       TaskEvent.TaskCreated(
@@ -104,7 +110,8 @@ object Task:
         parentTaskId,
         handlingUnitId,
         requestedQuantity,
-        at
+        at,
+        stockPositionId
       )
     (planned, event)
 
@@ -121,7 +128,8 @@ object Task:
       orderId: OrderId,
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
-      handlingUnitId: Option[HandlingUnitId]
+      handlingUnitId: Option[HandlingUnitId],
+      stockPositionId: Option[StockPositionId] = None
   ) extends Task:
 
     /** Assigns source and destination locations, transitioning to [[Allocated]].
@@ -151,6 +159,7 @@ object Task:
           waveId,
           parentTaskId,
           handlingUnitId,
+          stockPositionId,
           sourceLocationId,
           destinationLocationId
         )
@@ -175,6 +184,7 @@ object Task:
           waveId,
           parentTaskId,
           handlingUnitId,
+          stockPositionId,
           None,
           None,
           None
@@ -207,6 +217,7 @@ object Task:
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
+      stockPositionId: Option[StockPositionId] = None,
       sourceLocationId: LocationId,
       destinationLocationId: LocationId
   ) extends Task:
@@ -232,6 +243,7 @@ object Task:
           waveId,
           parentTaskId,
           handlingUnitId,
+          stockPositionId,
           sourceLocationId,
           destinationLocationId,
           userId
@@ -257,6 +269,7 @@ object Task:
           waveId,
           parentTaskId,
           handlingUnitId,
+          stockPositionId,
           Some(sourceLocationId),
           Some(destinationLocationId),
           None
@@ -288,6 +301,7 @@ object Task:
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
+      stockPositionId: Option[StockPositionId] = None,
       sourceLocationId: LocationId,
       destinationLocationId: LocationId,
       assignedTo: UserId
@@ -320,6 +334,7 @@ object Task:
           waveId,
           parentTaskId,
           handlingUnitId,
+          stockPositionId,
           sourceLocationId,
           destinationLocationId,
           assignedTo
@@ -360,6 +375,7 @@ object Task:
           waveId,
           parentTaskId,
           handlingUnitId,
+          stockPositionId,
           Some(sourceLocationId),
           Some(destinationLocationId),
           Some(assignedTo)
@@ -389,6 +405,7 @@ object Task:
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
+      stockPositionId: Option[StockPositionId] = None,
       sourceLocationId: LocationId,
       destinationLocationId: LocationId,
       assignedTo: UserId
@@ -408,6 +425,7 @@ object Task:
       waveId: Option[WaveId],
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
+      stockPositionId: Option[StockPositionId] = None,
       sourceLocationId: Option[LocationId],
       destinationLocationId: Option[LocationId],
       assignedTo: Option[UserId]

@@ -6,8 +6,7 @@ import neon.slot.{Slot, SlotActor, SlotEvent}
 
 import java.time.Instant
 
-class SlotProjectionHandlerSuite
-    extends PostgresContainerSuite:
+class SlotProjectionHandlerSuite extends PostgresContainerSuite:
 
   private given scala.concurrent.ExecutionContext =
     system.executionContext

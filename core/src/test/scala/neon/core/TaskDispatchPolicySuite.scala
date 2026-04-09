@@ -40,6 +40,7 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
       waveId,
       None,
       None,
+      None,
       sourceLocationId,
       destinationLocationId
     )
@@ -54,6 +55,7 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
       1,
       orderId,
       waveId,
+      None,
       None,
       None,
       sourceLocationId,

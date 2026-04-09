@@ -14,6 +14,7 @@ import neon.core.{
   WorkstationLifecycleError
 }
 import neon.user.User
+import neon.common.WorkstationMode
 import neon.workstation.{Workstation, WorkstationEvent, WorkstationType}
 import io.circe.Json
 import io.circe.parser.parse
@@ -154,13 +155,15 @@ class WorkstationRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
           workstationId,
           WorkstationType.PutWall,
           8,
-          consolidationGroupId
+          WorkstationMode.Picking,
+          consolidationGroupId.value
         )
         val workstationEvent =
           WorkstationEvent.WorkstationAssigned(
             workstationId,
             WorkstationType.PutWall,
-            consolidationGroupId,
+            WorkstationMode.Picking,
+            consolidationGroupId.value,
             at
           )
         val result = WorkstationAssignmentResult(
@@ -328,12 +331,14 @@ class WorkstationRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
         val idle = Workstation.Idle(
           workstationId,
           WorkstationType.PutWall,
-          8
+          8,
+          WorkstationMode.Picking
         )
         val event = WorkstationEvent.WorkstationEnabled(
           workstationId,
           WorkstationType.PutWall,
           8,
+          WorkstationMode.Picking,
           at
         )
         val result = WorkstationEnableResult(idle, event)

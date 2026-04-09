@@ -41,6 +41,7 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
       Some(waveId),
       None,
       None,
+      None,
       sourceLocationId,
       destinationLocationId,
       UserId()
@@ -54,6 +55,7 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
       PackagingLevel.Each,
       orderId,
       Some(waveId),
+      None,
       None,
       None,
       Some(sourceLocationId),
@@ -72,6 +74,7 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
       Some(waveId),
       None,
       None,
+      None,
       sourceLocationId,
       destinationLocationId,
       UserId()
@@ -86,6 +89,7 @@ class PickingCompletionPolicySuite extends AnyFunSpec with OptionValues:
       10,
       orderId,
       Some(waveId),
+      None,
       None,
       None,
       sourceLocationId,

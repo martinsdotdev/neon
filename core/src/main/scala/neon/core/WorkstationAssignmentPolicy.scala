@@ -37,5 +37,5 @@ object WorkstationAssignmentPolicy:
     if workstation.slotCount < consolidationGroup.orderIds.size then None
     else
       val consolidationGroupResult = consolidationGroup.assign(workstation.id, at)
-      val workstationResult = workstation.assign(consolidationGroup.id, at)
+      val workstationResult = workstation.assign(consolidationGroup.id.value, at)
       Some((consolidationGroupResult, workstationResult))

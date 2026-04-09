@@ -35,6 +35,7 @@ class WorkstationProjectionHandler(using ExecutionContext)
       case WorkstationActor.DomainEvent(e) =>
         val state = e match
           case _: WorkstationEvent.WorkstationEnabled  => "Idle"
+          case _: WorkstationEvent.ModeSwitched        => "Idle"
           case _: WorkstationEvent.WorkstationAssigned => "Active"
           case _: WorkstationEvent.WorkstationReleased => "Idle"
           case _: WorkstationEvent.WorkstationDisabled => "Disabled"

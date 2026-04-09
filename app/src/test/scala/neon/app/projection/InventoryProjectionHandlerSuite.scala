@@ -6,8 +6,7 @@ import neon.inventory.InventoryEvent
 
 import java.time.Instant
 
-class InventoryProjectionHandlerSuite
-    extends PostgresContainerSuite:
+class InventoryProjectionHandlerSuite extends PostgresContainerSuite:
 
   private given scala.concurrent.ExecutionContext =
     system.executionContext

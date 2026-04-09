@@ -7,6 +7,7 @@ import neon.common.{
   OrderId,
   PackagingLevel,
   SkuId,
+  StockPositionId,
   TaskId,
   UserId,
   WaveId
@@ -40,7 +41,8 @@ object TaskEvent:
       parentTaskId: Option[TaskId],
       handlingUnitId: Option[HandlingUnitId],
       requestedQuantity: Int,
-      occurredAt: Instant
+      occurredAt: Instant,
+      stockPositionId: Option[StockPositionId] = None
   ) extends TaskEvent
 
   /** Emitted when a planned task is allocated to source and destination locations. */

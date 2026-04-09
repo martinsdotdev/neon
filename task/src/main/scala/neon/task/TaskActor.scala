@@ -215,7 +215,8 @@ object TaskActor:
               e.orderId,
               e.waveId,
               e.parentTaskId,
-              e.handlingUnitId
+              e.handlingUnitId,
+              e.stockPositionId
             )
           )
 
@@ -233,6 +234,7 @@ object TaskActor:
                   planned.waveId,
                   planned.parentTaskId,
                   planned.handlingUnitId,
+                  planned.stockPositionId,
                   e.sourceLocationId,
                   e.destinationLocationId
                 )
@@ -253,6 +255,7 @@ object TaskActor:
                   allocated.waveId,
                   allocated.parentTaskId,
                   allocated.handlingUnitId,
+                  allocated.stockPositionId,
                   allocated.sourceLocationId,
                   allocated.destinationLocationId,
                   e.userId
@@ -275,6 +278,7 @@ object TaskActor:
                   assigned.waveId,
                   assigned.parentTaskId,
                   assigned.handlingUnitId,
+                  assigned.stockPositionId,
                   assigned.sourceLocationId,
                   assigned.destinationLocationId,
                   assigned.assignedTo
@@ -295,6 +299,7 @@ object TaskActor:
                   t.waveId,
                   t.parentTaskId,
                   t.handlingUnitId,
+                  t.stockPositionId,
                   e.sourceLocationId,
                   e.destinationLocationId,
                   e.assignedTo
@@ -311,6 +316,7 @@ object TaskActor:
                   t.waveId,
                   t.parentTaskId,
                   t.handlingUnitId,
+                  t.stockPositionId,
                   e.sourceLocationId,
                   e.destinationLocationId,
                   e.assignedTo
@@ -327,6 +333,7 @@ object TaskActor:
                   t.waveId,
                   t.parentTaskId,
                   t.handlingUnitId,
+                  t.stockPositionId,
                   e.sourceLocationId,
                   e.destinationLocationId,
                   e.assignedTo

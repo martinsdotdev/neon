@@ -6,8 +6,7 @@ import neon.transportorder.TransportOrderEvent
 
 import java.time.Instant
 
-class TransportOrderProjectionHandlerSuite
-    extends PostgresContainerSuite:
+class TransportOrderProjectionHandlerSuite extends PostgresContainerSuite:
 
   private given scala.concurrent.ExecutionContext =
     system.executionContext

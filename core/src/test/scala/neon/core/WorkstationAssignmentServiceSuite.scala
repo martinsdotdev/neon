@@ -1,6 +1,6 @@
 package neon.core
 
-import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
+import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId, WorkstationMode}
 import neon.consolidationgroup.{
   ConsolidationGroup,
   ConsolidationGroupEvent,
@@ -55,7 +55,7 @@ class WorkstationAssignmentServiceSuite extends AnyFunSpec with OptionValues wit
       id: WorkstationId = workstationId,
       slotCount: Int = 5
   ): Workstation.Idle =
-    Workstation.Idle(id, WorkstationType.PutWall, slotCount)
+    Workstation.Idle(id, WorkstationType.PutWall, slotCount, WorkstationMode.Picking)
 
   class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
     val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty
@@ -201,9 +201,9 @@ class WorkstationAssignmentServiceSuite extends AnyFunSpec with OptionValues wit
         assert(result.consolidationGroup.id == consolidationGroup.id)
         assert(result.consolidationGroup.workstationId == workstationId)
         assert(result.workstation.id == workstationId)
-        assert(result.workstation.consolidationGroupId == consolidationGroup.id)
+        assert(result.workstation.assignmentId == consolidationGroup.id.value)
         assert(result.consolidationGroupEvent.workstationId == workstationId)
-        assert(result.workstationEvent.consolidationGroupId == consolidationGroup.id)
+        assert(result.workstationEvent.assignmentId == consolidationGroup.id.value)
         assert(result.consolidationGroupEvent.occurredAt == at)
         assert(result.workstationEvent.occurredAt == at)
         assert(

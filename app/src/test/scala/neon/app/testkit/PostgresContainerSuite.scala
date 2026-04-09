@@ -3,23 +3,23 @@ package neon.app.testkit
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.apache.pekko.cluster.MemberStatus
-import org.apache.pekko.stream.{Materializer, SystemMaterializer}
 import org.apache.pekko.cluster.typed.{Cluster, Join}
 import org.apache.pekko.persistence.query.TimestampOffset
 import org.apache.pekko.persistence.query.typed.EventEnvelope
 import org.apache.pekko.persistence.r2dbc.ConnectionFactoryProvider
 import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
 import org.apache.pekko.stream.scaladsl.{Sink, Source}
-import reactor.core.publisher.Mono
+import org.apache.pekko.stream.{Materializer, SystemMaterializer}
 import org.flywaydb.core.Flyway
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.{Eventually, ScalaFutures}
 import org.scalatest.funspec.AnyFunSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.testcontainers.containers.PostgreSQLContainer as JavaPostgreSQLContainer
+import reactor.core.publisher.Mono
 
+import scala.concurrent.Await
 import scala.concurrent.duration.*
-import scala.concurrent.{Await, Future}
 
 /** Companion object that starts a PostgreSQL Testcontainer and runs Flyway migrations before any
   * test class body executes. This ensures the container is available when ScalaTestWithActorTestKit
@@ -129,8 +129,8 @@ abstract class PostgresContainerSuite
       }(using system.executionContext)
     Await.result(future, 10.seconds)
 
-  /** Acquires an R2DBC connection, creates an R2dbcSession, runs
-    * the given block, then closes the connection.
+  /** Acquires an R2DBC connection, creates an R2dbcSession, runs the given block, then closes the
+    * connection.
     */
   protected def withSession(
       f: R2dbcSession => Unit
@@ -161,6 +161,7 @@ abstract class PostgresContainerSuite
       entityType = entityType,
       slice = 0
     )
+
   /** Queries a single integer count from the test database. */
   protected def queryCount(sql: String): Long =
     val future = Source

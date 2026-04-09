@@ -85,6 +85,7 @@ class TransportOrderConfirmationServiceSuite extends AnyFunSpec with OptionValue
       waveId,
       None,
       Some(handlingUnitId),
+      None,
       sourceLocationId,
       destinationLocationId,
       userId

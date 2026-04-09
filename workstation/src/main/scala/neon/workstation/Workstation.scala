@@ -1,9 +1,10 @@
 package neon.workstation
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import neon.common.{ConsolidationGroupId, WorkstationId}
+import neon.common.{WorkstationId, WorkstationMode}
 
 import java.time.Instant
+import java.util.UUID
 
 /** Typestate-encoded workstation aggregate representing a physical station (put-wall or pack
   * station) where consolidation and packing operations occur.
@@ -38,32 +39,53 @@ object Workstation:
       *   idle state and enabled event
       */
     def enable(at: Instant): (Idle, WorkstationEvent.WorkstationEnabled) =
-      val idle = Idle(id, workstationType, slotCount)
-      val event = WorkstationEvent.WorkstationEnabled(id, workstationType, slotCount, at)
+      val mode = WorkstationMode.Picking
+      val idle = Idle(id, workstationType, slotCount, mode)
+      val event =
+        WorkstationEvent.WorkstationEnabled(id, workstationType, slotCount, mode, at)
       (idle, event)
 
-  /** A workstation that is enabled and ready to receive a consolidation group. */
+  /** A workstation that is enabled and ready to receive an assignment. */
   case class Idle(
       id: WorkstationId,
       workstationType: WorkstationType,
-      slotCount: Int
+      slotCount: Int,
+      mode: WorkstationMode
   ) extends Workstation:
-    /** Assigns a consolidation group, transitioning from [[Idle]] to [[Active]].
+    /** Switches the operational mode, transitioning from [[Idle]] to [[Idle]] with a new mode.
       *
-      * @param consolidationGroupId
-      *   the consolidation group to assign
+      * @param newMode
+      *   the mode to switch to
+      * @param at
+      *   instant of the transition
+      * @return
+      *   idle state with new mode and mode-switched event
+      */
+    def switchMode(
+        newMode: WorkstationMode,
+        at: Instant
+    ): (Idle, WorkstationEvent.ModeSwitched) =
+      val switched = copy(mode = newMode)
+      val event =
+        WorkstationEvent.ModeSwitched(id, workstationType, mode, newMode, at)
+      (switched, event)
+
+    /** Assigns work to this workstation, transitioning from [[Idle]] to [[Active]].
+      *
+      * @param assignmentId
+      *   the mode-specific assignment identifier
       * @param at
       *   instant of the transition
       * @return
       *   active state and assigned event
       */
     def assign(
-        consolidationGroupId: ConsolidationGroupId,
+        assignmentId: UUID,
         at: Instant
     ): (Active, WorkstationEvent.WorkstationAssigned) =
-      val active = Active(id, workstationType, slotCount, consolidationGroupId)
+      val active = Active(id, workstationType, slotCount, mode, assignmentId)
       val event =
-        WorkstationEvent.WorkstationAssigned(id, workstationType, consolidationGroupId, at)
+        WorkstationEvent.WorkstationAssigned(id, workstationType, mode, assignmentId, at)
       (active, event)
 
     /** Disables this workstation, transitioning from [[Idle]] to [[Disabled]].
@@ -78,14 +100,15 @@ object Workstation:
       val event = WorkstationEvent.WorkstationDisabled(id, workstationType, at)
       (disabled, event)
 
-  /** A workstation actively processing a consolidation group. */
+  /** A workstation actively processing an assignment. */
   case class Active(
       id: WorkstationId,
       workstationType: WorkstationType,
       slotCount: Int,
-      consolidationGroupId: ConsolidationGroupId
+      mode: WorkstationMode,
+      assignmentId: UUID
   ) extends Workstation:
-    /** Releases the current consolidation group, transitioning from [[Active]] to [[Idle]].
+    /** Releases the current assignment, transitioning from [[Active]] to [[Idle]].
       *
       * @param at
       *   instant of the transition
@@ -93,7 +116,7 @@ object Workstation:
       *   idle state and released event
       */
     def release(at: Instant): (Idle, WorkstationEvent.WorkstationReleased) =
-      val idle = Idle(id, workstationType, slotCount)
+      val idle = Idle(id, workstationType, slotCount, mode)
       val event = WorkstationEvent.WorkstationReleased(id, workstationType, at)
       (idle, event)
 

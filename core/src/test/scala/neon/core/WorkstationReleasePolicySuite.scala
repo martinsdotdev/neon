@@ -1,6 +1,6 @@
 package neon.core
 
-import neon.common.{ConsolidationGroupId, WaveId, WorkstationId}
+import neon.common.{ConsolidationGroupId, WaveId, WorkstationId, WorkstationMode}
 import neon.consolidationgroup.ConsolidationGroupEvent
 import neon.workstation.{Workstation, WorkstationType}
 import org.scalatest.funspec.AnyFunSpec
@@ -22,7 +22,13 @@ class WorkstationReleasePolicySuite extends AnyFunSpec:
     )
 
   def activeWorkstation(workstationType: WorkstationType = WorkstationType.PutWall) =
-    Workstation.Active(workstationId, workstationType, 8, consolidationGroupId)
+    Workstation.Active(
+      workstationId,
+      workstationType,
+      8,
+      WorkstationMode.Picking,
+      consolidationGroupId.value
+    )
 
   describe("WorkstationReleasePolicy"):
     it("returns the workstation to idle"):

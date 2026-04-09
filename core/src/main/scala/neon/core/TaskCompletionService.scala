@@ -6,6 +6,7 @@ import neon.consolidationgroup.{
   ConsolidationGroupEvent,
   ConsolidationGroupRepository
 }
+import neon.stockposition.{StockPosition, StockPositionEvent, StockPositionRepository}
 import neon.task.{Task, TaskEvent, TaskRepository}
 import neon.transportorder.{TransportOrder, TransportOrderEvent, TransportOrderRepository}
 import neon.wave.{Wave, WaveEvent, WaveRepository}
@@ -43,6 +44,8 @@ object TaskCompletionError:
   *   wave completion if all wave tasks are terminal
   * @param pickingCompletion
   *   consolidation group picking completion if all group tasks are terminal
+  * @param stockConsumption
+  *   stock position update from consuming or deallocating allocated stock
   */
 case class TaskCompletionResult(
     completed: Task.Completed,
@@ -52,7 +55,8 @@ case class TaskCompletionResult(
     waveCompletion: Option[(Wave.Completed, WaveEvent.WaveCompleted)],
     pickingCompletion: Option[
       (ConsolidationGroup.Picked, ConsolidationGroupEvent.ConsolidationGroupPicked)
-    ]
+    ],
+    stockConsumption: Option[(StockPosition, StockPositionEvent)] = None
 )
 
 /** Orchestrates task completion with a 5-step cascade: complete the task, check for shortpick,
@@ -75,7 +79,8 @@ class TaskCompletionService(
     waveRepository: WaveRepository,
     consolidationGroupRepository: ConsolidationGroupRepository,
     transportOrderRepository: TransportOrderRepository,
-    verificationProfile: VerificationProfile
+    verificationProfile: VerificationProfile,
+    stockPositionRepository: Option[StockPositionRepository] = None
 ):
   /** Completes a task and runs the post-completion cascade.
     *
@@ -119,6 +124,8 @@ class TaskCompletionService(
   ): Either[TaskCompletionError, TaskCompletionResult] =
     val (completed, completedEvent) = assigned.complete(actualQuantity, at)
     taskRepository.save(completed, completedEvent)
+
+    val stockConsumption = consumeOrDeallocateStock(completed, at)
 
     val shortpick = ShortpickPolicy(completed, at)
     shortpick.foreach { (replacement, event) => taskRepository.save(replacement, event) }
@@ -165,6 +172,43 @@ class TaskCompletionService(
         shortpick = shortpick,
         transportOrder = routing,
         waveCompletion = waveCompletion,
-        pickingCompletion = pickingCompletion
+        pickingCompletion = pickingCompletion,
+        stockConsumption = stockConsumption
       )
     )
+
+  /** Consumes allocated stock for the actual quantity picked and deallocates any remainder back to
+    * available. Skipped when no stock repository is provided or the task has no stock position.
+    */
+  private def consumeOrDeallocateStock(
+      completed: Task.Completed,
+      at: Instant
+  ): Option[(StockPosition, StockPositionEvent)] =
+    (stockPositionRepository, completed.stockPositionId) match
+      case (Some(spRepo), Some(spId)) =>
+        spRepo.findById(spId).flatMap { sp =>
+          val remainder = completed.requestedQuantity - completed.actualQuantity
+          if completed.actualQuantity > 0 && remainder > 0 then
+            // Partial pick: consume actual, then deallocate remainder
+            val (afterConsume, consumeEvent) =
+              sp.consumeAllocated(completed.actualQuantity, at)
+            spRepo.save(afterConsume, consumeEvent)
+            val (afterDeallocate, deallocateEvent) =
+              afterConsume.deallocate(remainder, at)
+            spRepo.save(afterDeallocate, deallocateEvent)
+            Some((afterDeallocate, deallocateEvent))
+          else if completed.actualQuantity > 0 then
+            // Full pick: consume all
+            val (updated, event) =
+              sp.consumeAllocated(completed.actualQuantity, at)
+            spRepo.save(updated, event)
+            Some((updated, event))
+          else if completed.requestedQuantity > 0 then
+            // Zero pick (full shortpick): deallocate all back to available
+            val (updated, event) =
+              sp.deallocate(completed.requestedQuantity, at)
+            spRepo.save(updated, event)
+            Some((updated, event))
+          else None
+        }
+      case _ => None

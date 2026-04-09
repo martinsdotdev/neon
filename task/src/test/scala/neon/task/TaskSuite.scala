@@ -55,6 +55,7 @@ class TaskSuite extends AnyFunSpec:
       waveId,
       None,
       handlingUnitId,
+      None,
       sourceLocationId,
       destinationLocationId
     )
@@ -269,6 +270,7 @@ class TaskSuite extends AnyFunSpec:
           Some(waveId),
           Some(parentId),
           Some(handlingUnitId),
+          None,
           sourceLocationId,
           destinationLocationId
         )

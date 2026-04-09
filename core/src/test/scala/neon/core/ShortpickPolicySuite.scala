@@ -44,6 +44,7 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
       waveId,
       None,
       handlingUnitId,
+      None,
       sourceLocationId,
       destinationLocationId,
       userId

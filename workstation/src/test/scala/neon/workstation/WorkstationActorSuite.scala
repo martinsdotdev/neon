@@ -1,7 +1,7 @@
 package neon.workstation
 
 import com.typesafe.config.ConfigFactory
-import neon.common.{ConsolidationGroupId, WorkstationId}
+import neon.common.{ConsolidationGroupId, WorkstationMode, WorkstationId}
 import org.apache.pekko.Done
 import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.apache.pekko.pattern.StatusReply
@@ -75,7 +75,7 @@ class WorkstationActorSuite
           esTestKit.runCommand[StatusReply[
             WorkstationActor.AssignResponse
           ]](
-            WorkstationActor.Assign(consolidationGroupId, at, _)
+            WorkstationActor.Assign(consolidationGroupId.value, at, _)
           )
         assert(assignResult.reply.isSuccess)
         assert(
@@ -107,6 +107,63 @@ class WorkstationActorSuite
             .isInstanceOf[Workstation.Disabled]
         )
 
+    describe("SwitchMode"):
+      it("switches mode on Idle workstation"):
+        createDisabled()
+        enableWorkstation()
+
+        val result =
+          esTestKit.runCommand[StatusReply[
+            WorkstationActor.SwitchModeResponse
+          ]](
+            WorkstationActor.SwitchMode(
+              WorkstationMode.Receiving,
+              at,
+              _
+            )
+          )
+        assert(result.reply.isSuccess)
+        assert(
+          result.reply.getValue.idle.mode == WorkstationMode.Receiving
+        )
+
+      it("rejects SwitchMode on Disabled"):
+        createDisabled()
+        val result =
+          esTestKit.runCommand[StatusReply[
+            WorkstationActor.SwitchModeResponse
+          ]](
+            WorkstationActor.SwitchMode(
+              WorkstationMode.Counting,
+              at,
+              _
+            )
+          )
+        assert(result.reply.isError)
+        assert(result.hasNoEvents)
+
+      it("rejects SwitchMode on Active"):
+        createDisabled()
+        enableWorkstation()
+        esTestKit.runCommand[StatusReply[
+          WorkstationActor.AssignResponse
+        ]](
+          WorkstationActor.Assign(consolidationGroupId.value, at, _)
+        )
+
+        val result =
+          esTestKit.runCommand[StatusReply[
+            WorkstationActor.SwitchModeResponse
+          ]](
+            WorkstationActor.SwitchMode(
+              WorkstationMode.Counting,
+              at,
+              _
+            )
+          )
+        assert(result.reply.isError)
+        assert(result.hasNoEvents)
+
     describe("Disable from Active"):
       it("allows direct disable from Active state"):
         createDisabled()
@@ -114,7 +171,7 @@ class WorkstationActorSuite
         esTestKit.runCommand[StatusReply[
           WorkstationActor.AssignResponse
         ]](
-          WorkstationActor.Assign(consolidationGroupId, at, _)
+          WorkstationActor.Assign(consolidationGroupId.value, at, _)
         )
 
         val result =
@@ -155,7 +212,7 @@ class WorkstationActorSuite
           esTestKit.runCommand[StatusReply[
             WorkstationActor.AssignResponse
           ]](
-            WorkstationActor.Assign(consolidationGroupId, at, _)
+            WorkstationActor.Assign(consolidationGroupId.value, at, _)
           )
         assert(result.reply.isError)
         assert(result.hasNoEvents)
@@ -166,14 +223,18 @@ class WorkstationActorSuite
         esTestKit.runCommand[StatusReply[
           WorkstationActor.AssignResponse
         ]](
-          WorkstationActor.Assign(consolidationGroupId, at, _)
+          WorkstationActor.Assign(consolidationGroupId.value, at, _)
         )
 
         val result =
           esTestKit.runCommand[StatusReply[
             WorkstationActor.AssignResponse
           ]](
-            WorkstationActor.Assign(ConsolidationGroupId(), at, _)
+            WorkstationActor.Assign(
+              ConsolidationGroupId().value,
+              at,
+              _
+            )
           )
         assert(result.reply.isError)
         assert(result.hasNoEvents)
@@ -197,7 +258,7 @@ class WorkstationActorSuite
         esTestKit.runCommand[StatusReply[
           WorkstationActor.AssignResponse
         ]](
-          WorkstationActor.Assign(consolidationGroupId, at, _)
+          WorkstationActor.Assign(consolidationGroupId.value, at, _)
         )
         esTestKit.restart()
 
@@ -208,5 +269,5 @@ class WorkstationActorSuite
         assert(result.reply.isDefined)
         assert(result.reply.get.isInstanceOf[Workstation.Active])
         val active = result.reply.get.asInstanceOf[Workstation.Active]
-        assert(active.consolidationGroupId == consolidationGroupId)
+        assert(active.assignmentId == consolidationGroupId.value)
         assert(active.workstationType == WorkstationType.PutWall)

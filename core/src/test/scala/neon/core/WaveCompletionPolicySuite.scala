@@ -31,6 +31,7 @@ class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
       Some(waveId),
       None,
       None,
+      None,
       sourceLocationId,
       destinationLocationId,
       UserId()
@@ -44,6 +45,7 @@ class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
       PackagingLevel.Each,
       orderId,
       Some(waveId),
+      None,
       None,
       None,
       Some(sourceLocationId),
@@ -62,6 +64,7 @@ class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
       Some(waveId),
       None,
       None,
+      None,
       sourceLocationId,
       destinationLocationId,
       UserId()
@@ -76,6 +79,7 @@ class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
       10,
       orderId,
       Some(waveId),
+      None,
       None,
       None,
       sourceLocationId,

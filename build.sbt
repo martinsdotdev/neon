@@ -141,6 +141,54 @@ lazy val inventory = project
     libraryDependencies ++= pekkoActorDependencies
   )
 
+lazy val stockPosition = project
+  .in(file("stock-position"))
+  .dependsOn(common)
+  .settings(
+    name := "neon-stock-position",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
+lazy val handlingUnitStock = project
+  .in(file("handling-unit-stock"))
+  .dependsOn(common)
+  .settings(
+    name := "neon-handling-unit-stock",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
+lazy val inboundDelivery = project
+  .in(file("inbound-delivery"))
+  .dependsOn(common)
+  .settings(
+    name := "neon-inbound-delivery",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
+lazy val goodsReceipt = project
+  .in(file("goods-receipt"))
+  .dependsOn(common)
+  .settings(
+    name := "neon-goods-receipt",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
+lazy val cycleCount = project
+  .in(file("cycle-count"))
+  .dependsOn(common)
+  .settings(
+    name := "neon-cycle-count",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
+lazy val countTask = project
+  .in(file("count-task"))
+  .dependsOn(common)
+  .settings(
+    name := "neon-count-task",
+    libraryDependencies ++= pekkoActorDependencies
+  )
+
 // --- Orchestration module ---
 
 lazy val core = project
@@ -155,6 +203,12 @@ lazy val core = project
     workstation,
     slot,
     inventory,
+    stockPosition,
+    handlingUnitStock,
+    inboundDelivery,
+    goodsReceipt,
+    cycleCount,
+    countTask,
     location,
     carrier,
     user
@@ -206,6 +260,12 @@ lazy val root = project
     task,
     location,
     inventory,
+    stockPosition,
+    handlingUnitStock,
+    inboundDelivery,
+    goodsReceipt,
+    cycleCount,
+    countTask,
     consolidationGroup,
     handlingUnit,
     transportOrder,

@@ -20,9 +20,8 @@ import neon.core.{
   TaskCompletionResult,
   VerificationProfile
 }
-import neon.user.AsyncUserRepository
 import neon.task.{AsyncTaskRepository, Task, TaskEvent, TaskType}
-import neon.user.User
+import neon.user.{AsyncUserRepository, User}
 import io.circe.parser.parse
 import io.circe.{Decoder, Json}
 import org.apache.pekko.http.scaladsl.model.headers.Cookie
@@ -54,6 +53,7 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
     10,
     orderId,
     Some(waveId),
+    None,
     None,
     None,
     sourceLocationId,

@@ -1,8 +1,8 @@
 package neon.app.repository
 
 import neon.app.testkit.PostgresContainerSuite
-import neon.common.{CarrierId, LocationId, WaveId}
-import neon.core.{DockCarrierAssignment, WaveDispatchRules}
+import neon.common.{LocationId, WaveId}
+import neon.core.WaveDispatchRules
 
 import java.util.UUID
 

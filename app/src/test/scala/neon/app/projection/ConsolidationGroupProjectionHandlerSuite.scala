@@ -6,8 +6,7 @@ import neon.consolidationgroup.ConsolidationGroupEvent
 
 import java.time.Instant
 
-class ConsolidationGroupProjectionHandlerSuite
-    extends PostgresContainerSuite:
+class ConsolidationGroupProjectionHandlerSuite extends PostgresContainerSuite:
 
   private given scala.concurrent.ExecutionContext =
     system.executionContext

@@ -74,7 +74,13 @@ class PekkoWorkstationRepository(
         case e: WorkstationEvent.WorkstationAssigned =>
           entityRef
             .askWithStatus[WorkstationActor.AssignResponse](
-              WorkstationActor.Assign(e.consolidationGroupId, e.occurredAt, _)
+              WorkstationActor.Assign(e.assignmentId, e.occurredAt, _)
+            )
+            .map(_ => ())
+        case e: WorkstationEvent.ModeSwitched =>
+          entityRef
+            .askWithStatus[WorkstationActor.SwitchModeResponse](
+              WorkstationActor.SwitchMode(e.newMode, e.occurredAt, _)
             )
             .map(_ => ())
         case e: WorkstationEvent.WorkstationReleased =>

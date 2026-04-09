@@ -1,6 +1,6 @@
 package neon.core
 
-import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId}
+import neon.common.{ConsolidationGroupId, OrderId, WaveId, WorkstationId, WorkstationMode}
 import neon.consolidationgroup.{
   ConsolidationGroup,
   ConsolidationGroupEvent,
@@ -58,10 +58,16 @@ class ConsolidationGroupCompletionServiceSuite
       id: WorkstationId = workstationId,
       consolidationGroupId: ConsolidationGroupId = consolidationGroupId
   ): Workstation.Active =
-    Workstation.Active(id, WorkstationType.PutWall, 5, consolidationGroupId)
+    Workstation.Active(
+      id,
+      WorkstationType.PutWall,
+      5,
+      WorkstationMode.Picking,
+      consolidationGroupId.value
+    )
 
   def idleWorkstation(id: WorkstationId = workstationId): Workstation.Idle =
-    Workstation.Idle(id, WorkstationType.PutWall, 5)
+    Workstation.Idle(id, WorkstationType.PutWall, 5, WorkstationMode.Picking)
 
   class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
     val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty

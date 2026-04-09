@@ -6,8 +6,7 @@ import neon.workstation.{Workstation, WorkstationActor, WorkstationEvent, Workst
 
 import java.time.Instant
 
-class WorkstationProjectionHandlerSuite
-    extends PostgresContainerSuite:
+class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
 
   private given scala.concurrent.ExecutionContext =
     system.executionContext
@@ -66,6 +65,7 @@ class WorkstationProjectionHandlerSuite
           workstationId = workstationId,
           workstationType = WorkstationType.PackStation,
           slotCount = 4,
+          mode = WorkstationMode.Picking,
           occurredAt = Instant.now()
         )
       )
@@ -118,7 +118,8 @@ class WorkstationProjectionHandlerSuite
         WorkstationEvent.WorkstationAssigned(
           workstationId = workstationId,
           workstationType = WorkstationType.PutWall,
-          consolidationGroupId = ConsolidationGroupId(),
+          mode = WorkstationMode.Picking,
+          assignmentId = ConsolidationGroupId().value,
           occurredAt = Instant.now()
         )
       )

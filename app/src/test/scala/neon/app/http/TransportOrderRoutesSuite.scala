@@ -23,8 +23,8 @@ import neon.transportorder.{TransportOrder, TransportOrderEvent}
 import neon.user.User
 import io.circe.Json
 import io.circe.parser.parse
-import org.apache.pekko.http.scaladsl.model.headers.Cookie
 import org.apache.pekko.http.scaladsl.model.StatusCodes
+import org.apache.pekko.http.scaladsl.model.headers.Cookie
 import org.apache.pekko.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.funspec.AnyFunSpec
 
