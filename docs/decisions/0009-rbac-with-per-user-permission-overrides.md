@@ -19,8 +19,7 @@ How should we model and enforce authorization?
 - Simplicity: avoid external services or complex graph-based models
 - Expressiveness: support both granting and revoking individual permissions
 - Deny wins: security-conservative default when overrides conflict
-- Prior art: production monorepo's credential/power model with deny-wins
-  overrides
+- Prior art: production credential/power model with deny-wins overrides
 
 ## Considered Options
 
@@ -75,8 +74,7 @@ overrides, deny always wins.
   in one model
 - Good, because deny-wins is security-conservative
 - Good, because no external service; two PostgreSQL tables
-- Good, because inspired by production systems (production credential/power
-  model)
+- Good, because inspired by production credential/power model
 - Neutral, because override table adds a join; mitigated by computing at session
   validation
 - Bad, because more complex than plain RBAC
@@ -150,5 +148,5 @@ CREATE TABLE user_permission_overrides (
 
 ### References
 
-- production monorepo: role/power model with credential overrides and
-  deny-wins semantics
+- Production role/power model with credential overrides and deny-wins
+  semantics
