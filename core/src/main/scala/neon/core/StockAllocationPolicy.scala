@@ -72,11 +72,19 @@ object StockAllocationPolicy:
       referenceDate: LocalDate,
       minimumShelfLifeDays: Int = 0
   ): Either[StockAllocationError, List[AllocationResult]] =
-    val results =
-      requests.map(allocateOne(_, availableStock, strategy, referenceDate, minimumShelfLifeDays))
-    results.collectFirst { case Left(error) => error } match
-      case Some(error) => Left(error)
-      case None        => Right(results.collect { case Right(result) => result })
+    val resultsBuilder = List.newBuilder[AllocationResult]
+    val iterator = requests.iterator
+    while iterator.hasNext do
+      allocateOne(
+        iterator.next(),
+        availableStock,
+        strategy,
+        referenceDate,
+        minimumShelfLifeDays
+      ) match
+        case Left(error)   => return Left(error)
+        case Right(result) => resultsBuilder += result
+    Right(resultsBuilder.result())
 
   private def allocateOne(
       request: AllocationRequest,

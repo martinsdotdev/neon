@@ -4,10 +4,8 @@ import neon.common.{ContainerId, HandlingUnitStockId, R2dbcProjectionQueries}
 import io.r2dbc.spi.ConnectionFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
-import org.apache.pekko.stream.scaladsl.{Sink, Source}
 import org.apache.pekko.util.Timeout
 
-import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 class PekkoHandlingUnitStockRepository(
@@ -33,31 +31,13 @@ class PekkoHandlingUnitStockRepository(
   def findByContainer(
       containerId: ContainerId
   ): Future[List[HandlingUnitStock]] =
-    Source
-      .fromPublisher(connectionFactory.create())
-      .runWith(Sink.head)
-      .flatMap { connection =>
-        val stmt = connection
-          .createStatement(
-            "SELECT handling_unit_stock_id FROM handling_unit_stock_by_container WHERE container_id = $1"
-          )
-          .bind(0, containerId.value)
-        Source
-          .fromPublisher(stmt.execute())
-          .flatMapConcat(result =>
-            Source.fromPublisher(
-              result.map((row, _) => row.get("handling_unit_stock_id", classOf[UUID]))
-            )
-          )
-          .runWith(Sink.seq)
-          .flatMap { ids =>
-            Future.sequence(ids.map(id => findById(HandlingUnitStockId(id))).toList)
-          }
-          .map(_.flatten)
-          .andThen { case _ =>
-            Source.fromPublisher(connection.close()).runWith(Sink.ignore)
-          }
-      }
+    queryProjectionIds(
+      "SELECT handling_unit_stock_id FROM handling_unit_stock_by_container WHERE container_id = $1",
+      containerId.value,
+      "handling_unit_stock_id"
+    ).flatMap { ids =>
+      Future.sequence(ids.map(id => findById(HandlingUnitStockId(id))))
+    }.map(_.flatten)
 
   def save(
       handlingUnitStock: HandlingUnitStock,

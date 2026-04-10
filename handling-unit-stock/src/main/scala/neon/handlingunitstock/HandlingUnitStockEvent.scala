@@ -6,6 +6,7 @@ import neon.common.{
   ContainerId,
   HandlingUnitStockId,
   InventoryStatus,
+  SkuId,
   SlotCode,
   StockLockType,
   StockPositionId
@@ -20,6 +21,7 @@ object HandlingUnitStockEvent:
 
   case class Created(
       handlingUnitStockId: HandlingUnitStockId,
+      skuId: SkuId,
       containerId: ContainerId,
       slotCode: SlotCode,
       stockPositionId: StockPositionId,

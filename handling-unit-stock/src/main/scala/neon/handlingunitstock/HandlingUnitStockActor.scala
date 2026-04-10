@@ -239,6 +239,7 @@ object HandlingUnitStockActor:
           ActiveState(
             HandlingUnitStock(
               id = e.handlingUnitStockId,
+              skuId = e.skuId,
               containerId = e.containerId,
               slotCode = e.slotCode,
               stockPositionId = e.stockPositionId,

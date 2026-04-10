@@ -5,6 +5,7 @@ import neon.common.{
   ContainerId,
   HandlingUnitStockId,
   InventoryStatus,
+  SkuId,
   SlotCode,
   StockLockType,
   StockPositionId
@@ -21,6 +22,7 @@ import java.time.Instant
   */
 case class HandlingUnitStock private[handlingunitstock] (
     id: HandlingUnitStockId,
+    skuId: SkuId,
     containerId: ContainerId,
     slotCode: SlotCode,
     stockPositionId: StockPositionId,
@@ -215,6 +217,7 @@ object HandlingUnitStock:
 
   /** Creates a new handling unit stock with all quantity in the available bucket. */
   def create(
+      skuId: SkuId,
       containerId: ContainerId,
       slotCode: SlotCode,
       stockPositionId: StockPositionId,
@@ -226,6 +229,7 @@ object HandlingUnitStock:
     val id = HandlingUnitStockId()
     val hus = HandlingUnitStock(
       id = id,
+      skuId = skuId,
       containerId = containerId,
       slotCode = slotCode,
       stockPositionId = stockPositionId,
@@ -239,6 +243,7 @@ object HandlingUnitStock:
     )
     val event = HandlingUnitStockEvent.Created(
       id,
+      skuId,
       containerId,
       slotCode,
       stockPositionId,

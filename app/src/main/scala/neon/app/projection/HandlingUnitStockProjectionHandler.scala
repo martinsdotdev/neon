@@ -29,7 +29,7 @@ class HandlingUnitStockProjectionHandler(using ExecutionContext)
               |  on_hand_quantity = $6, available_quantity = $6""".stripMargin
           )
           .bind(0, e.handlingUnitStockId.value)
-          .bindNull(1, classOf[UUID])
+          .bind(1, e.skuId.value)
           .bind(2, e.stockPositionId.value)
           .bind(3, e.containerId.value)
         stmt.bind(4, e.slotCode.value)

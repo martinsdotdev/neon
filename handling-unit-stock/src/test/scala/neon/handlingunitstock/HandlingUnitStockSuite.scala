@@ -5,6 +5,7 @@ import neon.common.{
   ContainerId,
   HandlingUnitStockId,
   InventoryStatus,
+  SkuId,
   SlotCode,
   StockLockType,
   StockPositionId
@@ -15,6 +16,7 @@ import java.time.Instant
 
 class HandlingUnitStockSuite extends AnyFunSpec:
 
+  val skuId = SkuId()
   val containerId = ContainerId()
   val slotCode = SlotCode("A-01")
   val stockPositionId = StockPositionId()
@@ -29,6 +31,7 @@ class HandlingUnitStockSuite extends AnyFunSpec:
   ): HandlingUnitStock =
     val (hus, _) =
       HandlingUnitStock.create(
+        skuId,
         containerId,
         slotCode,
         stockPositionId,
@@ -50,7 +53,7 @@ class HandlingUnitStockSuite extends AnyFunSpec:
 
       it("produces a HandlingUnitStock with available equal to onHand and a Created event"):
         val (hus, event) =
-          HandlingUnitStock.create(containerId, slotCode, stockPositionId, true, 50, at)
+          HandlingUnitStock.create(skuId, containerId, slotCode, stockPositionId, true, 50, at)
         assert(hus.id == event.handlingUnitStockId)
         assert(hus.containerId == containerId)
         assert(hus.slotCode == slotCode)
@@ -65,7 +68,7 @@ class HandlingUnitStockSuite extends AnyFunSpec:
 
       it("sets available equal to onHand with all other buckets at zero"):
         val (hus, _) =
-          HandlingUnitStock.create(containerId, slotCode, stockPositionId, true, 200, at)
+          HandlingUnitStock.create(skuId, containerId, slotCode, stockPositionId, true, 200, at)
         assert(hus.availableQuantity == hus.onHandQuantity)
         assert(hus.allocatedQuantity == 0)
         assert(hus.reservedQuantity == 0)
@@ -73,23 +76,23 @@ class HandlingUnitStockSuite extends AnyFunSpec:
 
       it("rejects negative initial quantity"):
         assertThrows[IllegalArgumentException]:
-          HandlingUnitStock.create(containerId, slotCode, stockPositionId, true, -1, at)
+          HandlingUnitStock.create(skuId, containerId, slotCode, stockPositionId, true, -1, at)
 
       it("accepts zero initial quantity"):
         val (hus, _) =
-          HandlingUnitStock.create(containerId, slotCode, stockPositionId, true, 0, at)
+          HandlingUnitStock.create(skuId, containerId, slotCode, stockPositionId, true, 0, at)
         assert(hus.onHandQuantity == 0)
         assert(hus.availableQuantity == 0)
 
       it("supports logical containers with physicalContainer set to false"):
         val (hus, event) =
-          HandlingUnitStock.create(containerId, slotCode, stockPositionId, false, 25, at)
+          HandlingUnitStock.create(skuId, containerId, slotCode, stockPositionId, false, 25, at)
         assert(hus.physicalContainer == false)
         assert(event.physicalContainer == false)
 
       it("Created event carries all identity fields and quantity"):
         val (hus, event) =
-          HandlingUnitStock.create(containerId, slotCode, stockPositionId, true, 75, at)
+          HandlingUnitStock.create(skuId, containerId, slotCode, stockPositionId, true, 75, at)
         assert(event.handlingUnitStockId == hus.id)
         assert(event.containerId == containerId)
         assert(event.slotCode == slotCode)

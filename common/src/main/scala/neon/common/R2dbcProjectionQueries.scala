@@ -21,6 +21,13 @@ trait R2dbcProjectionQueries:
       param: Any,
       idColumn: String
   ): Future[List[UUID]] =
+    queryProjectionIds(sql, List(param), idColumn)
+
+  protected def queryProjectionIds(
+      sql: String,
+      params: List[Any],
+      idColumn: String
+  ): Future[List[UUID]] =
     Source
       .fromPublisher(connectionFactory.create())
       .runWith(Sink.headOption)
@@ -32,8 +39,10 @@ trait R2dbcProjectionQueries:
             )
           )
         case Some(connection) =>
-          val stmt =
-            connection.createStatement(sql).bind(0, param)
+          val stmt = connection.createStatement(sql)
+          params.zipWithIndex.foreach { (param, index) =>
+            stmt.bind(index, param)
+          }
           Source
             .fromPublisher(stmt.execute())
             .flatMapConcat { result =>

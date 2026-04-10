@@ -6,6 +6,7 @@ import neon.common.{
   ContainerId,
   HandlingUnitStockId,
   InventoryStatus,
+  SkuId,
   SlotCode,
   StockLockType,
   StockPositionId
@@ -37,6 +38,7 @@ class HandlingUnitStockActorSuite
     with BeforeAndAfterEach:
 
   private val handlingUnitStockId = HandlingUnitStockId()
+  private val skuId = SkuId()
   private val containerId = ContainerId()
   private val slotCode = SlotCode("A-01")
   private val stockPositionId = StockPositionId()
@@ -63,7 +65,7 @@ class HandlingUnitStockActorSuite
 
   private def createHandlingUnitStock(onHand: Int = 100): Unit =
     val (hus, event) =
-      HandlingUnitStock.create(containerId, slotCode, stockPositionId, true, onHand, at)
+      HandlingUnitStock.create(skuId, containerId, slotCode, stockPositionId, true, onHand, at)
     esTestKit.runCommand[StatusReply[Done]](
       HandlingUnitStockActor.Create(hus, event, _)
     )
@@ -74,7 +76,7 @@ class HandlingUnitStockActorSuite
 
       it("accepts Create command and transitions to ActiveState"):
         val (hus, event) =
-          HandlingUnitStock.create(containerId, slotCode, stockPositionId, true, 100, at)
+          HandlingUnitStock.create(skuId, containerId, slotCode, stockPositionId, true, 100, at)
         val result = esTestKit.runCommand[StatusReply[Done]](
           HandlingUnitStockActor.Create(hus, event, _)
         )
@@ -86,7 +88,7 @@ class HandlingUnitStockActorSuite
       it("rejects Create when already active"):
         createHandlingUnitStock()
         val (hus, event) =
-          HandlingUnitStock.create(containerId, slotCode, stockPositionId, true, 50, at)
+          HandlingUnitStock.create(skuId, containerId, slotCode, stockPositionId, true, 50, at)
         val result = esTestKit.runCommand[StatusReply[Done]](
           HandlingUnitStockActor.Create(hus, event, _)
         )

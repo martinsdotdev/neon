@@ -125,12 +125,16 @@ class WaveReleaseService(
         // Allocation failed; proceed without stock allocation
         (baseTasks, Nil)
       case Right(allocationResults) =>
-        // Lock stock positions by calling allocate on each
+        // Lock stock positions using the in-memory map (avoid redundant findById calls)
+        val positionsById = availableStock.values.flatten.map(sp => sp.id -> sp).toMap
+        val mutablePositions =
+          scala.collection.mutable.Map.from(positionsById)
         allocationResults.foreach { result =>
           result.allocations.foreach { allocation =>
-            spRepo.findById(allocation.stockPositionId).foreach { sp =>
+            mutablePositions.get(allocation.stockPositionId).foreach { sp =>
               val (updated, event) = sp.allocate(allocation.quantity, at)
               spRepo.save(updated, event)
+              mutablePositions(allocation.stockPositionId) = updated
             }
           }
         }
