@@ -39,7 +39,7 @@ import neon.consolidationgroup.{
 import neon.counttask.{CountTask, CountTaskEvent, CountTaskRepository}
 import neon.cyclecount.{CycleCount, CycleCountEvent, CycleCountRepository}
 import neon.goodsreceipt.{GoodsReceipt, GoodsReceiptEvent, ReceivedLine}
-import neon.handlingunit.HandlingUnitStock
+import neon.handlingunitstock.HandlingUnitStock
 import neon.inbounddelivery.InboundDelivery
 import neon.order.{Order, OrderLine}
 import neon.stockposition.{StockPosition, StockPositionEvent, StockPositionRepository}

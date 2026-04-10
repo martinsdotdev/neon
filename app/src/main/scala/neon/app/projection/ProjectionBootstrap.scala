@@ -5,7 +5,7 @@ import neon.counttask.CountTaskEvent
 import neon.cyclecount.CycleCountEvent
 import neon.goodsreceipt.GoodsReceiptEvent
 import neon.handlingunit.HandlingUnitActor
-import neon.handlingunit.HandlingUnitStockEvent
+import neon.handlingunitstock.HandlingUnitStockEvent
 import neon.inbounddelivery.InboundDeliveryEvent
 import neon.inventory.InventoryEvent
 import neon.slot.SlotActor

@@ -1,4 +1,4 @@
-package neon.handlingunit
+package neon.handlingunitstock
 
 import com.typesafe.config.ConfigFactory
 import neon.common.{

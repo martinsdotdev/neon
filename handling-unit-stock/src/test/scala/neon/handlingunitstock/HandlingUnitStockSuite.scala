@@ -1,4 +1,4 @@
-package neon.handlingunit
+package neon.handlingunitstock
 
 import neon.common.{
   AdjustmentReasonCode,

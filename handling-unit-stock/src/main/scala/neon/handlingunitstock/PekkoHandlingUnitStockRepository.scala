@@ -1,4 +1,4 @@
-package neon.handlingunit
+package neon.handlingunitstock
 
 import neon.common.{ContainerId, HandlingUnitStockId, R2dbcProjectionQueries}
 import io.r2dbc.spi.ConnectionFactory

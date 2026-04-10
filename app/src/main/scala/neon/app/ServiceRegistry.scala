@@ -8,7 +8,7 @@ import neon.counttask.PekkoCountTaskRepository
 import neon.cyclecount.PekkoCycleCountRepository
 import neon.goodsreceipt.PekkoGoodsReceiptRepository
 import neon.handlingunit.PekkoHandlingUnitRepository
-import neon.handlingunit.PekkoHandlingUnitStockRepository
+import neon.handlingunitstock.PekkoHandlingUnitStockRepository
 import neon.inbounddelivery.PekkoInboundDeliveryRepository
 import neon.inventory.PekkoInventoryRepository
 import neon.slot.PekkoSlotRepository

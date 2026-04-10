@@ -33,4 +33,4 @@ Standalone modules (order, sku, user, inventory) depend only on `common` and hav
 **Tradeoffs:**
 - More sbt configuration boilerplate
 - Cross-module refactoring requires updating multiple subprojects
-- Directory names use kebab-case (`consolidation-group`) while packages use concatenated names (`neon.consolidationgroup`)
+- Directory names use kebab-case (`consolidation-group`) while packages use concatenated names (`neon.consolidation`)

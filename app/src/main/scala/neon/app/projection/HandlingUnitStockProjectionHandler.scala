@@ -1,6 +1,6 @@
 package neon.app.projection
 
-import neon.handlingunit.HandlingUnitStockEvent
+import neon.handlingunitstock.HandlingUnitStockEvent
 import org.apache.pekko.Done
 import org.apache.pekko.persistence.query.typed.EventEnvelope
 import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession

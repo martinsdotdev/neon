@@ -4,7 +4,7 @@ import com.github.f4b6a3.uuid.UuidCreator
 
 import java.util.UUID
 
-/** Unique identifier for a [[neon.handlingunit.HandlingUnitStock]]. Backed by a time-ordered
+/** Unique identifier for a [[neon.handlingunitstock.HandlingUnitStock]]. Backed by a time-ordered
   * UUID v7.
   */
 opaque type HandlingUnitStockId = UUID
