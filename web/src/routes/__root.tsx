@@ -5,7 +5,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools"
 import { getLocale } from "@/paraglide/runtime.js"
 import * as m from "@/paraglide/messages.js"
 
-import appCss from "../styles.css?url"
+import appCss from "../app/styles.css?url"
 
 export const Route = createRootRoute({
   head: () => ({

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/shared/ui/button"
 import * as m from "@/paraglide/messages.js"
 
 export const Route = createFileRoute("/")({ component: App })
