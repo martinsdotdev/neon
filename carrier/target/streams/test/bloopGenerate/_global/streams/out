@@ -1,0 +1,4 @@
+[debug] [carrier-test] Classpath dependencies List(common)
+[debug] [carrier-test] Dependencies from configurations List(carrier)
+[debug] Bloop wrote the configuration of project 'carrier-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/carrier-test.json'
+[success] Generated .bloop/carrier-test.json

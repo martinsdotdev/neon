@@ -1,0 +1,20 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/stock-position/src/test/scala/neon/stockposition/StockPositionActorSuite.scala, /home/martins/Projects/neon/stock-position/src/test/scala/neon/stockposition/StockPositionSuite.scala
+[debug] 	Modified: 
+[debug] 	Unmodified: /home/martins/Projects/neon/stock-position/src/test/scala/neon/stockposition/StockPositionActorSuite.scala, /home/martins/Projects/neon/stock-position/src/test/scala/neon/stockposition/StockPositionSuite.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[debug] scalafmt: Unchanged 0 Scala sources
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/stock-position/src/main/scala/neon/stockposition/StockPositionEvent.scala, /home/martins/Projects/neon/stock-position/src/main/scala/neon/stockposition/StockPositionRepository.scala, /home/martins/Projects/neon/stock-position/src/main/scala/neon/stockposition/StockPosition.scala, /home/martins/Projects/neon/stock-position/src/main/scala/neon/stockposition/AsyncStockPositionRepository.scala, /home/martins/Projects/neon/stock-position/src/main/scala/neon/stockposition/StockPositionActor.scala, /home/martins/Projects/neon/stock-position/src/main/scala/neon/stockposition/PekkoStockPositionRepository.scala
+[debug] 	Modified: 
+[debug] 	Unmodified: /home/martins/Projects/neon/stock-position/src/main/scala/neon/stockposition/StockPositionEvent.scala, /home/martins/Projects/neon/stock-position/src/main/scala/neon/stockposition/StockPositionRepository.scala, /home/martins/Projects/neon/stock-position/src/main/scala/neon/stockposition/StockPosition.scala, /home/martins/Projects/neon/stock-position/src/main/scala/neon/stockposition/AsyncStockPositionRepository.scala, /home/martins/Projects/neon/stock-position/src/main/scala/neon/stockposition/StockPositionActor.scala, /home/martins/Projects/neon/stock-position/src/main/scala/neon/stockposition/PekkoStockPositionRepository.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[debug] scalafmt: Unchanged 0 Scala sources

@@ -1,0 +1,4 @@
+[debug] [workstation-test] Classpath dependencies List(common)
+[debug] [workstation-test] Dependencies from configurations List(workstation)
+[debug] Bloop wrote the configuration of project 'workstation-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/workstation-test.json'
+[success] Generated .bloop/workstation-test.json

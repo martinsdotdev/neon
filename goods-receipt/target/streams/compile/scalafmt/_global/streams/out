@@ -1,0 +1,10 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/AsyncGoodsReceiptRepository.scala, /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/ReceivedLine.scala, /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/PekkoGoodsReceiptRepository.scala, /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/GoodsReceiptActor.scala, /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/GoodsReceipt.scala, /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/GoodsReceiptEvent.scala, /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/GoodsReceiptRepository.scala
+[debug] 	Modified: 
+[debug] 	Unmodified: /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/AsyncGoodsReceiptRepository.scala, /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/ReceivedLine.scala, /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/PekkoGoodsReceiptRepository.scala, /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/GoodsReceiptActor.scala, /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/GoodsReceipt.scala, /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/GoodsReceiptEvent.scala, /home/martins/Projects/neon/goods-receipt/src/main/scala/neon/goodsreceipt/GoodsReceiptRepository.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[debug] scalafmt: Unchanged 0 Scala sources

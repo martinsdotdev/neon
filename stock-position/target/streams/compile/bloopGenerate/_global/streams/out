@@ -1,0 +1,4 @@
+[debug] [stockPosition] Classpath dependencies List(common)
+[debug] [stockPosition] Dependencies from configurations List()
+[debug] Bloop wrote the configuration of project 'stockPosition' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/stockPosition.json'
+[success] Generated .bloop/stockPosition.json

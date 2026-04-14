@@ -1,0 +1,9 @@
+[warn] -- [E198] Unused Symbol Warning: /home/martins/Work/Mais/Eva/Neon/eva-wes/core/src/main/scala/eva/core/AsyncCycleCountService.scala:9:2 
+[warn] 9 |  LocationId,
+[warn]   |  ^^^^^^^^^^
+[warn]   |  unused import
+[warn] -- [E198] Unused Symbol Warning: /home/martins/Work/Mais/Eva/Neon/eva-wes/core/src/main/scala/eva/core/AsyncStockPositionService.scala:6:2 
+[warn] 6 |  InventoryStatus,
+[warn]   |  ^^^^^^^^^^^^^^^
+[warn]   |  unused import
+[warn] two warnings found

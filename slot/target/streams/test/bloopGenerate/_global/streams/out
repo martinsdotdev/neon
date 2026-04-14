@@ -1,0 +1,4 @@
+[debug] [slot-test] Classpath dependencies List(common)
+[debug] [slot-test] Dependencies from configurations List(slot)
+[debug] Bloop wrote the configuration of project 'slot-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/slot-test.json'
+[success] Generated .bloop/slot-test.json

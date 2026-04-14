@@ -1,0 +1,11 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/count-task/src/main/scala/neon/counttask/PekkoCountTaskRepository.scala, /home/martins/Projects/neon/count-task/src/main/scala/neon/counttask/AsyncCountTaskRepository.scala, /home/martins/Projects/neon/count-task/src/main/scala/neon/counttask/CountTask.scala, /home/martins/Projects/neon/count-task/src/main/scala/neon/counttask/CountTaskActor.scala, /home/martins/Projects/neon/count-task/src/main/scala/neon/counttask/CountTaskRepository.scala, /home/martins/Projects/neon/count-task/src/main/scala/neon/counttask/CountTaskEvent.scala
+[debug] 	Modified: /home/martins/Projects/neon/count-task/src/main/scala/neon/counttask/PekkoCountTaskRepository.scala
+[debug] 	Unmodified: /home/martins/Projects/neon/count-task/src/main/scala/neon/counttask/AsyncCountTaskRepository.scala, /home/martins/Projects/neon/count-task/src/main/scala/neon/counttask/CountTask.scala, /home/martins/Projects/neon/count-task/src/main/scala/neon/counttask/CountTaskActor.scala, /home/martins/Projects/neon/count-task/src/main/scala/neon/counttask/CountTaskRepository.scala, /home/martins/Projects/neon/count-task/src/main/scala/neon/counttask/CountTaskEvent.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[info] scalafmt: Formatting 1 Scala sources (/home/martins/Projects/neon/count-task)...
+[debug] scalafmt: Unchanged 1 Scala sources

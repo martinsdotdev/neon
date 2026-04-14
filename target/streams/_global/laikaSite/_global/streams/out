@@ -1,0 +1,282 @@
+[error] laika.api.errors.InvalidDocuments: One or more invalid documents:
+[error] /02-the-domain-model/ch06-policies.md
+[error] 
+[error]   [39]: unresolved internal reference: ../docs/decisions/0002-use-policy-service-repository-pattern.md
+[error] 
+[error]   [ADR-0002](../docs/decisions/0002-use-policy-service-repository-pattern.md).
+[error]   ^
+[error] 
+[error] /02-the-domain-model/ch07-services.md
+[error] 
+[error]   [44]: unresolved internal reference: ../docs/decisions/0002-use-policy-service-repository-pattern.md
+[error] 
+[error]   [ADR-0002](../docs/decisions/0002-use-policy-service-repository-pattern.md).
+[error]   ^
+[error] 
+[error]   [96]: unresolved internal reference: ../docs/decisions/0004-use-either-based-error-handling.md
+[error] 
+[error]   [ADR-0004](../docs/decisions/0004-use-either-based-error-handling.md).
+[error]   ^
+[error] 
+[error] /04-system-concerns/ch19-observability.md
+[error] 
+[error]   [26]: unresolved internal reference: ../docs/decisions/0010-use-structured-logging-with-wide-events.md
+[error] 
+[error]   [ADR-0010](../docs/decisions/0010-use-structured-logging-with-wide-events.md).
+[error]   ^
+[error] 
+[error] /05-advanced-topics/ch24-frontend.md
+[error] 
+[error]   [66]: unresolved internal reference: ch13-http-api.md
+[error] 
+[error]   built in [Chapter 13](ch13-http-api.md). For now, the backend is ready and
+[error]            ^
+[error] 
+[error] /05-advanced-topics/ch25-adrs.md
+[error] 
+[error]   [102]: unresolved internal reference: ch04-typestates.md
+[error] 
+[error]   *See: [Chapter 4: Modeling State with Typestates](ch04-typestates.md)*
+[error]         ^
+[error] 
+[error]   [119]: unresolved internal reference: ch06-policies.md
+[error] 
+[error]   *See: [Chapter 6: Policies](ch06-policies.md), [Chapter 7: Services](ch07-services.md), [Chapter 8: Repositories](ch08-repositories.md)*
+[error]         ^
+[error] 
+[error]   [119]: unresolved internal reference: ch07-services.md
+[error] 
+[error]   *See: [Chapter 6: Policies](ch06-policies.md), [Chapter 7: Services](ch07-services.md), [Chapter 8: Repositories](ch08-repositories.md)*
+[error]                                                  ^
+[error] 
+[error]   [119]: unresolved internal reference: ch08-repositories.md
+[error] 
+[error]   *See: [Chapter 6: Policies](ch06-policies.md), [Chapter 7: Services](ch07-services.md), [Chapter 8: Repositories](ch08-repositories.md)*
+[error]                                                                                           ^
+[error] 
+[error]   [133]: unresolved internal reference: ch03-common-foundation.md
+[error] 
+[error]   *See: [Chapter 3: The Common Foundation](ch03-common-foundation.md)*
+[error]         ^
+[error] 
+[error]   [147]: unresolved internal reference: ch18-error-handling.md
+[error] 
+[error]   *See: [Chapter 18: Error Handling Patterns](ch18-error-handling.md)*
+[error]         ^
+[error] 
+[error]   [161]: unresolved internal reference: ch02-getting-started.md
+[error] 
+[error]   *See: [Chapter 2: Getting Started](ch02-getting-started.md)*
+[error]         ^
+[error] 
+[error]   [206]: unresolved internal reference: ch13-http-api.md
+[error] 
+[error]   *See: [Chapter 13: The HTTP API](ch13-http-api.md)*
+[error]         ^
+[error] 
+[error]   [223]: unresolved internal reference: ch13-http-api.md
+[error] 
+[error]   *See: [Chapter 13: The HTTP API](ch13-http-api.md)*
+[error]         ^
+[error] 
+[error]   [240]: unresolved internal reference: ch19-observability.md
+[error] 
+[error]   *See: [Chapter 19: Observability and Logging](ch19-observability.md)*
+[error]         ^
+[error] 
+[error]   [252]: unresolved internal reference: ch04-typestates.md
+[error] 
+[error]  0001 | Typestate-Encoded Aggregates | [Ch 4: Typestates](ch04-typestates.md) |
+[error]                                           ^
+[error] 
+[error]   [253]: unresolved internal reference: ch06-policies.md
+[error] 
+[error]  0002 | Policy-Service-Repository Pattern | [Ch 6](ch06-policies.md), [Ch 7](ch07-services.md), [Ch 8](ch08-repositories.md) |
+[error]                                                ^
+[error] 
+[error]   [253]: unresolved internal reference: ch07-services.md
+[error] 
+[error]  0002 | Policy-Service-Repository Pattern | [Ch 6](ch06-policies.md), [Ch 7](ch07-services.md), [Ch 8](ch08-repositories.md) |
+[error]                                                                          ^
+[error] 
+[error]   [253]: unresolved internal reference: ch08-repositories.md
+[error] 
+[error]  0002 | Policy-Service-Repository Pattern | [Ch 6](ch06-policies.md), [Ch 7](ch07-services.md), [Ch 8](ch08-repositories.md) |
+[error]                                                                                                    ^
+[error] 
+[error]   [254]: unresolved internal reference: ch03-common-foundation.md
+[error] 
+[error]  0003 | Opaque Type IDs with UUID v7 | [Ch 3: Common Foundation](ch03-common-foundation.md) |
+[error]                                           ^
+[error] 
+[error]   [255]: unresolved internal reference: ch18-error-handling.md
+[error] 
+[error]  0004 | Either-Based Error Handling | [Ch 18: Error Handling](ch18-error-handling.md) |
+[error]                                          ^
+[error] 
+[error]   [256]: unresolved internal reference: ch02-getting-started.md
+[error] 
+[error]  0005 | Domain-Driven sbt Modules | [Ch 2: Getting Started](ch02-getting-started.md) |
+[error]                                        ^
+[error] 
+[error]   [259]: unresolved internal reference: ch13-http-api.md
+[error] 
+[error]  0008 | Session-Based Authentication | [Ch 13: HTTP API](ch13-http-api.md) |
+[error]                                           ^
+[error] 
+[error]   [260]: unresolved internal reference: ch13-http-api.md
+[error] 
+[error]  0009 | RBAC with Permission Overrides | [Ch 13: HTTP API](ch13-http-api.md) |
+[error]                                             ^
+[error] 
+[error]   [261]: unresolved internal reference: ch19-observability.md
+[error] 
+[error]  0010 | Structured Logging with Wide Events | [Ch 19: Observability](ch19-observability.md) |
+[error]                                                  ^
+[error] 	at laika.api.errors.InvalidDocuments$.$anonfun$from$7(errors.scala:125)
+[error] 	at scala.Option.map(Option.scala:230)
+[error] 	at laika.api.errors.InvalidDocuments$.from(errors.scala:125)
+[error] 	at laika.api.errors.InvalidDocuments$.$anonfun$from$4(errors.scala:117)
+[error] 	at scala.util.Either.fold(Either.scala:191)
+[error] 	at laika.api.errors.InvalidDocuments$.from(errors.scala:117)
+[error] 	at laika.io.internal.runtime.ParserRuntime$.rewriteTree$1(ParserRuntime.scala:149)
+[error] 	at laika.io.internal.runtime.ParserRuntime$.$anonfun$run$39(ParserRuntime.scala:185)
+[error] 	at flatMap @ laika.io.internal.runtime.ParserRuntime$.$anonfun$run$38(ParserRuntime.scala:184)
+[error] 	at flatMap @ laika.io.internal.runtime.ParserRuntime$.$anonfun$run$37(ParserRuntime.scala:183)
+[error] 	at mapN @ laika.helium.internal.builder.HeliumInputBuilder$.build(HeliumInputBuilder.scala:148)
+[error] 	at unsafeRunSync @ laika.sbt.Settings$.$anonfun$parserConfig$1(Settings.scala:103)
+[error] (laikaSite) laika.api.errors.InvalidDocuments: One or more invalid documents:
+[error] /02-the-domain-model/ch06-policies.md
+[error] 
+[error]   [39]: unresolved internal reference: ../docs/decisions/0002-use-policy-service-repository-pattern.md
+[error] 
+[error]   [ADR-0002](../docs/decisions/0002-use-policy-service-repository-pattern.md).
+[error]   ^
+[error] 
+[error] /02-the-domain-model/ch07-services.md
+[error] 
+[error]   [44]: unresolved internal reference: ../docs/decisions/0002-use-policy-service-repository-pattern.md
+[error] 
+[error]   [ADR-0002](../docs/decisions/0002-use-policy-service-repository-pattern.md).
+[error]   ^
+[error] 
+[error]   [96]: unresolved internal reference: ../docs/decisions/0004-use-either-based-error-handling.md
+[error] 
+[error]   [ADR-0004](../docs/decisions/0004-use-either-based-error-handling.md).
+[error]   ^
+[error] 
+[error] /04-system-concerns/ch19-observability.md
+[error] 
+[error]   [26]: unresolved internal reference: ../docs/decisions/0010-use-structured-logging-with-wide-events.md
+[error] 
+[error]   [ADR-0010](../docs/decisions/0010-use-structured-logging-with-wide-events.md).
+[error]   ^
+[error] 
+[error] /05-advanced-topics/ch24-frontend.md
+[error] 
+[error]   [66]: unresolved internal reference: ch13-http-api.md
+[error] 
+[error]   built in [Chapter 13](ch13-http-api.md). For now, the backend is ready and
+[error]            ^
+[error] 
+[error] /05-advanced-topics/ch25-adrs.md
+[error] 
+[error]   [102]: unresolved internal reference: ch04-typestates.md
+[error] 
+[error]   *See: [Chapter 4: Modeling State with Typestates](ch04-typestates.md)*
+[error]         ^
+[error] 
+[error]   [119]: unresolved internal reference: ch06-policies.md
+[error] 
+[error]   *See: [Chapter 6: Policies](ch06-policies.md), [Chapter 7: Services](ch07-services.md), [Chapter 8: Repositories](ch08-repositories.md)*
+[error]         ^
+[error] 
+[error]   [119]: unresolved internal reference: ch07-services.md
+[error] 
+[error]   *See: [Chapter 6: Policies](ch06-policies.md), [Chapter 7: Services](ch07-services.md), [Chapter 8: Repositories](ch08-repositories.md)*
+[error]                                                  ^
+[error] 
+[error]   [119]: unresolved internal reference: ch08-repositories.md
+[error] 
+[error]   *See: [Chapter 6: Policies](ch06-policies.md), [Chapter 7: Services](ch07-services.md), [Chapter 8: Repositories](ch08-repositories.md)*
+[error]                                                                                           ^
+[error] 
+[error]   [133]: unresolved internal reference: ch03-common-foundation.md
+[error] 
+[error]   *See: [Chapter 3: The Common Foundation](ch03-common-foundation.md)*
+[error]         ^
+[error] 
+[error]   [147]: unresolved internal reference: ch18-error-handling.md
+[error] 
+[error]   *See: [Chapter 18: Error Handling Patterns](ch18-error-handling.md)*
+[error]         ^
+[error] 
+[error]   [161]: unresolved internal reference: ch02-getting-started.md
+[error] 
+[error]   *See: [Chapter 2: Getting Started](ch02-getting-started.md)*
+[error]         ^
+[error] 
+[error]   [206]: unresolved internal reference: ch13-http-api.md
+[error] 
+[error]   *See: [Chapter 13: The HTTP API](ch13-http-api.md)*
+[error]         ^
+[error] 
+[error]   [223]: unresolved internal reference: ch13-http-api.md
+[error] 
+[error]   *See: [Chapter 13: The HTTP API](ch13-http-api.md)*
+[error]         ^
+[error] 
+[error]   [240]: unresolved internal reference: ch19-observability.md
+[error] 
+[error]   *See: [Chapter 19: Observability and Logging](ch19-observability.md)*
+[error]         ^
+[error] 
+[error]   [252]: unresolved internal reference: ch04-typestates.md
+[error] 
+[error]  0001 | Typestate-Encoded Aggregates | [Ch 4: Typestates](ch04-typestates.md) |
+[error]                                           ^
+[error] 
+[error]   [253]: unresolved internal reference: ch06-policies.md
+[error] 
+[error]  0002 | Policy-Service-Repository Pattern | [Ch 6](ch06-policies.md), [Ch 7](ch07-services.md), [Ch 8](ch08-repositories.md) |
+[error]                                                ^
+[error] 
+[error]   [253]: unresolved internal reference: ch07-services.md
+[error] 
+[error]  0002 | Policy-Service-Repository Pattern | [Ch 6](ch06-policies.md), [Ch 7](ch07-services.md), [Ch 8](ch08-repositories.md) |
+[error]                                                                          ^
+[error] 
+[error]   [253]: unresolved internal reference: ch08-repositories.md
+[error] 
+[error]  0002 | Policy-Service-Repository Pattern | [Ch 6](ch06-policies.md), [Ch 7](ch07-services.md), [Ch 8](ch08-repositories.md) |
+[error]                                                                                                    ^
+[error] 
+[error]   [254]: unresolved internal reference: ch03-common-foundation.md
+[error] 
+[error]  0003 | Opaque Type IDs with UUID v7 | [Ch 3: Common Foundation](ch03-common-foundation.md) |
+[error]                                           ^
+[error] 
+[error]   [255]: unresolved internal reference: ch18-error-handling.md
+[error] 
+[error]  0004 | Either-Based Error Handling | [Ch 18: Error Handling](ch18-error-handling.md) |
+[error]                                          ^
+[error] 
+[error]   [256]: unresolved internal reference: ch02-getting-started.md
+[error] 
+[error]  0005 | Domain-Driven sbt Modules | [Ch 2: Getting Started](ch02-getting-started.md) |
+[error]                                        ^
+[error] 
+[error]   [259]: unresolved internal reference: ch13-http-api.md
+[error] 
+[error]  0008 | Session-Based Authentication | [Ch 13: HTTP API](ch13-http-api.md) |
+[error]                                           ^
+[error] 
+[error]   [260]: unresolved internal reference: ch13-http-api.md
+[error] 
+[error]  0009 | RBAC with Permission Overrides | [Ch 13: HTTP API](ch13-http-api.md) |
+[error]                                             ^
+[error] 
+[error]   [261]: unresolved internal reference: ch19-observability.md
+[error] 
+[error]  0010 | Structured Logging with Wide Events | [Ch 19: Observability](ch19-observability.md) |
+[error]                                                  ^

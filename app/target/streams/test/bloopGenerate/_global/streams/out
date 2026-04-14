@@ -1,0 +1,4 @@
+[debug] [app-test] Classpath dependencies List(core, inventory, order, sku, user)
+[debug] [app-test] Dependencies from configurations List(app)
+[debug] Bloop wrote the configuration of project 'app-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/app-test.json'
+[success] Generated .bloop/app-test.json

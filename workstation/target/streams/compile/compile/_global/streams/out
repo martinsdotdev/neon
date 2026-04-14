@@ -1,0 +1,9 @@
+[warn] -- [E198] Unused Symbol Warning: /home/martins/Work/Mais/Eva/Neon/eva-wes/workstation/src/main/scala/eva/workstation/Workstation.scala:4:19 
+[warn] 4 |import eva.common.{ConsolidationGroupId, WorkstationId, WorkstationMode}
+[warn]   |                   ^^^^^^^^^^^^^^^^^^^^
+[warn]   |                   unused import
+[warn] -- [E198] Unused Symbol Warning: /home/martins/Work/Mais/Eva/Neon/eva-wes/workstation/src/main/scala/eva/workstation/WorkstationEvent.scala:5:19 
+[warn] 5 |import eva.common.{ConsolidationGroupId, WorkstationId, WorkstationMode}
+[warn]   |                   ^^^^^^^^^^^^^^^^^^^^
+[warn]   |                   unused import
+[warn] two warnings found

@@ -1,0 +1,37 @@
+[debug] Running TaskDef(eva.stockposition.StockPositionActorSuite, org.scalatest.tools.Framework$$anon$1@3f34fbcc, false, [SuiteSelector])
+[info] StockPositionActorSuite:
+[info] StockPositionActor
+[info]   Create
+[info]   - accepts Create command and transitions to ActiveState
+[info]   - rejects Create when already active
+[info]   Allocate
+[info]   - allocates and returns updated stock position
+[info]   - rejects Allocate on empty state
+[info]   Deallocate
+[info]   - deallocates and returns updated stock position
+[info]   AddQuantity
+[info]   - adds quantity and returns updated stock position
+[info]   ConsumeAllocated
+[info]   - consumes allocated and returns updated stock position
+[info]   Reserve
+[info]   - reserves and returns updated stock position with lock type
+[info]   ReleaseReservation
+[info]   - releases reservation and returns updated stock position
+[info]   Block and Unblock
+[info]   - blocks and unblocks quantity
+[info]   Adjust
+[info]   - adjusts quantity with reason code
+[info]   ChangeStatus
+[info]   - changes status and returns updated stock position
+[info]   GetState
+[info]   - returns None on empty state
+[info]   - returns stock position on active state
+[info]   event replay
+[info]   - recovers stock position with correct quantities after restart
+[info] Run completed in 1 second, 284 milliseconds.
+[info] Total number of tests run: 15
+[info] Suites: completed 1, aborted 0
+[info] Tests: succeeded 15, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	eva.stockposition.StockPositionActorSuite

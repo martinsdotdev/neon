@@ -1,0 +1,6 @@
+[debug] [zinc] IncrementalCompile -----------
+[debug] IncrementalCompile.incrementalCompile
+[debug] previous = Stamps for: 3 products, 3 sources, 13 libraries
+[debug] current source = Set(${BASE}/consolidation-group/src/test/scala/neon/consolidationgroup/ConsolidationGroupSuite.scala, ${BASE}/consolidation-group/src/test/scala/neon/consolidationgroup/ConsolidationGroupActorSuite.scala, ${BASE}/consolidation-group/src/test/scala/neon/consolidationgroup/PekkoConsolidationGroupRepositorySuite.scala)
+[debug] > initialChanges = InitialChanges(Changes(added = Set(), removed = Set(), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())
+[debug] No changes

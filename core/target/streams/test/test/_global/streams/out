@@ -1,0 +1,579 @@
+[debug] Running TaskDef(neon.core.CountCompletionServiceSuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.RoutingPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.TaskCancellationPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.CountCreationPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.TransportOrderCancellationPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.ConsolidationGroupCancellationPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.TransportOrderConfirmationServiceSuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.TaskDispatchPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.InboundReceivingServiceSuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.ConsolidationGroupFormationPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.TaskCompletionServiceSuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.WavePlanningServiceSuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.WorkstationAssignmentServiceSuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.PickingCompletionPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.ConsolidationGroupCompletionServiceSuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.StockAllocationPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.ShortpickPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[info] ConsolidationGroupCancellationPolicySuite:
+[info] ConsolidationGroupCancellationPolicy
+[info]   when consolidation groups include non-terminal states
+[info]   - cancels Created consolidation groups
+[info]   - cancels Picked consolidation groups
+[info]   - cancels ReadyForWorkstation consolidation groups
+[info]   - cancels Assigned consolidation groups
+[info]   - skips Completed consolidation groups
+[info]   - skips already Cancelled consolidation groups
+[info]   - cancels all four non-terminal states in one pass
+[info]   - emits one event per cancellation with correct fields
+[info]   - preserves orderIds in cancelled state for audit
+[info]   when all consolidation groups are already terminal
+[info]   - produces no cancellations
+[info]   when the list is empty
+[info]   - produces no cancellations
+[info] TaskCancellationPolicySuite:
+[info] TaskCancellationPolicy
+[info]   when wave tasks include open tasks
+[info]   - cancels Planned tasks
+[info]   - cancels Allocated tasks
+[info]   - cancels Assigned tasks
+[info]   - skips already Completed tasks
+[info]   - skips already Cancelled tasks
+[info]   - emits one event per cancelled task
+[info]   - omits assignedTo when cancelling from Planned
+[info]   - omits assignedTo when cancelling from Allocated
+[info]   - preserves the operator when cancelling from Assigned
+[info]   - preserves locations when cancelling from Allocated
+[info]   - preserves locations when cancelling from Assigned
+[info]   - omits locations when cancelling from Planned
+[info]   when all tasks are already terminal
+[info]   - produces no cancellations
+[info]   when the task list is empty
+[info]   - produces no cancellations
+[debug] Running TaskDef(neon.core.BufferArrivalPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.BufferCompletionPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.WaveCancellationServiceSuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[info] TransportOrderCancellationPolicySuite:
+[info] TransportOrderCancellationPolicy
+[info]   when orders include cancellable states
+[info]   - cancels Pending orders
+[debug] Running TaskDef(neon.core.VerificationProfileSuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[info]   - skips Confirmed orders
+[info]   - skips already Cancelled orders
+[info]   - emits one event per cancelled order
+[info]   - event carries handlingUnitId and destination for audit
+[debug] Running TaskDef(neon.core.WaveCompletionPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[info]   - preserves handlingUnitId and destination in Cancelled state
+[info]   when all orders are already terminal
+[info]   - produces no cancellations
+[info]   when the list is empty
+[info]   - produces no cancellations
+[info] CountCreationPolicySuite:
+[info] CountCreationPolicy
+[info]   when stock positions exist for all SKUs
+[info]   - creates one count task per SKU-location pair
+[info]   - sets expected quantity from stock snapshot
+[info]   - sets cycle count reference on each count task
+[info]   - sets SKU and location on each count task
+[info]   - CountTaskCreated event mirrors count task fields
+[info]   when a SKU exists in multiple locations
+[info]   - creates a count task for each location
+[info]   when stock snapshot is empty
+[info]   - returns an empty list
+[info]   when stock snapshot contains SKUs not in cycle count
+[info]   - only creates tasks for SKUs in the cycle count
+[info]   when stock snapshot has zero quantity
+[info]   - still creates a count task with zero expected quantity
+[info] CountCompletionServiceSuite:
+[info] CountCompletionService
+[info]   when cycle count does not exist
+[info]   - returns CycleCountNotFound
+[info]   when cycle count is not InProgress
+[info]   - rejects Completed cycle count
+[info]   - rejects New cycle count
+[info]   when all count tasks are recorded
+[info]   - completes the cycle count
+[info]   - persists Completed cycle count
+[info]   - collects variances from count tasks with non-zero variance
+[info]   when some count tasks are not terminal
+[info]   - returns OpenCountTasksRemaining
+[info]   - pending tasks also prevent completion
+[info]   when all count tasks are terminal (mix of recorded and cancelled)
+[info]   - completes the cycle count
+[info]   - only collects variances from recorded tasks, not cancelled
+[info]   when no count tasks have variances
+[info]   - returns empty variances list
+[info] TaskDispatchPolicySuite:
+[info] TaskDispatchPolicy
+[info]   with empty candidates
+[info]   - returns empty list
+[info]   with empty profile
+[info]   - returns candidates in original order
+[info]   count preservation
+[info]   - returns all candidates — dispatch only reorders, never filters
+[info]   WaveSequence
+[info]   - sorts oldest wave first — smaller UUID v7 = earlier wave
+[info]   - puts tasks without a wave last
+[info]   OrderPriority
+[info]   - sorts higher priority orders first
+[info]   - sorts Critical > High > Normal > Low
+[info]   - sorts known orders before tasks whose orderId is absent from the orders list
+[info]   OrderSimplicity
+[info]   - sorts single-line orders before multi-line orders
+[info]   ConsolidationGroupCompletion
+[info]   - sorts tasks with higher consolidation group completion percentage first
+[info]   - treats tasks with no consolidation group as 0% completion — places them last
+[info]   - treats tasks with waveId=None as 0% — consolidation groups require a waveId match
+[info]   PackagingTier
+[info]   - sorts Pallet before Case before Each
+[info]   composite criteria
+[info]   - uses second criterion to break ties from first
+[info]   - applies all criteria in order
+[debug] Running TaskDef(neon.core.PutawayCreationPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[info] ConsolidationGroupFormationPolicySuite:
+[info] ConsolidationGroupFormationPolicy
+[info]   Multi-order wave
+[info]   - creates a consolidation group for the wave
+[info]   - consolidation group contains all orders from the wave
+[info]   - emits a creation event for downstream coordination
+[info]   Single-order wave
+[debug] Running TaskDef(neon.core.WaveDispatchValidationPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[info]   - produces no consolidation groups
+[info] RoutingPolicySuite:
+[info] RoutingPolicy
+[info] - skips tasks without a handling unit
+[info] - creates a transport order for the handling unit
+[info] - TransportOrderCreated event carries handling unit, destination, and timestamp
+[info] InboundReceivingServiceSuite:
+[info] InboundReceivingService
+[info]   task creation
+[info]   - creates putaway tasks from confirmed goods receipt lines
+[info]   - creates one task per received line
+[info]   - persists all created tasks
+[info]   stock position updates
+[info]   - adds received quantity to existing stock position
+[info]   - skips stock position update when no stockPositionId provided
+[info]   result
+[info]   - carries tasks and stock position updates
+[info] TransportOrderConfirmationServiceSuite:
+[info] TransportOrderConfirmationService
+[info]   when transport order does not exist
+[info]   - returns TransportOrderNotFound
+[info]   when transport order is not Pending
+[info]   - rejects Confirmed
+[info]   - rejects Cancelled
+[info]   when handling unit does not exist
+[info]   - returns HandlingUnitNotFound
+[info]   when handling unit is not PickCreated
+[info]   - rejects InBuffer
+[info]   - rejects Empty
+[info]   confirming
+[info]   - confirms transport order and moves handling unit to buffer
+[info]   - includes handling unit and destination in confirmed event
+[info]   - includes buffer location in handling unit event
+[info]   - persists Confirmed transport order
+[info]   - persists InBuffer handling unit
+[info]   buffer completion cascade
+[info]     when all handling units arrive
+[info]     - transitions consolidation group to ReadyForWorkstation
+[info]     when other handling units are not yet in buffer
+[info]     - does not transition consolidation group
+[info]     when context is missing
+[info]     - skips when no task found for handling unit
+[info]     - skips when task has no wave
+[info]     - skips when no consolidation group found for wave
+[info]     - skips when consolidation group is not in Picked state
+[debug] Running TaskDef(neon.core.WorkstationAssignmentPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.TaskCreationPolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.WorkstationReleasePolicySuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.WarehouseDaySimulationSuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[debug] Running TaskDef(neon.core.WaveReleaseServiceSuite, org.scalatest.tools.Framework$$anon$1@338c0f4a, false, [SuiteSelector])
+[info] WorkstationAssignmentServiceSuite:
+[info] WorkstationAssignmentService
+[info]   when consolidation group does not exist
+[info]   - returns ConsolidationGroupNotFound
+[info]   when consolidation group is not ReadyForWorkstation
+[info]   - rejects Created with ConsolidationGroupNotReady
+[info]   - rejects Picked with ConsolidationGroupNotReady
+[info]   - rejects Assigned with ConsolidationGroupNotReady
+[info]   - rejects Completed with ConsolidationGroupNotReady
+[info]   - rejects Cancelled with ConsolidationGroupNotReady
+[info]   when no idle workstation is available
+[info]   - returns NoWorkstationAvailable and leaves state untouched
+[info]   when workstation has insufficient slots
+[info]   - returns NoWorkstationAvailable and does not persist partial writes
+[info]   assigning
+[info]   - assigns consolidation group to workstation and persists both transitions
+[info] WavePlanningServiceSuite:
+[info] WavePlanningService
+[info] - plans, reserves, and releases a wave on the happy path
+[info] - returns validation error and does not reserve when order has no carrier
+[info] - returns dock conflict from reserveForWave and does not release wave
+[info] - supports custom lineResolution integration with UomExpansion
+[info] - keeps Order compatibility outside WavePlanningService when carrierId is absent
+[info] PickingCompletionPolicySuite:
+[info] PickingCompletionPolicy
+[info]   when all tasks are terminal
+[info]   - transitions consolidation group to Picked state
+[info]   - considers Cancelled tasks terminal
+[info]   - ConsolidationGroupPicked event carries wave context and timestamp
+[info]   - Picked state retains consolidation group waveId and orderIds
+[info]   when tasks are still open
+[info]   - does not transition when Assigned tasks remain
+[info]   - considers Allocated tasks non-terminal
+[info]   - considers Planned tasks non-terminal
+[info]   when the task list is empty
+[info]   - does not transition for empty task list
+[info] StockAllocationPolicySuite:
+[info] StockAllocationPolicy
+[info]   FEFO strategy
+[info]   - allocates from the position with the earliest expiration date
+[info]   - uses production date as FIFO tiebreaker when expiration dates are equal
+[info]   - prefers smaller positions as tertiary sort to consolidate partial stock
+[info]   FIFO strategy
+[info]   - allocates from the position with the earliest production date
+[info]   partial allocation
+[info]   - splits across multiple positions when one is insufficient
+[info]   - allocates what is available when total stock is insufficient
+[info]   insufficient stock
+[info]   - returns InsufficientStock when no stock exists for the SKU
+[info]   shelf life validation
+[info]   - skips positions with insufficient remaining shelf life
+[info]   - returns InsufficientShelfLife when all positions have too little shelf life
+[info]   multiple requests
+[info]   - allocates independently for each request
+[info]   skips non-available positions
+[info]   - ignores positions with non-Available status
+[info] ConsolidationGroupCompletionServiceSuite:
+[info] ConsolidationGroupCompletionService
+[info]   when consolidation group does not exist
+[info]   - returns ConsolidationGroupNotFound
+[info]   when consolidation group is not Assigned
+[info]   - rejects Created with ConsolidationGroupNotAssigned
+[info]   - rejects Picked with ConsolidationGroupNotAssigned
+[info]   - rejects ReadyForWorkstation with ConsolidationGroupNotAssigned
+[info]   - rejects Completed with ConsolidationGroupNotAssigned
+[info]   - rejects Cancelled with ConsolidationGroupNotAssigned
+[info]   when workstation does not exist
+[info]   - returns WorkstationNotFound and leaves state untouched
+[info]   when workstation is not Active
+[info]   - returns WorkstationNotActive and leaves state untouched
+[info]   completing
+[info]   - completes consolidation group, releases workstation, and persists both
+[info] ShortpickPolicySuite:
+[info] ShortpickPolicy
+[info]   when actual meets requested
+[info]   - does not create a replacement task
+[info]   when actual exceeds requested
+[info]   - does not create a replacement task
+[info]   when actual is zero
+[info]   - returns replacement task with full requested quantity
+[info]   when actual is less than requested
+[info]   - returns replacement task for the unfulfilled quantity
+[info]   - copies wave, SKU, task type, and order ID from original
+[info]   - copies packaging level from original
+[info]   - sets parentTaskId to the original task's ID
+[info]   - preserves handling unit ID in replacement task
+[info]   - TaskCreated event mirrors all replacement task fields
+[info]   when task has no wave
+[info]   - copies None for both waveId and handlingUnitId
+[info]   packagingLevel propagation
+[info]   - copies Case packaging level to replacement task and event
+[info] BufferArrivalPolicySuite:
+[info] BufferArrivalPolicy
+[info] - moves the handling unit to the transport order destination
+[info] - emits an event identifying the handling unit and destination
+[info] BufferCompletionPolicySuite:
+[info] BufferCompletionPolicy
+[info]   when all handling units are in buffer
+[info]   - transitions the consolidation group to ready for workstation
+[info]   - carries waveId and occurredAt in the event
+[info]   - preserves consolidation group identity across transition
+[info]   when some handling units are not yet in buffer
+[info]   - does not transition when pick handling units are still in transit
+[info]   - does not transition when handling units have already been emptied
+[info]   when the handling unit list is empty
+[info]   - does not transition the consolidation group
+[info] WaveCancellationServiceSuite:
+[info] WaveCancellationService
+[info]   when wave does not exist
+[info]   - returns WaveNotFound
+[info]   when wave is already terminal
+[info]   - returns WaveAlreadyTerminal for a Completed wave
+[info]   - returns WaveAlreadyTerminal for a Cancelled wave
+[info]   cancelling a Planned wave
+[info]   - cancels without cascade
+[info]   cancelling a Released wave
+[info]   - cancels the wave
+[info]     task cascade
+[info]     - cancels Planned, Allocated, and Assigned tasks
+[info]     - skips Completed and Cancelled tasks
+[info]     transport order cascade
+[info]     - cancels Pending transport orders found via task handling units
+[info]     - skips Confirmed transport orders
+[info]     - skips tasks without handling units
+[info]     consolidation group cascade
+[info]     - cancels non-terminal consolidation groups
+[info]     when no downstream aggregates exist
+[info]     - produces empty cascade result
+[info]   full cascade
+[info]   - cancels wave, tasks, transport orders, and consolidation groups together
+[info] VerificationProfileSuite:
+[info] VerificationProfile
+[info]   requiresVerification
+[info]   - returns true for a packaging level present in the set
+[info]   - returns false for a packaging level absent from the set
+[info]   - supports multiple packaging levels
+[info]   disabled
+[info]   - returns false for any packaging level
+[info] WaveCompletionPolicySuite:
+[info] WaveCompletionPolicy
+[info]   when all tasks are terminal
+[info]   - transitions wave to Completed
+[info]   - considers Cancelled tasks terminal
+[info]   when tasks are still open
+[info]   - does not complete when Assigned tasks remain
+[info]   - considers Allocated tasks non-terminal
+[info]   - considers Planned tasks non-terminal
+[info]   when the task list is empty
+[info]   - does not complete for empty task list
+[info] PutawayCreationPolicySuite:
+[info] PutawayCreationPolicy
+[info]   with an empty list
+[info]   - produces no tasks
+[info]   with a single line
+[info]   - assigns Putaway task type to all created tasks
+[info]   - copies SKU ID from received line
+[info]   - copies packaging level from received line
+[info]   - assigns line quantity as requestedQuantity
+[info]   - copies order ID
+[info]   - sets waveId to None for putaway tasks
+[info]   - sets parentTaskId to None
+[info]   - sets handlingUnitId to None
+[info]   - TaskCreated event mirrors all fields of the Planned task
+[info]   with multiple lines
+[info]   - produces one Planned task per received line
+[info]   - each task preserves its line's packaging level
+[info]   - each task preserves its line's SKU
+[info] WaveDispatchValidationPolicySuite:
+[info] WaveDispatchValidationPolicy
+[info] - accepts valid orders, carriers, docks, and assignments
+[info] - fails when an order has no carrier
+[info] - fails when a referenced carrier is inactive
+[info] - fails when a mapped location is not a shipping dock
+[info] - fails when the same carrier is mapped to multiple docks in the same wave
+[info] - fails when the same dock appears more than once in the same wave mapping
+[info] - fails when an order carrier is not mapped to any dock
+[info] - fails with dock conflict when another active wave uses the same dock with different carrier
+[info] - accepts same dock when active wave uses the same carrier
+[info] - accepts different carrier on same dock when cross-wave exclusivity rule is disabled
+[info] WorkstationAssignmentPolicySuite:
+[info] WorkstationAssignmentPolicy
+[info]   capacity check
+[info]   - rejects assignment when workstation has fewer slots than orders
+[info]   - accepts assignment when workstation has exactly enough slots
+[info]   consolidation group transition
+[info]   - assigns the consolidation group to the workstation
+[info]   - consolidation group event carries workstationId and occurredAt
+[info]   workstation transition
+[info]   - activates the workstation with the assignment
+[info]   - workstation event carries assignmentId and occurredAt
+[info]   - preserves workstation type after assignment
+[info]   cross-aggregate consistency
+[info]   - consolidation group's workstationId matches workstation's id
+[info] WorkstationReleasePolicySuite:
+[info] WorkstationReleasePolicy
+[info] - returns the workstation to idle
+[info] - emits a released event with workstationId and occurredAt
+[info] - preserves workstation type after release
+[info] TaskCreationPolicySuite:
+[info] TaskCreationPolicy
+[info]   with an empty list
+[info]   - produces no tasks
+[info]   with a single request
+[info]   - assigns Pick task type to all created tasks
+[info]   - copies SKU ID from request
+[info]   - copies packaging level from request
+[info]   - assigns request quantity as requestedQuantity
+[info]   - copies order ID from request
+[info]   - carries wave ID from the request
+[info]   - sets parentTaskId to None
+[info]   - sets handlingUnitId to None
+[info]   - TaskCreated event mirrors all fields of the Planned task
+[info]   with multiple requests
+[info]   - produces one Planned task per TaskRequest
+[info]   - all tasks share the same wave ID
+[info]   - each task preserves its request's packaging level
+[info] WaveReleaseServiceSuite:
+[info] WaveReleaseService
+[info]   wave persistence
+[info]   - saves wave in Released state
+[info]   task creation
+[info]   - creates tasks from task requests via TaskCreationPolicy
+[info]   - creates one task per order line for multi-line orders
+[info]   - persists all created tasks
+[info]   consolidation group formation
+[info]   - creates consolidation groups for Multi grouping
+[info]   - skips consolidation groups for Single grouping
+[info]   stock allocation
+[info]   - locks stock positions when stock repository is provided
+[info]   - sets stockPositionId on created tasks
+[info]   - skips allocation when stock repository is not provided
+[info]   - allocates across multiple stock positions for a single task
+[info]   result
+[info]   - carries wave, event, tasks, and consolidation groups
+[info] TaskCompletionServiceSuite:
+[info] TaskCompletionService
+[info]   when task does not exist
+[info]   - returns TaskNotFound
+[info]   when task is not Assigned
+[info]   - rejects Planned
+[info]   - rejects Allocated
+[info]   - rejects Completed
+[info]   - rejects Cancelled
+[info]   when actual quantity is negative
+[info]   - returns InvalidActualQuantity
+[info]   completing
+[info]   - transitions to Completed with requested and actual quantities
+[info]   - TaskCompleted event carries task identity, quantities, and timestamp
+[info]   - persists Completed state
+[info]   shortpick cascade
+[info]     when actual meets requested
+[info]     - does not create a replacement task
+[info]     when actual is less than requested
+[info]     - creates Planned replacement for the unfulfilled remainder
+[info]     - persists replacement task
+[info]     when actual is zero
+[info]     - creates replacement for the full requested quantity
+[info]   routing cascade
+[info]     when task has a handling unit
+[info]     - creates Pending transport order to the destination
+[info]     - persists transport order
+[info]     when task has no handling unit
+[info]     - does not create a transport order
+[info]   wave completion
+[info]     when all wave tasks are terminal
+[info]     - transitions wave to Completed
+[info]     - persists Completed wave
+[info]     when open wave tasks remain
+[info]     - does not complete the wave
+[info]     when task has no wave
+[info]     - skips wave completion
+[info]     when wave is already Completed
+[info]     - skips wave completion
+[info]     when wave does not exist
+[info]     - skips wave completion
+[info]     when shortpick creates a replacement
+[info]     - prevents wave completion
+[info]   picking completion
+[info]     when all consolidation group tasks are terminal
+[info]     - transitions consolidation group to Picked
+[info]     - persists Picked consolidation group
+[info]     when open consolidation group tasks remain
+[info]     - does not transition consolidation group
+[info]     when task has no wave
+[info]     - skips picking completion
+[info]     when no consolidation group exists for the wave
+[info]     - skips picking completion
+[info]     when consolidation group is already Picked
+[info]     - skips picking completion
+[info]     when consolidation group does not contain the task's order
+[info]     - skips picking completion
+[info]     when wave has tasks for multiple orders
+[info]     - transitions consolidation group independently of other orders' tasks
+[info]   full cascade
+[info]     when all conditions are met
+[info]     - fires completion, routing, wave, and picking completion
+[info]     when shortpick occurs
+[info]     - prevents wave and consolidation group completion
+[info]   stock consumption
+[info]   - consumes allocated stock on task completion
+[info]   - consumes actual and deallocates remainder on partial pick
+[info]   - skips consumption when task has no stockPositionId
+[info]   - skips consumption when stock repository is not provided
+[info]   - deallocates full quantity when actual quantity is zero
+[info]   verification gate
+[info]     when verification is required and provided
+[info]     - completes normally
+[info]     when verification is required and not provided
+[info]     - returns VerificationRequired
+[info]     - does not persist any state change
+[info]     when verification is not required
+[info]     - completes regardless of verified flag
+[info]     when profile targets a different packaging level
+[info]     - does not gate tasks with a non-matching level
+[info]     interaction with shortpick
+[info]     - rejection prevents the entire cascade
+[info] WarehouseDaySimulationSuite:
+[info] A full day of warehouse operations
+[info]   06:00 inbound receiving
+[info]   - creates inbound delivery in New state
+[info]   - transitions to Receiving state
+[info]   - records received quantity
+[info]   - completes the delivery
+[info]   - creates goods receipt in Open state
+[info]   - records a received line
+[info]   - confirms the goods receipt
+[info]   - creates putaway tasks from the receipt
+[info]   - updates stock position with received quantity
+[info]   08:00 outbound wave with FEFO allocation
+[info]   - creates tasks for both orders
+[info]   - allocates stock using FEFO (earliest expiry first)
+[info]   - locks allocated quantity on the stock position
+[info]   - sets stockPositionId on created tasks
+[info]   10:00 picking with shortpick
+[info]   - completes a full pick and consumes stock
+[info]   - handles a shortpick: picker finds only 25 of 30 requested
+[info]   - consumed allocated stock after picks
+[info]   14:00 cycle count (blind)
+[info]   - creates a cycle count in InProgress state
+[info]   - creates count tasks with expected quantities from stock snapshot
+[info]   - records actual count with variance
+[info]   - completes the cycle count and reports variances
+[info]   16:00 SOX-compliant adjustment
+[info]   - rejects adjustment when counter is the same as adjuster
+[info]   - approves adjustment when supervisor (different user) adjusts
+[info]   - applies the stock adjustment
+[info]   17:00 workstation mode switching
+[info]   - starts in Picking mode when enabled
+[info]   - switches from Picking to Receiving mode
+[info]   - switches to Counting mode for cycle count
+[info]   - cannot switch mode while Active (processing work)
+[info]   end of day summary
+[info]   - all stock positions reflect the day's operations
+[info]   - events trace the complete audit trail
+[info] Run completed in 756 milliseconds.
+[info] Total number of tests run: 313
+[info] Suites: completed 29, aborted 0
+[info] Tests: succeeded 313, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.core.InboundReceivingServiceSuite
+[debug] 	neon.core.PutawayCreationPolicySuite
+[debug] 	neon.core.WorkstationAssignmentPolicySuite
+[debug] 	neon.core.WorkstationAssignmentServiceSuite
+[debug] 	neon.core.VerificationProfileSuite
+[debug] 	neon.core.TransportOrderCancellationPolicySuite
+[debug] 	neon.core.WorkstationReleasePolicySuite
+[debug] 	neon.core.ConsolidationGroupCompletionServiceSuite
+[debug] 	neon.core.ConsolidationGroupFormationPolicySuite
+[debug] 	neon.core.TaskCompletionServiceSuite
+[debug] 	neon.core.ConsolidationGroupCancellationPolicySuite
+[debug] 	neon.core.RoutingPolicySuite
+[debug] 	neon.core.WavePlanningServiceSuite
+[debug] 	neon.core.TaskCreationPolicySuite
+[debug] 	neon.core.BufferCompletionPolicySuite
+[debug] 	neon.core.TransportOrderConfirmationServiceSuite
+[debug] 	neon.core.TaskCancellationPolicySuite
+[debug] 	neon.core.WarehouseDaySimulationSuite
+[debug] 	neon.core.PickingCompletionPolicySuite
+[debug] 	neon.core.TaskDispatchPolicySuite
+[debug] 	neon.core.StockAllocationPolicySuite
+[debug] 	neon.core.CountCreationPolicySuite
+[debug] 	neon.core.WaveCancellationServiceSuite
+[debug] 	neon.core.CountCompletionServiceSuite
+[debug] 	neon.core.BufferArrivalPolicySuite
+[debug] 	neon.core.WaveReleaseServiceSuite
+[debug] 	neon.core.WaveDispatchValidationPolicySuite
+[debug] 	neon.core.WaveCompletionPolicySuite
+[debug] 	neon.core.ShortpickPolicySuite

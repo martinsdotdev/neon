@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Appendix B: Module Dependency Graph</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+    <script type="module">
+
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({ 
+  startOnLoad: true,
+  theme: "base",
+  themeVariables: {
+    'darkMode': dark,
+    'primaryColor': dark ? '#125d75' : '#eef5f6', 
+    'primaryTextColor': dark ? '#a7d4de' : '#007c99',
+    'primaryBorderColor': dark ? '#a7d4de' : '#a7d4de',
+    'lineColor': dark ? '#a7d4de' : '#007c99',
+    'background': dark ? '#064458' : '#ffffff',
+  }
+});
+
+</script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Appendix B: Module Dependency Graph</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#dependency-diagram">Dependency Diagram</a></li>
+    <li class="level1 nav-node"><a href="#module-reference">Module Reference</a></li>
+    <li class="level2 nav-leaf"><a href="#reference-data-modules-no-pekko-actors">Reference Data Modules (no Pekko actors)</a></li>
+    <li class="level2 nav-leaf"><a href="#event-sourced-aggregate-modules-with-pekko-actors">Event-Sourced Aggregate Modules (with Pekko actors)</a></li>
+    <li class="level2 nav-leaf"><a href="#orchestration-and-application-modules">Orchestration and Application Modules</a></li>
+    <li class="level2 nav-leaf"><a href="#naming-convention">Naming Convention</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="appendix-b-module-dependency-graph" class="title">Appendix B: Module Dependency Graph</h1>
+        
+        <h2 id="dependency-diagram" class="section"><a class="anchor-link left" href="#dependency-diagram"><i class="icofont-laika link">&#xef71;</i></a>Dependency Diagram</h2>
+        <pre class="mermaid">graph TD
+    app[&quot;app&lt;br/&gt;&lt;small&gt;neon-app&lt;/small&gt;&quot;]
+    core[&quot;core&lt;br/&gt;&lt;small&gt;neon-core&lt;/small&gt;&quot;]
+    wave[&quot;wave&lt;br/&gt;&lt;small&gt;neon-wave&lt;/small&gt;&quot;]
+    task[&quot;task&lt;br/&gt;&lt;small&gt;neon-task&lt;/small&gt;&quot;]
+    cg[&quot;consolidation-group&lt;br/&gt;&lt;small&gt;neon-consolidation-group&lt;/small&gt;&quot;]
+    hu[&quot;handling-unit&lt;br/&gt;&lt;small&gt;neon-handling-unit&lt;/small&gt;&quot;]
+    to[&quot;transport-order&lt;br/&gt;&lt;small&gt;neon-transport-order&lt;/small&gt;&quot;]
+    ws[&quot;workstation&lt;br/&gt;&lt;small&gt;neon-workstation&lt;/small&gt;&quot;]
+    slot[&quot;slot&lt;br/&gt;&lt;small&gt;neon-slot&lt;/small&gt;&quot;]
+    inv[&quot;inventory&lt;br/&gt;&lt;small&gt;neon-inventory&lt;/small&gt;&quot;]
+    sp[&quot;stock-position&lt;br/&gt;&lt;small&gt;neon-stock-position&lt;/small&gt;&quot;]
+    hus[&quot;handling-unit-stock&lt;br/&gt;&lt;small&gt;neon-handling-unit-stock&lt;/small&gt;&quot;]
+    ibd[&quot;inbound-delivery&lt;br/&gt;&lt;small&gt;neon-inbound-delivery&lt;/small&gt;&quot;]
+    gr[&quot;goods-receipt&lt;br/&gt;&lt;small&gt;neon-goods-receipt&lt;/small&gt;&quot;]
+    cc[&quot;cycle-count&lt;br/&gt;&lt;small&gt;neon-cycle-count&lt;/small&gt;&quot;]
+    ct[&quot;count-task&lt;br/&gt;&lt;small&gt;neon-count-task&lt;/small&gt;&quot;]
+    common[&quot;common&lt;br/&gt;&lt;small&gt;neon-common&lt;/small&gt;&quot;]
+    order[&quot;order&lt;br/&gt;&lt;small&gt;neon-order&lt;/small&gt;&quot;]
+    location[&quot;location&lt;br/&gt;&lt;small&gt;neon-location&lt;/small&gt;&quot;]
+    sku[&quot;sku&lt;br/&gt;&lt;small&gt;neon-sku&lt;/small&gt;&quot;]
+    user[&quot;user&lt;br/&gt;&lt;small&gt;neon-user&lt;/small&gt;&quot;]
+    carrier[&quot;carrier&lt;br/&gt;&lt;small&gt;neon-carrier&lt;/small&gt;&quot;]
+
+    app --&gt; core
+    app --&gt; inv
+    app --&gt; order
+    app --&gt; sku
+    app --&gt; user
+
+    core --&gt; common
+    core --&gt; wave
+    core --&gt; task
+    core --&gt; cg
+    core --&gt; hu
+    core --&gt; to
+    core --&gt; ws
+    core --&gt; slot
+    core --&gt; inv
+    core --&gt; sp
+    core --&gt; hus
+    core --&gt; ibd
+    core --&gt; gr
+    core --&gt; cc
+    core --&gt; ct
+    core --&gt; location
+    core --&gt; carrier
+    core --&gt; user
+
+    wave --&gt; common
+    wave --&gt; order
+    wave --&gt; sku
+    task --&gt; common
+    cg --&gt; common
+    hu --&gt; common
+    to --&gt; common
+    ws --&gt; common
+    slot --&gt; common
+    inv --&gt; common
+    sp --&gt; common
+    hus --&gt; common
+    ibd --&gt; common
+    gr --&gt; common
+    cc --&gt; common
+    ct --&gt; common
+
+    order --&gt; common
+    location --&gt; common
+    sku --&gt; common
+    user --&gt; common
+    carrier --&gt; common</pre>
+        
+        <h2 id="module-reference" class="section"><a class="anchor-link left" href="#module-reference"><i class="icofont-laika link">&#xef71;</i></a>Module Reference</h2>
+        
+        <h3 id="reference-data-modules-no-pekko-actors" class="section"><a class="anchor-link left" href="#reference-data-modules-no-pekko-actors"><i class="icofont-laika link">&#xef71;</i></a>Reference Data Modules (no Pekko actors)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>sbt Name</th>
+              <th>Package</th>
+              <th>Direct Dependencies</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>common</code></td>
+              <td><code>neon-common</code></td>
+              <td><code>neon.common</code></td>
+              <td>(none)</td>
+            </tr>
+            <tr>
+              <td><code>order</code></td>
+              <td><code>neon-order</code></td>
+              <td><code>neon.order</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>location</code></td>
+              <td><code>neon-location</code></td>
+              <td><code>neon.location</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>sku</code></td>
+              <td><code>neon-sku</code></td>
+              <td><code>neon.sku</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>user</code></td>
+              <td><code>neon-user</code></td>
+              <td><code>neon.user</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>carrier</code></td>
+              <td><code>neon-carrier</code></td>
+              <td><code>neon.carrier</code></td>
+              <td>common</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h3 id="event-sourced-aggregate-modules-with-pekko-actors" class="section"><a class="anchor-link left" href="#event-sourced-aggregate-modules-with-pekko-actors"><i class="icofont-laika link">&#xef71;</i></a>Event-Sourced Aggregate Modules (with Pekko actors)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>sbt Name</th>
+              <th>Package</th>
+              <th>Direct Dependencies</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>wave</code></td>
+              <td><code>neon-wave</code></td>
+              <td><code>neon.wave</code></td>
+              <td>common, order, sku</td>
+            </tr>
+            <tr>
+              <td><code>task</code></td>
+              <td><code>neon-task</code></td>
+              <td><code>neon.task</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>consolidation-group</code></td>
+              <td><code>neon-consolidation-group</code></td>
+              <td><code>neon.consolidationgroup</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>handling-unit</code></td>
+              <td><code>neon-handling-unit</code></td>
+              <td><code>neon.handlingunit</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>transport-order</code></td>
+              <td><code>neon-transport-order</code></td>
+              <td><code>neon.transportorder</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>workstation</code></td>
+              <td><code>neon-workstation</code></td>
+              <td><code>neon.workstation</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>slot</code></td>
+              <td><code>neon-slot</code></td>
+              <td><code>neon.slot</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>inventory</code></td>
+              <td><code>neon-inventory</code></td>
+              <td><code>neon.inventory</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>stock-position</code></td>
+              <td><code>neon-stock-position</code></td>
+              <td><code>neon.stockposition</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>handling-unit-stock</code></td>
+              <td><code>neon-handling-unit-stock</code></td>
+              <td><code>neon.handlingunitstock</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>inbound-delivery</code></td>
+              <td><code>neon-inbound-delivery</code></td>
+              <td><code>neon.inbounddelivery</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>goods-receipt</code></td>
+              <td><code>neon-goods-receipt</code></td>
+              <td><code>neon.goodsreceipt</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>cycle-count</code></td>
+              <td><code>neon-cycle-count</code></td>
+              <td><code>neon.cyclecount</code></td>
+              <td>common</td>
+            </tr>
+            <tr>
+              <td><code>count-task</code></td>
+              <td><code>neon-count-task</code></td>
+              <td><code>neon.counttask</code></td>
+              <td>common</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h3 id="orchestration-and-application-modules" class="section"><a class="anchor-link left" href="#orchestration-and-application-modules"><i class="icofont-laika link">&#xef71;</i></a>Orchestration and Application Modules</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>sbt Name</th>
+              <th>Package</th>
+              <th>Direct Dependencies</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>core</code></td>
+              <td><code>neon-core</code></td>
+              <td><code>neon.core</code></td>
+              <td>common, all 14 event-sourced modules, location, carrier, user</td>
+            </tr>
+            <tr>
+              <td><code>app</code></td>
+              <td><code>neon-app</code></td>
+              <td><code>neon.app</code></td>
+              <td>core, inventory, order, sku, user</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h3 id="naming-convention" class="section"><a class="anchor-link left" href="#naming-convention"><i class="icofont-laika link">&#xef71;</i></a>Naming Convention</h3>
+        <p>Directory names use <strong>kebab-case</strong> (e.g., <code>consolidation-group</code>), while package names use <strong>concatenated lowercase</strong> (e.g., <code>neon.consolidationgroup</code>). The sbt project name always uses the <code>neon-</code> prefix with the directory name (e.g., <code>neon-consolidation-group</code>).</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,121 @@
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:55:4 
+[error] 55 |    StockPositionActor.Command,
+[error]    |    ^^^^^^^^^^^^^^^^^^
+[error]    |    Not found: StockPositionActor
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:57:4 
+[error] 57 |    StockPositionActor.State
+[error]    |    ^^^^^^^^^^^^^^^^^^
+[error]    |    Not found: StockPositionActor
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:60:4 
+[error] 60 |    StockPositionActor(stockPositionId.value.toString),
+[error]    |    ^^^^^^^^^^^^^^^^^^
+[error]    |    Not found: StockPositionActor
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:84:39 
+[error] 84 |        val state = result.stateOfType[StockPositionActor.ActiveState]
+[error]    |                                       ^^^^^^^^^^^^^^^^^^
+[error]    |                                       Not found: StockPositionActor
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:101:54 
+[error] 101 |        val result = esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                                      ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:110:54 
+[error] 110 |        val result = esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                                      ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:120:41 
+[error] 120 |        esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                         ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:123:54 
+[error] 123 |        val result = esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                                      ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:135:54 
+[error] 135 |        val result = esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                                      ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:147:41 
+[error] 147 |        esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                         ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:150:54 
+[error] 150 |        val result = esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                                      ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:163:54 
+[error] 163 |        val result = esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                                      ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:175:41 
+[error] 175 |        esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                         ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:178:54 
+[error] 178 |        val result = esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                                      ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:190:41 
+[error] 190 |        esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                         ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:193:54 
+[error] 193 |        val result = esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                                      ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:205:54 
+[error] 205 |        val result = esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                                      ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:217:54 
+[error] 217 |        val result = esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                                      ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:243:41 
+[error] 243 |        esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                         ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/stock-position/src/test/scala/eva/stockposition/StockPositionActorSuite.scala:246:41 
+[error] 246 |        esTestKit.runCommand[StatusReply[StockPositionActor.MutationResponse]](
+[error]     |                                         ^^^^^^^^^^^^^^^^^^
+[error]     |                                         Not found: StockPositionActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] 20 errors found

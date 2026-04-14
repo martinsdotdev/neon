@@ -1,0 +1,4 @@
+[debug] [handlingUnitStock-test] Classpath dependencies List(common)
+[debug] [handlingUnitStock-test] Dependencies from configurations List(handlingUnitStock)
+[debug] Bloop wrote the configuration of project 'handlingUnitStock-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/handlingUnitStock-test.json'
+[success] Generated .bloop/handlingUnitStock-test.json

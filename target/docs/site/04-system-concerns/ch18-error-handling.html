@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Error Handling Patterns</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="ch17-serialization.html">Serialization</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Error Handling Patterns</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#three-levels-of-error-handling">Three Levels of Error Handling</a></li>
+    <li class="level1 nav-node"><a href="#level-1-precondition-guards-with-require">Level 1: Precondition Guards with <code>require()</code></a></li>
+    <li class="level2 nav-leaf"><a href="#when-to-use-require-vs-either">When to Use <code>require()</code> vs. <code>Either</code></a></li>
+    <li class="level1 nav-node"><a href="#level-2-sealed-trait-adts-for-business-errors">Level 2: Sealed Trait ADTs for Business Errors</a></li>
+    <li class="level2 nav-leaf"><a href="#defining-error-types">Defining Error Types</a></li>
+    <li class="level2 nav-leaf"><a href="#the-error-adt-catalogue">The Error ADT Catalogue</a></li>
+    <li class="level1 nav-leaf"><a href="#either-composition-in-services">Either Composition in Services</a></li>
+    <li class="level1 nav-node"><a href="#level-3-http-status-code-mapping">Level 3: HTTP Status Code Mapping</a></li>
+    <li class="level2 nav-leaf"><a href="#why-no-error-bodies">Why No Error Bodies?</a></li>
+    <li class="level1 nav-leaf"><a href="#architecture-note-railway-oriented-programming">Architecture Note: Railway Oriented Programming</a></li>
+    <li class="level1 nav-leaf"><a href="#summary">Summary</a></li>
+    <li class="level1 nav-leaf"><a href="#what-comes-next">What Comes Next</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="error-handling-patterns" class="title">Error Handling Patterns</h1>
+        <p>Every system must deal with things going wrong. The question is not whether
+        errors will happen, but how we represent them, propagate them, and present
+        them to callers. In Neon WES, error handling is not an afterthought bolted
+        onto the domain model. It is a deliberate, three-level architecture that
+        matches different error types to different mechanisms.</p>
+        <p>In this chapter, we will walk through all three levels: <code>require()</code> for
+        programming errors, sealed trait ADTs for business errors, and HTTP status
+        code mapping for external callers. Along the way, we will see how these
+        levels compose into a coherent strategy that spans the entire system, from
+        aggregate creation to the JSON response body.</p>
+        
+        <h2 id="three-levels-of-error-handling" class="section"><a class="anchor-link left" href="#three-levels-of-error-handling"><i class="icofont-laika link">&#xef71;</i></a>Three Levels of Error Handling</h2>
+        <p>Before diving into the details, let&#39;s get the big picture. Neon WES has
+        three distinct categories of errors, and each one is handled by a different
+        mechanism:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>What Goes Wrong</th>
+              <th>Mechanism</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Programming error: a precondition was violated</td>
+              <td><code>require()</code> throws</td>
+              <td>Negative quantity, empty order list</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Business error: a valid request hits an invalid state</td>
+              <td>Sealed trait ADT + <code>Either</code></td>
+              <td>Task not found, wave already cancelled</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>External presentation: mapping business errors to HTTP</td>
+              <td>Status code selection</td>
+              <td>NotFound to 404, AlreadyTerminal to 409</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Level 1 catches bugs. Level 2 models expected failure modes. Level 3
+        translates those failure modes for HTTP clients. Let&#39;s examine each one.</p>
+        
+        <h2 id="level-1-precondition-guards-with-require" class="section"><a class="anchor-link left" href="#level-1-precondition-guards-with-require"><i class="icofont-laika link">&#xef71;</i></a>Level 1: Precondition Guards with <code>require()</code></h2>
+        <p>The first level of error handling is the simplest: <code>require()</code> calls on
+        aggregate constructors and critical operations. These guard preconditions
+        that should never be violated if the calling code is correct. A failing
+        <code>require()</code> means there is a bug in the system, not a problem with user
+        input.</p>
+        <p>Here is how the <code>Task.Planned</code> factory enforces its invariants:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">require</span><span>(</span><span class="identifier">requestedQuantity</span><span> &gt; </span><span class="number-literal">0</span><span>,
+  </span><span class="string-literal">s&quot;requestedQuantity must be positive, got </span><span class="substitution">$requestedQuantity</span><span class="string-literal">&quot;</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: task/src/main/scala/neon/task/Task.scala</em>&lt;/small&gt;</p>
+        <p>And <code>WavePlanner.plan</code> guards its own precondition:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">require</span><span>(</span><span class="identifier">orders</span><span>.</span><span class="identifier">nonEmpty</span><span>, </span><span class="string-literal">&quot;orders must not be empty&quot;</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/main/scala/neon/wave/WavePlanner.scala</em>&lt;/small&gt;</p>
+        <p>The <code>Inventory</code> aggregate is particularly thorough about its preconditions:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">require</span><span>(</span><span class="identifier">quantity</span><span> &gt; </span><span class="number-literal">0</span><span>, </span><span class="string-literal">s&quot;quantity must be positive, got </span><span class="substitution">$quantity</span><span class="string-literal">&quot;</span><span>)
+</span><span class="identifier">require</span><span>(</span><span class="identifier">quantity</span><span> &lt;= </span><span class="identifier">available</span><span>,
+  </span><span class="string-literal">s&quot;quantity </span><span class="substitution">$quantity</span><span class="string-literal"> exceeds available </span><span class="substitution">$available</span><span class="string-literal">&quot;</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: inventory/src/main/scala/neon/inventory/Inventory.scala</em>&lt;/small&gt;</p>
+        <p>Several patterns emerge across these examples:</p>
+        <p><strong>Guard at the boundary.</strong> The <code>require()</code> calls appear at the point of
+        construction or the entry to a transition method. By the time a <code>Task.Planned</code>
+        instance exists, we know its quantity is positive. By the time <code>WavePlanner</code>
+        starts creating tasks, we know the order list is non-empty.</p>
+        <p><strong>Include context in the message.</strong> Messages like <code>&quot;requestedQuantity must be
+positive, got $requestedQuantity&quot;</code> tell you both what the rule is and what
+        the actual bad value was. When this shows up in a log, you know immediately
+        what happened.</p>
+        <p><strong>Crash, don&#39;t recover.</strong> A <code>require()</code> failure throws an
+        <code>IllegalArgumentException</code>. In the domain layer, this is the correct response.
+        If someone passes a negative quantity to <code>Task.Planned</code>, the calling code is
+        wrong. The service layer should have validated this before calling the
+        aggregate. The exception bubbles up as a 500 Internal Server Error, which is
+        appropriate for a bug.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p><code>require()</code> is Scala&#39;s built-in precondition method. It takes a
+          boolean condition and a message string. When the condition is false, it
+          throws <code>IllegalArgumentException</code> with the given message. Think of it as
+          a lightweight assertion that stays active in production.</p>
+        </div>
+        
+        <h3 id="when-to-use-require-vs-either" class="section"><a class="anchor-link left" href="#when-to-use-require-vs-either"><i class="icofont-laika link">&#xef71;</i></a>When to Use <code>require()</code> vs. <code>Either</code></h3>
+        <p>The boundary between Level 1 and Level 2 is the boundary between programming
+        errors and business errors. Here is a simple rule of thumb:</p>
+        <ul>
+          <li>
+            <p><strong>If the caller could reasonably trigger this from valid user input, use
+            <code>Either</code>.</strong> A user asking to cancel an already-cancelled wave is not a
+            bug. It is a legitimate request that happens to be invalid given the
+            current state.</p>
+          </li>
+          <li>
+            <p><strong>If the caller should have prevented this, use <code>require()</code>.</strong> A negative
+            quantity should never reach the aggregate. The service layer or HTTP
+            layer should have caught it. If it arrives anyway, that is a programming
+            error.</p>
+          </li>
+        </ul>
+        <p>The Neon WES codebase follows this rule consistently. Preconditions that
+        protect aggregate invariants use <code>require()</code>. Business-level failures that
+        depend on runtime state use sealed trait ADTs and <code>Either</code>.</p>
+        
+        <h2 id="level-2-sealed-trait-adts-for-business-errors" class="section"><a class="anchor-link left" href="#level-2-sealed-trait-adts-for-business-errors"><i class="icofont-laika link">&#xef71;</i></a>Level 2: Sealed Trait ADTs for Business Errors</h2>
+        <p>The second level is where most of the error handling lives. When a service
+        operation can fail for business reasons, we define a sealed trait that
+        enumerates every possible failure mode. Services return
+        <code>Either[Error, Result]</code>, forcing callers to handle both paths.</p>
+        
+        <h3 id="defining-error-types" class="section"><a class="anchor-link left" href="#defining-error-types"><i class="icofont-laika link">&#xef71;</i></a>Defining Error Types</h3>
+        <p>Let&#39;s look at <code>TaskCompletionError</code>, the error type for the task completion
+        service:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">TaskCompletionError</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">TaskCompletionError</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">TaskNotFound</span><span>(</span><span class="identifier">taskId</span><span>: </span><span class="type-name">TaskId</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">TaskCompletionError</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">TaskNotAssigned</span><span>(</span><span class="identifier">taskId</span><span>: </span><span class="type-name">TaskId</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">TaskCompletionError</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InvalidActualQuantity</span><span>(</span><span class="identifier">taskId</span><span>: </span><span class="type-name">TaskId</span><span>, </span><span class="identifier">actualQuantity</span><span>: </span><span class="type-name">Int</span><span>)
+      </span><span class="keyword">extends</span><span> </span><span class="type-name">TaskCompletionError</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">VerificationRequired</span><span>(</span><span class="identifier">taskId</span><span>: </span><span class="type-name">TaskId</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">TaskCompletionError</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskCompletionService.scala</em>&lt;/small&gt;</p>
+        <p>Four things to notice:</p>
+        <ol class="arabic">
+          <li>
+            <p><strong>The trait is sealed.</strong> No one outside this file can add new error cases.
+            The compiler knows every possible variant, which enables exhaustive pattern
+            matching.</p>
+          </li>
+          <li>
+            <p><strong>Each case class carries context.</strong> <code>TaskNotFound</code> carries the <code>taskId</code>
+            that was not found. <code>InvalidActualQuantity</code> carries both the <code>taskId</code> and
+            the bad <code>actualQuantity</code>. When you log or display these errors, you have
+            everything you need to understand what happened.</p>
+          </li>
+          <li>
+            <p><strong>The names are precise.</strong> <code>TaskNotAssigned</code> does not mean the task does
+            not exist (that is <code>TaskNotFound</code>). It means the task exists but is not in
+            the <code>Assigned</code> state. Each name describes exactly one failure mode.</p>
+          </li>
+          <li>
+            <p><strong>No inheritance hierarchy.</strong> The cases are flat siblings under one sealed
+            trait. There is no <code>ValidationError</code> supertype or <code>NotFoundError</code> base
+            class. Each error ADT is specific to its service.</p>
+          </li>
+        </ol>
+        <p>Here is the corresponding error type for wave cancellation:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">WaveCancellationError</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">WaveCancellationError</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">WaveNotFound</span><span>(</span><span class="identifier">waveId</span><span>: </span><span class="type-name">WaveId</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">WaveCancellationError</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">WaveAlreadyTerminal</span><span>(</span><span class="identifier">waveId</span><span>: </span><span class="type-name">WaveId</span><span>)
+      </span><span class="keyword">extends</span><span> </span><span class="type-name">WaveCancellationError</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/WaveCancellationService.scala</em>&lt;/small&gt;</p>
+        <p>Simpler. Only two things can go wrong when cancelling a wave: it does not
+        exist, or it is already in a terminal state (completed or cancelled). The
+        error type has exactly two cases.</p>
+        
+        <h3 id="the-error-adt-catalogue" class="section"><a class="anchor-link left" href="#the-error-adt-catalogue"><i class="icofont-laika link">&#xef71;</i></a>The Error ADT Catalogue</h3>
+        <p>Neon WES has over a dozen error ADTs, one per service operation. Here is a
+        representative sample:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Error ADT</th>
+              <th>Service</th>
+              <th>Cases</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>TaskCompletionError</code></td>
+              <td><code>TaskCompletionService</code></td>
+              <td>NotFound, NotAssigned, InvalidQuantity, VerificationRequired</td>
+            </tr>
+            <tr>
+              <td><code>TaskLifecycleError</code></td>
+              <td><code>AsyncTaskLifecycleService</code></td>
+              <td>NotFound, InWrongState, AlreadyTerminal, UserNotFound, UserNotActive</td>
+            </tr>
+            <tr>
+              <td><code>WaveCancellationError</code></td>
+              <td><code>WaveCancellationService</code></td>
+              <td>NotFound, AlreadyTerminal</td>
+            </tr>
+            <tr>
+              <td><code>WorkstationAssignmentError</code></td>
+              <td><code>WorkstationAssignmentService</code></td>
+              <td>NotFound, InWrongState</td>
+            </tr>
+            <tr>
+              <td><code>AuthError</code></td>
+              <td><code>AuthenticationService</code></td>
+              <td>InvalidCredentials, AccountInactive</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>The pattern repeats across transport orders, consolidation groups, slots,
+        inventory, stock positions, inbound deliveries, and cycle counts. Each ADT
+        has exactly the cases that its specific service can produce, no more, no
+        less.</p>
+        
+        <h2 id="either-composition-in-services" class="section"><a class="anchor-link left" href="#either-composition-in-services"><i class="icofont-laika link">&#xef71;</i></a>Either Composition in Services</h2>
+        <p>Now let&#39;s see how services use <code>Either</code> to compose operations that can fail
+        at multiple points. Here is the <code>TaskCompletionService.complete</code> method:</p>
+        <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">complete</span><span>(
+    </span><span class="identifier">taskId</span><span>: </span><span class="type-name">TaskId</span><span>,
+    </span><span class="identifier">actualQuantity</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">verified</span><span>: </span><span class="type-name">Boolean</span><span>,
+    </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+): </span><span class="type-name">Either</span><span>[</span><span class="type-name">TaskCompletionError</span><span>, </span><span class="type-name">TaskCompletionResult</span><span>] =
+  </span><span class="keyword">if</span><span> </span><span class="identifier">actualQuantity</span><span> &lt; </span><span class="number-literal">0</span><span> </span><span class="identifier">then</span><span>
+    </span><span class="keyword">return</span><span> </span><span class="type-name">Left</span><span>(</span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">InvalidActualQuantity</span><span>(
+      </span><span class="identifier">taskId</span><span>, </span><span class="identifier">actualQuantity</span><span>))
+
+  </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">findById</span><span>(</span><span class="identifier">taskId</span><span>) </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt;
+      </span><span class="type-name">Left</span><span>(</span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">TaskNotFound</span><span>(</span><span class="identifier">taskId</span><span>))
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">assigned</span><span>: </span><span class="type-name">Task</span><span>.</span><span class="type-name">Assigned</span><span>) =&gt;
+      </span><span class="keyword">if</span><span> </span><span class="identifier">verificationProfile</span><span>.</span><span class="identifier">requiresVerification</span><span>(
+        </span><span class="identifier">assigned</span><span>.</span><span class="identifier">packagingLevel</span><span>) &amp;&amp; !</span><span class="identifier">verified</span><span>
+      </span><span class="identifier">then</span><span> </span><span class="type-name">Left</span><span>(</span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">VerificationRequired</span><span>(</span><span class="identifier">taskId</span><span>))
+      </span><span class="keyword">else</span><span> </span><span class="identifier">completeAssigned</span><span>(</span><span class="identifier">assigned</span><span>, </span><span class="identifier">actualQuantity</span><span>, </span><span class="identifier">at</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>) =&gt;
+      </span><span class="type-name">Left</span><span>(</span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">TaskNotAssigned</span><span>(</span><span class="identifier">taskId</span><span>))</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskCompletionService.scala</em>&lt;/small&gt;</p>
+        <p>Let&#39;s trace the logic step by step:</p>
+        <ol class="arabic">
+          <li>
+            <p><strong>Validate input.</strong> If <code>actualQuantity</code> is negative, return
+            <code>Left(InvalidActualQuantity)</code> immediately. This is a borderline case
+            between Level 1 and Level 2; the service catches it as a business error
+            rather than letting the aggregate&#39;s <code>require()</code> throw.</p>
+          </li>
+          <li>
+            <p><strong>Look up the task.</strong> If <code>findById</code> returns <code>None</code>, return
+            <code>Left(TaskNotFound)</code>.</p>
+          </li>
+          <li>
+            <p><strong>Check the state.</strong> If the task exists but is not <code>Assigned</code>, return
+            <code>Left(TaskNotAssigned)</code>. Here we use pattern matching on the typestate:
+            only <code>Task.Assigned</code> can be completed.</p>
+          </li>
+          <li>
+            <p><strong>Check verification.</strong> If the packaging level requires verification and
+            the <code>verified</code> flag is false, return <code>Left(VerificationRequired)</code>.</p>
+          </li>
+          <li>
+            <p><strong>Proceed.</strong> Only when all four checks pass do we call
+            <code>completeAssigned</code>, which runs the full cascade (shortpick check, routing,
+            wave completion, picking completion) and returns <code>Right(result)</code>.</p>
+          </li>
+        </ol>
+        <p>And here is <code>WaveCancellationService.cancel</code>, which follows the same
+        pattern:</p>
+        <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">cancel</span><span>(
+    </span><span class="identifier">waveId</span><span>: </span><span class="type-name">WaveId</span><span>,
+    </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+): </span><span class="type-name">Either</span><span>[</span><span class="type-name">WaveCancellationError</span><span>, </span><span class="type-name">WaveCancellationResult</span><span>] =
+  </span><span class="identifier">waveRepository</span><span>.</span><span class="identifier">findById</span><span>(</span><span class="identifier">waveId</span><span>) </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt;
+      </span><span class="type-name">Left</span><span>(</span><span class="type-name">WaveCancellationError</span><span>.</span><span class="type-name">WaveNotFound</span><span>(</span><span class="identifier">waveId</span><span>))
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">planned</span><span>: </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Planned</span><span>) =&gt;
+      </span><span class="identifier">cancelPlanned</span><span>(</span><span class="identifier">planned</span><span>, </span><span class="identifier">at</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">released</span><span>: </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Released</span><span>) =&gt;
+      </span><span class="identifier">cancelReleased</span><span>(</span><span class="identifier">released</span><span>, </span><span class="identifier">at</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>: </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Completed</span><span>) =&gt;
+      </span><span class="type-name">Left</span><span>(</span><span class="type-name">WaveCancellationError</span><span>.</span><span class="type-name">WaveAlreadyTerminal</span><span>(</span><span class="identifier">waveId</span><span>))
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>: </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Cancelled</span><span>) =&gt;
+      </span><span class="type-name">Left</span><span>(</span><span class="type-name">WaveCancellationError</span><span>.</span><span class="type-name">WaveAlreadyTerminal</span><span>(</span><span class="identifier">waveId</span><span>))</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/WaveCancellationService.scala</em>&lt;/small&gt;</p>
+        <p>The structure is identical. Look up the entity, match on its state, return
+        <code>Left</code> for invalid states, proceed for valid ones. Both terminal states
+        (<code>Completed</code> and <code>Cancelled</code>) produce the same <code>WaveAlreadyTerminal</code> error.</p>
+        <p>Notice how the typestate pattern from Chapter 4 and the error ADT pattern
+        reinforce each other. The <code>match</code> on <code>Some(planned: Wave.Planned)</code> is a
+        typestate check. The <code>Left(WaveAlreadyTerminal)</code> is an error ADT case. The
+        two mechanisms work together: typestates tell us <em>which</em> state the entity is
+        in, and the error ADT tells the <em>caller</em> why the operation was rejected.</p>
+        
+        <h2 id="level-3-http-status-code-mapping" class="section"><a class="anchor-link left" href="#level-3-http-status-code-mapping"><i class="icofont-laika link">&#xef71;</i></a>Level 3: HTTP Status Code Mapping</h2>
+        <p>The third level bridges domain errors to the outside world. HTTP routes
+        pattern-match on the <code>Either</code> result from services and select the
+        appropriate status code. Here is how <code>TaskRoutes</code> maps
+        <code>TaskCompletionError</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="type-name">Left</span><span>(</span><span class="identifier">error</span><span>) =&gt;
+  </span><span class="identifier">error</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">TaskNotFound</span><span> =&gt;
+      </span><span class="identifier">complete</span><span>(</span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">NotFound</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">TaskNotAssigned</span><span> =&gt;
+      </span><span class="identifier">complete</span><span>(</span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">Conflict</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">InvalidActualQuantity</span><span> =&gt;
+      </span><span class="identifier">complete</span><span>(</span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">UnprocessableEntity</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">VerificationRequired</span><span> =&gt;
+      </span><span class="identifier">complete</span><span>(</span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">PreconditionRequired</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/scala/neon/app/http/TaskRoutes.scala</em>&lt;/small&gt;</p>
+        <p>And <code>WaveRoutes</code> maps <code>WaveCancellationError</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="type-name">Left</span><span>(</span><span class="identifier">_</span><span>: </span><span class="type-name">WaveCancellationError</span><span>.</span><span class="type-name">WaveNotFound</span><span>) =&gt;
+  </span><span class="identifier">complete</span><span>(</span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">NotFound</span><span>)
+</span><span class="keyword">case</span><span> </span><span class="type-name">Left</span><span>(</span><span class="identifier">_</span><span>: </span><span class="type-name">WaveCancellationError</span><span>.</span><span class="type-name">WaveAlreadyTerminal</span><span>) =&gt;
+  </span><span class="identifier">complete</span><span>(</span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">Conflict</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/scala/neon/app/http/WaveRoutes.scala</em>&lt;/small&gt;</p>
+        <p>The mapping convention is consistent across every route in the system:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Domain Error Pattern</th>
+              <th>HTTP Status</th>
+              <th>Semantics</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>XxxNotFound</code></td>
+              <td>404 Not Found</td>
+              <td>The entity does not exist</td>
+            </tr>
+            <tr>
+              <td><code>XxxAlreadyTerminal</code>, <code>XxxInWrongState</code></td>
+              <td>409 Conflict</td>
+              <td>State machine violation</td>
+            </tr>
+            <tr>
+              <td><code>InvalidXxx</code>, validation errors</td>
+              <td>422 Unprocessable Entity</td>
+              <td>Structurally valid request, semantically invalid data</td>
+            </tr>
+            <tr>
+              <td><code>VerificationRequired</code></td>
+              <td>428 Precondition Required</td>
+              <td>A business precondition was not met</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>The route layer also factors out reusable error mappers for services that
+        have many error cases. Here is <code>TaskRoutes</code>&#39; lifecycle error mapper:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">mapLifecycleError</span><span>(</span><span class="identifier">error</span><span>: </span><span class="type-name">TaskLifecycleError</span><span>): </span><span class="type-name">Route</span><span> =
+  </span><span class="identifier">error</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">TaskLifecycleError</span><span>.</span><span class="type-name">TaskNotFound</span><span> =&gt;
+      </span><span class="identifier">complete</span><span>(</span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">NotFound</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">TaskLifecycleError</span><span>.</span><span class="type-name">TaskInWrongState</span><span> =&gt;
+      </span><span class="identifier">complete</span><span>(</span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">Conflict</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">TaskLifecycleError</span><span>.</span><span class="type-name">TaskAlreadyTerminal</span><span> =&gt;
+      </span><span class="identifier">complete</span><span>(</span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">Conflict</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">TaskLifecycleError</span><span>.</span><span class="type-name">UserNotFound</span><span> =&gt;
+      </span><span class="identifier">complete</span><span>(</span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">UnprocessableEntity</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">TaskLifecycleError</span><span>.</span><span class="type-name">UserNotActive</span><span> =&gt;
+      </span><span class="identifier">complete</span><span>(</span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">UnprocessableEntity</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/scala/neon/app/http/TaskRoutes.scala</em>&lt;/small&gt;</p>
+        <p>Because the error traits are sealed, the compiler verifies exhaustive
+        matching. If someone adds a new error case to <code>TaskLifecycleError</code>, every
+        route that matches on it will produce a warning until the new case is
+        handled. This is the sealed trait&#39;s killer feature: no error can silently
+        slip through.</p>
+        
+        <h3 id="why-no-error-bodies" class="section"><a class="anchor-link left" href="#why-no-error-bodies"><i class="icofont-laika link">&#xef71;</i></a>Why No Error Bodies?</h3>
+        <p>You may have noticed that the routes return status codes without JSON error
+        bodies. In a production system, you might add structured error responses:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>{
+  </span><span class="attribute-name">&quot;error&quot;</span><span>: </span><span class="string-literal">&quot;TaskNotAssigned&quot;</span><span>,
+  </span><span class="attribute-name">&quot;taskId&quot;</span><span>: </span><span class="string-literal">&quot;0195abc...&quot;</span><span>,
+  </span><span class="attribute-name">&quot;message&quot;</span><span>: </span><span class="string-literal">&quot;Task is in Planned state, not Assigned&quot;</span><span>
+}</span></code></pre>
+        <p>The important point is that the domain error ADT would be the single source
+        of truth for generating these bodies. The information is already in the
+        error case class fields (<code>taskId</code>, <code>actualQuantity</code>). Adding JSON error
+        responses is a presentation concern that does not require changing the
+        domain or service layers.</p>
+        
+        <h2 id="architecture-note-railway-oriented-programming" class="section"><a class="anchor-link left" href="#architecture-note-railway-oriented-programming"><i class="icofont-laika link">&#xef71;</i></a>Architecture Note: Railway Oriented Programming</h2>
+        <p>The error handling strategy in Neon WES follows a pattern that Scott Wlaschin
+        calls <em>Railway Oriented Programming</em> (ROP). The metaphor is a two-track
+        railway:</p>
+        <pre><code>     Right track (success)
+  =============================&gt;
+  input --&gt; step1 --&gt; step2 --&gt; step3 --&gt; output
+  =============================&gt;
+     Left track (failure)</code></pre>
+        <p>Every service operation is a function from input to <code>Either[Error, Result]</code>.
+        Think of <code>Either</code> as a two-track railway. The <code>Right</code> track carries the
+        success value forward through each step. The <code>Left</code> track carries the error
+        value, bypassing all remaining steps.</p>
+        <p>Each step in a service (repository lookup, policy call, state transition) is
+        what Wlaschin calls a &quot;switch function&quot;: it takes a normal input and
+        produces a two-track output. The <code>flatMap</code> method (or <code>for</code>-comprehension)
+        chains these switches together, automatically routing <code>Left</code> values around
+        all subsequent processing.</p>
+        <p>Consider the task completion flow:</p>
+        <ol class="arabic">
+          <li><strong>Validate input</strong> (switch): quantity &gt;= 0, or Left(InvalidActualQuantity)</li>
+          <li><strong>Find task</strong> (switch): found, or Left(TaskNotFound)</li>
+          <li><strong>Check state</strong> (switch): is Assigned, or Left(TaskNotAssigned)</li>
+          <li><strong>Check verification</strong> (switch): verified if required, or Left(VerificationRequired)</li>
+          <li><strong>Execute cascade</strong> (switch): complete, shortpick, route, wave check</li>
+        </ol>
+        <p>If any switch sends the value onto the Left track, steps 2 through 5 are
+        bypassed. The <code>Left(TaskNotFound)</code> from step 2 propagates directly to the
+        caller without executing steps 3, 4, or 5.</p>
+        <p>This is not just a metaphor. It is a structural property of the code. The
+        <code>Either</code> type encodes the two-track railway at the type level. The compiler
+        ensures that callers handle both tracks. And the sealed trait ensures that
+        every possible Left value is accounted for.</p>
+        <p>The three levels we discussed map onto the railway model:</p>
+        <ul>
+          <li><strong>Level 1 (<code>require</code>)</strong>: a derailment. The train crashes. This is a bug,
+          not a track switch.</li>
+          <li><strong>Level 2 (sealed trait + <code>Either</code>)</strong>: the railway itself. Every switch
+          function can route to the success track or the failure track.</li>
+          <li><strong>Level 3 (HTTP mapping)</strong>: the station at the end of the line, where we
+          translate the track the train arrived on into an HTTP response.</li>
+        </ul>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Wlaschin&#39;s &quot;Railway Oriented Programming&quot; talk and blog post
+          are excellent resources for understanding this pattern in depth. His
+          examples use F#, but the concepts map directly to Scala&#39;s <code>Either</code> and
+          <code>flatMap</code>. See the Further Reading section in Chapter 26 for the link.</p>
+        </div>
+        
+        <h2 id="summary" class="section"><a class="anchor-link left" href="#summary"><i class="icofont-laika link">&#xef71;</i></a>Summary</h2>
+        <ul>
+          <li><strong><code>require()</code></strong> guards domain invariants that should never be violated.
+          A failing <code>require()</code> means a bug in the calling code, not a user error.</li>
+          <li><strong>Sealed trait ADTs</strong> enumerate every business failure mode for each
+          service. Services return <code>Either[Error, Result]</code>, making errors visible
+          in the type signature and forcing callers to handle them.</li>
+          <li><strong>HTTP status code mapping</strong> translates domain errors to standard HTTP
+          status codes. The sealed trait&#39;s exhaustive matching guarantee ensures
+          every error case has a corresponding status code.</li>
+          <li><strong>Railway Oriented Programming</strong> provides the conceptual framework:
+          <code>Either</code> is a two-track railway, <code>flatMap</code> chains switch functions, and
+          <code>Left</code> values bypass all remaining processing.</li>
+          <li><strong>The three levels compose cleanly.</strong> <code>require()</code> catches bugs at the
+          aggregate boundary. <code>Either</code> propagates business errors through the
+          service layer. HTTP mapping presents those errors to external callers.
+          Each level handles its own concern without leaking into the others.</li>
+        </ul>
+        
+        <h2 id="what-comes-next" class="section"><a class="anchor-link left" href="#what-comes-next"><i class="icofont-laika link">&#xef71;</i></a>What Comes Next</h2>
+        <p>In the next chapter, we will look at how Neon WES makes the system
+        observable. We will explore structured logging with wide events, MDC
+        propagation across async boundaries, and the three-layer instrumentation
+        strategy that lets us trace a single HTTP request from the route handler
+        through service calls and into actor message processing.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

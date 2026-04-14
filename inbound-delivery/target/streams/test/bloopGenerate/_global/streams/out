@@ -1,0 +1,4 @@
+[debug] [inboundDelivery-test] Classpath dependencies List(common)
+[debug] [inboundDelivery-test] Dependencies from configurations List(inboundDelivery)
+[debug] Bloop wrote the configuration of project 'inboundDelivery-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/inboundDelivery-test.json'
+[success] Generated .bloop/inboundDelivery-test.json

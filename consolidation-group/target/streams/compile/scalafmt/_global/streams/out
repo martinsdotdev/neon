@@ -1,0 +1,11 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroupActor.scala, /home/martins/Projects/neon/consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroupEvent.scala, /home/martins/Projects/neon/consolidation-group/src/main/scala/neon/consolidationgroup/AsyncConsolidationGroupRepository.scala, /home/martins/Projects/neon/consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroupRepository.scala, /home/martins/Projects/neon/consolidation-group/src/main/scala/neon/consolidationgroup/PekkoConsolidationGroupRepository.scala, /home/martins/Projects/neon/consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroup.scala
+[debug] 	Modified: /home/martins/Projects/neon/consolidation-group/src/main/scala/neon/consolidationgroup/PekkoConsolidationGroupRepository.scala
+[debug] 	Unmodified: /home/martins/Projects/neon/consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroupActor.scala, /home/martins/Projects/neon/consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroupEvent.scala, /home/martins/Projects/neon/consolidation-group/src/main/scala/neon/consolidationgroup/AsyncConsolidationGroupRepository.scala, /home/martins/Projects/neon/consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroupRepository.scala, /home/martins/Projects/neon/consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroup.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[info] scalafmt: Formatting 1 Scala sources (/home/martins/Projects/neon/consolidation-group)...
+[debug] scalafmt: Unchanged 1 Scala sources

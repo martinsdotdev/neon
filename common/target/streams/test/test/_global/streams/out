@@ -1,0 +1,45 @@
+[debug] Running TaskDef(neon.common.PermissionSuite, org.scalatest.tools.Framework$$anon$1@51a6af19, false, [SuiteSelector])
+[debug] Running TaskDef(neon.common.UomHierarchySuite, org.scalatest.tools.Framework$$anon$1@51a6af19, false, [SuiteSelector])
+[debug] Running TaskDef(neon.common.LotSuite, org.scalatest.tools.Framework$$anon$1@51a6af19, false, [SuiteSelector])
+[info] UomHierarchySuite:
+[info] UomHierarchy
+[info] - maps packaging levels to eaches-per-unit
+[info] - supports direct access and membership check
+[info] - distinguishes empty from non-empty
+[info] - rejects Each — it is the implicit base unit
+[info] - rejects zero or negative eaches-per-unit
+[info] LotSuite:
+[info] Lot
+[info] - wraps a non-empty string and exposes it via .value
+[info] - rejects empty string to prevent silent data corruption
+[info] PermissionSuite:
+[info] Permission
+[info] - round-trips every permission through fromKey
+[info] - returns None for unknown key
+[debug] Running TaskDef(neon.common.LotAttributesSuite, org.scalatest.tools.Framework$$anon$1@51a6af19, false, [SuiteSelector])
+[info] LotAttributesSuite:
+[info] LotAttributes
+[info]   creating
+[info]   - accepts all-None fields for untracked SKUs
+[info]   - accepts lot with expiration date for FEFO-managed SKUs
+[info]   - accepts full GS1 AI set (lot, expiry, production date, serial number)
+[info]   remaining shelf life
+[info]   - computes remaining days from expiration date and reference date
+[info]   - returns zero when expiration date equals reference date
+[info]   - returns zero for expired stock
+[info]   - returns Int.MaxValue when no expiration date is set
+[info]   expiration check
+[info]   - reports not expired when expiration date is in the future
+[info]   - reports expired when expiration date is in the past
+[info]   - reports expired when expiration date equals reference date
+[info]   - reports not expired when no expiration date is set
+[info] Run completed in 6 seconds, 612 milliseconds.
+[info] Total number of tests run: 20
+[info] Suites: completed 4, aborted 0
+[info] Tests: succeeded 20, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.common.UomHierarchySuite
+[debug] 	neon.common.PermissionSuite
+[debug] 	neon.common.LotSuite
+[debug] 	neon.common.LotAttributesSuite

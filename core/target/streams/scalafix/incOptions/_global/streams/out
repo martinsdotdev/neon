@@ -1,0 +1,5 @@
+[debug] Created transactional ClassFileManager with tempDir = /home/martins/Projects/neon/core/target/scala-3.8.2/scalafix-classes.bak
+[debug] About to delete class files:
+[debug] We backup class files:
+[debug] Created transactional ClassFileManager with tempDir = /home/martins/Projects/neon/core/target/scala-3.8.2/scalafix-classes.bak
+[debug] Removing the temporary directory used for backing up class files: /home/martins/Projects/neon/core/target/scala-3.8.2/scalafix-classes.bak

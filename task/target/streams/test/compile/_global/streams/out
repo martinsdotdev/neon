@@ -1,0 +1,8 @@
+[error] -- [E007] Type Mismatch Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/task/src/test/scala/eva/task/TaskSuite.scala:58:6 
+[error] 58 |      sourceLocationId,
+[error]    |      ^^^^^^^^^^^^^^^^
+[error]    |     Found:    (TaskSuite.this.sourceLocationId : eva.common.LocationId)
+[error]    |     Required: Option[eva.common.StockPositionId]
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] one error found

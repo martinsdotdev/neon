@@ -1,0 +1,115 @@
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:40:4 
+[error] 40 |    InboundDeliveryActor.Command,
+[error]    |    ^^^^^^^^^^^^^^^^^^^^
+[error]    |    Not found: InboundDeliveryActor
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:42:4 
+[error] 42 |    InboundDeliveryActor.State
+[error]    |    ^^^^^^^^^^^^^^^^^^^^
+[error]    |    Not found: InboundDeliveryActor
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:45:4 
+[error] 45 |    InboundDeliveryActor(deliveryId.value.toString),
+[error]    |    ^^^^^^^^^^^^^^^^^^^^
+[error]    |    Not found: InboundDeliveryActor
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:69:37 
+[error] 69 |    esTestKit.runCommand[StatusReply[InboundDeliveryActor.StartReceivingResponse]](
+[error]    |                                     ^^^^^^^^^^^^^^^^^^^^
+[error]    |                                     Not found: InboundDeliveryActor
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:92:25 
+[error] 92 |            .stateOfType[InboundDeliveryActor.ActiveState]
+[error]    |                         ^^^^^^^^^^^^^^^^^^^^
+[error]    |                         Not found: InboundDeliveryActor
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:116:43 
+[error] 116 |          esTestKit.runCommand[StatusReply[InboundDeliveryActor.StartReceivingResponse]](
+[error]     |                                           ^^^^^^^^^^^^^^^^^^^^
+[error]     |                                       Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:122:25 
+[error] 122 |            .stateOfType[InboundDeliveryActor.ActiveState]
+[error]     |                         ^^^^^^^^^^^^^^^^^^^^
+[error]     |                         Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:129:43 
+[error] 129 |          esTestKit.runCommand[StatusReply[InboundDeliveryActor.StartReceivingResponse]](
+[error]     |                                           ^^^^^^^^^^^^^^^^^^^^
+[error]     |                                       Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:140:43 
+[error] 140 |          esTestKit.runCommand[StatusReply[InboundDeliveryActor.ReceiveResponse]](
+[error]     |                                           ^^^^^^^^^^^^^^^^^^^^
+[error]     |                                       Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:150:43 
+[error] 150 |          esTestKit.runCommand[StatusReply[InboundDeliveryActor.ReceiveResponse]](
+[error]     |                                           ^^^^^^^^^^^^^^^^^^^^
+[error]     |                                       Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:160:41 
+[error] 160 |        esTestKit.runCommand[StatusReply[InboundDeliveryActor.ReceiveResponse]](
+[error]     |                                         ^^^^^^^^^^^^^^^^^^^^
+[error]     |                                       Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:164:43 
+[error] 164 |          esTestKit.runCommand[StatusReply[InboundDeliveryActor.CompleteResponse]](
+[error]     |                                           ^^^^^^^^^^^^^^^^^^^^
+[error]     |                                       Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:170:25 
+[error] 170 |            .stateOfType[InboundDeliveryActor.ActiveState]
+[error]     |                         ^^^^^^^^^^^^^^^^^^^^
+[error]     |                         Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:179:41 
+[error] 179 |        esTestKit.runCommand[StatusReply[InboundDeliveryActor.ReceiveResponse]](
+[error]     |                                         ^^^^^^^^^^^^^^^^^^^^
+[error]     |                                       Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:183:43 
+[error] 183 |          esTestKit.runCommand[StatusReply[InboundDeliveryActor.CloseResponse]](
+[error]     |                                           ^^^^^^^^^^^^^^^^^^^^
+[error]     |                                       Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:188:23 
+[error] 188 |          .stateOfType[InboundDeliveryActor.ActiveState]
+[error]     |                       ^^^^^^^^^^^^^^^^^^^^
+[error]     |                       Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:198:43 
+[error] 198 |          esTestKit.runCommand[StatusReply[InboundDeliveryActor.CancelResponse]](
+[error]     |                                           ^^^^^^^^^^^^^^^^^^^^
+[error]     |                                       Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:204:25 
+[error] 204 |            .stateOfType[InboundDeliveryActor.ActiveState]
+[error]     |                         ^^^^^^^^^^^^^^^^^^^^
+[error]     |                         Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inbound-delivery/src/test/scala/eva/inbounddelivery/InboundDeliveryActorSuite.scala:213:43 
+[error] 213 |          esTestKit.runCommand[StatusReply[InboundDeliveryActor.CancelResponse]](
+[error]     |                                           ^^^^^^^^^^^^^^^^^^^^
+[error]     |                                       Not found: InboundDeliveryActor
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] 19 errors found

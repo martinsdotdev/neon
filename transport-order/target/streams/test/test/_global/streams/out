@@ -1,0 +1,47 @@
+[debug] Running TaskDef(neon.transportorder.TransportOrderActorSuite, org.scalatest.tools.Framework$$anon$1@7c22a290, false, [SuiteSelector])
+[debug] Running TaskDef(neon.transportorder.PekkoTransportOrderRepositorySuite, org.scalatest.tools.Framework$$anon$1@7c22a290, false, [SuiteSelector])
+[debug] Running TaskDef(neon.transportorder.TransportOrderSuite, org.scalatest.tools.Framework$$anon$1@7c22a290, false, [SuiteSelector])
+[info] TransportOrderSuite:
+[info] TransportOrder
+[info]   creating
+[info]   - produces a Pending state and a TransportOrderCreated event
+[info]   - event carries all fields for operator notification
+[info]   confirming
+[info]   - records that the operator delivered the container
+[info]   - carries handling unit and destination for audit
+[info]   - emits an event for downstream routing policies
+[info]   cancelling
+[info]   - preserves handling unit and destination for audit
+[info]   - cancelled event carries transport order ID and destination for audit
+[info] TransportOrderActorSuite:
+[info] TransportOrderActor
+[info]   full lifecycle Pending -> Confirmed
+[info]   - transitions through confirm
+[info]   full lifecycle Pending -> Cancelled
+[info]   - transitions through cancel
+[info]   invalid transitions
+[info]   - rejects Confirm on Cancelled order
+[info]   - rejects Cancel on Confirmed order
+[info]   - rejects Confirm on empty state
+[info]   GetState
+[info]   - returns None on empty state
+[info]   - returns Some after creation
+[info]   event replay
+[info]   - recovers Pending state from journal
+[info]   - recovers Confirmed state from journal
+[info] PekkoTransportOrderRepositorySuite:
+[info] PekkoTransportOrderRepository
+[info]   save and findById
+[info]   - persists a Pending transport order and retrieves it
+[info]   - returns None for a non-existent transport order
+[info]   saveAll
+[info]   - persists multiple transport orders
+[info] Run completed in 7 seconds, 11 milliseconds.
+[info] Total number of tests run: 19
+[info] Suites: completed 3, aborted 0
+[info] Tests: succeeded 19, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.transportorder.TransportOrderSuite
+[debug] 	neon.transportorder.TransportOrderActorSuite
+[debug] 	neon.transportorder.PekkoTransportOrderRepositorySuite

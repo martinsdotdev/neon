@@ -1,0 +1,68 @@
+[debug] Running TaskDef(neon.workstation.WorkstationSuite, org.scalatest.tools.Framework$$anon$1@9fbc112, false, [SuiteSelector])
+[debug] Running TaskDef(neon.workstation.PekkoWorkstationRepositorySuite, org.scalatest.tools.Framework$$anon$1@9fbc112, false, [SuiteSelector])
+[info] WorkstationSuite:
+[info] Workstation
+[info]   enabling
+[info]   - makes the workstation available for assignment
+[info]   - defaults to Picking mode
+[info]   - emits an event for capacity tracking
+[info]   - enabled event carries mode
+[info]   switching mode
+[info]   - transitions to the new mode
+[info]   - emits a ModeSwitched event with previous and new mode
+[info]   - preserves workstation identity after switch
+[info]   assigning
+[info]   - binds the assignment to this workstation
+[info]   - emits an event linking workstation to assignment
+[info]   - carries mode into the Active state
+[info]   - event carries mode
+[info]   releasing
+[info]   - frees the workstation for the next assignment
+[info]   - preserves mode after release
+[info]   - emits an event for scheduling
+[info]   cycling
+[info]   - processes multiple assignments in sequence
+[info]   disabling
+[info]   - takes an idle workstation offline
+[info]   - force-stops an active workstation for maintenance
+[info]   identity
+[info]   - carries workstation type through all states
+[info]   - carries slot count through all states
+[info]   - enabled event carries slot count for capacity tracking
+[info]   - events carry workstation type for capacity routing
+[debug] Running TaskDef(neon.workstation.WorkstationActorSuite, org.scalatest.tools.Framework$$anon$1@9fbc112, false, [SuiteSelector])
+[info] WorkstationActorSuite:
+[info] WorkstationActor
+[info]   full lifecycle Disabled -> Idle -> Active -> Idle -> Disabled
+[info]   - transitions through all states
+[info]   SwitchMode
+[info]   - switches mode on Idle workstation
+[info]   - rejects SwitchMode on Disabled
+[info]   - rejects SwitchMode on Active
+[info]   Disable from Active
+[info]   - allows direct disable from Active state
+[info]   idempotent Create
+[info]   - acks on second Create without error
+[info]   invalid transitions
+[info]   - rejects Enable on Idle
+[info]   - rejects Assign on Disabled
+[info]   - rejects Assign on Active
+[info]   - rejects Release on Idle
+[info]   event replay
+[info]   - recovers Active state from journal
+[info] PekkoWorkstationRepositorySuite:
+[info] PekkoWorkstationRepository
+[info]   create and findById
+[info]   - persists a Disabled workstation via create and retrieves it
+[info]   - returns None for a non-existent workstation
+[info]   save with enable
+[info]   - transitions Disabled to Idle
+[info] Run completed in 9 seconds, 915 milliseconds.
+[info] Total number of tests run: 35
+[info] Suites: completed 3, aborted 0
+[info] Tests: succeeded 35, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.workstation.WorkstationSuite
+[debug] 	neon.workstation.WorkstationActorSuite
+[debug] 	neon.workstation.PekkoWorkstationRepositorySuite

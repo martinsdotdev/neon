@@ -1,0 +1,10 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/wave/src/main/scala/neon/wave/UomExpansion.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/AsyncWaveRepository.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/WaveActor.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/Wave.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/WaveEvent.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/OrderGrouping.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/PekkoWaveRepository.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/WavePlanner.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/WaveRepository.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/TaskRequest.scala
+[debug] 	Modified: 
+[debug] 	Unmodified: /home/martins/Projects/neon/wave/src/main/scala/neon/wave/UomExpansion.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/AsyncWaveRepository.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/WaveActor.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/Wave.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/WaveEvent.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/OrderGrouping.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/PekkoWaveRepository.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/WavePlanner.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/WaveRepository.scala, /home/martins/Projects/neon/wave/src/main/scala/neon/wave/TaskRequest.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[debug] scalafmt: Unchanged 0 Scala sources

@@ -1,0 +1,11 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: parsed config (v3.10.7): /home/martins/Projects/neon/.scalafmt.conf
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/common/src/test/scala/neon/common/LotSuite.scala, /home/martins/Projects/neon/common/src/test/scala/neon/common/LotAttributesSuite.scala, /home/martins/Projects/neon/common/src/test/scala/neon/common/UomHierarchySuite.scala, /home/martins/Projects/neon/common/src/test/scala/neon/common/PermissionSuite.scala
+[debug] 	Modified: 
+[debug] 	Unmodified: /home/martins/Projects/neon/common/src/test/scala/neon/common/LotSuite.scala, /home/martins/Projects/neon/common/src/test/scala/neon/common/LotAttributesSuite.scala, /home/martins/Projects/neon/common/src/test/scala/neon/common/UomHierarchySuite.scala, /home/martins/Projects/neon/common/src/test/scala/neon/common/PermissionSuite.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[debug] scalafmt: Unchanged 0 Scala sources

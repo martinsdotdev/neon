@@ -1,0 +1,4 @@
+[debug] [transportOrder] Classpath dependencies List(common)
+[debug] [transportOrder] Dependencies from configurations List()
+[debug] Bloop wrote the configuration of project 'transportOrder' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/transportOrder.json'
+[success] Generated .bloop/transportOrder.json

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Getting Started</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+    <script type="module">
+
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({ 
+  startOnLoad: true,
+  theme: "base",
+  themeVariables: {
+    'darkMode': dark,
+    'primaryColor': dark ? '#125d75' : '#eef5f6', 
+    'primaryTextColor': dark ? '#a7d4de' : '#007c99',
+    'primaryBorderColor': dark ? '#a7d4de' : '#a7d4de',
+    'lineColor': dark ? '#a7d4de' : '#007c99',
+    'background': dark ? '#064458' : '#ffffff',
+  }
+});
+
+</script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Getting Started</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#prerequisites">Prerequisites</a></li>
+    <li class="level1 nav-leaf"><a href="#cloning-and-building">Cloning and Building</a></li>
+    <li class="level1 nav-leaf"><a href="#project-structure-at-a-glance">Project Structure at a Glance</a></li>
+    <li class="level1 nav-leaf"><a href="#the-dependency-graph">The Dependency Graph</a></li>
+    <li class="level1 nav-leaf"><a href="#running-your-first-test">Running Your First Test</a></li>
+    <li class="level1 nav-leaf"><a href="#running-a-module-s-full-test-suite">Running a Module&#39;s Full Test Suite</a></li>
+    <li class="level1 nav-leaf"><a href="#code-formatting-and-linting">Code Formatting and Linting</a></li>
+    <li class="level1 nav-leaf"><a href="#the-vertical-slice-convention">The Vertical Slice Convention</a></li>
+    <li class="level1 nav-leaf"><a href="#a-note-on-directory-and-package-naming">A Note on Directory and Package Naming</a></li>
+    <li class="level1 nav-leaf"><a href="#what-is-next">What is Next?</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="getting-started" class="title">Getting Started</h1>
+        <p>Let&#39;s get the project running on your machine and take a first look at how it
+        is organized. By the end of this chapter we will have compiled every module, run
+        our first test, and built a mental map of where things live.</p>
+        
+        <h2 id="prerequisites" class="section"><a class="anchor-link left" href="#prerequisites"><i class="icofont-laika link">&#xef71;</i></a>Prerequisites</h2>
+        <p>Before we begin, make sure you have the following installed:</p>
+        <ul>
+          <li>
+            <p><strong>JDK 21 or later.</strong> Neon WES targets Scala 3.8.2, which runs on the JVM.
+            Any distribution will do (Eclipse Temurin, Amazon Corretto, GraalBuild CE).
+            Verify with <code>java -version</code>.</p>
+          </li>
+          <li>
+            <p><strong>sbt (Scala Build Tool).</strong> Version 1.x. This is the build tool that
+            compiles, tests, and runs the project. Install it via your package manager
+            or from <a href="https://www.scala-sbt.org/">scala-sbt.org</a>.</p>
+          </li>
+          <li>
+            <p><strong>Docker.</strong> Some integration tests in the <code>app</code> module use
+            <em>Testcontainers</em> to spin up a PostgreSQL database automatically. You do not
+            need Docker for the domain-level unit tests, but you will need it for the
+            full test suite.</p>
+          </li>
+          <li>
+            <p><strong>An editor with Scala support.</strong> We recommend IntelliJ IDEA with the Scala
+            plugin, or VS Code with Metals. Either will give you type-aware
+            completions, inline errors, and go-to-definition across all 22 modules.</p>
+          </li>
+        </ul>
+        
+        <h2 id="cloning-and-building" class="section"><a class="anchor-link left" href="#cloning-and-building"><i class="icofont-laika link">&#xef71;</i></a>Cloning and Building</h2>
+        <p>Start by cloning the repository and compiling:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>git clone &lt;repository-url&gt; neon-wes
+</span><span class="identifier">cd</span><span> neon-wes
+sbt compile</span></code></pre>
+        <p>The <code>sbt compile</code> command compiles all 22 modules in dependency order. On the
+        first run this will take a few minutes because sbt needs to download Scala
+        itself, Pekko, Circe, and every other library dependency. Subsequent
+        compilations are incremental and much faster.</p>
+        <p>If everything succeeds you will see:</p>
+        <pre><code>[success] Total time: ...</code></pre>
+        <p>Congratulations, the project builds. Let&#39;s look at what we just compiled.</p>
+        
+        <h2 id="project-structure-at-a-glance" class="section"><a class="anchor-link left" href="#project-structure-at-a-glance"><i class="icofont-laika link">&#xef71;</i></a>Project Structure at a Glance</h2>
+        <p>Open the repository root in your file explorer or editor. The top-level
+        directories map one-to-one to sbt subprojects. Here they are, grouped by role:</p>
+        <pre><code>neon-wes/
+|
+|-- common/                  &lt;-- Foundation: shared types, IDs, enums
+|
+|-- order/                   \
+|-- sku/                      |
+|-- location/                 |-- Reference data (read-only, no actors)
+|-- user/                     |
+|-- carrier/                 /
+|
+|-- wave/                    \
+|-- task/                     |
+|-- consolidation-group/      |
+|-- handling-unit/            |
+|-- transport-order/          |
+|-- workstation/              |  Event-sourced aggregates
+|-- slot/                     |  (each with its own Pekko actor)
+|-- inventory/                |
+|-- stock-position/           |
+|-- handling-unit-stock/      |
+|-- inbound-delivery/         |
+|-- goods-receipt/            |
+|-- cycle-count/              |
+|-- count-task/              /
+|
+|-- core/                    &lt;-- Orchestration: policies, services
+|
+|-- app/                     &lt;-- Application shell: HTTP, projections, bootstrap</code></pre>
+        <p>That is a lot of directories, but the mental model is simple. There are four
+        layers, and dependencies flow in one direction: inward.</p>
+        
+        <h2 id="the-dependency-graph" class="section"><a class="anchor-link left" href="#the-dependency-graph"><i class="icofont-laika link">&#xef71;</i></a>The Dependency Graph</h2>
+        <p>Let&#39;s make the layers explicit. Every module in Neon WES falls into one of four
+        tiers:</p>
+        <ol class="arabic">
+          <li>
+            <p><strong>Foundation.</strong> The <code>common</code> module depends on nothing. It defines the
+            shared vocabulary: opaque ID types, enums like <code>Priority</code> and
+            <code>PackagingLevel</code>, and utility traits.</p>
+          </li>
+          <li>
+            <p><strong>Domain modules.</strong> Both <em>reference data</em> modules and <em>event-sourced
+            aggregate</em> modules sit in this tier. They depend on <code>common</code>, and some
+            depend on each other when the domain requires it. For example, <code>wave</code>
+            depends on <code>order</code> and <code>sku</code> because a wave is planned from customer
+            orders and needs SKU information for UoM expansion.</p>
+          </li>
+          <li>
+            <p><strong>Orchestration.</strong> The <code>core</code> module depends on every domain module. It
+            contains the <em>policies</em> and <em>services</em> that coordinate work across
+            aggregates. When a task completes, <code>core</code> decides whether to trigger a
+            shortpick, route the next transport order, or complete the parent wave.
+            All of that cross-aggregate logic lives here.</p>
+          </li>
+          <li>
+            <p><strong>Application shell.</strong> The <code>app</code> module depends on <code>core</code> plus the
+            reference data modules it needs for HTTP endpoints and CQRS projections.
+            It wires everything together: Pekko cluster bootstrap, HTTP routes,
+            projection handlers, and database migrations.</p>
+          </li>
+        </ol>
+        <p>Here is a simplified view of the dependency graph:</p>
+        <pre class="mermaid">graph TD
+    app --&gt; core
+    core --&gt; wave
+    core --&gt; task
+    core --&gt; consolidation-group
+    core --&gt; handling-unit
+    core --&gt; transport-order
+    core --&gt; workstation
+    core --&gt; slot
+    core --&gt; inventory
+    core --&gt; stock-position
+    core --&gt; handling-unit-stock
+    core --&gt; inbound-delivery
+    core --&gt; goods-receipt
+    core --&gt; cycle-count
+    core --&gt; count-task
+    core --&gt; location
+    core --&gt; carrier
+    core --&gt; user
+    wave --&gt; common
+    task --&gt; common
+    consolidation-group --&gt; common
+    order --&gt; common
+    location --&gt; common
+    wave --&gt; order
+    wave --&gt; sku
+    sku --&gt; common
+    common</pre>
+        <p>The critical rule this structure enforces: <strong>dependencies point inward.</strong> A
+        domain module like <code>wave</code> can never import from <code>core</code> or <code>app</code>. The <code>core</code>
+        module can never import from <code>app</code>. This keeps domain logic free of
+        infrastructure concerns. If you accidentally add a forbidden dependency, sbt
+        will refuse to compile.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>This layered dependency structure is an example of <em>Hexagonal
+          Architecture</em> (also called Ports and Adapters). Domain modules define port
+          interfaces; the <code>app</code> module provides the infrastructure adapters. We will
+          explore this pattern in detail in Chapter 8.</p>
+        </div>
+        
+        <h2 id="running-your-first-test" class="section"><a class="anchor-link left" href="#running-your-first-test"><i class="icofont-laika link">&#xef71;</i></a>Running Your First Test</h2>
+        <p>Let&#39;s verify that the domain logic works. Run the <code>WaveSuite</code>, which tests the
+        Wave aggregate in isolation:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>sbt </span><span class="string-literal">&quot;wave/testOnly neon.wave.WaveSuite&quot;</span></code></pre>
+        <p>This executes a single test suite. ScalaTest will print output like this:</p>
+        <pre><code>WaveSuite:
+Wave
+  releasing
+  - authorizes work to begin
+  - carries order IDs for task creation
+  - records when the wave was released
+  completing
+  - marks all work as done
+  cancelling
+  - can be cancelled before release
+  - can be cancelled after release
+  - cancellation event carries orderGrouping for downstream routing
+  order grouping
+  - is carried in events for downstream routing</code></pre>
+        <p>Notice several things about this output. The suite uses <code>describe</code>/<code>it</code> blocks,
+        which produce the nested structure you see above. The test names read like
+        specifications (&quot;authorizes work to begin,&quot; &quot;marks all work as done&quot;). And this
+        entire suite ran without a database, without an actor system, without Docker. It
+        exercises the <code>Wave</code> domain aggregate as a plain Scala object in memory.</p>
+        <p>The naming convention is straightforward: every test suite is named
+        <code>&lt;ComponentName&gt;Suite</code>. So <code>WaveSuite</code> tests the <code>Wave</code> aggregate,
+        <code>WavePlannerSuite</code> tests the <code>WavePlanner</code>, and <code>WaveActorSuite</code> tests the
+        Pekko actor that wraps the aggregate.</p>
+        
+        <h2 id="running-a-module-s-full-test-suite" class="section"><a class="anchor-link left" href="#running-a-module-s-full-test-suite"><i class="icofont-laika link">&#xef71;</i></a>Running a Module&#39;s Full Test Suite</h2>
+        <p>To run every test in a single module, drop the <code>testOnly</code> qualifier:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>sbt wave/test</span></code></pre>
+        <p>This runs all five suites in the <code>wave</code> module: <code>WaveSuite</code>,
+        <code>WavePlannerSuite</code>, <code>UomExpansionSuite</code>, <code>WaveActorSuite</code>, and
+        <code>PekkoWaveRepositorySuite</code>. The first three are pure domain tests. The last
+        two exercise the Pekko actor layer and require an in-process actor system (but
+        still no external database).</p>
+        <p>You can do the same for any module:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>sbt core/test          </span><span class="comment"># All tests in the core module
+</span><span>sbt task/test          </span><span class="comment"># All tests in the task module</span></code></pre>
+        <p>To run the entire project&#39;s test suite:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>sbt test</span></code></pre>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Some tests in the <code>app</code> module use Testcontainers to spin up a
+          PostgreSQL instance automatically. Make sure Docker is running before you
+          execute <code>sbt test</code> or <code>sbt app/test</code>. The domain-level tests in other
+          modules do not require Docker.</p>
+        </div>
+        
+        <h2 id="code-formatting-and-linting" class="section"><a class="anchor-link left" href="#code-formatting-and-linting"><i class="icofont-laika link">&#xef71;</i></a>Code Formatting and Linting</h2>
+        <p>Neon WES enforces consistent formatting with two tools:</p>
+        <p><strong>Scalafmt</strong> handles code formatting. The maximum line width is 100 characters.
+        To format all source files:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>sbt scalafmtAll</span></code></pre>
+        <p>To check formatting without modifying files (useful in CI):</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>sbt scalafmtCheckAll</span></code></pre>
+        <p><strong>Scalafix</strong> handles import organization. It uses the <code>OrganizeImports</code> rule
+        with <code>Merge</code> grouping, which means imports from the same package are combined
+        into a single import statement. To run it:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>sbt scalafixAll</span></code></pre>
+        <p>If you are using IntelliJ or Metals, both can be configured to run Scalafmt on
+        save. We recommend enabling this so formatting never drifts.</p>
+        
+        <h2 id="the-vertical-slice-convention" class="section"><a class="anchor-link left" href="#the-vertical-slice-convention"><i class="icofont-laika link">&#xef71;</i></a>The Vertical Slice Convention</h2>
+        <p>Now that we can build and test, let&#39;s look more closely at how a single module
+        is organized. Each event-sourced aggregate follows the same <em>vertical slice</em>
+        pattern. Let&#39;s use <code>wave/</code> as our example:</p>
+        <pre><code>wave/
+  src/main/scala/neon/wave/
+    Wave.scala                  # Domain aggregate (typestate encoding)
+    WaveEvent.scala             # Domain events (sealed trait)
+    WaveActor.scala             # Pekko EventSourcedBehavior
+    WaveRepository.scala        # Sync repository port (trait)
+    AsyncWaveRepository.scala   # Async repository port (trait)
+    PekkoWaveRepository.scala   # Cluster sharding adapter (implementation)
+    WavePlanner.scala           # Wave planning logic
+    OrderGrouping.scala         # Supporting domain type
+    TaskRequest.scala           # Supporting domain type
+    UomExpansion.scala          # Unit-of-measure expansion logic</code></pre>
+        <p>The first six files follow a pattern that repeats across every event-sourced
+        module. Let&#39;s briefly describe each one:</p>
+        <ul>
+          <li>
+            <p><strong><code>Wave.scala</code></strong> contains the domain aggregate itself, modeled as a sealed
+            trait hierarchy with <em>typestate encoding</em>. Each state (Planned, Released,
+            Completed, Cancelled) is a separate case class with transition methods that
+            only exist on valid source states.</p>
+          </li>
+          <li>
+            <p><strong><code>WaveEvent.scala</code></strong> defines the events that the aggregate produces. Every
+            state transition returns a <code>(NewState, Event)</code> tuple, so the event type
+            mirrors the transitions in the aggregate.</p>
+          </li>
+          <li>
+            <p><strong><code>WaveActor.scala</code></strong> wraps the domain aggregate in a Pekko
+            <code>EventSourcedBehavior</code>. It translates external commands into aggregate
+            method calls, persists the resulting events, and reconstructs state during
+            recovery.</p>
+          </li>
+          <li>
+            <p><strong><code>WaveRepository.scala</code></strong> defines the synchronous repository port. This is
+            a simple trait with methods like <code>findById</code> and <code>save</code>. Tests use in-memory
+            implementations of this trait.</p>
+          </li>
+          <li>
+            <p><strong><code>AsyncWaveRepository.scala</code></strong> defines the asynchronous repository port,
+            returning <code>Future</code>s. This is the port that services in <code>core</code> call at
+            runtime.</p>
+          </li>
+          <li>
+            <p><strong><code>PekkoWaveRepository.scala</code></strong> implements the async port using Pekko
+            Cluster Sharding. It sends commands to sharded entity actors and translates
+            the replies back into domain types.</p>
+          </li>
+        </ul>
+        <p>The remaining files (<code>WavePlanner.scala</code>, <code>OrderGrouping.scala</code>,
+        <code>TaskRequest.scala</code>, <code>UomExpansion.scala</code>) are domain-specific helpers that
+        vary from module to module. The six-file core pattern, however, is consistent.</p>
+        <p>This vertical slice design means that when you work on a feature for a
+        particular aggregate, everything you need lives in one directory. You rarely
+        need to jump between modules for day-to-day aggregate work. The only exception
+        is <code>core/</code>, where cross-aggregate orchestration happens.</p>
+        <p>We will explore each of these file types in depth over the next several
+        chapters.</p>
+        
+        <h2 id="a-note-on-directory-and-package-naming" class="section"><a class="anchor-link left" href="#a-note-on-directory-and-package-naming"><i class="icofont-laika link">&#xef71;</i></a>A Note on Directory and Package Naming</h2>
+        <p>You may have noticed that directory names use <em>kebab-case</em>
+        (<code>consolidation-group/</code>, <code>handling-unit/</code>, <code>transport-order/</code>), while Scala
+        package names use concatenated names (<code>neon.consolidationgroup</code>,
+        <code>neon.handlingunit</code>, <code>neon.transportorder</code>). This is a deliberate convention.
+        Kebab-case is idiomatic for directory names in multi-module projects, but JVM
+        package names cannot contain hyphens.</p>
+        <p>The mapping is predictable: strip the hyphens and concatenate. If you see a
+        directory called <code>count-task/</code>, the package inside is <code>neon.counttask</code>.</p>
+        
+        <h2 id="what-is-next" class="section"><a class="anchor-link left" href="#what-is-next"><i class="icofont-laika link">&#xef71;</i></a>What is Next?</h2>
+        <p>We now have a working build, we know how to run tests at every level of
+        granularity, and we have a map of the project&#39;s 22 modules and four
+        architectural layers. That is enough to start reading code.</p>
+        <p>In Part II, we will dive into the code itself. We will start with the <code>common</code>
+        module, the foundation that every other module depends on. There we will meet
+        the opaque ID types, shared enums, and utility traits that form the vocabulary
+        of the entire system.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,2103 @@
+{
+    "version": "1.4.0",
+    "project": {
+        "name": "app",
+        "directory": "/home/martins/Work/Mais/Eva/Neon/eva-wes/app",
+        "workspaceDir": "/home/martins/Work/Mais/Eva/Neon/eva-wes",
+        "sources": [
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/app/src/main/scala",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/app/src/main/scala-3",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/app/src/main/java",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/app/target/scala-3.8.2/src_managed/main"
+        ],
+        "dependencies": [
+            "core",
+            "inventory",
+            "order",
+            "sku",
+            "user"
+        ],
+        "classpath": [
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/core/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/common/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/wave/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/order/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/sku/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/task/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/consolidationGroup/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/handlingUnit/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/transportOrder/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/workstation/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/slot/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/inventory/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/stockPosition/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/handlingUnitStock/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/inboundDelivery/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/goodsReceipt/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/cycleCount/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/countTask/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/location/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/carrier/scala-3.8.2/classes",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/user/scala-3.8.2/classes",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala3-library_3/3.8.2/scala3-library_3-3.8.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-http_3/1.1.0/pekko-http_3-1.1.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-typed_3/1.2.0/pekko-cluster-typed_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence-r2dbc_3/1.1.0/pekko-persistence-r2dbc_3-1.1.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-projection-r2dbc_3/1.1.0/pekko-projection-r2dbc_3-1.1.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/postgresql/r2dbc-postgresql/1.0.7.RELEASE/r2dbc-postgresql-1.0.7.RELEASE.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/flywaydb/flyway-core/11.8.2/flyway-core-11.8.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/flywaydb/flyway-database-postgresql/11.8.2/flyway-database-postgresql-11.8.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-projection-eventsourced_3/1.1.0/pekko-projection-eventsourced_3-1.1.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.5.18/logback-classic-1.5.18.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/net/logstash/logback/logstash-logback-encoder/8.1/logstash-logback-encoder-8.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/scala-logging/scala-logging_3/4.0.0-RC1/scala-logging_3-4.0.0-RC1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/de/mkammerer/argon2-jvm/2.12/argon2-jvm-2.12.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-core_3/0.14.13/circe-core_3-0.14.13.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-generic_3/0.14.13/circe-generic_3-0.14.13.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-parser_3/0.14.13/circe-parser_3-0.14.13.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-actor-typed_3/1.2.0/pekko-actor-typed_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-sharding-typed_3/1.2.0/pekko-cluster-sharding-typed_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence-typed_3/1.2.0/pekko-persistence-typed_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-serialization-jackson_3/1.2.0/pekko-serialization-jackson_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/r2dbc/r2dbc-spi/1.0.0.RELEASE/r2dbc-spi-1.0.0.RELEASE.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.2/scala-library-3.8.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-http-core_3/1.1.0/pekko-http-core_3-1.1.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster_3/1.2.0/pekko-cluster_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-tools_3/1.2.0/pekko-cluster-tools_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-distributed-data_3/1.2.0/pekko-distributed-data_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence-query_3/1.2.0/pekko-persistence-query_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/r2dbc/r2dbc-pool/1.0.2.RELEASE/r2dbc-pool-1.0.2.RELEASE.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-projection-core_3/1.1.0/pekko-projection-core_3-1.1.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/scram/client/2.1/client-2.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/projectreactor/reactor-core/3.5.20/reactor-core-3.5.20.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/projectreactor/netty/reactor-netty-core/1.1.22/reactor-netty-core-1.1.22.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.19.2/jackson-databind-2.19.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/ch/qos/logback/logback-core/1.5.18/logback-core-1.5.18.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/scala-logging/scala2-macros_2.13/4.0.0-RC1/scala2-macros_2.13-4.0.0-RC1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/de/mkammerer/argon2-jvm-nolibs/2.12/argon2-jvm-nolibs-2.12.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-numbers_3/0.14.13/circe-numbers_3-0.14.13.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-core_3/2.13.0/cats-core_3-2.13.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-jawn_3/0.14.13/circe-jawn_3-0.14.13.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/f4b6a3/uuid-creator/6.1.1/uuid-creator-6.1.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-stream_3/1.2.0/pekko-stream_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-actor_3/1.2.0/pekko-actor_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-slf4j_3/1.2.0/pekko-slf4j_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-sharding_3/1.2.0/pekko-cluster-sharding_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-remote_3/1.2.0/pekko-remote_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-stream-typed_3/1.2.0/pekko-stream-typed_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence_3/1.2.0/pekko-persistence_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.19.2/jackson-core-2.19.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.19.2/jackson-annotations-2.19.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.19.2/jackson-datatype-jdk8-2.19.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.19.2/jackson-datatype-jsr310-2.19.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-parameter-names/2.19.2/jackson-module-parameter-names-2.19.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-cbor/2.19.2/jackson-dataformat-cbor-2.19.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-scala_3/2.19.2/jackson-module-scala_3-2.19.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/lz4/lz4-java/1.8.0/lz4-java-1.8.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-parsing_3/1.1.0/pekko-parsing_3-1.1.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/parboiled/parboiled_3/2.5.1/parboiled_3-2.5.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-coordination_3/1.2.0/pekko-coordination_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/lmdbjava/lmdbjava/0.9.1/lmdbjava-0.9.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-protobuf-v3_3/1.2.0/pekko-protobuf-v3_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/projectreactor/addons/reactor-pool/1.0.8/reactor-pool-1.0.8.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/scram/common/2.1/common-2.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-handler/4.1.112.Final/netty-handler-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-handler-proxy/4.1.112.Final/netty-handler-proxy-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver-dns/4.1.112.Final/netty-resolver-dns-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver-dns-native-macos/4.1.112.Final/netty-resolver-dns-native-macos-4.1.112.Final-osx-x86_64.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport-native-epoll/4.1.112.Final/netty-transport-native-epoll-4.1.112.Final-linux-x86_64.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.16/scala-reflect-2.13.16.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/net/java/dev/jna/jna/5.16.0/jna-5.16.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-kernel_3/2.13.0/cats-kernel_3-2.13.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/typelevel/jawn-parser_3/1.6.0/jawn-parser_3-1.6.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/ssl-config-core_3/0.6.1/ssl-config-core_3-0.6.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/config/1.4.4/config-1.4.4.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-pki_3/1.2.0/pekko-pki_3-1.2.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/agrona/agrona/1.22.0/agrona-1.22.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/thoughtworks/paranamer/paranamer/2.8.3/paranamer-2.8.3.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-constants/0.10.4/jnr-constants-0.10.4.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-ffi/2.2.17/jnr-ffi-2.2.17.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/stringprep/saslprep/1.1/saslprep-1.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-common/4.1.112.Final/netty-common-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver/4.1.112.Final/netty-resolver-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-buffer/4.1.112.Final/netty-buffer-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport/4.1.112.Final/netty-transport-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport-native-unix-common/4.1.112.Final/netty-transport-native-unix-common-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec/4.1.112.Final/netty-codec-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-socks/4.1.112.Final/netty-codec-socks-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-http/4.1.112.Final/netty-codec-http-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-dns/4.1.112.Final/netty-codec-dns-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver-dns-classes-macos/4.1.112.Final/netty-resolver-dns-classes-macos-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport-classes-epoll/4.1.112.Final/netty-transport-classes-epoll-4.1.112.Final.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/hierynomus/asn-one/0.6.0/asn-one-0.6.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jffi/1.3.13/jffi-1.3.13.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jffi/1.3.13/jffi-1.3.13-native.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm/9.7.1/asm-9.7.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-commons/9.7.1/asm-commons-9.7.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-analysis/9.7.1/asm-analysis-9.7.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-tree/9.7.1/asm-tree-9.7.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-util/9.7.1/asm-util-9.7.1.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-a64asm/1.0.0/jnr-a64asm-1.0.0.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-x86asm/1.0.2/jnr-x86asm-1.0.2.jar",
+            "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/stringprep/stringprep/1.1/stringprep-1.1.jar"
+        ],
+        "out": "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/app",
+        "classesDir": "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/app/scala-3.8.2/classes",
+        "resources": [
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/app/src/main/resources",
+            "/home/martins/Work/Mais/Eva/Neon/eva-wes/app/target/scala-3.8.2/resource_managed/main"
+        ],
+        "scala": {
+            "organization": "org.scala-lang",
+            "name": "scala-compiler",
+            "version": "3.8.2",
+            "options": [
+                "-Wunused:imports",
+                "-Xsemanticdb",
+                "-semanticdb-target",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/app/target/scala-3.8.2/meta"
+            ],
+            "jars": [
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala3-library_3/3.8.2/scala3-library_3-3.8.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.2/scala-library-3.8.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala3-compiler_3/3.8.2/scala3-compiler_3-3.8.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala3-interfaces/3.8.2/scala3-interfaces-3.8.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/tasty-core_3/3.8.2/tasty-core_3-3.8.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-asm/9.9.0-scala-1/scala-asm-9.9.0-scala-1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-sbt/compiler-interface/1.10.7/compiler-interface-1.10.7.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-sbt/util-interface/1.10.7/util-interface-1.10.7.jar"
+            ],
+            "setup": {
+                "order": "mixed",
+                "addLibraryToBootClasspath": false,
+                "addCompilerToClasspath": false,
+                "addExtraJarsToClasspath": false,
+                "manageBootClasspath": false,
+                "filterLibraryFromClasspath": false
+            },
+            "bridgeJars": [
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala3-sbt-bridge/3.8.2/scala3-sbt-bridge-3.8.2.jar"
+            ]
+        },
+        "java": {
+            "options": [
+                
+            ]
+        },
+        "test": {
+            "frameworks": [
+                {
+                    "names": [
+                        "org.scalacheck.ScalaCheckFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.specs2.runner.Specs2Framework",
+                        "org.specs2.runner.SpecsFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.specs.runner.SpecsFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.scalatest.tools.Framework",
+                        "org.scalatest.tools.ScalaTestFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "com.novocode.junit.JUnitFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "munit.Framework"
+                    ]
+                },
+                {
+                    "names": [
+                        "zio.test.sbt.ZTestFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "weaver.framework.CatsEffect"
+                    ]
+                },
+                {
+                    "names": [
+                        "hedgehog.sbt.Framework"
+                    ]
+                }
+            ],
+            "options": {
+                "excludes": [
+                    
+                ],
+                "arguments": [
+                    
+                ]
+            }
+        },
+        "platform": {
+            "name": "jvm",
+            "config": {
+                "home": "/home/martins/.local/share/mise/installs/java/temurin-25.0.2+10.0.LTS",
+                "options": [
+                    "-Duser.dir=/home/martins/Work/Mais/Eva/Neon/eva-wes"
+                ]
+            },
+            "mainClass": [
+                
+            ],
+            "runtimeConfig": {
+                "home": "/home/martins/.local/share/mise/installs/java/temurin-25.0.2+10.0.LTS",
+                "options": [
+                    "-Duser.dir=/home/martins/Work/Mais/Eva/Neon/eva-wes"
+                ]
+            },
+            "classpath": [
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/app/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/core/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/common/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/wave/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/order/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/sku/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/task/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/consolidationGroup/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/handlingUnit/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/transportOrder/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/workstation/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/slot/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/inventory/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/stockPosition/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/handlingUnitStock/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/inboundDelivery/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/goodsReceipt/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/cycleCount/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/countTask/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/location/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/carrier/scala-3.8.2/classes",
+                "/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/user/scala-3.8.2/classes",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala3-library_3/3.8.2/scala3-library_3-3.8.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-http_3/1.1.0/pekko-http_3-1.1.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-typed_3/1.2.0/pekko-cluster-typed_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence-r2dbc_3/1.1.0/pekko-persistence-r2dbc_3-1.1.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-projection-r2dbc_3/1.1.0/pekko-projection-r2dbc_3-1.1.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/postgresql/r2dbc-postgresql/1.0.7.RELEASE/r2dbc-postgresql-1.0.7.RELEASE.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/flywaydb/flyway-core/11.8.2/flyway-core-11.8.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/flywaydb/flyway-database-postgresql/11.8.2/flyway-database-postgresql-11.8.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/postgresql/postgresql/42.7.6/postgresql-42.7.6.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-projection-eventsourced_3/1.1.0/pekko-projection-eventsourced_3-1.1.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.5.18/logback-classic-1.5.18.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/net/logstash/logback/logstash-logback-encoder/8.1/logstash-logback-encoder-8.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/scala-logging/scala-logging_3/4.0.0-RC1/scala-logging_3-4.0.0-RC1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/de/mkammerer/argon2-jvm/2.12/argon2-jvm-2.12.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-core_3/0.14.13/circe-core_3-0.14.13.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-generic_3/0.14.13/circe-generic_3-0.14.13.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-parser_3/0.14.13/circe-parser_3-0.14.13.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-actor-typed_3/1.2.0/pekko-actor-typed_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-sharding-typed_3/1.2.0/pekko-cluster-sharding-typed_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence-typed_3/1.2.0/pekko-persistence-typed_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-serialization-jackson_3/1.2.0/pekko-serialization-jackson_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/r2dbc/r2dbc-spi/1.0.0.RELEASE/r2dbc-spi-1.0.0.RELEASE.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.2/scala-library-3.8.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-http-core_3/1.1.0/pekko-http-core_3-1.1.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster_3/1.2.0/pekko-cluster_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-tools_3/1.2.0/pekko-cluster-tools_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-distributed-data_3/1.2.0/pekko-distributed-data_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence-query_3/1.2.0/pekko-persistence-query_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/r2dbc/r2dbc-pool/1.0.2.RELEASE/r2dbc-pool-1.0.2.RELEASE.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-projection-core_3/1.1.0/pekko-projection-core_3-1.1.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/scram/client/2.1/client-2.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/projectreactor/reactor-core/3.5.20/reactor-core-3.5.20.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/projectreactor/netty/reactor-netty-core/1.1.22/reactor-netty-core-1.1.22.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.19.2/jackson-databind-2.19.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/checkerframework/checker-qual/3.49.3/checker-qual-3.49.3.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/ch/qos/logback/logback-core/1.5.18/logback-core-1.5.18.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/scala-logging/scala2-macros_2.13/4.0.0-RC1/scala2-macros_2.13-4.0.0-RC1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/de/mkammerer/argon2-jvm-nolibs/2.12/argon2-jvm-nolibs-2.12.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-numbers_3/0.14.13/circe-numbers_3-0.14.13.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-core_3/2.13.0/cats-core_3-2.13.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-jawn_3/0.14.13/circe-jawn_3-0.14.13.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/f4b6a3/uuid-creator/6.1.1/uuid-creator-6.1.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-stream_3/1.2.0/pekko-stream_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-actor_3/1.2.0/pekko-actor_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-slf4j_3/1.2.0/pekko-slf4j_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-sharding_3/1.2.0/pekko-cluster-sharding_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-remote_3/1.2.0/pekko-remote_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-stream-typed_3/1.2.0/pekko-stream-typed_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence_3/1.2.0/pekko-persistence_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.19.2/jackson-core-2.19.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.19.2/jackson-annotations-2.19.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.19.2/jackson-datatype-jdk8-2.19.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.19.2/jackson-datatype-jsr310-2.19.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-parameter-names/2.19.2/jackson-module-parameter-names-2.19.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-cbor/2.19.2/jackson-dataformat-cbor-2.19.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-scala_3/2.19.2/jackson-module-scala_3-2.19.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/lz4/lz4-java/1.8.0/lz4-java-1.8.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-parsing_3/1.1.0/pekko-parsing_3-1.1.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/parboiled/parboiled_3/2.5.1/parboiled_3-2.5.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-coordination_3/1.2.0/pekko-coordination_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/lmdbjava/lmdbjava/0.9.1/lmdbjava-0.9.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-protobuf-v3_3/1.2.0/pekko-protobuf-v3_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/projectreactor/addons/reactor-pool/1.0.8/reactor-pool-1.0.8.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/scram/common/2.1/common-2.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-handler/4.1.112.Final/netty-handler-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-handler-proxy/4.1.112.Final/netty-handler-proxy-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver-dns/4.1.112.Final/netty-resolver-dns-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver-dns-native-macos/4.1.112.Final/netty-resolver-dns-native-macos-4.1.112.Final-osx-x86_64.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport-native-epoll/4.1.112.Final/netty-transport-native-epoll-4.1.112.Final-linux-x86_64.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.16/scala-reflect-2.13.16.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/net/java/dev/jna/jna/5.16.0/jna-5.16.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-kernel_3/2.13.0/cats-kernel_3-2.13.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/typelevel/jawn-parser_3/1.6.0/jawn-parser_3-1.6.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/ssl-config-core_3/0.6.1/ssl-config-core_3-0.6.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/config/1.4.4/config-1.4.4.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-pki_3/1.2.0/pekko-pki_3-1.2.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/agrona/agrona/1.22.0/agrona-1.22.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/thoughtworks/paranamer/paranamer/2.8.3/paranamer-2.8.3.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-constants/0.10.4/jnr-constants-0.10.4.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-ffi/2.2.17/jnr-ffi-2.2.17.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/stringprep/saslprep/1.1/saslprep-1.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-common/4.1.112.Final/netty-common-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver/4.1.112.Final/netty-resolver-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-buffer/4.1.112.Final/netty-buffer-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport/4.1.112.Final/netty-transport-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport-native-unix-common/4.1.112.Final/netty-transport-native-unix-common-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec/4.1.112.Final/netty-codec-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-socks/4.1.112.Final/netty-codec-socks-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-http/4.1.112.Final/netty-codec-http-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-dns/4.1.112.Final/netty-codec-dns-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver-dns-classes-macos/4.1.112.Final/netty-resolver-dns-classes-macos-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport-classes-epoll/4.1.112.Final/netty-transport-classes-epoll-4.1.112.Final.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/hierynomus/asn-one/0.6.0/asn-one-0.6.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jffi/1.3.13/jffi-1.3.13.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jffi/1.3.13/jffi-1.3.13-native.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm/9.7.1/asm-9.7.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-commons/9.7.1/asm-commons-9.7.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-analysis/9.7.1/asm-analysis-9.7.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-tree/9.7.1/asm-tree-9.7.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-util/9.7.1/asm-util-9.7.1.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-a64asm/1.0.0/jnr-a64asm-1.0.0.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-x86asm/1.0.2/jnr-x86asm-1.0.2.jar",
+                "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/stringprep/stringprep/1.1/stringprep-1.1.jar"
+            ]
+        },
+        "resolution": {
+            "modules": [
+                {
+                    "organization": "org.scala-lang",
+                    "name": "scala3-library_3",
+                    "version": "3.8.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "scala3-library_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala3-library_3/3.8.2/scala3-library_3-3.8.2.jar"
+                        },
+                        {
+                            "name": "scala3-library_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala3-library_3/3.8.2/scala3-library_3-3.8.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-http_3",
+                    "version": "1.1.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-http_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-http_3/1.1.0/pekko-http_3-1.1.0.jar"
+                        },
+                        {
+                            "name": "pekko-http_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-http_3/1.1.0/pekko-http_3-1.1.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-cluster-typed_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-cluster-typed_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-typed_3/1.2.0/pekko-cluster-typed_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-cluster-typed_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-typed_3/1.2.0/pekko-cluster-typed_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-persistence-r2dbc_3",
+                    "version": "1.1.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-persistence-r2dbc_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence-r2dbc_3/1.1.0/pekko-persistence-r2dbc_3-1.1.0.jar"
+                        },
+                        {
+                            "name": "pekko-persistence-r2dbc_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence-r2dbc_3/1.1.0/pekko-persistence-r2dbc_3-1.1.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-projection-r2dbc_3",
+                    "version": "1.1.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-projection-r2dbc_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-projection-r2dbc_3/1.1.0/pekko-projection-r2dbc_3-1.1.0.jar"
+                        },
+                        {
+                            "name": "pekko-projection-r2dbc_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-projection-r2dbc_3/1.1.0/pekko-projection-r2dbc_3-1.1.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.postgresql",
+                    "name": "r2dbc-postgresql",
+                    "version": "1.0.7.RELEASE",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "r2dbc-postgresql",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/postgresql/r2dbc-postgresql/1.0.7.RELEASE/r2dbc-postgresql-1.0.7.RELEASE.jar"
+                        },
+                        {
+                            "name": "r2dbc-postgresql",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/postgresql/r2dbc-postgresql/1.0.7.RELEASE/r2dbc-postgresql-1.0.7.RELEASE-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.flywaydb",
+                    "name": "flyway-core",
+                    "version": "11.8.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "flyway-core",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/flywaydb/flyway-core/11.8.2/flyway-core-11.8.2.jar"
+                        },
+                        {
+                            "name": "flyway-core",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/flywaydb/flyway-core/11.8.2/flyway-core-11.8.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.flywaydb",
+                    "name": "flyway-database-postgresql",
+                    "version": "11.8.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "flyway-database-postgresql",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/flywaydb/flyway-database-postgresql/11.8.2/flyway-database-postgresql-11.8.2.jar"
+                        },
+                        {
+                            "name": "flyway-database-postgresql",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/flywaydb/flyway-database-postgresql/11.8.2/flyway-database-postgresql-11.8.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-projection-eventsourced_3",
+                    "version": "1.1.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-projection-eventsourced_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-projection-eventsourced_3/1.1.0/pekko-projection-eventsourced_3-1.1.0.jar"
+                        },
+                        {
+                            "name": "pekko-projection-eventsourced_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-projection-eventsourced_3/1.1.0/pekko-projection-eventsourced_3-1.1.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "ch.qos.logback",
+                    "name": "logback-classic",
+                    "version": "1.5.18",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "logback-classic",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.5.18/logback-classic-1.5.18.jar"
+                        },
+                        {
+                            "name": "logback-classic",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.5.18/logback-classic-1.5.18-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "net.logstash.logback",
+                    "name": "logstash-logback-encoder",
+                    "version": "8.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "logstash-logback-encoder",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/net/logstash/logback/logstash-logback-encoder/8.1/logstash-logback-encoder-8.1.jar"
+                        },
+                        {
+                            "name": "logstash-logback-encoder",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/net/logstash/logback/logstash-logback-encoder/8.1/logstash-logback-encoder-8.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.typesafe.scala-logging",
+                    "name": "scala-logging_3",
+                    "version": "4.0.0-RC1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "scala-logging_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/scala-logging/scala-logging_3/4.0.0-RC1/scala-logging_3-4.0.0-RC1.jar"
+                        },
+                        {
+                            "name": "scala-logging_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/scala-logging/scala-logging_3/4.0.0-RC1/scala-logging_3-4.0.0-RC1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "de.mkammerer",
+                    "name": "argon2-jvm",
+                    "version": "2.12",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "argon2-jvm",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/de/mkammerer/argon2-jvm/2.12/argon2-jvm-2.12.jar"
+                        },
+                        {
+                            "name": "argon2-jvm",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/de/mkammerer/argon2-jvm/2.12/argon2-jvm-2.12-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.circe",
+                    "name": "circe-core_3",
+                    "version": "0.14.13",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "circe-core_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-core_3/0.14.13/circe-core_3-0.14.13.jar"
+                        },
+                        {
+                            "name": "circe-core_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-core_3/0.14.13/circe-core_3-0.14.13-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.circe",
+                    "name": "circe-generic_3",
+                    "version": "0.14.13",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "circe-generic_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-generic_3/0.14.13/circe-generic_3-0.14.13.jar"
+                        },
+                        {
+                            "name": "circe-generic_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-generic_3/0.14.13/circe-generic_3-0.14.13-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.circe",
+                    "name": "circe-parser_3",
+                    "version": "0.14.13",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "circe-parser_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-parser_3/0.14.13/circe-parser_3-0.14.13.jar"
+                        },
+                        {
+                            "name": "circe-parser_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-parser_3/0.14.13/circe-parser_3-0.14.13-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-actor-typed_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-actor-typed_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-actor-typed_3/1.2.0/pekko-actor-typed_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-actor-typed_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-actor-typed_3/1.2.0/pekko-actor-typed_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-cluster-sharding-typed_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-cluster-sharding-typed_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-sharding-typed_3/1.2.0/pekko-cluster-sharding-typed_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-cluster-sharding-typed_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-sharding-typed_3/1.2.0/pekko-cluster-sharding-typed_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-persistence-typed_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-persistence-typed_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence-typed_3/1.2.0/pekko-persistence-typed_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-persistence-typed_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence-typed_3/1.2.0/pekko-persistence-typed_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-serialization-jackson_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-serialization-jackson_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-serialization-jackson_3/1.2.0/pekko-serialization-jackson_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-serialization-jackson_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-serialization-jackson_3/1.2.0/pekko-serialization-jackson_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.r2dbc",
+                    "name": "r2dbc-spi",
+                    "version": "1.0.0.RELEASE",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "r2dbc-spi",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/r2dbc/r2dbc-spi/1.0.0.RELEASE/r2dbc-spi-1.0.0.RELEASE.jar"
+                        },
+                        {
+                            "name": "r2dbc-spi",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/r2dbc/r2dbc-spi/1.0.0.RELEASE/r2dbc-spi-1.0.0.RELEASE-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.scala-lang",
+                    "name": "scala-library",
+                    "version": "3.8.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "scala-library",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.2/scala-library-3.8.2.jar"
+                        },
+                        {
+                            "name": "scala-library",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.2/scala-library-3.8.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-http-core_3",
+                    "version": "1.1.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-http-core_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-http-core_3/1.1.0/pekko-http-core_3-1.1.0.jar"
+                        },
+                        {
+                            "name": "pekko-http-core_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-http-core_3/1.1.0/pekko-http-core_3-1.1.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-cluster_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-cluster_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster_3/1.2.0/pekko-cluster_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-cluster_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster_3/1.2.0/pekko-cluster_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-cluster-tools_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-cluster-tools_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-tools_3/1.2.0/pekko-cluster-tools_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-cluster-tools_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-tools_3/1.2.0/pekko-cluster-tools_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-distributed-data_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-distributed-data_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-distributed-data_3/1.2.0/pekko-distributed-data_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-distributed-data_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-distributed-data_3/1.2.0/pekko-distributed-data_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-persistence-query_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-persistence-query_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence-query_3/1.2.0/pekko-persistence-query_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-persistence-query_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence-query_3/1.2.0/pekko-persistence-query_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.r2dbc",
+                    "name": "r2dbc-pool",
+                    "version": "1.0.2.RELEASE",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "r2dbc-pool",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/r2dbc/r2dbc-pool/1.0.2.RELEASE/r2dbc-pool-1.0.2.RELEASE.jar"
+                        },
+                        {
+                            "name": "r2dbc-pool",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/r2dbc/r2dbc-pool/1.0.2.RELEASE/r2dbc-pool-1.0.2.RELEASE-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-projection-core_3",
+                    "version": "1.1.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-projection-core_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-projection-core_3/1.1.0/pekko-projection-core_3-1.1.0.jar"
+                        },
+                        {
+                            "name": "pekko-projection-core_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-projection-core_3/1.1.0/pekko-projection-core_3-1.1.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.ongres.scram",
+                    "name": "client",
+                    "version": "2.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "client",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/scram/client/2.1/client-2.1.jar"
+                        },
+                        {
+                            "name": "client",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/scram/client/2.1/client-2.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.projectreactor",
+                    "name": "reactor-core",
+                    "version": "3.5.20",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "reactor-core",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/projectreactor/reactor-core/3.5.20/reactor-core-3.5.20.jar"
+                        },
+                        {
+                            "name": "reactor-core",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/projectreactor/reactor-core/3.5.20/reactor-core-3.5.20-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.projectreactor.netty",
+                    "name": "reactor-netty-core",
+                    "version": "1.1.22",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "reactor-netty-core",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/projectreactor/netty/reactor-netty-core/1.1.22/reactor-netty-core-1.1.22.jar"
+                        },
+                        {
+                            "name": "reactor-netty-core",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/projectreactor/netty/reactor-netty-core/1.1.22/reactor-netty-core-1.1.22-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.fasterxml.jackson.core",
+                    "name": "jackson-databind",
+                    "version": "2.19.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jackson-databind",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.19.2/jackson-databind-2.19.2.jar"
+                        },
+                        {
+                            "name": "jackson-databind",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.19.2/jackson-databind-2.19.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "ch.qos.logback",
+                    "name": "logback-core",
+                    "version": "1.5.18",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "logback-core",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/ch/qos/logback/logback-core/1.5.18/logback-core-1.5.18.jar"
+                        },
+                        {
+                            "name": "logback-core",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/ch/qos/logback/logback-core/1.5.18/logback-core-1.5.18-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.slf4j",
+                    "name": "slf4j-api",
+                    "version": "2.0.17",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "slf4j-api",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar"
+                        },
+                        {
+                            "name": "slf4j-api",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.typesafe.scala-logging",
+                    "name": "scala2-macros_2.13",
+                    "version": "4.0.0-RC1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "scala2-macros_2.13",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/scala-logging/scala2-macros_2.13/4.0.0-RC1/scala2-macros_2.13-4.0.0-RC1.jar"
+                        },
+                        {
+                            "name": "scala2-macros_2.13",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/scala-logging/scala2-macros_2.13/4.0.0-RC1/scala2-macros_2.13-4.0.0-RC1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "de.mkammerer",
+                    "name": "argon2-jvm-nolibs",
+                    "version": "2.12",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "argon2-jvm-nolibs",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/de/mkammerer/argon2-jvm-nolibs/2.12/argon2-jvm-nolibs-2.12.jar"
+                        },
+                        {
+                            "name": "argon2-jvm-nolibs",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/de/mkammerer/argon2-jvm-nolibs/2.12/argon2-jvm-nolibs-2.12-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.circe",
+                    "name": "circe-numbers_3",
+                    "version": "0.14.13",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "circe-numbers_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-numbers_3/0.14.13/circe-numbers_3-0.14.13.jar"
+                        },
+                        {
+                            "name": "circe-numbers_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-numbers_3/0.14.13/circe-numbers_3-0.14.13-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.typelevel",
+                    "name": "cats-core_3",
+                    "version": "2.13.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "cats-core_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-core_3/2.13.0/cats-core_3-2.13.0.jar"
+                        },
+                        {
+                            "name": "cats-core_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-core_3/2.13.0/cats-core_3-2.13.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.circe",
+                    "name": "circe-jawn_3",
+                    "version": "0.14.13",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "circe-jawn_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-jawn_3/0.14.13/circe-jawn_3-0.14.13.jar"
+                        },
+                        {
+                            "name": "circe-jawn_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/circe/circe-jawn_3/0.14.13/circe-jawn_3-0.14.13-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.github.f4b6a3",
+                    "name": "uuid-creator",
+                    "version": "6.1.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "uuid-creator",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/f4b6a3/uuid-creator/6.1.1/uuid-creator-6.1.1.jar"
+                        },
+                        {
+                            "name": "uuid-creator",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/f4b6a3/uuid-creator/6.1.1/uuid-creator-6.1.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-stream_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-stream_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-stream_3/1.2.0/pekko-stream_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-stream_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-stream_3/1.2.0/pekko-stream_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-actor_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-actor_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-actor_3/1.2.0/pekko-actor_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-actor_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-actor_3/1.2.0/pekko-actor_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-slf4j_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-slf4j_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-slf4j_3/1.2.0/pekko-slf4j_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-slf4j_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-slf4j_3/1.2.0/pekko-slf4j_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-cluster-sharding_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-cluster-sharding_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-sharding_3/1.2.0/pekko-cluster-sharding_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-cluster-sharding_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-cluster-sharding_3/1.2.0/pekko-cluster-sharding_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-remote_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-remote_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-remote_3/1.2.0/pekko-remote_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-remote_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-remote_3/1.2.0/pekko-remote_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-stream-typed_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-stream-typed_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-stream-typed_3/1.2.0/pekko-stream-typed_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-stream-typed_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-stream-typed_3/1.2.0/pekko-stream-typed_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-persistence_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-persistence_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence_3/1.2.0/pekko-persistence_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-persistence_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-persistence_3/1.2.0/pekko-persistence_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.fasterxml.jackson.core",
+                    "name": "jackson-core",
+                    "version": "2.19.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jackson-core",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.19.2/jackson-core-2.19.2.jar"
+                        },
+                        {
+                            "name": "jackson-core",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.19.2/jackson-core-2.19.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.fasterxml.jackson.core",
+                    "name": "jackson-annotations",
+                    "version": "2.19.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jackson-annotations",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.19.2/jackson-annotations-2.19.2.jar"
+                        },
+                        {
+                            "name": "jackson-annotations",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.19.2/jackson-annotations-2.19.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.fasterxml.jackson.datatype",
+                    "name": "jackson-datatype-jdk8",
+                    "version": "2.19.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jackson-datatype-jdk8",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.19.2/jackson-datatype-jdk8-2.19.2.jar"
+                        },
+                        {
+                            "name": "jackson-datatype-jdk8",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.19.2/jackson-datatype-jdk8-2.19.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.fasterxml.jackson.datatype",
+                    "name": "jackson-datatype-jsr310",
+                    "version": "2.19.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jackson-datatype-jsr310",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.19.2/jackson-datatype-jsr310-2.19.2.jar"
+                        },
+                        {
+                            "name": "jackson-datatype-jsr310",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.19.2/jackson-datatype-jsr310-2.19.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.fasterxml.jackson.module",
+                    "name": "jackson-module-parameter-names",
+                    "version": "2.19.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jackson-module-parameter-names",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-parameter-names/2.19.2/jackson-module-parameter-names-2.19.2.jar"
+                        },
+                        {
+                            "name": "jackson-module-parameter-names",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-parameter-names/2.19.2/jackson-module-parameter-names-2.19.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.fasterxml.jackson.dataformat",
+                    "name": "jackson-dataformat-cbor",
+                    "version": "2.19.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jackson-dataformat-cbor",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-cbor/2.19.2/jackson-dataformat-cbor-2.19.2.jar"
+                        },
+                        {
+                            "name": "jackson-dataformat-cbor",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-cbor/2.19.2/jackson-dataformat-cbor-2.19.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.fasterxml.jackson.module",
+                    "name": "jackson-module-scala_3",
+                    "version": "2.19.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jackson-module-scala_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-scala_3/2.19.2/jackson-module-scala_3-2.19.2.jar"
+                        },
+                        {
+                            "name": "jackson-module-scala_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-scala_3/2.19.2/jackson-module-scala_3-2.19.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lz4",
+                    "name": "lz4-java",
+                    "version": "1.8.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "lz4-java",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/lz4/lz4-java/1.8.0/lz4-java-1.8.0.jar"
+                        },
+                        {
+                            "name": "lz4-java",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/lz4/lz4-java/1.8.0/lz4-java-1.8.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.reactivestreams",
+                    "name": "reactive-streams",
+                    "version": "1.0.4",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "reactive-streams",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar"
+                        },
+                        {
+                            "name": "reactive-streams",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-parsing_3",
+                    "version": "1.1.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-parsing_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-parsing_3/1.1.0/pekko-parsing_3-1.1.0.jar"
+                        },
+                        {
+                            "name": "pekko-parsing_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-parsing_3/1.1.0/pekko-parsing_3-1.1.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.parboiled",
+                    "name": "parboiled_3",
+                    "version": "2.5.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "parboiled_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/parboiled/parboiled_3/2.5.1/parboiled_3-2.5.1.jar"
+                        },
+                        {
+                            "name": "parboiled_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/parboiled/parboiled_3/2.5.1/parboiled_3-2.5.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-coordination_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-coordination_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-coordination_3/1.2.0/pekko-coordination_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-coordination_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-coordination_3/1.2.0/pekko-coordination_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.lmdbjava",
+                    "name": "lmdbjava",
+                    "version": "0.9.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "lmdbjava",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/lmdbjava/lmdbjava/0.9.1/lmdbjava-0.9.1.jar"
+                        },
+                        {
+                            "name": "lmdbjava",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/lmdbjava/lmdbjava/0.9.1/lmdbjava-0.9.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-protobuf-v3_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-protobuf-v3_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-protobuf-v3_3/1.2.0/pekko-protobuf-v3_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-protobuf-v3_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-protobuf-v3_3/1.2.0/pekko-protobuf-v3_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.projectreactor.addons",
+                    "name": "reactor-pool",
+                    "version": "1.0.8",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "reactor-pool",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/projectreactor/addons/reactor-pool/1.0.8/reactor-pool-1.0.8.jar"
+                        },
+                        {
+                            "name": "reactor-pool",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/projectreactor/addons/reactor-pool/1.0.8/reactor-pool-1.0.8-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.ongres.scram",
+                    "name": "common",
+                    "version": "2.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "common",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/scram/common/2.1/common-2.1.jar"
+                        },
+                        {
+                            "name": "common",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/scram/common/2.1/common-2.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-handler",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-handler",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-handler/4.1.112.Final/netty-handler-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-handler",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-handler/4.1.112.Final/netty-handler-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-handler-proxy",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-handler-proxy",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-handler-proxy/4.1.112.Final/netty-handler-proxy-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-handler-proxy",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-handler-proxy/4.1.112.Final/netty-handler-proxy-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-resolver-dns",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-resolver-dns",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver-dns/4.1.112.Final/netty-resolver-dns-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-resolver-dns",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver-dns/4.1.112.Final/netty-resolver-dns-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.scala-lang",
+                    "name": "scala-reflect",
+                    "version": "2.13.16",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "scala-reflect",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.16/scala-reflect-2.13.16.jar"
+                        },
+                        {
+                            "name": "scala-reflect",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.16/scala-reflect-2.13.16-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "net.java.dev.jna",
+                    "name": "jna",
+                    "version": "5.16.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jna",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/net/java/dev/jna/jna/5.16.0/jna-5.16.0.jar"
+                        },
+                        {
+                            "name": "jna",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/net/java/dev/jna/jna/5.16.0/jna-5.16.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.typelevel",
+                    "name": "cats-kernel_3",
+                    "version": "2.13.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "cats-kernel_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-kernel_3/2.13.0/cats-kernel_3-2.13.0.jar"
+                        },
+                        {
+                            "name": "cats-kernel_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-kernel_3/2.13.0/cats-kernel_3-2.13.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.typelevel",
+                    "name": "jawn-parser_3",
+                    "version": "1.6.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jawn-parser_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/typelevel/jawn-parser_3/1.6.0/jawn-parser_3-1.6.0.jar"
+                        },
+                        {
+                            "name": "jawn-parser_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/typelevel/jawn-parser_3/1.6.0/jawn-parser_3-1.6.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.typesafe",
+                    "name": "ssl-config-core_3",
+                    "version": "0.6.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "ssl-config-core_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/ssl-config-core_3/0.6.1/ssl-config-core_3-0.6.1.jar"
+                        },
+                        {
+                            "name": "ssl-config-core_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/ssl-config-core_3/0.6.1/ssl-config-core_3-0.6.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.typesafe",
+                    "name": "config",
+                    "version": "1.4.4",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "config",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/config/1.4.4/config-1.4.4.jar"
+                        },
+                        {
+                            "name": "config",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/config/1.4.4/config-1.4.4-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.pekko",
+                    "name": "pekko-pki_3",
+                    "version": "1.2.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "pekko-pki_3",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-pki_3/1.2.0/pekko-pki_3-1.2.0.jar"
+                        },
+                        {
+                            "name": "pekko-pki_3",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-pki_3/1.2.0/pekko-pki_3-1.2.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.agrona",
+                    "name": "agrona",
+                    "version": "1.22.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "agrona",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/agrona/agrona/1.22.0/agrona-1.22.0.jar"
+                        },
+                        {
+                            "name": "agrona",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/agrona/agrona/1.22.0/agrona-1.22.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.thoughtworks.paranamer",
+                    "name": "paranamer",
+                    "version": "2.8.3",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "paranamer",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/thoughtworks/paranamer/paranamer/2.8.3/paranamer-2.8.3.jar"
+                        },
+                        {
+                            "name": "paranamer",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/thoughtworks/paranamer/paranamer/2.8.3/paranamer-2.8.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.github.jnr",
+                    "name": "jnr-constants",
+                    "version": "0.10.4",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jnr-constants",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-constants/0.10.4/jnr-constants-0.10.4.jar"
+                        },
+                        {
+                            "name": "jnr-constants",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-constants/0.10.4/jnr-constants-0.10.4-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.github.jnr",
+                    "name": "jnr-ffi",
+                    "version": "2.2.17",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jnr-ffi",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-ffi/2.2.17/jnr-ffi-2.2.17.jar"
+                        },
+                        {
+                            "name": "jnr-ffi",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-ffi/2.2.17/jnr-ffi-2.2.17-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.ongres.stringprep",
+                    "name": "saslprep",
+                    "version": "1.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "saslprep",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/stringprep/saslprep/1.1/saslprep-1.1.jar"
+                        },
+                        {
+                            "name": "saslprep",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/stringprep/saslprep/1.1/saslprep-1.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-common",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-common",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-common/4.1.112.Final/netty-common-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-common",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-common/4.1.112.Final/netty-common-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-resolver",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-resolver",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver/4.1.112.Final/netty-resolver-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-resolver",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver/4.1.112.Final/netty-resolver-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-buffer",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-buffer",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-buffer/4.1.112.Final/netty-buffer-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-buffer",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-buffer/4.1.112.Final/netty-buffer-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-transport",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-transport",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport/4.1.112.Final/netty-transport-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-transport",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport/4.1.112.Final/netty-transport-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-transport-native-unix-common",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-transport-native-unix-common",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport-native-unix-common/4.1.112.Final/netty-transport-native-unix-common-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-transport-native-unix-common",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport-native-unix-common/4.1.112.Final/netty-transport-native-unix-common-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-codec",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-codec",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec/4.1.112.Final/netty-codec-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-codec",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec/4.1.112.Final/netty-codec-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-codec-socks",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-codec-socks",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-socks/4.1.112.Final/netty-codec-socks-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-codec-socks",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-socks/4.1.112.Final/netty-codec-socks-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-codec-http",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-codec-http",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-http/4.1.112.Final/netty-codec-http-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-codec-http",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-http/4.1.112.Final/netty-codec-http-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-codec-dns",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-codec-dns",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-dns/4.1.112.Final/netty-codec-dns-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-codec-dns",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-dns/4.1.112.Final/netty-codec-dns-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-resolver-dns-classes-macos",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-resolver-dns-classes-macos",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver-dns-classes-macos/4.1.112.Final/netty-resolver-dns-classes-macos-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-resolver-dns-classes-macos",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-resolver-dns-classes-macos/4.1.112.Final/netty-resolver-dns-classes-macos-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "io.netty",
+                    "name": "netty-transport-classes-epoll",
+                    "version": "4.1.112.Final",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "netty-transport-classes-epoll",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport-classes-epoll/4.1.112.Final/netty-transport-classes-epoll-4.1.112.Final.jar"
+                        },
+                        {
+                            "name": "netty-transport-classes-epoll",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/netty/netty-transport-classes-epoll/4.1.112.Final/netty-transport-classes-epoll-4.1.112.Final-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.hierynomus",
+                    "name": "asn-one",
+                    "version": "0.6.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "asn-one",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/hierynomus/asn-one/0.6.0/asn-one-0.6.0.jar"
+                        },
+                        {
+                            "name": "asn-one",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/hierynomus/asn-one/0.6.0/asn-one-0.6.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.github.jnr",
+                    "name": "jffi",
+                    "version": "1.3.13",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jffi",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jffi/1.3.13/jffi-1.3.13.jar"
+                        },
+                        {
+                            "name": "jffi",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jffi/1.3.13/jffi-1.3.13-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.ow2.asm",
+                    "name": "asm",
+                    "version": "9.7.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "asm",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm/9.7.1/asm-9.7.1.jar"
+                        },
+                        {
+                            "name": "asm",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm/9.7.1/asm-9.7.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.ow2.asm",
+                    "name": "asm-commons",
+                    "version": "9.7.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "asm-commons",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-commons/9.7.1/asm-commons-9.7.1.jar"
+                        },
+                        {
+                            "name": "asm-commons",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-commons/9.7.1/asm-commons-9.7.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.ow2.asm",
+                    "name": "asm-analysis",
+                    "version": "9.7.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "asm-analysis",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-analysis/9.7.1/asm-analysis-9.7.1.jar"
+                        },
+                        {
+                            "name": "asm-analysis",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-analysis/9.7.1/asm-analysis-9.7.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.ow2.asm",
+                    "name": "asm-tree",
+                    "version": "9.7.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "asm-tree",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-tree/9.7.1/asm-tree-9.7.1.jar"
+                        },
+                        {
+                            "name": "asm-tree",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-tree/9.7.1/asm-tree-9.7.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.ow2.asm",
+                    "name": "asm-util",
+                    "version": "9.7.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "asm-util",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-util/9.7.1/asm-util-9.7.1.jar"
+                        },
+                        {
+                            "name": "asm-util",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm-util/9.7.1/asm-util-9.7.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.github.jnr",
+                    "name": "jnr-a64asm",
+                    "version": "1.0.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jnr-a64asm",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-a64asm/1.0.0/jnr-a64asm-1.0.0.jar"
+                        },
+                        {
+                            "name": "jnr-a64asm",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-a64asm/1.0.0/jnr-a64asm-1.0.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.github.jnr",
+                    "name": "jnr-x86asm",
+                    "version": "1.0.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jnr-x86asm",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-x86asm/1.0.2/jnr-x86asm-1.0.2.jar"
+                        },
+                        {
+                            "name": "jnr-x86asm",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-x86asm/1.0.2/jnr-x86asm-1.0.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "com.ongres.stringprep",
+                    "name": "stringprep",
+                    "version": "1.1",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "stringprep",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/stringprep/stringprep/1.1/stringprep-1.1.jar"
+                        },
+                        {
+                            "name": "stringprep",
+                            "classifier": "sources",
+                            "path": "/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/ongres/stringprep/stringprep/1.1/stringprep-1.1-sources.jar"
+                        }
+                    ]
+                }
+            ]
+        },
+        "tags": [
+            "library"
+        ]
+    }
+}

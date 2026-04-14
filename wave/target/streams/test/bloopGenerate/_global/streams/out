@@ -1,0 +1,4 @@
+[debug] [wave-test] Classpath dependencies List(common, order, sku)
+[debug] [wave-test] Dependencies from configurations List(wave)
+[debug] Bloop wrote the configuration of project 'wave-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/wave-test.json'
+[success] Generated .bloop/wave-test.json

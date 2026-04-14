@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Appendix D: API Reference</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Appendix D: API Reference</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#authentication">Authentication</a></li>
+    <li class="level1 nav-leaf"><a href="#waves">Waves</a></li>
+    <li class="level1 nav-leaf"><a href="#tasks">Tasks</a></li>
+    <li class="level1 nav-leaf"><a href="#consolidation-groups">Consolidation Groups</a></li>
+    <li class="level1 nav-leaf"><a href="#handling-units">Handling Units</a></li>
+    <li class="level1 nav-leaf"><a href="#transport-orders">Transport Orders</a></li>
+    <li class="level1 nav-leaf"><a href="#workstations">Workstations</a></li>
+    <li class="level1 nav-leaf"><a href="#slots">Slots</a></li>
+    <li class="level1 nav-leaf"><a href="#inventory">Inventory</a></li>
+    <li class="level1 nav-leaf"><a href="#stock-positions">Stock Positions</a></li>
+    <li class="level1 nav-node"><a href="#inbound">Inbound</a></li>
+    <li class="level2 nav-leaf"><a href="#deliveries">Deliveries</a></li>
+    <li class="level2 nav-leaf"><a href="#receipts">Receipts</a></li>
+    <li class="level1 nav-leaf"><a href="#cycle-counts">Cycle Counts</a></li>
+    <li class="level1 nav-leaf"><a href="#permission-reference">Permission Reference</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="appendix-d-api-reference" class="title">Appendix D: API Reference</h1>
+        <p>All endpoints use JSON request and response bodies with circe marshalling. Authentication is cookie-based (session token). Each endpoint requires a specific permission, enforced by <code>AuthDirectives.requirePermission</code>.</p>
+        <hr>
+        
+        <h2 id="authentication" class="section"><a class="anchor-link left" href="#authentication"><i class="icofont-laika link">&#xef71;</i></a>Authentication</h2>
+        <p>Base path: <code>/auth</code></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/auth/login</code></td>
+              <td>(none)</td>
+              <td><code>{ login, password }</code></td>
+              <td><code>{ userId, login, name, role, permissions[] }</code></td>
+              <td>401 InvalidCredentials, 403 AccountInactive</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/auth/logout</code></td>
+              <td>(none)</td>
+              <td>(none)</td>
+              <td>200 OK</td>
+              <td>(none)</td>
+            </tr>
+            <tr>
+              <td>GET</td>
+              <td><code>/auth/me</code></td>
+              <td>(authenticated)</td>
+              <td>(none)</td>
+              <td><code>{ userId, login, name, role, permissions[] }</code></td>
+              <td>401 Unauthorized</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Login sets an HttpOnly session cookie (<code>session</code>). Logout clears it.</p>
+        <hr>
+        
+        <h2 id="waves" class="section"><a class="anchor-link left" href="#waves"><i class="icofont-laika link">&#xef71;</i></a>Waves</h2>
+        <p>Base path: <code>/waves</code></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/waves/plan-and-release</code></td>
+              <td><code>wave:plan</code></td>
+              <td><code>{ orderIds[], grouping, dockAssignments[{ dockId, carrierId }] }</code></td>
+              <td><code>{ status, waveId, tasksCreated, consolidationGroupsCreated }</code></td>
+              <td>409 DockConflict, 422 other planning errors</td>
+            </tr>
+            <tr>
+              <td>DELETE</td>
+              <td><code>/waves/{waveId}</code></td>
+              <td><code>wave:cancel</code></td>
+              <td>(none)</td>
+              <td><code>{ status, waveId, cancelledTasks, cancelledTransportOrders, cancelledConsolidationGroups }</code></td>
+              <td>404 WaveNotFound, 409 WaveAlreadyTerminal</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="tasks" class="section"><a class="anchor-link left" href="#tasks"><i class="icofont-laika link">&#xef71;</i></a>Tasks</h2>
+        <p>Base path: <code>/tasks</code></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/tasks/{taskId}/complete</code></td>
+              <td><code>task:complete</code></td>
+              <td><code>{ actualQuantity, verified }</code></td>
+              <td><code>{ status, taskId, actualQuantity, requestedQuantity, hasShortpick, hasTransportOrder }</code></td>
+              <td>404 TaskNotFound, 409 TaskNotAssigned, 422 InvalidActualQuantity, 428 VerificationRequired</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/tasks/{taskId}/allocate</code></td>
+              <td><code>task:allocate</code></td>
+              <td><code>{ sourceLocationId, destinationLocationId }</code></td>
+              <td><code>{ status, taskId, sourceLocationId, destinationLocationId }</code></td>
+              <td>404 TaskNotFound, 409 TaskInWrongState or TaskAlreadyTerminal, 422 UserNotFound or UserNotActive</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/tasks/{taskId}/assign</code></td>
+              <td><code>task:assign</code></td>
+              <td><code>{ userId }</code></td>
+              <td><code>{ status, taskId, userId }</code></td>
+              <td>404 TaskNotFound, 409 TaskInWrongState or TaskAlreadyTerminal, 422 UserNotFound or UserNotActive</td>
+            </tr>
+            <tr>
+              <td>DELETE</td>
+              <td><code>/tasks/{taskId}</code></td>
+              <td><code>task:cancel</code></td>
+              <td>(none)</td>
+              <td><code>{ status, taskId }</code></td>
+              <td>404 TaskNotFound, 409 TaskInWrongState or TaskAlreadyTerminal</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="consolidation-groups" class="section"><a class="anchor-link left" href="#consolidation-groups"><i class="icofont-laika link">&#xef71;</i></a>Consolidation Groups</h2>
+        <p>Base path: <code>/consolidation-groups</code></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/consolidation-groups/{id}/complete</code></td>
+              <td><code>consolidation-group:complete</code></td>
+              <td>(none)</td>
+              <td><code>{ status, consolidationGroupId, workstationReleased }</code></td>
+              <td>404 ConsolidationGroupNotFound, 409 ConsolidationGroupNotAssigned or WorkstationNotActive, 422 WorkstationNotFound</td>
+            </tr>
+            <tr>
+              <td>DELETE</td>
+              <td><code>/consolidation-groups/{id}</code></td>
+              <td><code>consolidation-group:cancel</code></td>
+              <td>(none)</td>
+              <td><code>{ status, consolidationGroupId }</code></td>
+              <td>404 ConsolidationGroupNotFound, 409 ConsolidationGroupAlreadyTerminal</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="handling-units" class="section"><a class="anchor-link left" href="#handling-units"><i class="icofont-laika link">&#xef71;</i></a>Handling Units</h2>
+        <p>Base path: <code>/handling-units</code></p>
+        <p>All handling unit endpoints require the <code>handling-unit:manage</code> permission.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/handling-units/{id}/pack</code></td>
+              <td><code>handling-unit:manage</code></td>
+              <td>(none)</td>
+              <td><code>{ status, handlingUnitId }</code></td>
+              <td>404 HandlingUnitNotFound, 409 HandlingUnitInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/handling-units/{id}/ready-to-ship</code></td>
+              <td><code>handling-unit:manage</code></td>
+              <td>(none)</td>
+              <td><code>{ status, handlingUnitId }</code></td>
+              <td>404 HandlingUnitNotFound, 409 HandlingUnitInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/handling-units/{id}/ship</code></td>
+              <td><code>handling-unit:manage</code></td>
+              <td>(none)</td>
+              <td><code>{ status, handlingUnitId }</code></td>
+              <td>404 HandlingUnitNotFound, 409 HandlingUnitInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/handling-units/{id}/empty</code></td>
+              <td><code>handling-unit:manage</code></td>
+              <td>(none)</td>
+              <td><code>{ status, handlingUnitId }</code></td>
+              <td>404 HandlingUnitNotFound, 409 HandlingUnitInWrongState</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="transport-orders" class="section"><a class="anchor-link left" href="#transport-orders"><i class="icofont-laika link">&#xef71;</i></a>Transport Orders</h2>
+        <p>Base path: <code>/transport-orders</code></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/transport-orders/{id}/confirm</code></td>
+              <td><code>transport-order:confirm</code></td>
+              <td>(none)</td>
+              <td><code>{ status, transportOrderId, handlingUnitInBuffer, bufferCompletion }</code></td>
+              <td>404 TransportOrderNotFound, 409 TransportOrderNotPending or HandlingUnitNotPickCreated, 422 HandlingUnitNotFound</td>
+            </tr>
+            <tr>
+              <td>DELETE</td>
+              <td><code>/transport-orders/{id}</code></td>
+              <td><code>transport-order:cancel</code></td>
+              <td>(none)</td>
+              <td><code>{ status, transportOrderId }</code></td>
+              <td>404 TransportOrderNotFound, 409 TransportOrderAlreadyTerminal</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="workstations" class="section"><a class="anchor-link left" href="#workstations"><i class="icofont-laika link">&#xef71;</i></a>Workstations</h2>
+        <p>Base path: <code>/workstations</code></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/workstations</code></td>
+              <td><code>workstation:manage</code></td>
+              <td><code>{ workstationType, slotCount }</code></td>
+              <td><code>{ status, workstationId, workstationType, slotCount }</code></td>
+              <td>422 creation error</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/workstations/{id}/enable</code></td>
+              <td><code>workstation:manage</code></td>
+              <td>(none)</td>
+              <td><code>{ status, workstationId }</code></td>
+              <td>404 WorkstationNotFound, 409 WorkstationInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/workstations/{id}/disable</code></td>
+              <td><code>workstation:manage</code></td>
+              <td>(none)</td>
+              <td><code>{ status, workstationId }</code></td>
+              <td>404 WorkstationNotFound, 409 WorkstationInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/workstations/assign</code></td>
+              <td><code>workstation:assign</code></td>
+              <td><code>{ consolidationGroupId }</code></td>
+              <td><code>{ status, consolidationGroupId, workstationId }</code></td>
+              <td>404 ConsolidationGroupNotFound, 409 ConsolidationGroupNotReady, 503 NoWorkstationAvailable</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="slots" class="section"><a class="anchor-link left" href="#slots"><i class="icofont-laika link">&#xef71;</i></a>Slots</h2>
+        <p>Base path: <code>/slots</code></p>
+        <p>All slot endpoints require the <code>slot:manage</code> permission.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/slots/{id}/reserve</code></td>
+              <td><code>slot:manage</code></td>
+              <td><code>{ orderId, handlingUnitId }</code></td>
+              <td><code>{ status, slotId }</code></td>
+              <td>404 SlotNotFound, 409 SlotInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/slots/{id}/complete</code></td>
+              <td><code>slot:manage</code></td>
+              <td>(none)</td>
+              <td><code>{ status, slotId }</code></td>
+              <td>404 SlotNotFound, 409 SlotInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/slots/{id}/release</code></td>
+              <td><code>slot:manage</code></td>
+              <td>(none)</td>
+              <td><code>{ status, slotId }</code></td>
+              <td>404 SlotNotFound, 409 SlotInWrongState</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="inventory" class="section"><a class="anchor-link left" href="#inventory"><i class="icofont-laika link">&#xef71;</i></a>Inventory</h2>
+        <p>Base path: <code>/inventory</code></p>
+        <p>All inventory endpoints require the <code>inventory:manage</code> permission.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/inventory</code></td>
+              <td><code>inventory:manage</code></td>
+              <td><code>{ locationId, skuId, packagingLevel, lot?, onHand }</code></td>
+              <td><code>{ status, inventoryId }</code></td>
+              <td>404 InventoryNotFound, 422 InvalidQuantity</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/inventory/{id}/reserve</code></td>
+              <td><code>inventory:manage</code></td>
+              <td><code>{ quantity }</code></td>
+              <td><code>{ status, inventoryId }</code></td>
+              <td>404 InventoryNotFound, 409 InsufficientAvailable, 422 InvalidQuantity</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/inventory/{id}/release</code></td>
+              <td><code>inventory:manage</code></td>
+              <td><code>{ quantity }</code></td>
+              <td><code>{ status, inventoryId }</code></td>
+              <td>404 InventoryNotFound, 409 InsufficientReserved, 422 InvalidQuantity</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/inventory/{id}/consume</code></td>
+              <td><code>inventory:manage</code></td>
+              <td><code>{ quantity }</code></td>
+              <td><code>{ status, inventoryId }</code></td>
+              <td>404 InventoryNotFound, 409 InsufficientReserved, 422 InvalidQuantity</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/inventory/{id}/correct-lot</code></td>
+              <td><code>inventory:manage</code></td>
+              <td><code>{ lot? }</code></td>
+              <td><code>{ status, inventoryId }</code></td>
+              <td>404 InventoryNotFound, 409 ReservedNotZero</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="stock-positions" class="section"><a class="anchor-link left" href="#stock-positions"><i class="icofont-laika link">&#xef71;</i></a>Stock Positions</h2>
+        <p>Base path: <code>/stock-positions</code></p>
+        <p>All stock position endpoints require the <code>stock:manage</code> permission.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/stock-positions</code></td>
+              <td><code>stock:manage</code></td>
+              <td><code>{ skuId, warehouseAreaId, lot?, onHandQuantity }</code></td>
+              <td><code>{ status, stockPositionId }</code></td>
+              <td>422 InvalidQuantity</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/stock-positions/{id}/block</code></td>
+              <td><code>stock:manage</code></td>
+              <td><code>{ quantity }</code></td>
+              <td><code>{ status, stockPositionId }</code></td>
+              <td>404 StockPositionNotFound, 409 InsufficientAvailable, 422 InvalidQuantity</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/stock-positions/{id}/unblock</code></td>
+              <td><code>stock:manage</code></td>
+              <td><code>{ quantity }</code></td>
+              <td><code>{ status, stockPositionId }</code></td>
+              <td>404 StockPositionNotFound, 409 InsufficientBlocked, 422 InvalidQuantity</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/stock-positions/{id}/adjust</code></td>
+              <td><code>stock:manage</code></td>
+              <td><code>{ delta, reasonCode }</code></td>
+              <td><code>{ status, stockPositionId }</code></td>
+              <td>404 StockPositionNotFound, 422 InvalidQuantity</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="inbound" class="section"><a class="anchor-link left" href="#inbound"><i class="icofont-laika link">&#xef71;</i></a>Inbound</h2>
+        <p>Base path: <code>/inbound</code></p>
+        <p>All inbound endpoints require the <code>inbound:manage</code> permission.</p>
+        
+        <h3 id="deliveries" class="section"><a class="anchor-link left" href="#deliveries"><i class="icofont-laika link">&#xef71;</i></a>Deliveries</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/inbound/deliveries</code></td>
+              <td><code>inbound:manage</code></td>
+              <td><code>{ skuId, packagingLevel, lot?, expectedQuantity }</code></td>
+              <td><code>{ status, deliveryId }</code></td>
+              <td>409 DeliveryInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/inbound/deliveries/{id}/receive</code></td>
+              <td><code>inbound:manage</code></td>
+              <td><code>{ quantity, rejectedQuantity }</code></td>
+              <td><code>{ status, deliveryId }</code></td>
+              <td>404 DeliveryNotFound, 409 DeliveryInWrongState</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h3 id="receipts" class="section"><a class="anchor-link left" href="#receipts"><i class="icofont-laika link">&#xef71;</i></a>Receipts</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/inbound/receipts</code></td>
+              <td><code>inbound:manage</code></td>
+              <td><code>{ inboundDeliveryId }</code></td>
+              <td><code>{ status, receiptId }</code></td>
+              <td>409 ReceiptInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/inbound/receipts/{id}/record-line</code></td>
+              <td><code>inbound:manage</code></td>
+              <td><code>{ skuId, quantity, packagingLevel, lot?, targetContainerId? }</code></td>
+              <td><code>{ status, receiptId }</code></td>
+              <td>404 ReceiptNotFound, 409 ReceiptInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/inbound/receipts/{id}/confirm</code></td>
+              <td><code>inbound:manage</code></td>
+              <td>(none)</td>
+              <td><code>{ status, receiptId }</code></td>
+              <td>404 ReceiptNotFound, 409 ReceiptInWrongState</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="cycle-counts" class="section"><a class="anchor-link left" href="#cycle-counts"><i class="icofont-laika link">&#xef71;</i></a>Cycle Counts</h2>
+        <p>Base path: <code>/cycle-counts</code></p>
+        <p>All cycle count endpoints require the <code>cycle-count:manage</code> permission.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Permission</th>
+              <th>Request Body</th>
+              <th>Response Body</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>POST</td>
+              <td><code>/cycle-counts</code></td>
+              <td><code>cycle-count:manage</code></td>
+              <td><code>{ warehouseAreaId, skuIds[], countType, countMethod }</code></td>
+              <td><code>{ status, cycleCountId }</code></td>
+              <td>409 CycleCountInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/cycle-counts/{id}/start</code></td>
+              <td><code>cycle-count:manage</code></td>
+              <td>(none)</td>
+              <td><code>{ status, cycleCountId }</code></td>
+              <td>404 CycleCountNotFound, 409 CycleCountInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/cycle-counts/{id}/tasks/{taskId}/assign</code></td>
+              <td><code>cycle-count:manage</code></td>
+              <td><code>{ userId }</code></td>
+              <td><code>{ status, countTaskId }</code></td>
+              <td>404 CountTaskNotFound, 409 CountTaskInWrongState</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td><code>/cycle-counts/{id}/tasks/{taskId}/record</code></td>
+              <td><code>cycle-count:manage</code></td>
+              <td><code>{ actualQuantity }</code></td>
+              <td><code>{ status, countTaskId }</code></td>
+              <td>404 CountTaskNotFound, 409 CountTaskInWrongState</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="permission-reference" class="section"><a class="anchor-link left" href="#permission-reference"><i class="icofont-laika link">&#xef71;</i></a>Permission Reference</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Permission Key</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>wave:plan</code></td>
+              <td>Plan and release waves</td>
+            </tr>
+            <tr>
+              <td><code>wave:cancel</code></td>
+              <td>Cancel waves</td>
+            </tr>
+            <tr>
+              <td><code>task:complete</code></td>
+              <td>Complete tasks</td>
+            </tr>
+            <tr>
+              <td><code>task:allocate</code></td>
+              <td>Allocate tasks to locations</td>
+            </tr>
+            <tr>
+              <td><code>task:assign</code></td>
+              <td>Assign tasks to users</td>
+            </tr>
+            <tr>
+              <td><code>task:cancel</code></td>
+              <td>Cancel tasks</td>
+            </tr>
+            <tr>
+              <td><code>transport-order:confirm</code></td>
+              <td>Confirm transport order delivery</td>
+            </tr>
+            <tr>
+              <td><code>transport-order:cancel</code></td>
+              <td>Cancel transport orders</td>
+            </tr>
+            <tr>
+              <td><code>consolidation-group:complete</code></td>
+              <td>Complete consolidation groups</td>
+            </tr>
+            <tr>
+              <td><code>consolidation-group:cancel</code></td>
+              <td>Cancel consolidation groups</td>
+            </tr>
+            <tr>
+              <td><code>workstation:assign</code></td>
+              <td>Assign work to workstations</td>
+            </tr>
+            <tr>
+              <td><code>workstation:manage</code></td>
+              <td>Create, enable, disable workstations</td>
+            </tr>
+            <tr>
+              <td><code>handling-unit:manage</code></td>
+              <td>Manage handling unit lifecycle</td>
+            </tr>
+            <tr>
+              <td><code>slot:manage</code></td>
+              <td>Reserve, complete, release slots</td>
+            </tr>
+            <tr>
+              <td><code>inventory:manage</code></td>
+              <td>Manage inventory positions</td>
+            </tr>
+            <tr>
+              <td><code>stock:manage</code></td>
+              <td>Manage stock positions</td>
+            </tr>
+            <tr>
+              <td><code>inbound:manage</code></td>
+              <td>Manage inbound deliveries and receipts</td>
+            </tr>
+            <tr>
+              <td><code>cycle-count:manage</code></td>
+              <td>Manage cycle counts and count tasks</td>
+            </tr>
+            <tr>
+              <td><code>user:manage</code></td>
+              <td>Manage user accounts</td>
+            </tr>
+          </tbody>
+        </table>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

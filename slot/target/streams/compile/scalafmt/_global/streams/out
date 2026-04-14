@@ -1,0 +1,11 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/slot/src/main/scala/neon/slot/PekkoSlotRepository.scala, /home/martins/Projects/neon/slot/src/main/scala/neon/slot/SlotActor.scala, /home/martins/Projects/neon/slot/src/main/scala/neon/slot/SlotRepository.scala, /home/martins/Projects/neon/slot/src/main/scala/neon/slot/SlotEvent.scala, /home/martins/Projects/neon/slot/src/main/scala/neon/slot/AsyncSlotRepository.scala, /home/martins/Projects/neon/slot/src/main/scala/neon/slot/Slot.scala
+[debug] 	Modified: /home/martins/Projects/neon/slot/src/main/scala/neon/slot/PekkoSlotRepository.scala
+[debug] 	Unmodified: /home/martins/Projects/neon/slot/src/main/scala/neon/slot/SlotActor.scala, /home/martins/Projects/neon/slot/src/main/scala/neon/slot/SlotRepository.scala, /home/martins/Projects/neon/slot/src/main/scala/neon/slot/SlotEvent.scala, /home/martins/Projects/neon/slot/src/main/scala/neon/slot/AsyncSlotRepository.scala, /home/martins/Projects/neon/slot/src/main/scala/neon/slot/Slot.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[info] scalafmt: Formatting 1 Scala sources (/home/martins/Projects/neon/slot)...
+[debug] scalafmt: Unchanged 1 Scala sources

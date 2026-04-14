@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>CQRS and Projections</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 active nav-leaf"><a href="#">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">CQRS and Projections</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#why-cqrs">Why CQRS?</a></li>
+    <li class="level1 nav-node"><a href="#projection-architecture">Projection Architecture</a></li>
+    <li class="level2 nav-leaf"><a href="#the-building-blocks">The Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="#projectionbootstrap">ProjectionBootstrap</a></li>
+    <li class="level2 nav-leaf"><a href="#the-initprojection-helper">The initProjection Helper</a></li>
+    <li class="level1 nav-leaf"><a href="#walkthrough-taskprojectionhandler">Walkthrough: TaskProjectionHandler</a></li>
+    <li class="level1 nav-leaf"><a href="#the-full-projection-catalogue">The Full Projection Catalogue</a></li>
+    <li class="level1 nav-leaf"><a href="#loggingprojectionhandler-base-class">LoggingProjectionHandler Base Class</a></li>
+    <li class="level1 nav-leaf"><a href="#what-comes-next">What Comes Next</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="cqrs-and-projections" class="title">CQRS and Projections</h1>
+        <p>In the previous chapters we built event-sourced actors that persist domain
+        events to an R2DBC journal. Those events are the single source of truth for
+        every aggregate. But there is a problem: querying across aggregates is
+        painful. If you want to list all tasks for a given wave, you would have to
+        fan out <code>GetState</code> commands to every task entity in the cluster and filter
+        the results. That is slow, wasteful, and does not scale.</p>
+        <p>CQRS (Command Query Responsibility Segregation) solves this by splitting our
+        system into two sides. The <em>write side</em> is the event-sourced actors we built
+        in Chapters 10 and 11. The <em>read side</em> is a set of projections that consume
+        those same events and populate query-optimized PostgreSQL tables. Each side
+        can evolve independently: the write model is optimized for consistency and
+        state machine correctness, while the read model is optimized for fast queries
+        and flexible filtering.</p>
+        <p>In this chapter we will explore how Neon WES wires up projections with
+        <code>ShardedDaemonProcess</code>, how individual projection handlers consume events and
+        upsert into read-side tables, and how the <code>LoggingProjectionHandler</code> base
+        class provides structured observability for every projection in the system.</p>
+        
+        <h2 id="why-cqrs" class="section"><a class="anchor-link left" href="#why-cqrs"><i class="icofont-laika link">&#xef71;</i></a>Why CQRS?</h2>
+        <p>Let&#39;s start with the fundamental tension that CQRS resolves.</p>
+        <p>Our event-sourced actors store their state as a sequence of events in the
+        R2DBC journal. They are excellent at one thing: receiving a command, validating
+        it against the current state, and persisting the resulting event. Each actor
+        owns exactly one entity instance (one wave, one task, one workstation), and
+        Pekko Cluster Sharding guarantees that only one actor per entity exists in the
+        cluster at any time.</p>
+        <p>This design is perfect for writes. But reads are a different story. Consider
+        these common queries:</p>
+        <ul>
+          <li>&quot;Show me all tasks for wave W-42.&quot;</li>
+          <li>&quot;List every workstation that is currently Idle.&quot;</li>
+          <li>&quot;How many consolidation groups are in state ReadyForWorkstation?&quot;</li>
+          <li>&quot;What is the current stock position for SKU-A in warehouse area 1?&quot;</li>
+        </ul>
+        <p>None of these queries map naturally to a single entity. To answer &quot;all tasks
+        for wave W-42,&quot; we would need to know which task IDs belong to that wave (we
+        do not have a global index), then ask each task actor for its state, then
+        assemble the results. That is an N+1 pattern at the cluster level.</p>
+        <p>CQRS eliminates this problem by maintaining dedicated read-side tables that
+        are updated asynchronously from the event stream. The <code>task_by_wave</code> table,
+        for example, is indexed by <code>wave_id</code> and stores the current state of every
+        task. A simple <code>SELECT * FROM task_by_wave WHERE wave_id = ?</code> returns
+        everything we need in one query.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The read side is <em>eventually consistent</em> with the write side.
+          After a command succeeds and an event is persisted, there is a small delay
+          (typically milliseconds) before the projection handler processes that event
+          and updates the read-side table. For warehouse operations, this latency is
+          negligible. The critical guarantee is that the write side is always
+          consistent: the actor will never accept an invalid command.</p>
+        </div>
+        <p>The trade-off is clear. We maintain two representations of the same data.
+        The write side is the authoritative event log; the read side is a derived
+        view. If a read-side table ever becomes corrupted or needs a schema change,
+        we can rebuild it by replaying events from the journal. Nothing is lost.</p>
+        
+        <h2 id="projection-architecture" class="section"><a class="anchor-link left" href="#projection-architecture"><i class="icofont-laika link">&#xef71;</i></a>Projection Architecture</h2>
+        <p>Neon WES initializes all its projections in a single bootstrap object. Let&#39;s
+        look at how the pieces fit together.</p>
+        
+        <h3 id="the-building-blocks" class="section"><a class="anchor-link left" href="#the-building-blocks"><i class="icofont-laika link">&#xef71;</i></a>The Building Blocks</h3>
+        <p>Three Pekko components collaborate to make projections work:</p>
+        <ol class="arabic">
+          <li>
+            <p><strong>EventSourcedProvider</strong>: reads events from the R2DBC journal, partitioned
+            by <em>slice ranges</em>. Slices are a sharding concept that divides entity IDs
+            into numbered buckets (0 to 1023). Each projection instance is responsible
+            for a contiguous range of slices.</p>
+          </li>
+          <li>
+            <p><strong>R2dbcProjection.atLeastOnce</strong>: creates a projection that processes events
+            with at-least-once delivery semantics. If the projection crashes
+            mid-batch, it will re-process some events after recovery. Our handlers are
+            written to be idempotent (using <code>ON CONFLICT ... DO UPDATE</code>), so
+            reprocessing is safe.</p>
+          </li>
+          <li>
+            <p><strong>ShardedDaemonProcess</strong>: runs projection instances as managed actors
+            distributed across the cluster. If a node goes down, another node picks up
+            its slice ranges automatically.</p>
+          </li>
+        </ol>
+        
+        <h3 id="projectionbootstrap" class="section"><a class="anchor-link left" href="#projectionbootstrap"><i class="icofont-laika link">&#xef71;</i></a>ProjectionBootstrap</h3>
+        <p>All projections are initialized in <code>ProjectionBootstrap.start</code>, which runs
+        once at application startup from the <code>Guardian</code> root actor.</p>
+        <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">ProjectionBootstrap</span><span>:
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">start</span><span>(</span><span class="identifier">system</span><span>: </span><span class="type-name">ActorSystem</span><span>[?]): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">given</span><span> </span><span class="type-name">ActorSystem</span><span>[?] = </span><span class="identifier">system</span><span>
+    </span><span class="identifier">given</span><span> </span><span class="type-name">ExecutionContext</span><span> = </span><span class="identifier">system</span><span>.</span><span class="identifier">executionContext</span><span>
+
+    </span><span class="identifier">initProjection</span><span>[</span><span class="type-name">TaskEvent</span><span>](
+      </span><span class="string-literal">&quot;task-projection&quot;</span><span>,
+      </span><span class="string-literal">&quot;Task&quot;</span><span>,
+      () =&gt; </span><span class="type-name">TaskProjectionHandler</span><span>()
+    )
+
+    </span><span class="identifier">initProjection</span><span>[</span><span class="type-name">ConsolidationGroupEvent</span><span>](
+      </span><span class="string-literal">&quot;consolidation-group-projection&quot;</span><span>,
+      </span><span class="string-literal">&quot;ConsolidationGroup&quot;</span><span>,
+      () =&gt; </span><span class="type-name">ConsolidationGroupProjectionHandler</span><span>()
+    )
+
+    </span><span class="identifier">initProjection</span><span>[</span><span class="type-name">TransportOrderEvent</span><span>](
+      </span><span class="string-literal">&quot;transport-order-projection&quot;</span><span>,
+      </span><span class="string-literal">&quot;TransportOrder&quot;</span><span>,
+      () =&gt; </span><span class="type-name">TransportOrderProjectionHandler</span><span>()
+    )
+
+    </span><span class="comment">// ... one initProjection call per event-sourced aggregate</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/scala/neon/app/projection/ProjectionBootstrap.scala</em>&lt;/small&gt;</p>
+        <p>The pattern is consistent: every event-sourced aggregate gets its own
+        projection, identified by a name string and the entity type tag that matches
+        what the actor uses in <code>.withTagger</code>. The handler factory is a zero-argument
+        function that creates a fresh handler instance.</p>
+        
+        <h3 id="the-initprojection-helper" class="section"><a class="anchor-link left" href="#the-initprojection-helper"><i class="icofont-laika link">&#xef71;</i></a>The initProjection Helper</h3>
+        <p>The private <code>initProjection</code> method wires together the three building blocks:</p>
+        <pre><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">initProjection</span><span>[</span><span class="type-name">E</span><span>](
+    </span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">entityType</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">handlerFactory</span><span>: () =&gt; </span><span class="type-name">R2dbcHandler</span><span>[</span><span class="type-name">EventEnvelope</span><span>[</span><span class="type-name">E</span><span>]]
+)(</span><span class="identifier">using</span><span> </span><span class="identifier">system</span><span>: </span><span class="type-name">ActorSystem</span><span>[?]): </span><span class="type-name">Unit</span><span> =
+  </span><span class="keyword">val</span><span> </span><span class="identifier">sliceRanges</span><span> = </span><span class="type-name">EventSourcedProvider</span><span>.</span><span class="identifier">sliceRanges</span><span>(
+    </span><span class="identifier">system</span><span>,
+    </span><span class="type-name">R2dbcReadJournal</span><span>.</span><span class="type-name">Identifier</span><span>,
+    </span><span class="identifier">numberOfRanges</span><span> = </span><span class="number-literal">1</span><span>
+  )
+  </span><span class="type-name">ShardedDaemonProcess</span><span>(</span><span class="identifier">system</span><span>).</span><span class="identifier">init</span><span>(
+    </span><span class="identifier">name</span><span> = </span><span class="identifier">name</span><span>,
+    </span><span class="identifier">numberOfInstances</span><span> = </span><span class="number-literal">1</span><span>,
+    </span><span class="identifier">behaviorFactory</span><span> = { </span><span class="identifier">index</span><span> =&gt;
+      </span><span class="keyword">val</span><span> </span><span class="identifier">sliceRange</span><span> = </span><span class="identifier">sliceRanges</span><span>(</span><span class="identifier">index</span><span>)
+      </span><span class="keyword">val</span><span> </span><span class="identifier">sourceProvider</span><span> =
+        </span><span class="type-name">EventSourcedProvider</span><span>.</span><span class="identifier">eventsBySlices</span><span>[</span><span class="type-name">E</span><span>](
+          </span><span class="identifier">system</span><span>,
+          </span><span class="identifier">readJournalPluginId</span><span> = </span><span class="type-name">R2dbcReadJournal</span><span>.</span><span class="type-name">Identifier</span><span>,
+          </span><span class="identifier">entityType</span><span> = </span><span class="identifier">entityType</span><span>,
+          </span><span class="identifier">minSlice</span><span> = </span><span class="identifier">sliceRange</span><span>.</span><span class="identifier">min</span><span>,
+          </span><span class="identifier">maxSlice</span><span> = </span><span class="identifier">sliceRange</span><span>.</span><span class="identifier">max</span><span>
+        )
+      </span><span class="type-name">ProjectionBehavior</span><span>(
+        </span><span class="type-name">R2dbcProjection</span><span>.</span><span class="identifier">atLeastOnce</span><span>(
+          </span><span class="identifier">projectionId</span><span> = </span><span class="type-name">ProjectionId</span><span>(</span><span class="identifier">name</span><span>, </span><span class="identifier">sliceRange</span><span>.</span><span class="identifier">min</span><span>.</span><span class="identifier">toString</span><span>),
+          </span><span class="identifier">settings</span><span> = </span><span class="type-name">None</span><span>,
+          </span><span class="identifier">sourceProvider</span><span> = </span><span class="identifier">sourceProvider</span><span>,
+          </span><span class="identifier">handler</span><span> = </span><span class="identifier">handlerFactory</span><span>
+        )
+      )
+    },
+    </span><span class="identifier">stopMessage</span><span> = </span><span class="type-name">ProjectionBehavior</span><span>.</span><span class="type-name">Stop</span><span>
+  )</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/scala/neon/app/projection/ProjectionBootstrap.scala</em>&lt;/small&gt;</p>
+        <p>Let&#39;s walk through this step by step:</p>
+        <ol class="arabic">
+          <li>
+            <p><strong>Slice ranges</strong>: We ask for <code>numberOfRanges = 1</code>, meaning one projection
+            instance handles all 1024 slices. For higher throughput, we could split
+            into multiple ranges (say 4), and <code>ShardedDaemonProcess</code> would run four
+            instances across the cluster, each responsible for 256 slices.</p>
+          </li>
+          <li>
+            <p><strong>Source provider</strong>: <code>EventSourcedProvider.eventsBySlices</code> creates a
+            streaming source that reads events tagged with <code>entityType</code> from the R2DBC
+            journal. It delivers events in order within each persistence ID.</p>
+          </li>
+          <li>
+            <p><strong>Projection behavior</strong>: <code>R2dbcProjection.atLeastOnce</code> wraps the source
+            and handler into a <code>ProjectionBehavior</code> actor. This actor manages offset
+            tracking (so it knows where to resume after restart) and calls the handler
+            for each event envelope.</p>
+          </li>
+          <li>
+            <p><strong>ShardedDaemonProcess</strong>: starts the projection as a cluster singleton
+            (since we have one instance). If the owning node crashes, the daemon
+            process migrates to another node and resumes from the last committed
+            offset.</p>
+          </li>
+        </ol>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The <code>settings = None</code> parameter means we accept Pekko&#39;s default
+          projection settings. In production you might tune <code>saveOffsetAfterEnvelopes</code>
+          or <code>saveOffsetAfterDuration</code> to control how frequently offsets are committed.</p>
+        </div>
+        
+        <h2 id="walkthrough-taskprojectionhandler" class="section"><a class="anchor-link left" href="#walkthrough-taskprojectionhandler"><i class="icofont-laika link">&#xef71;</i></a>Walkthrough: TaskProjectionHandler</h2>
+        <p>Now let&#39;s see what happens inside a handler when an event arrives. The
+        <code>TaskProjectionHandler</code> is a representative example that populates two
+        read-side tables: <code>task_by_wave</code> and <code>task_by_handling_unit</code>.</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">TaskProjectionHandler</span><span>(</span><span class="identifier">using</span><span> </span><span class="type-name">ExecutionContext</span><span>)
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">LoggingProjectionHandler</span><span>[</span><span class="type-name">TaskEvent</span><span>]:
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">processEvent</span><span>(
+      </span><span class="identifier">session</span><span>: </span><span class="type-name">R2dbcSession</span><span>,
+      </span><span class="identifier">envelope</span><span>: </span><span class="type-name">EventEnvelope</span><span>[</span><span class="type-name">TaskEvent</span><span>]
+  ): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Done</span><span>] =
+    </span><span class="identifier">envelope</span><span>.</span><span class="identifier">event</span><span> </span><span class="keyword">match</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCreated</span><span> =&gt;
+        </span><span class="keyword">val</span><span> </span><span class="identifier">stmt</span><span> = </span><span class="identifier">session</span><span>.</span><span class="identifier">createStatement</span><span>(
+          </span><span class="string-literal">&quot;&quot;&quot;INSERT INTO task_by_wave
+            |  (task_id, wave_id, order_id, handling_unit_id, state)
+            |VALUES ($1, $2, $3, $4, $5)
+            |ON CONFLICT (task_id) DO UPDATE SET state = $5&quot;&quot;&quot;</span><span>.</span><span class="identifier">stripMargin</span><span>
+        )
+        </span><span class="identifier">stmt</span><span>.</span><span class="identifier">bind</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="identifier">e</span><span>.</span><span class="identifier">taskId</span><span>.</span><span class="identifier">value</span><span>)
+        </span><span class="identifier">bindOptionalUuid</span><span>(</span><span class="identifier">stmt</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="identifier">e</span><span>.</span><span class="identifier">waveId</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">value</span><span>))
+        </span><span class="identifier">stmt</span><span>.</span><span class="identifier">bind</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="identifier">e</span><span>.</span><span class="identifier">orderId</span><span>.</span><span class="identifier">value</span><span>)
+        </span><span class="identifier">bindOptionalUuid</span><span>(</span><span class="identifier">stmt</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="identifier">e</span><span>.</span><span class="identifier">handlingUnitId</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">value</span><span>))
+        </span><span class="identifier">stmt</span><span>.</span><span class="identifier">bind</span><span>(</span><span class="number-literal">4</span><span>, </span><span class="string-literal">&quot;Planned&quot;</span><span>)
+
+        </span><span class="comment">// Also insert into task_by_handling_unit if present
+</span><span>        </span><span class="keyword">val</span><span> </span><span class="identifier">insertHandlingUnit</span><span> = </span><span class="identifier">e</span><span>.</span><span class="identifier">handlingUnitId</span><span>.</span><span class="identifier">map</span><span> { </span><span class="identifier">handlingUnitId</span><span> =&gt;
+          </span><span class="keyword">val</span><span> </span><span class="identifier">stmt2</span><span> = </span><span class="identifier">session</span><span>.</span><span class="identifier">createStatement</span><span>(
+            </span><span class="string-literal">&quot;&quot;&quot;INSERT INTO task_by_handling_unit
+              |  (task_id, handling_unit_id, wave_id, order_id, state)
+              |VALUES ($1, $2, $3, $4, $5)
+              |ON CONFLICT (task_id) DO UPDATE SET state = $5&quot;&quot;&quot;</span><span>.</span><span class="identifier">stripMargin</span><span>
+          )
+          </span><span class="identifier">stmt2</span><span>.</span><span class="identifier">bind</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="identifier">e</span><span>.</span><span class="identifier">taskId</span><span>.</span><span class="identifier">value</span><span>)
+          </span><span class="identifier">stmt2</span><span>.</span><span class="identifier">bind</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="identifier">handlingUnitId</span><span>.</span><span class="identifier">value</span><span>)
+          </span><span class="identifier">bindOptionalUuid</span><span>(</span><span class="identifier">stmt2</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="identifier">e</span><span>.</span><span class="identifier">waveId</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">value</span><span>))
+          </span><span class="identifier">stmt2</span><span>.</span><span class="identifier">bind</span><span>(</span><span class="number-literal">3</span><span>, </span><span class="identifier">e</span><span>.</span><span class="identifier">orderId</span><span>.</span><span class="identifier">value</span><span>)
+          </span><span class="identifier">stmt2</span><span>.</span><span class="identifier">bind</span><span>(</span><span class="number-literal">4</span><span>, </span><span class="string-literal">&quot;Planned&quot;</span><span>)
+          </span><span class="identifier">stmt2</span><span>
+        }
+
+        </span><span class="identifier">session</span><span>.</span><span class="identifier">updateOne</span><span>(</span><span class="identifier">stmt</span><span>).</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">_</span><span> =&gt;
+          </span><span class="identifier">insertHandlingUnit</span><span> </span><span class="keyword">match</span><span>
+            </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">s</span><span>) =&gt; </span><span class="identifier">session</span><span>.</span><span class="identifier">updateOne</span><span>(</span><span class="identifier">s</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">Done</span><span>)
+            </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span>    =&gt; </span><span class="type-name">Future</span><span>.</span><span class="identifier">successful</span><span>(</span><span class="type-name">Done</span><span>)
+        }
+
+      </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskAllocated</span><span> =&gt;
+        </span><span class="identifier">updateState</span><span>(</span><span class="identifier">session</span><span>, </span><span class="identifier">e</span><span>.</span><span class="identifier">taskId</span><span>.</span><span class="identifier">value</span><span>, </span><span class="string-literal">&quot;Allocated&quot;</span><span>)
+      </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskAssigned</span><span> =&gt;
+        </span><span class="identifier">updateState</span><span>(</span><span class="identifier">session</span><span>, </span><span class="identifier">e</span><span>.</span><span class="identifier">taskId</span><span>.</span><span class="identifier">value</span><span>, </span><span class="string-literal">&quot;Assigned&quot;</span><span>)
+      </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCompleted</span><span> =&gt;
+        </span><span class="identifier">updateState</span><span>(</span><span class="identifier">session</span><span>, </span><span class="identifier">e</span><span>.</span><span class="identifier">taskId</span><span>.</span><span class="identifier">value</span><span>, </span><span class="string-literal">&quot;Completed&quot;</span><span>)
+      </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCancelled</span><span> =&gt;
+        </span><span class="identifier">updateState</span><span>(</span><span class="identifier">session</span><span>, </span><span class="identifier">e</span><span>.</span><span class="identifier">taskId</span><span>.</span><span class="identifier">value</span><span>, </span><span class="string-literal">&quot;Cancelled&quot;</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/scala/neon/app/projection/TaskProjectionHandler.scala</em>&lt;/small&gt;</p>
+        <p>Several patterns stand out:</p>
+        <p><strong>Pattern matching on the event sealed trait.</strong> Every event type gets its own
+        case. For <code>TaskCreated</code>, we insert a new row. For state-change events
+        (<code>TaskAllocated</code>, <code>TaskAssigned</code>, <code>TaskCompleted</code>, <code>TaskCancelled</code>), we
+        update the <code>state</code> column.</p>
+        <p><strong>Idempotent writes with ON CONFLICT.</strong> The <code>INSERT ... ON CONFLICT (task_id)
+DO UPDATE</code> clause means replaying the same event twice produces the same
+        result. This is essential for at-least-once delivery.</p>
+        <p><strong>Two tables from one event.</strong> <code>TaskCreated</code> writes to both <code>task_by_wave</code>
+        and <code>task_by_handling_unit</code>. This denormalization lets us query tasks
+        efficiently by either dimension without joins.</p>
+        <p><strong>Optional UUID binding.</strong> Tasks may or may not belong to a wave (standalone
+        tasks have <code>waveId = None</code>). The <code>bindOptionalUuid</code> helper binds <code>NULL</code> when
+        the value is absent:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">bindOptionalUuid</span><span>(
+    </span><span class="identifier">stmt</span><span>: </span><span class="identifier">io</span><span>.</span><span class="identifier">r2dbc</span><span>.</span><span class="identifier">spi</span><span>.</span><span class="type-name">Statement</span><span>,
+    </span><span class="identifier">index</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">value</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">UUID</span><span>]
+): </span><span class="type-name">Unit</span><span> =
+  </span><span class="identifier">value</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">v</span><span>) =&gt; </span><span class="identifier">stmt</span><span>.</span><span class="identifier">bind</span><span>(</span><span class="identifier">index</span><span>, </span><span class="identifier">v</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span>    =&gt; </span><span class="identifier">stmt</span><span>.</span><span class="identifier">bindNull</span><span>(</span><span class="identifier">index</span><span>, </span><span class="identifier">classOf</span><span>[</span><span class="type-name">UUID</span><span>])</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/scala/neon/app/projection/TaskProjectionHandler.scala</em>&lt;/small&gt;</p>
+        <p><strong>Shared updateState helper.</strong> Four of the five event types need the same
+        operation (update two tables), so we factor that into a private method:</p>
+        <pre><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateState</span><span>(
+    </span><span class="identifier">session</span><span>: </span><span class="type-name">R2dbcSession</span><span>,
+    </span><span class="identifier">taskId</span><span>: </span><span class="type-name">UUID</span><span>,
+    </span><span class="identifier">state</span><span>: </span><span class="type-name">String</span><span>
+): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Done</span><span>] =
+  </span><span class="keyword">val</span><span> </span><span class="identifier">stmt1</span><span> = </span><span class="identifier">session</span><span>
+    .</span><span class="identifier">createStatement</span><span>(
+      </span><span class="string-literal">&quot;UPDATE task_by_wave SET state = $1 WHERE task_id = $2&quot;</span><span>
+    )
+    .</span><span class="identifier">bind</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="identifier">state</span><span>)
+    .</span><span class="identifier">bind</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="identifier">taskId</span><span>)
+  </span><span class="keyword">val</span><span> </span><span class="identifier">stmt2</span><span> = </span><span class="identifier">session</span><span>
+    .</span><span class="identifier">createStatement</span><span>(
+      </span><span class="string-literal">&quot;UPDATE task_by_handling_unit SET state = $1 WHERE task_id = $2&quot;</span><span>
+    )
+    .</span><span class="identifier">bind</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="identifier">state</span><span>)
+    .</span><span class="identifier">bind</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="identifier">taskId</span><span>)
+  </span><span class="identifier">session</span><span>
+    .</span><span class="identifier">updateOne</span><span>(</span><span class="identifier">stmt1</span><span>)
+    .</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">_</span><span> =&gt; </span><span class="identifier">session</span><span>.</span><span class="identifier">updateOne</span><span>(</span><span class="identifier">stmt2</span><span>))
+    .</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">Done</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/scala/neon/app/projection/TaskProjectionHandler.scala</em>&lt;/small&gt;</p>
+        
+        <h2 id="the-full-projection-catalogue" class="section"><a class="anchor-link left" href="#the-full-projection-catalogue"><i class="icofont-laika link">&#xef71;</i></a>The Full Projection Catalogue</h2>
+        <p>Neon WES ships with thirteen projections. Each one follows the same pattern
+        we just studied. Here is the complete catalogue:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Projection</th>
+              <th>Handler Class</th>
+              <th>Read-Side Table</th>
+              <th>Key Columns</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>task-projection</code></td>
+              <td><code>TaskProjectionHandler</code></td>
+              <td><code>task_by_wave</code>, <code>task_by_handling_unit</code></td>
+              <td><code>task_id</code>, <code>wave_id</code>, <code>state</code></td>
+            </tr>
+            <tr>
+              <td><code>consolidation-group-projection</code></td>
+              <td><code>ConsolidationGroupProjectionHandler</code></td>
+              <td><code>consolidation_group_by_wave</code></td>
+              <td><code>consolidation_group_id</code>, <code>wave_id</code>, <code>state</code></td>
+            </tr>
+            <tr>
+              <td><code>transport-order-projection</code></td>
+              <td><code>TransportOrderProjectionHandler</code></td>
+              <td><code>transport_order_by_handling_unit</code></td>
+              <td><code>transport_order_id</code>, <code>handling_unit_id</code>, <code>state</code></td>
+            </tr>
+            <tr>
+              <td><code>workstation-projection</code></td>
+              <td><code>WorkstationProjectionHandler</code></td>
+              <td><code>workstation_by_type_and_state</code></td>
+              <td><code>workstation_id</code>, <code>workstation_type</code>, <code>state</code></td>
+            </tr>
+            <tr>
+              <td><code>handling-unit-projection</code></td>
+              <td><code>HandlingUnitProjectionHandler</code></td>
+              <td><code>handling_unit_lookup</code></td>
+              <td><code>handling_unit_id</code>, <code>packaging_level</code>, <code>state</code></td>
+            </tr>
+            <tr>
+              <td><code>slot-projection</code></td>
+              <td><code>SlotProjectionHandler</code></td>
+              <td><code>slot_by_workstation</code></td>
+              <td><code>slot_id</code>, <code>workstation_id</code>, <code>order_id</code>, <code>state</code></td>
+            </tr>
+            <tr>
+              <td><code>inventory-projection</code></td>
+              <td><code>InventoryProjectionHandler</code></td>
+              <td><code>inventory_by_location_sku_lot</code></td>
+              <td><code>inventory_id</code>, <code>location_id</code>, <code>sku_id</code>, <code>on_hand</code>, <code>reserved</code></td>
+            </tr>
+            <tr>
+              <td><code>stock-position-projection</code></td>
+              <td><code>StockPositionProjectionHandler</code></td>
+              <td><code>stock_position_by_sku_area</code></td>
+              <td><code>stock_position_id</code>, <code>sku_id</code>, <code>warehouse_area_id</code></td>
+            </tr>
+            <tr>
+              <td><code>handling-unit-stock-projection</code></td>
+              <td><code>HandlingUnitStockProjectionHandler</code></td>
+              <td><code>handling_unit_stock_by_container</code></td>
+              <td><code>handling_unit_stock_id</code>, <code>sku_id</code>, <code>container_id</code></td>
+            </tr>
+            <tr>
+              <td><code>inbound-delivery-projection</code></td>
+              <td><code>InboundDeliveryProjectionHandler</code></td>
+              <td><code>inbound_delivery_by_state</code></td>
+              <td><code>inbound_delivery_id</code>, <code>sku_id</code>, <code>state</code></td>
+            </tr>
+            <tr>
+              <td><code>goods-receipt-projection</code></td>
+              <td><code>GoodsReceiptProjectionHandler</code></td>
+              <td><code>goods_receipt_by_delivery</code></td>
+              <td><code>goods_receipt_id</code>, <code>inbound_delivery_id</code>, <code>state</code></td>
+            </tr>
+            <tr>
+              <td><code>cycle-count-projection</code></td>
+              <td><code>CycleCountProjectionHandler</code></td>
+              <td><code>cycle_count_by_state</code></td>
+              <td><code>cycle_count_id</code>, <code>warehouse_area_id</code>, <code>state</code></td>
+            </tr>
+            <tr>
+              <td><code>count-task-projection</code></td>
+              <td><code>CountTaskProjectionHandler</code></td>
+              <td><code>count_task_by_cycle_count</code></td>
+              <td><code>count_task_id</code>, <code>cycle_count_id</code>, <code>state</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Notice the naming convention in the read-side tables. Each table name
+        describes the primary query dimension: <code>task_by_wave</code> is optimized for
+        &quot;find tasks by wave ID,&quot; <code>workstation_by_type_and_state</code> for &quot;find
+        workstations by type and current state,&quot; and so on. This is a deliberate
+        CQRS practice: name your read model tables after the queries they serve.</p>
+        <p>Some projections are more complex than others. <code>StockPositionProjectionHandler</code>
+        handles ten different event types (Created, Allocated, Deallocated,
+        QuantityAdded, AllocatedConsumed, Reserved, ReservationReleased, Blocked,
+        Unblocked, Adjusted, StatusChanged) because stock positions have rich
+        quantity semantics. <code>GoodsReceiptProjectionHandler</code> is simpler, tracking just
+        Open, Confirmed, and Cancelled states.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Every handler class lives in the <code>app</code> module under
+          <code>neon.app.projection</code>. The <code>app</code> module is the only one that depends on all
+          domain modules, so it has visibility into every event type. Domain modules
+          themselves know nothing about projections.</p>
+        </div>
+        
+        <h2 id="loggingprojectionhandler-base-class" class="section"><a class="anchor-link left" href="#loggingprojectionhandler-base-class"><i class="icofont-laika link">&#xef71;</i></a>LoggingProjectionHandler Base Class</h2>
+        <p>Every projection handler in Neon WES extends <code>LoggingProjectionHandler</code>
+        rather than <code>R2dbcHandler</code> directly. This base class adds structured logging
+        around event processing:</p>
+        <pre><code class="nohighlight"><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">LoggingProjectionHandler</span><span>[</span><span class="type-name">E</span><span>](</span><span class="identifier">using</span><span>
+    </span><span class="type-name">ExecutionContext</span><span>
+) </span><span class="keyword">extends</span><span> </span><span class="type-name">R2dbcHandler</span><span>[</span><span class="type-name">EventEnvelope</span><span>[</span><span class="type-name">E</span><span>]]
+    </span><span class="keyword">with</span><span> </span><span class="type-name">LazyLogging</span><span>:
+
+  </span><span class="keyword">final</span><span> </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">process</span><span>(
+      </span><span class="identifier">session</span><span>: </span><span class="type-name">R2dbcSession</span><span>,
+      </span><span class="identifier">envelope</span><span>: </span><span class="type-name">EventEnvelope</span><span>[</span><span class="type-name">E</span><span>]
+  ): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Done</span><span>] =
+    </span><span class="identifier">logger</span><span>.</span><span class="identifier">debug</span><span>(
+      </span><span class="string-literal">&quot;Processing {} for {}&quot;</span><span>,
+      </span><span class="identifier">envelope</span><span>.</span><span class="identifier">event</span><span>.</span><span class="identifier">getClass</span><span>.</span><span class="identifier">getSimpleName</span><span>,
+      </span><span class="identifier">envelope</span><span>.</span><span class="identifier">persistenceId</span><span>
+    )
+    </span><span class="identifier">processEvent</span><span>(</span><span class="identifier">session</span><span>, </span><span class="identifier">envelope</span><span>).</span><span class="identifier">recoverWith</span><span> { </span><span class="keyword">case</span><span> </span><span class="identifier">exception</span><span> =&gt;
+      </span><span class="identifier">logger</span><span>.</span><span class="identifier">error</span><span>(
+        </span><span class="string-literal">&quot;Projection failed for {}&quot;</span><span>,
+        </span><span class="identifier">envelope</span><span>.</span><span class="identifier">persistenceId</span><span>,
+        </span><span class="identifier">exception</span><span>
+      )
+      </span><span class="type-name">Future</span><span>.</span><span class="identifier">failed</span><span>(</span><span class="identifier">exception</span><span>)
+    }
+
+  </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">processEvent</span><span>(
+      </span><span class="identifier">session</span><span>: </span><span class="type-name">R2dbcSession</span><span>,
+      </span><span class="identifier">envelope</span><span>: </span><span class="type-name">EventEnvelope</span><span>[</span><span class="type-name">E</span><span>]
+  ): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Done</span><span>]</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/scala/neon/app/projection/LoggingProjectionHandler.scala</em>&lt;/small&gt;</p>
+        <p>The design is a straightforward application of the Template Method pattern:</p>
+        <ol class="arabic">
+          <li><code>process</code> is <code>final</code>, so subclasses cannot bypass logging.</li>
+          <li>On entry, it logs a DEBUG message with the event class name and persistence
+          ID (e.g., <code>&quot;Processing TaskCompleted for Task|abc-123&quot;</code>).</li>
+          <li>It delegates to the abstract <code>processEvent</code> method that subclasses
+          implement.</li>
+          <li>If <code>processEvent</code> fails, it logs an ERROR with the full stack trace, then
+          re-throws so Pekko&#39;s projection supervision can handle the failure
+          (typically by retrying or restarting the projection).</li>
+        </ol>
+        <p>This means we get consistent observability across all thirteen projections
+        without any boilerplate in the concrete handlers. When a projection falls
+        behind or starts failing, the ERROR logs immediately tell us which entity
+        and which event type caused the problem.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The <code>LazyLogging</code> trait from scala-logging creates one logger per
+          concrete subclass, so log messages automatically include the handler class
+          name in the logger context. You can set per-handler log levels in your
+          Logback configuration if needed.</p>
+        </div>
+        
+        <h2 id="what-comes-next" class="section"><a class="anchor-link left" href="#what-comes-next"><i class="icofont-laika link">&#xef71;</i></a>What Comes Next</h2>
+        <p>We now have a complete pipeline: commands flow into actors (write side),
+        events are persisted to the journal, and projections consume those events to
+        populate query-optimized tables (read side). But those read-side tables are
+        not much use if we cannot expose them through an API.</p>
+        <p>In the next chapter, we will build the HTTP layer that ties everything
+        together. We will see how Pekko HTTP routes call async services, how circe
+        provides JSON marshalling with zero boilerplate, how domain error ADTs map
+        cleanly to HTTP status codes, and how session-based authentication protects
+        every endpoint.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

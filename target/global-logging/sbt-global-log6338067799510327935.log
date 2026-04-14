@@ -1,0 +1,87 @@
+[debug] > Exec(early(addDefaultCommands), None, None)
+[debug] > Exec(addDefaultCommands, None, None)
+[debug] > Exec(early(initialize), None, None)
+[debug] > Exec(initialize, None, None)
+[debug] > Exec(boot, None, None)
+[debug] > Exec(writeSbtVersion, None, None)
+[debug] > Exec(reload, None, None)
+[debug] > Exec(sbtStashOnFailure, None, None)
+[debug] > Exec(onFailure loadFailed, None, None)
+[debug] > Exec(loadp, None, None)
+[info] welcome to sbt 1.12.4 (Eclipse Adoptium Java 25.0.2)
+[debug] Load.defaultLoad until apply took 267.984035ms
+[debug]                       Load.loadUnit: plugins took 107.608853ms
+[debug]                       Load.loadUnit: defsScala took 1.671276ms
+[debug] [Loading] Scanning directory /home/martins/Work/Mais/Eva/Neon/eva-wes/project/project/project
+[debug]                         Load.loadUnit: mkEval took 16.406931ms
+[debug] [Loading] Found non-root projects 
+[debug] [Loading] Done in /home/martins/Work/Mais/Eva/Neon/eva-wes/project/project/project, returning: ()
+[debug] deducing auto plugins based on known facts Set(Atom(sbt.plugins.CorePlugin)) and clauses Clauses(Clause(Atom(sbt.plugins.JvmPlugin),Set(Atom(sbt.plugins.IvyPlugin)))
+[debug] Clause(Atom(sbt.ScriptedPlugin),Set(Atom(sbt.plugins.JvmPlugin)))
+[debug] Clause(Atom(sbt.plugins.SbtPlugin),Set(Atom(sbt.ScriptedPlugin)))
+[debug] Clause(Atom(sbt.plugins.SemanticdbPlugin),Set(Atom(sbt.plugins.JvmPlugin)))
+[debug] Clause(Atom(sbt.plugins.JUnitXmlReportPlugin),Set(Atom(sbt.plugins.JvmPlugin)))
+[debug] Clause(Atom(sbt.plugins.MiniDependencyTreePlugin),Set(Atom(sbt.plugins.JvmPlugin)))
+[debug] Clause(Atom(sbt.plugins.CorePlugin),Set(Atom(sbt.plugins.IvyPlugin)))
+[debug] Clause(Atom(sbt.plugins.IvyPlugin),Set(Atom(sbt.plugins.JvmPlugin)))
+[debug] Clause(Atom(sbt.plugins.JvmPlugin),Set(Atom(sbt.plugins.SemanticdbPlugin)))
+[debug] Clause(Atom(sbt.plugins.JvmPlugin),Set(Atom(sbt.plugins.JUnitXmlReportPlugin)))
+[debug] Clause(Atom(sbt.plugins.CorePlugin),Set(Atom(sbt.plugins.Giter8TemplatePlugin)))
+[debug] Clause(Atom(sbt.plugins.JvmPlugin),Set(Atom(sbt.plugins.MiniDependencyTreePlugin))))
+[debug]   :: deduced result: Matched(sbt.plugins.CorePlugin,sbt.plugins.Giter8TemplatePlugin,sbt.plugins.IvyPlugin,sbt.plugins.JvmPlugin,sbt.plugins.MiniDependencyTreePlugin,sbt.plugins.JUnitXmlReportPlugin,sbt.plugins.SemanticdbPlugin)
+[debug] Plugins.deducer#function took 61.777879 ms
+[info] loading settings for project eva-wes-build-build-build from metals.sbt...
+[debug]                           Load.resolveProject(eva-wes-build-build-build) took 197.438899ms
+[debug]                         Load.loadTransitive: finalizeProject(Project(id eva-wes-build-build-build, base: /home/martins/Work/Mais/Eva/Neon/eva-wes/project/project/project, plugins: List(<none>))) took 317.164035ms
+[debug] [Loading] Done in /home/martins/Work/Mais/Eva/Neon/eva-wes/project/project/project, returning: (eva-wes-build-build-build)
+[debug]                       Load.loadUnit: loadedProjectsRaw took 2051.821323ms
+[debug]                       Load.loadUnit: cleanEvalClasses took 43.480729ms
+[debug]                     Load.loadUnit(file:/home/martins/Work/Mais/Eva/Neon/eva-wes/project/project/project/, ...) took 2232.690177ms
+[debug]                   Load.apply: load took 3534.439843ms
+[debug]                   Load.apply: resolveProjects took 32.029829ms
+[debug]                   Load.apply: finalTransforms took 271.435428ms
+[debug]                   Load.apply: config.delegates took 40.738206ms
+[debug]                   Load.apply: Def.make(settings)... took 1907.07023ms
+[debug]                   Load.apply: structureIndex took 472.350933ms
+[debug]                   Load.apply: mkStreams took 3.301434ms
+[info] loading project definition from /home/martins/Work/Mais/Eva/Neon/eva-wes/project/project/project
+[debug] Running task... Cancel: Signal, check cycles: false, forcegc: true
+[debug]                 Load.loadUnit: plugins took 9349.087026ms
+[debug]                 Load.loadUnit: defsScala took 0.036434ms
+[debug] [Loading] Scanning directory /home/martins/Work/Mais/Eva/Neon/eva-wes/project/project
+[debug]                   Load.loadUnit: mkEval took 0.946371ms
+[debug] [Loading] Found non-root projects 
+[debug] [Loading] Done in /home/martins/Work/Mais/Eva/Neon/eva-wes/project/project, returning: ()
+[debug] deducing auto plugins based on known facts Set(Atom(sbt.plugins.CorePlugin)) and clauses Clauses(Clause(Atom(sbt.plugins.JvmPlugin),Set(Atom(sbt.plugins.IvyPlugin)))
+[debug] Clause(Atom(sbt.ScriptedPlugin),Set(Atom(sbt.plugins.JvmPlugin)))
+[debug] Clause(Atom(sbt.plugins.SbtPlugin),Set(Atom(sbt.ScriptedPlugin)))
+[debug] Clause(Atom(sbt.plugins.SemanticdbPlugin),Set(Atom(sbt.plugins.JvmPlugin)))
+[debug] Clause(Atom(sbt.plugins.JUnitXmlReportPlugin),Set(Atom(sbt.plugins.JvmPlugin)))
+[debug] Clause(Atom(sbt.plugins.MiniDependencyTreePlugin),Set(Atom(sbt.plugins.JvmPlugin)))
+[debug] Clause(Atom(bloop.integrations.sbt.BloopPlugin),Set(Atom(sbt.plugins.JvmPlugin)))
+[debug] Clause(Atom(sbt.plugins.CorePlugin),Set(Atom(sbt.plugins.IvyPlugin)))
+[debug] Clause(Atom(sbt.plugins.IvyPlugin),Set(Atom(sbt.plugins.JvmPlugin)))
+[debug] Clause(Atom(sbt.plugins.JvmPlugin),Set(Atom(sbt.plugins.SemanticdbPlugin)))
+[debug] Clause(Atom(sbt.plugins.JvmPlugin),Set(Atom(sbt.plugins.JUnitXmlReportPlugin)))
+[debug] Clause(Atom(sbt.plugins.CorePlugin),Set(Atom(sbt.plugins.Giter8TemplatePlugin)))
+[debug] Clause(Atom(sbt.plugins.JvmPlugin),Set(Atom(sbt.plugins.MiniDependencyTreePlugin)))
+[debug] Clause(Atom(sbt.plugins.JvmPlugin),Set(Atom(bloop.integrations.sbt.BloopPlugin))))
+[debug]   :: deduced result: Matched(sbt.plugins.CorePlugin,sbt.plugins.Giter8TemplatePlugin,sbt.plugins.IvyPlugin,sbt.plugins.JvmPlugin,bloop.integrations.sbt.BloopPlugin,sbt.plugins.MiniDependencyTreePlugin,sbt.plugins.JUnitXmlReportPlugin,sbt.plugins.SemanticdbPlugin)
+[debug] Plugins.deducer#function took 6.528612 ms
+[info] loading settings for project eva-wes-build-build from metals.sbt...
+[debug]                     Load.resolveProject(eva-wes-build-build) took 66.358735ms
+[debug]                   Load.loadTransitive: finalizeProject(Project(id eva-wes-build-build, base: /home/martins/Work/Mais/Eva/Neon/eva-wes/project/project, plugins: List(<none>))) took 74.310532ms
+[debug] [Loading] Done in /home/martins/Work/Mais/Eva/Neon/eva-wes/project/project, returning: (eva-wes-build-build)
+[debug]                 Load.loadUnit: loadedProjectsRaw took 121.74915ms
+[debug]                 Load.loadUnit: cleanEvalClasses took 0.909731ms
+[debug]               Load.loadUnit(file:/home/martins/Work/Mais/Eva/Neon/eva-wes/project/project/, ...) took 9484.04889ms
+[debug]             Load.apply: load took 9486.163124ms
+[debug]             Load.apply: resolveProjects took 0.154154ms
+[debug]             Load.apply: finalTransforms took 39.996206ms
+[debug]             Load.apply: config.delegates took 11.942719ms
+[debug]             Load.apply: Def.make(settings)... took 122.28974ms
+[debug]             Load.apply: structureIndex took 46.17039ms
+[debug]             Load.apply: mkStreams took 0.005542ms
+[info] loading project definition from /home/martins/Work/Mais/Eva/Neon/eva-wes/project/project
+[debug] Evaluating tasks: bloopInstall
+[debug] Running task... Cancel: Signal, check cycles: false, forcegc: true

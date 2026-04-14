@@ -1,0 +1,1 @@
+{"name":"sbt","version":"1.12.4","bspVersion":"2.1.0-M1","languages":["scala"],"argv":["/home/martins/.local/share/mise/installs/java/temurin-25.0.2+10.0.LTS/bin/java","-Xms100m","-Xmx100m","-classpath","/home/martins/.local/share/mise/installs/sbt/1.12.4/bin/sbt-launch.jar","-Dsbt.script=/home/martins/.local/share/mise/installs/sbt/1.12.4/bin/sbt","xsbt.boot.Boot","-bsp"]}

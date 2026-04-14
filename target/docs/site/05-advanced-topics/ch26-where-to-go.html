@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Where to Go from Here</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Where to Go from Here</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#what-we-built">What We Built</a></li>
+    <li class="level1 nav-node"><a href="#the-five-patterns-revisited">The Five Patterns Revisited</a></li>
+    <li class="level2 nav-leaf"><a href="#the-decider-pattern">The Decider Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="#railway-oriented-programming">Railway Oriented Programming</a></li>
+    <li class="level2 nav-leaf"><a href="#functional-core-imperative-shell">Functional Core, Imperative Shell</a></li>
+    <li class="level2 nav-leaf"><a href="#the-elm-architecture">The Elm Architecture</a></li>
+    <li class="level2 nav-leaf"><a href="#hexagonal-architecture">Hexagonal Architecture</a></li>
+    <li class="level1 nav-node"><a href="#further-reading">Further Reading</a></li>
+    <li class="level2 nav-leaf"><a href="#event-sourcing-and-domain-modeling">Event Sourcing and Domain Modeling</a></li>
+    <li class="level2 nav-leaf"><a href="#error-handling-and-architecture">Error Handling and Architecture</a></li>
+    <li class="level2 nav-leaf"><a href="#infrastructure">Infrastructure</a></li>
+    <li class="level2 nav-leaf"><a href="#security">Security</a></li>
+    <li class="level2 nav-leaf"><a href="#craft-and-inspiration">Craft and Inspiration</a></li>
+    <li class="level1 nav-leaf"><a href="#what-you-could-build-next">What You Could Build Next</a></li>
+    <li class="level1 nav-leaf"><a href="#closing">Closing</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="where-to-go-from-here" class="title">Where to Go from Here</h1>
+        <p>You have reached the end of the book. Over the preceding twenty-five
+        chapters, we built a complete Warehouse Execution System from the ground up:
+        domain types, state machines, events, policies, services, repositories,
+        actors, cluster sharding, CQRS projections, an HTTP API, authentication,
+        authorization, error handling, observability, serialization, and a frontend
+        stack. That is a lot of ground to cover. Let&#39;s take a moment to look back at
+        what we built, revisit the patterns that hold it together, and point toward
+        where you might go from here.</p>
+        
+        <h2 id="what-we-built" class="section"><a class="anchor-link left" href="#what-we-built"><i class="icofont-laika link">&#xef71;</i></a>What We Built</h2>
+        <p>The journey began with a question: what is a Warehouse Execution System?
+        In Chapter 1, we explored the domain of warehouse operations, the flow of
+        goods from inbound receipt to outbound shipping, and the role of software in
+        orchestrating that flow.</p>
+        <p>In Part II, we built the domain model. We started with the common
+        foundation (opaque type IDs, shared enums, utility types) and then
+        introduced the central innovation of the system: typestate encoding. By
+        modeling each aggregate state as a distinct case class, we made illegal
+        transitions compile-time errors rather than runtime bugs. We defined events
+        as immutable records of state changes, policies as pure functions that
+        decide what should happen next, services as orchestrators that compose
+        policies and repositories, and repositories as abstract ports that decouple
+        the domain from persistence.</p>
+        <p>In Part III, we brought the domain to life. We wrapped aggregates in
+        event-sourced Pekko actors, distributed them across a cluster with sharding,
+        projected their events into read-side tables for queries, exposed the whole
+        thing through an HTTP API, and tested every layer from pure domain logic to
+        full integration.</p>
+        <p>In Part IV, we addressed system concerns. We wired everything together in a
+        bootstrap sequence, configured serialization for both the persistence
+        journal and the HTTP layer, built a three-level error handling strategy, and
+        instrumented the system with structured logging and MDC propagation.</p>
+        <p>In Part V, we went further: stock management, inbound and cycle counting,
+        handling units and workstations, the frontend stack, and the Architecture
+        Decision Records that document why we made the choices we made.</p>
+        <p>The result is not a toy. It is a system with fourteen event-sourced
+        aggregates, over a dozen services with cascading state transitions, a
+        complete RBAC-protected HTTP API, CQRS projections for read-side queries,
+        and structured observability from the HTTP boundary through actors and
+        projections.</p>
+        
+        <h2 id="the-five-patterns-revisited" class="section"><a class="anchor-link left" href="#the-five-patterns-revisited"><i class="icofont-laika link">&#xef71;</i></a>The Five Patterns Revisited</h2>
+        <p>Five architectural patterns weave through the entire system. Each one
+        appeared in context throughout the book. Let&#39;s name them explicitly and see
+        how they connect.</p>
+        
+        <h3 id="the-decider-pattern" class="section"><a class="anchor-link left" href="#the-decider-pattern"><i class="icofont-laika link">&#xef71;</i></a>The Decider Pattern</h3>
+        <p>Jeremie Chassaing&#39;s &quot;Functional Event Sourcing Decider&quot; defines three
+        functions: <code>decide</code> (command to events), <code>evolve</code> (state + event to new
+        state), and <code>initialState</code>. Our typestate aggregates are Deciders. The
+        transition methods (e.g., <code>Task.Assigned.complete</code>) are the <code>decide</code>
+        function, producing a <code>(NewState, Event)</code> tuple. The actor&#39;s event handler
+        is the <code>evolve</code> function, reconstructing state from events during recovery.
+        The <code>EmptyState</code> is the <code>initialState</code>. The Decider pattern gives us a
+        formal model for event-sourced domain logic.</p>
+        
+        <h3 id="railway-oriented-programming" class="section"><a class="anchor-link left" href="#railway-oriented-programming"><i class="icofont-laika link">&#xef71;</i></a>Railway Oriented Programming</h3>
+        <p>Scott Wlaschin&#39;s &quot;Railway Oriented Programming&quot; provides the error handling
+        model. <code>Either[Error, Result]</code> is the two-track railway. Each service
+        operation is a switch function that can route to the success track or the
+        failure track. <code>flatMap</code> chains switches together, and <code>Left</code> values bypass
+        all remaining processing. The sealed trait ADTs enumerate every possible
+        failure mode, and the compiler&#39;s exhaustive matching guarantee ensures
+        nothing slips through. We explored this in depth in Chapter 18.</p>
+        
+        <h3 id="functional-core-imperative-shell" class="section"><a class="anchor-link left" href="#functional-core-imperative-shell"><i class="icofont-laika link">&#xef71;</i></a>Functional Core, Imperative Shell</h3>
+        <p>Gary Bernhardt&#39;s &quot;Boundaries&quot; talk describes an architecture where pure,
+        functional code sits at the center (the &quot;core&quot;) and impure, side-effecting
+        code wraps around it (the &quot;shell&quot;). In Neon WES, policies are the
+        functional core: stateless, pure functions with no dependencies, returning
+        <code>Option[(State, Event)]</code>. Services are the imperative shell: they read from
+        repositories (impure), call policies (pure), and write results back
+        (impure). This sandwich structure makes the business logic trivially
+        testable. You do not need a database or an actor system to test a policy.
+        You just call the function.</p>
+        
+        <h3 id="the-elm-architecture" class="section"><a class="anchor-link left" href="#the-elm-architecture"><i class="icofont-laika link">&#xef71;</i></a>The Elm Architecture</h3>
+        <p>The Elm programming language popularized a pattern for managing state:
+        <code>Model</code>, <code>Update</code>, <code>View</code>. Our event-sourced actors follow the same
+        structure. The <code>State</code> sealed trait is the Model. The command handler
+        (which processes commands and produces events) is the Update function.
+        The HTTP routes and CQRS projections are the View, transforming internal
+        state into external representations. The actor&#39;s recovery process replays
+        events through the event handler, reconstructing the Model from its history.
+        This is the Elm Architecture applied to server-side event sourcing.</p>
+        
+        <h3 id="hexagonal-architecture" class="section"><a class="anchor-link left" href="#hexagonal-architecture"><i class="icofont-laika link">&#xef71;</i></a>Hexagonal Architecture</h3>
+        <p>Alistair Cockburn&#39;s Hexagonal Architecture (also called Ports and Adapters)
+        separates the application into a core that defines port interfaces and
+        adapters that implement them. In Neon WES, repository traits are ports:
+        <code>TaskRepository</code>, <code>WaveRepository</code>, and their async counterparts define
+        abstract persistence contracts. In-memory implementations are adapters for
+        testing. <code>PekkoTaskRepository</code>, <code>PekkoWaveRepository</code>, and their siblings
+        are adapters for production, backed by Cluster Sharding. The HTTP routes
+        are adapters for the external boundary. The domain model has no knowledge of
+        Pekko, PostgreSQL, or HTTP. It depends only on abstract traits defined in
+        its own module.</p>
+        
+        <h2 id="further-reading" class="section"><a class="anchor-link left" href="#further-reading"><i class="icofont-laika link">&#xef71;</i></a>Further Reading</h2>
+        <p>Each pattern above has a canonical reference. Here are the primary sources,
+        along with additional resources that shaped the design of Neon WES.</p>
+        
+        <h3 id="event-sourcing-and-domain-modeling" class="section"><a class="anchor-link left" href="#event-sourcing-and-domain-modeling"><i class="icofont-laika link">&#xef71;</i></a>Event Sourcing and Domain Modeling</h3>
+        <ul>
+          <li>
+            <p><strong>Jeremie Chassaing, &quot;Functional Event Sourcing Decider&quot;</strong>
+            <a href="https://thinkbeforecoding.com/post/2021/12/17/functional-event-sourcing-decider">https://thinkbeforecoding.com/post/2021/12/17/functional-event-sourcing-decider</a>
+            The formal model behind our aggregate design. Defines <code>decide</code>, <code>evolve</code>,
+            and <code>initialState</code> as the three functions of an event-sourced entity.</p>
+          </li>
+          <li>
+            <p><strong>Vaughn Vernon, <em>Implementing Domain-Driven Design</em></strong> (Addison-Wesley, 2013).
+            The standard reference for applying DDD tactically with aggregates,
+            entities, value objects, domain events, and bounded contexts.</p>
+          </li>
+          <li>
+            <p><strong>Scott Wlaschin, <em>Domain Modeling Made Functional</em></strong> (Pragmatic Bookshelf, 2018).
+            Types as documentation, making illegal states unrepresentable, and modeling
+            domain workflows with types and functions. The direct inspiration for our
+            typestate approach, translated from F# to Scala 3.</p>
+          </li>
+        </ul>
+        
+        <h3 id="error-handling-and-architecture" class="section"><a class="anchor-link left" href="#error-handling-and-architecture"><i class="icofont-laika link">&#xef71;</i></a>Error Handling and Architecture</h3>
+        <ul>
+          <li>
+            <p><strong>Scott Wlaschin, &quot;Railway Oriented Programming&quot;</strong>
+            <a href="https://fsharpforfunandprofit.com/rop/">https://fsharpforfunandprofit.com/rop/</a>
+            The conceptual model behind our <code>Either</code>-based error handling. The two-track
+            railway metaphor makes error propagation intuitive.</p>
+          </li>
+          <li>
+            <p><strong>Gary Bernhardt, &quot;Boundaries&quot;</strong>
+            <a href="https://www.destroyallsoftware.com/talks/boundaries">https://www.destroyallsoftware.com/talks/boundaries</a>
+            The talk that crystallizes the Functional Core, Imperative Shell pattern.
+            Pure values at the center, side effects at the edges.</p>
+          </li>
+          <li>
+            <p><strong>Alistair Cockburn, &quot;Hexagonal Architecture&quot;</strong>
+            <a href="https://alistair.cockburn.us/hexagonal-architecture/">https://alistair.cockburn.us/hexagonal-architecture/</a>
+            The original description of Ports and Adapters. Our repository traits are
+            ports; Pekko and in-memory implementations are adapters.</p>
+          </li>
+        </ul>
+        
+        <h3 id="infrastructure" class="section"><a class="anchor-link left" href="#infrastructure"><i class="icofont-laika link">&#xef71;</i></a>Infrastructure</h3>
+        <ul>
+          <li>
+            <p><strong>Apache Pekko Persistence Documentation</strong>
+            <a href="https://pekko.apache.org/docs/pekko/current/typed/persistence.html">https://pekko.apache.org/docs/pekko/current/typed/persistence.html</a>
+            The official guide to event-sourced actors, cluster sharding, and
+            projections. Essential reference for Chapters 10, 11, and 12.</p>
+          </li>
+          <li>
+            <p><strong>The Elm Architecture Guide</strong>
+            <a href="https://guide.elm-lang.org/architecture/">https://guide.elm-lang.org/architecture/</a>
+            Model, Update, View. The same pattern our actors follow, applied in a
+            frontend context.</p>
+          </li>
+        </ul>
+        
+        <h3 id="security" class="section"><a class="anchor-link left" href="#security"><i class="icofont-laika link">&#xef71;</i></a>Security</h3>
+        <ul>
+          <li><strong>The Copenhagen Book</strong>
+          <a href="https://thecopenhagenbook.com/">https://thecopenhagenbook.com/</a>
+          The reference for our session-based authentication: server-side tokens,
+          password hashing, cookie configuration, and CSRF protection. See
+          ADR-0008.</li>
+        </ul>
+        
+        <h3 id="craft-and-inspiration" class="section"><a class="anchor-link left" href="#craft-and-inspiration"><i class="icofont-laika link">&#xef71;</i></a>Craft and Inspiration</h3>
+        <ul>
+          <li><strong>Robert Nystrom, <em>Crafting Interpreters</em></strong> (Genever Benning, 2021).
+          <a href="https://craftinginterpreters.com/">https://craftinginterpreters.com/</a>
+          Not directly about warehouse systems, but a masterclass in building
+          complex software incrementally, explaining every design decision along
+          the way. The pedagogical approach of this book was inspired by Nystrom&#39;s
+          chapter-by-chapter construction of a complete system.</li>
+        </ul>
+        
+        <h2 id="what-you-could-build-next" class="section"><a class="anchor-link left" href="#what-you-could-build-next"><i class="icofont-laika link">&#xef71;</i></a>What You Could Build Next</h2>
+        <p>The patterns in this book are not locked to warehouse software. Here are
+        some directions you could take them:</p>
+        <p><strong>Your own domain.</strong> Pick a domain you know well and model it with
+        typestates, event sourcing, and the policy-service-repository pattern.
+        Healthcare workflows, financial transactions, logistics coordination,
+        game state machines: any domain with well-defined state transitions and
+        auditability requirements is a natural fit.</p>
+        <p><strong>Additional warehouse aggregates.</strong> The warehouse domain is vast. Dock
+        door scheduling, labor management, replenishment planning, and wave
+        optimization are all potential aggregate modules. Chapter 20&#39;s checklist
+        gives you the exact steps.</p>
+        <p><strong>Performance exploration.</strong> The system is designed for correctness first.
+        Load testing with realistic warehouse throughput (thousands of task
+        completions per hour, hundreds of concurrent waves) would reveal how the
+        sharding and projection layers behave under pressure.</p>
+        <p><strong>Event schema evolution.</strong> As systems evolve, event schemas change.
+        Building a real event adapter (Chapter 17 described the mechanism) is a
+        valuable exercise in understanding backward compatibility in event-sourced
+        systems.</p>
+        <p><strong>A frontend.</strong> Chapter 24 described the planned stack. Building an
+        operator interface on top of the HTTP API (Chapter 13) is a full project
+        in itself, combining real-time data with complex workflow UIs.</p>
+        
+        <h2 id="closing" class="section"><a class="anchor-link left" href="#closing"><i class="icofont-laika link">&#xef71;</i></a>Closing</h2>
+        <p>We started this book with a warehouse floor: pallets arriving on trucks,
+        workers scanning barcodes, forklifts moving goods through aisles. We end
+        it with a running system that models those operations as typed state
+        machines, records every transition as an immutable event, orchestrates
+        cascading logic through pure policies, distributes work across a cluster
+        of actors, and exposes it all through a secure, observable HTTP API.</p>
+        <p>The patterns we explored are not specific to warehouse systems. Typestate
+        encoding, event sourcing, the Decider pattern, Railway Oriented Programming,
+        Functional Core/Imperative Shell, and Hexagonal Architecture apply wherever
+        you need to model complex state transitions with correctness guarantees. A
+        healthcare system tracking patient workflows, a financial system processing
+        transactions, a logistics platform coordinating deliveries -- all of these
+        can benefit from the same approach.</p>
+        <p>The most important lesson is not any single pattern. It is the discipline of
+        making design decisions explicit, encoding business rules in types rather
+        than comments, and building systems where the compiler is your first line of
+        defense against bugs. When an illegal state transition is a compile error
+        rather than a runtime exception, when every failure mode is visible in a
+        type signature, when every architectural choice is documented in an ADR, you
+        can change the system with confidence. And in a warehouse that runs around
+        the clock, confidence is everything.</p>
+        <p>Thank you for reading. Now go build something.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

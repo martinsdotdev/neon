@@ -1,0 +1,74 @@
+[debug] Running TaskDef(neon.inventory.InventoryActorSuite, org.scalatest.tools.Framework$$anon$1@7e2260c4, false, [SuiteSelector])
+[debug] Running TaskDef(neon.inventory.InventorySuite, org.scalatest.tools.Framework$$anon$1@7e2260c4, false, [SuiteSelector])
+[debug] Running TaskDef(neon.inventory.PekkoInventoryRepositorySuite, org.scalatest.tools.Framework$$anon$1@7e2260c4, false, [SuiteSelector])
+[info] InventorySuite:
+[info] Inventory
+[info]   creating
+[info]   - produces an Inventory with reserved = 0 and an InventoryCreated event
+[info]   - rejects negative onHand
+[info]   - allows onHand = 0 for empty position tracking
+[info]   - event carries all fields for downstream consumers
+[info]   available
+[info]   - is onHand minus reserved
+[info]   - is zero when fully reserved
+[info]   reserving
+[info]   - increments reserved and emits InventoryReserved
+[info]   - rejects quantity exceeding available
+[info]   - allows reserving exactly the available amount
+[info]   - rejects quantity <= 0
+[info]   - event carries inventory identity and lot
+[info]   releasing
+[info]   - decrements reserved and emits InventoryReleased
+[info]   - rejects quantity exceeding reserved
+[info]   - allows releasing exactly the reserved amount
+[info]   - rejects quantity <= 0
+[info]   - event carries inventory identity and lot
+[info]   consuming
+[info]   - decrements both onHand and reserved
+[info]   - rejects quantity exceeding reserved
+[info]   - allows consuming exactly the reserved amount
+[info]   - rejects quantity <= 0
+[info]   - event carries inventory identity and lot
+[info]   correcting lot
+[info]   - changes the lot and emits LotCorrected with previous and new
+[info]   - can set lot from None to Some
+[info]   - can clear lot from Some to None
+[info]   - emits event even when correcting to the same lot
+[info]   - event carries inventory identity
+[info]   - rejects correction when units are reserved
+[info]   - succeeds when reserved is zero
+[info]   lotless inventory
+[info]   - reserve and consume work without lot tracking
+[info]   lifecycle
+[info]   - stock arrives, gets allocated, and leaves the position
+[info] InventoryActorSuite:
+[info] InventoryActor
+[info]   Reserve
+[info]   - reserves quantity from available stock
+[info]   Release
+[info]   - releases reserved quantity back to available
+[info]   Consume
+[info]   - reduces both on-hand and reserved
+[info]   CorrectLot
+[info]   - corrects lot when reserved is zero
+[info]   commands on empty state
+[info]   - rejects Reserve on empty state
+[info]   - GetState returns None on empty state
+[info]   event replay
+[info]   - recovers inventory with reserved quantity
+[info] PekkoInventoryRepositorySuite:
+[info] PekkoInventoryRepository
+[info]   save and findById
+[info]   - persists inventory via create and retrieves it
+[info]   - returns None for a non-existent inventory
+[info]   save with reserve
+[info]   - updates reserved quantity
+[info] Run completed in 5 seconds, 240 milliseconds.
+[info] Total number of tests run: 40
+[info] Suites: completed 3, aborted 0
+[info] Tests: succeeded 40, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.inventory.InventorySuite
+[debug] 	neon.inventory.PekkoInventoryRepositorySuite
+[debug] 	neon.inventory.InventoryActorSuite

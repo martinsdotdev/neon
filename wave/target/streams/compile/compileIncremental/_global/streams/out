@@ -1,0 +1,6 @@
+[debug] [zinc] IncrementalCompile -----------
+[debug] IncrementalCompile.incrementalCompile
+[debug] previous = Stamps for: 55 products, 10 sources, 7 libraries
+[debug] current source = Set(${BASE}/wave/src/main/scala/neon/wave/WaveActor.scala, ${BASE}/wave/src/main/scala/neon/wave/UomExpansion.scala, ${BASE}/wave/src/main/scala/neon/wave/Wave.scala, ${BASE}/wave/src/main/scala/neon/wave/OrderGrouping.scala, ${BASE}/wave/src/main/scala/neon/wave/PekkoWaveRepository.scala, ${BASE}/wave/src/main/scala/neon/wave/TaskRequest.scala, ${BASE}/wave/src/main/scala/neon/wave/WaveRepository.scala, ${BASE}/wave/src/main/scala/neon/wave/AsyncWaveRepository.scala, ${BASE}/wave/src/main/scala/neon/wave/WavePlanner.scala, ${BASE}/wave/src/main/scala/neon/wave/WaveEvent.scala)
+[debug] > initialChanges = InitialChanges(Changes(added = Set(), removed = Set(), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())
+[debug] No changes

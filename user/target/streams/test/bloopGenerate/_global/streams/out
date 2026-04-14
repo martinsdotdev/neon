@@ -1,0 +1,4 @@
+[debug] [user-test] Classpath dependencies List(common)
+[debug] [user-test] Dependencies from configurations List(user)
+[debug] Bloop wrote the configuration of project 'user-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/user-test.json'
+[success] Generated .bloop/user-test.json

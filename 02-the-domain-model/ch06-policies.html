@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Policies: Pure Business Logic</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Policies: Pure Business Logic</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#what-is-a-policy">What Is a Policy?</a></li>
+    <li class="level1 nav-node"><a href="#anatomy-of-a-policy">Anatomy of a Policy</a></li>
+    <li class="level2 nav-leaf"><a href="#object-no-state-no-dependencies"><code>object</code>: No state, no dependencies</a></li>
+    <li class="level2 nav-leaf"><a href="#the-apply-signature-domain-values-in-decision-out">The <code>apply</code> signature: domain values in, decision out</a></li>
+    <li class="level2 nav-leaf"><a href="#the-logic-arithmetic-and-a-conditional">The logic: arithmetic and a conditional</a></li>
+    <li class="level1 nav-leaf"><a href="#testing-policies">Testing Policies</a></li>
+    <li class="level1 nav-node"><a href="#the-policy-catalogue">The Policy Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="#task-lifecycle-policies">Task Lifecycle Policies</a></li>
+    <li class="level2 nav-leaf"><a href="#completion-detection-policies">Completion Detection Policies</a></li>
+    <li class="level2 nav-leaf"><a href="#routing">Routing</a></li>
+    <li class="level2 nav-leaf"><a href="#formation">Formation</a></li>
+    <li class="level1 nav-node"><a href="#deep-dive-stockallocationpolicy">Deep Dive: StockAllocationPolicy</a></li>
+    <li class="level2 nav-leaf"><a href="#the-input-and-output-types">The input and output types</a></li>
+    <li class="level2 nav-leaf"><a href="#the-signature">The signature</a></li>
+    <li class="level2 nav-leaf"><a href="#the-algorithm">The algorithm</a></li>
+    <li class="level2 nav-leaf"><a href="#partial-allocation-support">Partial allocation support</a></li>
+    <li class="level1 nav-leaf"><a href="#architecture-note-functional-core-imperative-shell">Architecture Note: Functional Core, Imperative Shell</a></li>
+    <li class="level1 nav-leaf"><a href="#what-comes-next">What Comes Next</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="policies-pure-business-logic" class="title">Policies: Pure Business Logic</h1>
+        <p>When a worker picks 7 items instead of the requested 10, who decides that a
+        replacement task should be created for the remaining 3? When all tasks for a
+        wave are finished, who detects that the wave itself is complete? The answer,
+        in both cases, is a <em>policy</em>.</p>
+        <p>In Chapter 4 we learned how typestate encoding makes illegal transitions
+        unrepresentable. In Chapter 5 we saw how events record every state change as
+        an immutable fact. But neither typestates nor events answer a critical
+        question: <em>given some facts about the world, what should happen next?</em> That
+        is the job of a policy. In this chapter, we will build the decision-making
+        layer of Neon WES, one pure function at a time.</p>
+        
+        <h2 id="what-is-a-policy" class="section"><a class="anchor-link left" href="#what-is-a-policy"><i class="icofont-laika link">&#xef71;</i></a>What Is a Policy?</h2>
+        <p>A policy is a stateless decision object. It takes domain values in and returns
+        a decision out. No dependencies, no side effects, no repositories, no clocks.
+        A policy is a pure function wrapped in a Scala <code>object</code>.</p>
+        <p>This is a deliberate design choice, recorded in ADR-0002. The core module uses
+        a three-layer pattern:</p>
+        <ul>
+          <li><strong>Policies</strong> decide <em>what</em> should happen. Pure business rules, no I/O.</li>
+          <li><strong>Services</strong> orchestrate <em>how</em> it happens. They read from repositories, call
+          policies, and write results back.</li>
+          <li><strong>Repositories</strong> define <em>where</em> data lives. Abstract port traits with no
+          concrete implementation in the domain layer.</li>
+        </ul>
+        <p>Policies sit at the bottom of this stack. They depend on nothing. Services call
+        them, but policies never call services, never call repositories, never reach
+        out to the external world. This constraint is what makes them so easy to test
+        and so easy to reason about.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The Policy-Service-Repository pattern is documented in
+          ADR-0002.
+          The short version: separate stateless decision objects (policies) from
+          orchestration (services) and persistence (repositories) so that business
+          rules are trivially testable and reusable across services.</p>
+        </div>
+        
+        <h2 id="anatomy-of-a-policy" class="section"><a class="anchor-link left" href="#anatomy-of-a-policy"><i class="icofont-laika link">&#xef71;</i></a>Anatomy of a Policy</h2>
+        <p>Let&#39;s start with the canonical example. When a pick task completes with fewer
+        items than requested (a <em>shortpick</em>), the system needs to decide whether to
+        create a replacement task for the remainder. Here is the policy that makes
+        that decision:</p>
+        <pre><code class="nohighlight"><span class="keyword">package</span><span> </span><span class="identifier">neon</span><span>.</span><span class="identifier">core</span><span>
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">neon</span><span>.</span><span class="identifier">task</span><span>.{</span><span class="type-name">Task</span><span>, </span><span class="type-name">TaskEvent</span><span>}
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">time</span><span>.</span><span class="type-name">Instant</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">ShortpickPolicy</span><span>:
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(
+      </span><span class="identifier">completed</span><span>: </span><span class="type-name">Task</span><span>.</span><span class="type-name">Completed</span><span>,
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+  ): </span><span class="type-name">Option</span><span>[(</span><span class="type-name">Task</span><span>.</span><span class="type-name">Planned</span><span>, </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCreated</span><span>)] =
+    </span><span class="keyword">val</span><span> </span><span class="identifier">remainder</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">requestedQuantity</span><span> - </span><span class="identifier">completed</span><span>.</span><span class="identifier">actualQuantity</span><span>
+    </span><span class="keyword">if</span><span> </span><span class="identifier">remainder</span><span> &lt;= </span><span class="number-literal">0</span><span> </span><span class="identifier">then</span><span> </span><span class="type-name">None</span><span>
+    </span><span class="keyword">else</span><span>
+      </span><span class="type-name">Some</span><span>(
+        </span><span class="type-name">Task</span><span>.</span><span class="identifier">create</span><span>(
+          </span><span class="identifier">taskType</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">taskType</span><span>,
+          </span><span class="identifier">skuId</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">skuId</span><span>,
+          </span><span class="identifier">packagingLevel</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">packagingLevel</span><span>,
+          </span><span class="identifier">requestedQuantity</span><span> = </span><span class="identifier">remainder</span><span>,
+          </span><span class="identifier">orderId</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">orderId</span><span>,
+          </span><span class="identifier">waveId</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">waveId</span><span>,
+          </span><span class="identifier">parentTaskId</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="identifier">completed</span><span>.</span><span class="identifier">id</span><span>),
+          </span><span class="identifier">handlingUnitId</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">handlingUnitId</span><span>,
+          </span><span class="identifier">at</span><span> = </span><span class="identifier">at</span><span>
+        )
+      )</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/ShortpickPolicy.scala</em>&lt;/small&gt;</p>
+        <p>Let&#39;s walk through this line by line.</p>
+        
+        <h3 id="object-no-state-no-dependencies" class="section"><a class="anchor-link left" href="#object-no-state-no-dependencies"><i class="icofont-laika link">&#xef71;</i></a><code>object</code>: No state, no dependencies</h3>
+        <p>The policy is defined as a Scala <code>object</code>, not a <code>class</code>. There is no
+        constructor, no injected dependencies, no mutable fields. You cannot
+        instantiate it with different configurations. There is exactly one
+        <code>ShortpickPolicy</code>, and it behaves the same way every time it is called.</p>
+        
+        <h3 id="the-apply-signature-domain-values-in-decision-out" class="section"><a class="anchor-link left" href="#the-apply-signature-domain-values-in-decision-out"><i class="icofont-laika link">&#xef71;</i></a>The <code>apply</code> signature: domain values in, decision out</h3>
+        <p>The method takes two arguments: the completed task and a timestamp. Both are
+        plain domain values. It returns <code>Option[(Task.Planned, TaskEvent.TaskCreated)]</code>.
+        The <code>Option</code> encodes the decision itself: <code>Some</code> means &quot;yes, create a
+        replacement task,&quot; and <code>None</code> means &quot;no action needed.&quot; The tuple inside the
+        <code>Some</code> follows the same <code>(NewState, Event)</code> pattern we saw in Chapter 4 for
+        typestate transitions.</p>
+        <p>Notice what the signature does <em>not</em> include: no <code>Future</code>, no <code>Either</code> wrapping
+        an I/O error, no repository to look up additional data. Everything the policy
+        needs to make its decision arrives through the parameters.</p>
+        
+        <h3 id="the-logic-arithmetic-and-a-conditional" class="section"><a class="anchor-link left" href="#the-logic-arithmetic-and-a-conditional"><i class="icofont-laika link">&#xef71;</i></a>The logic: arithmetic and a conditional</h3>
+        <p>The core logic is three lines. Calculate the remainder. If it is zero or
+        negative, return <code>None</code>. Otherwise, create a replacement task via <code>Task.create</code>
+        (the same factory method from Chapter 4) and return <code>Some</code>.</p>
+        <p>The <code>Task.create</code> call passes <code>parentTaskId = Some(completed.id)</code>. This is a
+        small but important detail: the replacement task knows which original task
+        spawned it. This parent-child link enables traceability. When an operator or
+        supervisor wants to understand why a particular task exists, they can follow
+        the chain back to the original shortpick.</p>
+        
+        <h2 id="testing-policies" class="section"><a class="anchor-link left" href="#testing-policies"><i class="icofont-laika link">&#xef71;</i></a>Testing Policies</h2>
+        <p>Because a policy is a pure function with no dependencies, testing it requires
+        no mocks, no test containers, no setup infrastructure. You construct the input,
+        call the function, and assert on the output. Here is the test suite for
+        <code>ShortpickPolicy</code>:</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">ShortpickPolicySuite</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyFunSpec</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">OptionValues</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">skuId</span><span> = </span><span class="type-name">SkuId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">userId</span><span> = </span><span class="type-name">UserId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">orderId</span><span> = </span><span class="type-name">OrderId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">waveId</span><span> = </span><span class="type-name">WaveId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">handlingUnitId</span><span> = </span><span class="type-name">HandlingUnitId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">sourceLocationId</span><span> = </span><span class="type-name">LocationId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">destinationLocationId</span><span> = </span><span class="type-name">LocationId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">at</span><span> = </span><span class="type-name">Instant</span><span>.</span><span class="identifier">now</span><span>()
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">completed</span><span>(
+      </span><span class="identifier">requested</span><span>: </span><span class="type-name">Int</span><span>,
+      </span><span class="identifier">actual</span><span>: </span><span class="type-name">Int</span><span>,
+      </span><span class="identifier">waveId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">WaveId</span><span>] = </span><span class="type-name">Some</span><span>(</span><span class="identifier">waveId</span><span>),
+      </span><span class="identifier">handlingUnitId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">HandlingUnitId</span><span>] = </span><span class="type-name">Some</span><span>(</span><span class="identifier">handlingUnitId</span><span>),
+      </span><span class="identifier">packagingLevel</span><span>: </span><span class="type-name">PackagingLevel</span><span> = </span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Each</span><span>
+  ) =
+    </span><span class="type-name">Task</span><span>.</span><span class="type-name">Completed</span><span>(
+      </span><span class="type-name">TaskId</span><span>(), </span><span class="type-name">TaskType</span><span>.</span><span class="type-name">Pick</span><span>, </span><span class="identifier">skuId</span><span>, </span><span class="identifier">packagingLevel</span><span>,
+      </span><span class="identifier">requested</span><span>, </span><span class="identifier">actual</span><span>, </span><span class="identifier">orderId</span><span>, </span><span class="identifier">waveId</span><span>, </span><span class="type-name">None</span><span>,
+      </span><span class="identifier">handlingUnitId</span><span>, </span><span class="type-name">None</span><span>, </span><span class="identifier">sourceLocationId</span><span>,
+      </span><span class="identifier">destinationLocationId</span><span>, </span><span class="identifier">userId</span><span>
+    )
+
+  </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;ShortpickPolicy&quot;</span><span>):
+    </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when actual meets requested&quot;</span><span>):
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;does not create a replacement task&quot;</span><span>):
+        </span><span class="identifier">assert</span><span>(</span><span class="type-name">ShortpickPolicy</span><span>(</span><span class="identifier">completed</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">10</span><span>), </span><span class="identifier">at</span><span>).</span><span class="identifier">isEmpty</span><span>)
+
+    </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when actual exceeds requested&quot;</span><span>):
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;does not create a replacement task&quot;</span><span>):
+        </span><span class="identifier">assert</span><span>(</span><span class="type-name">ShortpickPolicy</span><span>(</span><span class="identifier">completed</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">12</span><span>), </span><span class="identifier">at</span><span>).</span><span class="identifier">isEmpty</span><span>)
+
+    </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when actual is zero&quot;</span><span>):
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;returns replacement task with full requested quantity&quot;</span><span>):
+        </span><span class="keyword">val</span><span> (</span><span class="identifier">replacement</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="type-name">ShortpickPolicy</span><span>(</span><span class="identifier">completed</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">0</span><span>), </span><span class="identifier">at</span><span>).</span><span class="identifier">value</span><span>
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">requestedQuantity</span><span> == </span><span class="number-literal">10</span><span>)
+
+    </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when actual is less than requested&quot;</span><span>):
+      </span><span class="keyword">val</span><span> </span><span class="identifier">task</span><span> = </span><span class="identifier">completed</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">7</span><span>)
+      </span><span class="keyword">val</span><span> (</span><span class="identifier">replacement</span><span>, </span><span class="identifier">event</span><span>) = </span><span class="type-name">ShortpickPolicy</span><span>(</span><span class="identifier">task</span><span>, </span><span class="identifier">at</span><span>).</span><span class="identifier">value</span><span>
+
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;returns replacement task for the unfulfilled quantity&quot;</span><span>):
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">requestedQuantity</span><span> == </span><span class="number-literal">3</span><span>)
+
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;copies wave, SKU, task type, and order ID from original&quot;</span><span>):
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">waveId</span><span> == </span><span class="identifier">task</span><span>.</span><span class="identifier">waveId</span><span>)
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">skuId</span><span> == </span><span class="identifier">task</span><span>.</span><span class="identifier">skuId</span><span>)
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">taskType</span><span> == </span><span class="identifier">task</span><span>.</span><span class="identifier">taskType</span><span>)
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">orderId</span><span> == </span><span class="identifier">task</span><span>.</span><span class="identifier">orderId</span><span>)
+
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;sets parentTaskId to the original task&#39;s ID&quot;</span><span>):
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">parentTaskId</span><span>.</span><span class="identifier">value</span><span> == </span><span class="identifier">task</span><span>.</span><span class="identifier">id</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/ShortpickPolicySuite.scala</em>&lt;/small&gt;</p>
+        <p>A few things to notice about this test style.</p>
+        <p><strong>No mocks.</strong> The test constructs a <code>Task.Completed</code> directly, calls the
+        policy, and inspects the result. There is no mock framework, no stub
+        repository, no dependency injection container. Pure functions yield pure tests.</p>
+        <p><strong>Factory methods for test data.</strong> The <code>completed(requested, actual)</code> helper
+        creates a <code>Task.Completed</code> with sensible defaults, letting each test focus on
+        the two numbers that matter. Optional parameters like <code>packagingLevel</code> allow
+        specific tests to override defaults when they need to verify propagation of
+        a particular field.</p>
+        <p><strong>Edge cases are obvious.</strong> Full pick (10 of 10): no replacement. Over-pick
+        (12 of 10): no replacement. Zero pick (0 of 10): full replacement. Partial
+        pick (7 of 10): replacement for 3. The <code>Option</code> return type makes each case
+        read naturally. <code>isEmpty</code> for &quot;nothing happened,&quot; <code>.value</code> (from
+        <code>OptionValues</code>) for &quot;something happened, let me inspect it.&quot;</p>
+        <p><strong>The <code>(State, Event)</code> tuple is destructured inline.</strong> When we write
+        <code>val (replacement, event) = ShortpickPolicy(task, at).value</code>, we get both
+        pieces of the decision in a single call, ready to assert on separately.</p>
+        <p>These tests run in milliseconds. There is no database to start, no actor
+        system to boot, no network to configure. This is the payoff of the policy
+        pattern: the most important business rules in the system are the cheapest to
+        test.</p>
+        
+        <h2 id="the-policy-catalogue" class="section"><a class="anchor-link left" href="#the-policy-catalogue"><i class="icofont-laika link">&#xef71;</i></a>The Policy Catalogue</h2>
+        <p>Neon WES ships with a collection of policies that cover the major decision
+        points in warehouse execution. Let&#39;s walk through each one, grouped by the
+        kind of decision it makes.</p>
+        
+        <h3 id="task-lifecycle-policies" class="section"><a class="anchor-link left" href="#task-lifecycle-policies"><i class="icofont-laika link">&#xef71;</i></a>Task Lifecycle Policies</h3>
+        <p><strong>TaskCreationPolicy</strong> converts task requests (produced when a wave is
+        released) into planned tasks:</p>
+        <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">TaskCreationPolicy</span><span>:
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(
+      </span><span class="identifier">taskRequests</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">TaskRequest</span><span>],
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+  ): </span><span class="type-name">List</span><span>[(</span><span class="type-name">Task</span><span>.</span><span class="type-name">Planned</span><span>, </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCreated</span><span>)] =
+    </span><span class="identifier">taskRequests</span><span>.</span><span class="identifier">map</span><span>: </span><span class="identifier">req</span><span> =&gt;
+      </span><span class="type-name">Task</span><span>.</span><span class="identifier">create</span><span>(
+        </span><span class="identifier">taskType</span><span> = </span><span class="type-name">TaskType</span><span>.</span><span class="type-name">Pick</span><span>,
+        </span><span class="identifier">skuId</span><span> = </span><span class="identifier">req</span><span>.</span><span class="identifier">skuId</span><span>,
+        </span><span class="identifier">packagingLevel</span><span> = </span><span class="identifier">req</span><span>.</span><span class="identifier">packagingLevel</span><span>,
+        </span><span class="identifier">requestedQuantity</span><span> = </span><span class="identifier">req</span><span>.</span><span class="identifier">quantity</span><span>,
+        </span><span class="identifier">orderId</span><span> = </span><span class="identifier">req</span><span>.</span><span class="identifier">orderId</span><span>,
+        </span><span class="identifier">waveId</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="identifier">req</span><span>.</span><span class="identifier">waveId</span><span>),
+        </span><span class="identifier">parentTaskId</span><span> = </span><span class="type-name">None</span><span>,
+        </span><span class="identifier">handlingUnitId</span><span> = </span><span class="type-name">None</span><span>,
+        </span><span class="identifier">at</span><span> = </span><span class="identifier">at</span><span>
+      )</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskCreationPolicy.scala</em>&lt;/small&gt;</p>
+        <p>This is the simplest kind of policy: a straight mapping. Each <code>TaskRequest</code>
+        becomes exactly one <code>Task.Planned</code>. There is no filtering, no conditional
+        logic, no <code>Option</code> in the return type. The list goes in, a list of equal
+        length comes out. Notice that <code>parentTaskId</code> is <code>None</code> because these are
+        original tasks, not shortpick replacements.</p>
+        <p><strong>ShortpickPolicy</strong> (which we already examined in detail) handles the other end
+        of the task lifecycle: creating replacement tasks when picks come up short.</p>
+        <p>Together, these two policies govern every task creation in the system.
+        <code>TaskCreationPolicy</code> creates the initial batch from wave release.
+        <code>ShortpickPolicy</code> creates follow-up tasks when things do not go as planned.</p>
+        
+        <h3 id="completion-detection-policies" class="section"><a class="anchor-link left" href="#completion-detection-policies"><i class="icofont-laika link">&#xef71;</i></a>Completion Detection Policies</h3>
+        <p>Two policies share the same structural pattern: check whether all tasks in a
+        group have reached a terminal state, and if so, transition the parent entity.</p>
+        <p><strong>WaveCompletionPolicy</strong> checks whether a wave is done:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">WaveCompletionPolicy</span><span>:
+  </span><span class="keyword">import</span><span> </span><span class="type-name">TaskPredicates</span><span>.</span><span class="identifier">isTerminal</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(
+      </span><span class="identifier">waveTasks</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Task</span><span>],
+      </span><span class="identifier">wave</span><span>: </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Released</span><span>,
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+  ): </span><span class="type-name">Option</span><span>[(</span><span class="type-name">Wave</span><span>.</span><span class="type-name">Completed</span><span>, </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveCompleted</span><span>)] =
+    </span><span class="keyword">if</span><span> </span><span class="identifier">waveTasks</span><span>.</span><span class="identifier">isEmpty</span><span> </span><span class="identifier">then</span><span> </span><span class="type-name">None</span><span>
+    </span><span class="keyword">else</span><span> </span><span class="keyword">if</span><span> </span><span class="identifier">waveTasks</span><span>.</span><span class="identifier">forall</span><span>(</span><span class="identifier">isTerminal</span><span>) </span><span class="identifier">then</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">wave</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">at</span><span>))
+    </span><span class="keyword">else</span><span> </span><span class="type-name">None</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/WaveCompletionPolicy.scala</em>&lt;/small&gt;</p>
+        <p><strong>PickingCompletionPolicy</strong> does the same for consolidation groups:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">PickingCompletionPolicy</span><span>:
+  </span><span class="keyword">import</span><span> </span><span class="type-name">TaskPredicates</span><span>.</span><span class="identifier">isTerminal</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(
+      </span><span class="identifier">tasks</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Task</span><span>],
+      </span><span class="identifier">consolidationGroup</span><span>: </span><span class="type-name">ConsolidationGroup</span><span>.</span><span class="type-name">Created</span><span>,
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+  ): </span><span class="type-name">Option</span><span>[(</span><span class="type-name">ConsolidationGroup</span><span>.</span><span class="type-name">Picked</span><span>, </span><span class="type-name">ConsolidationGroupEvent</span><span>.</span><span class="type-name">ConsolidationGroupPicked</span><span>)] =
+    </span><span class="keyword">if</span><span> </span><span class="identifier">tasks</span><span>.</span><span class="identifier">isEmpty</span><span> </span><span class="identifier">then</span><span> </span><span class="type-name">None</span><span>
+    </span><span class="keyword">else</span><span> </span><span class="keyword">if</span><span> </span><span class="identifier">tasks</span><span>.</span><span class="identifier">forall</span><span>(</span><span class="identifier">isTerminal</span><span>) </span><span class="identifier">then</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">consolidationGroup</span><span>.</span><span class="identifier">pick</span><span>(</span><span class="identifier">at</span><span>))
+    </span><span class="keyword">else</span><span> </span><span class="type-name">None</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/PickingCompletionPolicy.scala</em>&lt;/small&gt;</p>
+        <p>Both policies rely on <code>TaskPredicates.isTerminal</code>, a shared helper:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">private</span><span>[</span><span class="identifier">core</span><span>] </span><span class="keyword">object</span><span> </span><span class="type-name">TaskPredicates</span><span>:
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">isTerminal</span><span>(</span><span class="identifier">task</span><span>: </span><span class="type-name">Task</span><span>): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">task</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">Task</span><span>.</span><span class="type-name">Completed</span><span> =&gt; </span><span class="boolean-literal">true</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">Task</span><span>.</span><span class="type-name">Cancelled</span><span> =&gt; </span><span class="boolean-literal">true</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>                 =&gt; </span><span class="boolean-literal">false</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskPredicates.scala</em>&lt;/small&gt;</p>
+        <p>The predicate uses pattern matching on the typestate-encoded <code>Task</code> trait. A
+        task is terminal if it is <code>Completed</code> or <code>Cancelled</code>. All other states
+        (Planned, Allocated, Assigned) are non-terminal. This is the typestate pattern
+        from Chapter 4 paying dividends: the pattern match is exhaustive over the
+        sealed trait, so adding a new task state would force us to update this
+        predicate.</p>
+        <p>Notice the structural similarity between <code>WaveCompletionPolicy</code> and
+        <code>PickingCompletionPolicy</code>. Both take a list of tasks and a parent entity, both
+        check <code>forall(isTerminal)</code>, both return <code>Option[(NewState, Event)]</code>. The only
+        differences are the parent type (<code>Wave.Released</code> vs. <code>ConsolidationGroup.Created</code>)
+        and the transition method (<code>complete</code> vs. <code>pick</code>). This consistency is not
+        accidental. When every policy follows the same shape, reading a new policy
+        takes seconds, not minutes.</p>
+        <p>Both policies also guard against empty task lists. An empty wave or an empty
+        consolidation group should not be considered &quot;complete&quot; just because
+        <code>List.empty.forall(...)</code> returns <code>true</code> (which it does, vacuously). The
+        explicit <code>isEmpty</code> check prevents this subtle bug.</p>
+        
+        <h3 id="routing" class="section"><a class="anchor-link left" href="#routing"><i class="icofont-laika link">&#xef71;</i></a>Routing</h3>
+        <p><strong>RoutingPolicy</strong> creates a transport order when a task completes with an
+        associated handling unit:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">RoutingPolicy</span><span>:
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(
+      </span><span class="identifier">event</span><span>: </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCompleted</span><span>,
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+  ): </span><span class="type-name">Option</span><span>[(</span><span class="type-name">TransportOrder</span><span>.</span><span class="type-name">Pending</span><span>, </span><span class="type-name">TransportOrderEvent</span><span>.</span><span class="type-name">TransportOrderCreated</span><span>)] =
+    </span><span class="identifier">event</span><span>.</span><span class="identifier">handlingUnitId</span><span>.</span><span class="identifier">map</span><span> { </span><span class="identifier">handlingUnitId</span><span> =&gt;
+      </span><span class="type-name">TransportOrder</span><span>.</span><span class="identifier">create</span><span>(</span><span class="identifier">handlingUnitId</span><span>, </span><span class="identifier">event</span><span>.</span><span class="identifier">destinationLocationId</span><span>, </span><span class="identifier">at</span><span>)
+    }</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/RoutingPolicy.scala</em>&lt;/small&gt;</p>
+        <p>This policy is a single expression. The <code>Option</code> comes directly from
+        <code>event.handlingUnitId</code>: if the completed task had a handling unit, create a
+        transport order to move it to the destination; if not, do nothing. Not every
+        task involves a handling unit (some task types like replenishment or transfer
+        may operate without one), so the <code>Option</code> handles both cases elegantly.</p>
+        <p>The policy takes a <code>TaskEvent.TaskCompleted</code> rather than a <code>Task.Completed</code>.
+        This is a deliberate choice. The routing decision fires in response to an
+        event (something that just happened), not in response to the current state of
+        the task. The event carries exactly the fields the policy needs:
+        <code>handlingUnitId</code> and <code>destinationLocationId</code>.</p>
+        
+        <h3 id="formation" class="section"><a class="anchor-link left" href="#formation"><i class="icofont-laika link">&#xef71;</i></a>Formation</h3>
+        <p><strong>ConsolidationGroupFormationPolicy</strong> creates consolidation groups when a wave
+        is released, but only for multi-order waves:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">ConsolidationGroupFormationPolicy</span><span>:
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(
+      </span><span class="identifier">event</span><span>: </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveReleased</span><span>,
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+  ): </span><span class="type-name">List</span><span>[(</span><span class="type-name">ConsolidationGroup</span><span>.</span><span class="type-name">Created</span><span>, </span><span class="type-name">ConsolidationGroupEvent</span><span>.</span><span class="type-name">ConsolidationGroupCreated</span><span>)] =
+    </span><span class="identifier">event</span><span>.</span><span class="identifier">orderGrouping</span><span> </span><span class="keyword">match</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="type-name">OrderGrouping</span><span>.</span><span class="type-name">Multi</span><span> =&gt;
+        </span><span class="type-name">List</span><span>(</span><span class="type-name">ConsolidationGroup</span><span>.</span><span class="identifier">create</span><span>(</span><span class="identifier">event</span><span>.</span><span class="identifier">waveId</span><span>, </span><span class="identifier">event</span><span>.</span><span class="identifier">orderIds</span><span>, </span><span class="identifier">at</span><span>))
+      </span><span class="keyword">case</span><span> </span><span class="type-name">OrderGrouping</span><span>.</span><span class="type-name">Single</span><span> =&gt; </span><span class="type-name">Nil</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/ConsolidationGroupFormationPolicy.scala</em>&lt;/small&gt;</p>
+        <p>The <code>OrderGrouping</code> enum (from Chapter 3) drives the decision. A <code>Multi</code> wave
+        groups multiple orders together for consolidation at a workstation, so the
+        policy creates a consolidation group. A <code>Single</code> wave processes each order
+        independently, so no groups are needed and the policy returns <code>Nil</code>.</p>
+        <p>The return type here is <code>List</code> rather than <code>Option</code>. This makes sense because
+        future extensions might create multiple consolidation groups per wave (for
+        example, splitting a large wave into groups of manageable size). The <code>List</code>
+        return type anticipates that possibility without requiring a signature change.</p>
+        
+        <h2 id="deep-dive-stockallocationpolicy" class="section"><a class="anchor-link left" href="#deep-dive-stockallocationpolicy"><i class="icofont-laika link">&#xef71;</i></a>Deep Dive: StockAllocationPolicy</h2>
+        <p>The policies we have seen so far are compact. Each one makes a single decision
+        in a few lines. <code>StockAllocationPolicy</code> is different. It is the most complex
+        policy in the system, and it deserves a closer look.</p>
+        <p>The problem it solves: given a list of SKU/quantity requests and a map of
+        available stock positions, decide which stock to allocate. The allocation must
+        respect inventory status, shelf life constraints, and a configurable sorting
+        strategy.</p>
+        
+        <h3 id="the-input-and-output-types" class="section"><a class="anchor-link left" href="#the-input-and-output-types"><i class="icofont-laika link">&#xef71;</i></a>The input and output types</h3>
+        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">AllocationRequest</span><span>(</span><span class="identifier">skuId</span><span>: </span><span class="type-name">SkuId</span><span>, </span><span class="identifier">quantity</span><span>: </span><span class="type-name">Int</span><span>)
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">StockAllocation</span><span>(
+    </span><span class="identifier">stockPositionId</span><span>: </span><span class="type-name">StockPositionId</span><span>,
+    </span><span class="identifier">quantity</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">lotAttributes</span><span>: </span><span class="type-name">LotAttributes</span><span>
+)
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">AllocationResult</span><span>(
+    </span><span class="identifier">request</span><span>: </span><span class="type-name">AllocationRequest</span><span>,
+    </span><span class="identifier">allocations</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">StockAllocation</span><span>],
+    </span><span class="identifier">shortQuantity</span><span>: </span><span class="type-name">Int</span><span>
+)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/StockAllocationPolicy.scala</em>&lt;/small&gt;</p>
+        <p>An <code>AllocationRequest</code> says &quot;I need this many units of this SKU.&quot; A
+        <code>StockAllocation</code> says &quot;take this many from this stock position, with these
+        lot attributes.&quot; An <code>AllocationResult</code> ties them together, and includes a
+        <code>shortQuantity</code> field for the unfulfilled remainder. If the warehouse has 7
+        units available but 10 are requested, <code>shortQuantity</code> is 3.</p>
+        
+        <h3 id="the-signature" class="section"><a class="anchor-link left" href="#the-signature"><i class="icofont-laika link">&#xef71;</i></a>The signature</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">StockAllocationPolicy</span><span>:
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(
+      </span><span class="identifier">requests</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">AllocationRequest</span><span>],
+      </span><span class="identifier">availableStock</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">SkuId</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">StockPosition</span><span>]],
+      </span><span class="identifier">strategy</span><span>: </span><span class="type-name">AllocationStrategy</span><span>,
+      </span><span class="identifier">referenceDate</span><span>: </span><span class="type-name">LocalDate</span><span>,
+      </span><span class="identifier">minimumShelfLifeDays</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">0</span><span>
+  ): </span><span class="type-name">Either</span><span>[</span><span class="type-name">StockAllocationError</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">AllocationResult</span><span>]] =</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/StockAllocationPolicy.scala</em>&lt;/small&gt;</p>
+        <p>This is the first policy we have seen that returns <code>Either</code> instead of
+        <code>Option</code>. The reason: allocation can fail in ways that need to be
+        distinguished. Running out of stock and failing a shelf life check are
+        different errors that require different responses. The <code>Option</code> policies
+        express a binary &quot;do something or do nothing&quot; decision. This policy expresses
+        a three-way outcome: success, insufficient stock, or insufficient shelf life.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">StockAllocationError</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">StockAllocationError</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InsufficientStock</span><span>(</span><span class="identifier">skuId</span><span>: </span><span class="type-name">SkuId</span><span>, </span><span class="identifier">requested</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">available</span><span>: </span><span class="type-name">Int</span><span>)
+      </span><span class="keyword">extends</span><span> </span><span class="type-name">StockAllocationError</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InsufficientShelfLife</span><span>(</span><span class="identifier">skuId</span><span>: </span><span class="type-name">SkuId</span><span>, </span><span class="identifier">requiredDays</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">availableDays</span><span>: </span><span class="type-name">Int</span><span>)
+      </span><span class="keyword">extends</span><span> </span><span class="type-name">StockAllocationError</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/StockAllocationError.scala</em>&lt;/small&gt;</p>
+        <p>Even the error type is a sealed trait with descriptive case classes. No
+        exception strings, no error codes. The caller can pattern match and handle each
+        failure precisely.</p>
+        
+        <h3 id="the-algorithm" class="section"><a class="anchor-link left" href="#the-algorithm"><i class="icofont-laika link">&#xef71;</i></a>The algorithm</h3>
+        <p>The allocation works in four stages:</p>
+        <ol class="arabic">
+          <li>
+            <p><strong>Filter by inventory status.</strong> Only positions with <code>InventoryStatus.Available</code>
+            and a positive available quantity are eligible. Blocked, damaged, or
+            quality-hold stock is excluded.</p>
+          </li>
+          <li>
+            <p><strong>Filter by shelf life.</strong> If <code>minimumShelfLifeDays</code> is greater than zero,
+            positions whose remaining shelf life falls below the threshold are removed.
+            If this filter eliminates all candidates, the policy returns
+            <code>InsufficientShelfLife</code> with the best available shelf life for diagnostic
+            purposes.</p>
+          </li>
+          <li>
+            <p><strong>Sort by strategy.</strong> The <code>AllocationStrategy</code> enum determines the sort
+            order:</p>
+            <ul>
+              <li><code>Fefo</code> (First Expired, First Out): sort by expiration date ascending,
+              then production date, then quantity. Items closest to expiration get
+              picked first.</li>
+              <li><code>Fifo</code> (First In, First Out): sort by production date ascending, then
+              quantity. The oldest stock gets picked first.</li>
+              <li><code>NearestLocation</code>: reserved for future implementation when location
+              proximity scoring is added.</li>
+            </ul>
+          </li>
+          <li>
+            <p><strong>Greedy first-fit allocation.</strong> Walk the sorted list, taking as much as
+            possible from each position until the requested quantity is fulfilled or all
+            eligible stock is exhausted. Any unfulfilled remainder is recorded in
+            <code>shortQuantity</code>.</p>
+          </li>
+        </ol>
+        <pre><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">sortByStrategy</span><span>(
+    </span><span class="identifier">positions</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">StockPosition</span><span>],
+    </span><span class="identifier">strategy</span><span>: </span><span class="type-name">AllocationStrategy</span><span>,
+    </span><span class="identifier">referenceDate</span><span>: </span><span class="type-name">LocalDate</span><span>
+): </span><span class="type-name">List</span><span>[</span><span class="type-name">StockPosition</span><span>] =
+  </span><span class="identifier">strategy</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">AllocationStrategy</span><span>.</span><span class="type-name">Fefo</span><span> =&gt;
+      </span><span class="identifier">positions</span><span>.</span><span class="identifier">sortBy</span><span>(</span><span class="identifier">sp</span><span> =&gt;
+        (
+          </span><span class="identifier">sp</span><span>.</span><span class="identifier">lotAttributes</span><span>.</span><span class="identifier">expirationDate</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="type-name">LocalDate</span><span>.</span><span class="type-name">MAX</span><span>),
+          </span><span class="identifier">sp</span><span>.</span><span class="identifier">lotAttributes</span><span>.</span><span class="identifier">productionDate</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="type-name">LocalDate</span><span>.</span><span class="type-name">MAX</span><span>),
+          </span><span class="identifier">sp</span><span>.</span><span class="identifier">availableQuantity</span><span>
+        )
+      )
+    </span><span class="keyword">case</span><span> </span><span class="type-name">AllocationStrategy</span><span>.</span><span class="type-name">Fifo</span><span> =&gt;
+      </span><span class="identifier">positions</span><span>.</span><span class="identifier">sortBy</span><span>(</span><span class="identifier">sp</span><span> =&gt;
+        (
+          </span><span class="identifier">sp</span><span>.</span><span class="identifier">lotAttributes</span><span>.</span><span class="identifier">productionDate</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="type-name">LocalDate</span><span>.</span><span class="type-name">MAX</span><span>),
+          </span><span class="identifier">sp</span><span>.</span><span class="identifier">availableQuantity</span><span>
+        )
+      )
+    </span><span class="keyword">case</span><span> </span><span class="type-name">AllocationStrategy</span><span>.</span><span class="type-name">NearestLocation</span><span> =&gt;
+      </span><span class="identifier">positions</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/StockAllocationPolicy.scala</em>&lt;/small&gt;</p>
+        <p>The <code>sortBy</code> calls use tuple ordering to break ties. For FEFO, positions with
+        no expiration date sort last (<code>LocalDate.MAX</code>), which is the safe default: if
+        we do not know when something expires, pick the stock we <em>do</em> know about
+        first. The same logic applies to missing production dates in FIFO.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">greedyAllocate</span><span>(
+    </span><span class="identifier">sorted</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">StockPosition</span><span>],
+    </span><span class="identifier">needed</span><span>: </span><span class="type-name">Int</span><span>
+): (</span><span class="type-name">List</span><span>[</span><span class="type-name">StockAllocation</span><span>], </span><span class="type-name">Int</span><span>) =
+  </span><span class="keyword">var</span><span> </span><span class="identifier">remaining</span><span> = </span><span class="identifier">needed</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">allocations</span><span> = </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">mutable</span><span>.</span><span class="type-name">ListBuffer</span><span>[</span><span class="type-name">StockAllocation</span><span>]()
+  </span><span class="keyword">for</span><span> </span><span class="identifier">sp</span><span> &lt;- </span><span class="identifier">sorted</span><span> </span><span class="keyword">if</span><span> </span><span class="identifier">remaining</span><span> &gt; </span><span class="number-literal">0</span><span> </span><span class="identifier">do</span><span>
+    </span><span class="keyword">val</span><span> </span><span class="identifier">qty</span><span> = </span><span class="identifier">math</span><span>.</span><span class="identifier">min</span><span>(</span><span class="identifier">remaining</span><span>, </span><span class="identifier">sp</span><span>.</span><span class="identifier">availableQuantity</span><span>)
+    </span><span class="identifier">allocations</span><span> += </span><span class="type-name">StockAllocation</span><span>(</span><span class="identifier">sp</span><span>.</span><span class="identifier">id</span><span>, </span><span class="identifier">qty</span><span>, </span><span class="identifier">sp</span><span>.</span><span class="identifier">lotAttributes</span><span>)
+    </span><span class="identifier">remaining</span><span> -= </span><span class="identifier">qty</span><span>
+  (</span><span class="identifier">allocations</span><span>.</span><span class="identifier">toList</span><span>, </span><span class="identifier">remaining</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/StockAllocationPolicy.scala</em>&lt;/small&gt;</p>
+        <p>The greedy allocator is the only place in the entire policy that uses mutable
+        state (a <code>var</code> and a <code>ListBuffer</code>). This is a pragmatic choice: the mutable
+        loop is easier to read than a fold for this particular algorithm, and the
+        mutation is entirely local. The <code>ListBuffer</code> is converted to an immutable
+        <code>List</code> before it leaves the method. No caller ever sees the mutable
+        internals.</p>
+        
+        <h3 id="partial-allocation-support" class="section"><a class="anchor-link left" href="#partial-allocation-support"><i class="icofont-laika link">&#xef71;</i></a>Partial allocation support</h3>
+        <p>An important design decision: the policy does not fail when it cannot fully
+        satisfy a request. If 10 units are requested but only 7 are available, the
+        result contains allocations for 7 with <code>shortQuantity = 3</code>. The calling
+        service decides how to handle the short: it might proceed with a partial pick,
+        create a replenishment request, or reject the wave entirely. The policy
+        reports the facts; the service makes the judgment call.</p>
+        <p>This is the policy pattern working as intended. The complex stock selection
+        logic is isolated in a pure function. The orchestration decision (&quot;what do we
+        do about a short?&quot;) belongs in the service layer, which has access to
+        configuration, business rules, and the broader context.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p><code>StockAllocationPolicy</code> is the most algorithmically complex policy
+          in Neon WES, but it follows the same structural rules as every other policy:
+          it is a stateless <code>object</code>, it takes domain values as input, and it returns
+          a result with no side effects. Complexity in the algorithm does not require
+          complexity in the architecture.</p>
+        </div>
+        
+        <h2 id="architecture-note-functional-core-imperative-shell" class="section"><a class="anchor-link left" href="#architecture-note-functional-core-imperative-shell"><i class="icofont-laika link">&#xef71;</i></a>Architecture Note: Functional Core, Imperative Shell</h2>
+        <p>If the policy pattern feels familiar, you may be thinking of Gary Bernhardt&#39;s
+        <em>Functional Core, Imperative Shell</em> architecture. The idea is to separate your
+        system into two layers:</p>
+        <ul>
+          <li>The <strong>functional core</strong> contains pure logic with no dependencies. You can
+          test it with simple inputs and outputs.</li>
+          <li>The <strong>imperative shell</strong> handles I/O, state management, and coordination.
+          It calls into the functional core, but the core never calls back.</li>
+        </ul>
+        <p>In Neon WES, the functional core has two components:</p>
+        <ol class="arabic">
+          <li>
+            <p><strong>Aggregate transition methods</strong> (Chapter 4). A <code>Task.Planned</code> has an
+            <code>allocate()</code> method that returns <code>(Task.Allocated, TaskEvent.TaskAllocated)</code>.
+            Pure data transformation, no side effects.</p>
+          </li>
+          <li>
+            <p><strong>Policies</strong> (this chapter). <code>ShortpickPolicy</code> takes a completed task and
+            returns an optional replacement. <code>WaveCompletionPolicy</code> takes a list of
+            tasks and a wave and returns an optional completion. Pure decisions, no
+            side effects.</p>
+          </li>
+        </ol>
+        <p>The imperative shell is the service layer (Chapter 7). A service reads tasks
+        from a repository, passes them to <code>WaveCompletionPolicy</code>, and if the policy
+        returns <code>Some</code>, saves the completed wave back to the repository. The service
+        does the I/O. The policy does the thinking.</p>
+        <p>This separation explains why policy tests are so fast. They do not need to
+        start a database, boot an actor system, or configure a network. They call a
+        function and check the result. The most critical business rules in your system
+        should also be the cheapest to verify, and the functional core, imperative
+        shell pattern makes that possible.</p>
+        <p>The aggregate transition methods and the policies together form a layer of
+        pure, deterministic logic at the heart of the application. Everything else
+        (services, repositories, actors, HTTP routes, projections) exists to feed data
+        into this core and to act on its decisions.</p>
+        
+        <h2 id="what-comes-next" class="section"><a class="anchor-link left" href="#what-comes-next"><i class="icofont-laika link">&#xef71;</i></a>What Comes Next</h2>
+        <p>Policies make decisions, but they do not act on them. They cannot read from a
+        database or save a result. For that, we need services. In the next chapter, we
+        will see how services orchestrate policies with repository access to implement
+        complex multi-step business operations, like completing a task that triggers a
+        shortpick check, a routing decision, a wave completion check, and a
+        consolidation group transition, all in a single coordinated flow.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,22 @@
+<configuration>
+  <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+  <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+  </appender>
+
+  <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="JSON" />
+    <queueSize>1024</queueSize>
+    <neverBlock>true</neverBlock>
+    <includeCallerData>false</includeCallerData>
+  </appender>
+
+  <logger name="neon" level="INFO" />
+  <logger name="org.apache.pekko" level="WARN" />
+  <logger name="io.r2dbc" level="WARN" />
+
+  <root level="WARN">
+    <appender-ref ref="ASYNC" />
+  </root>
+</configuration>

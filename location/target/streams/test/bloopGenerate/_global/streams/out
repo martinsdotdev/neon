@@ -1,0 +1,4 @@
+[debug] [location-test] Classpath dependencies List(common)
+[debug] [location-test] Dependencies from configurations List(location)
+[debug] Bloop wrote the configuration of project 'location-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/location-test.json'
+[success] Generated .bloop/location-test.json

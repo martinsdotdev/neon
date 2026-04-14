@@ -1,0 +1,54 @@
+[debug] Running TaskDef(neon.counttask.CountTaskSuite, org.scalatest.tools.Framework$$anon$1@73bf7c9c, false, [SuiteSelector])
+[debug] Running TaskDef(neon.counttask.CountTaskActorSuite, org.scalatest.tools.Framework$$anon$1@73bf7c9c, false, [SuiteSelector])
+[info] CountTaskSuite:
+[info] CountTask
+[info]   creating
+[info]   - captures cycle count reference, SKU, and location
+[info]   - captures expected quantity
+[info]   assigning
+[info]   - transitions from Pending to Assigned
+[info]   - preserves all fields through the transition
+[info]   - emits CountTaskAssigned event with correct fields
+[info]   recording
+[info]   - transitions from Assigned to Recorded
+[info]   - captures actual quantity and computes variance
+[info]   - computes positive variance when actual exceeds expected
+[info]   - computes zero variance when actual matches expected
+[info]   - preserves all fields through the transition
+[info]   - emits CountTaskRecorded event with quantities and variance
+[info]   cancelling
+[info]   - can be cancelled from Pending
+[info]   - can be cancelled from Assigned
+[info]   - cancellation preserves cycle count reference
+[info]   - cancellation from Assigned preserves assignedTo
+[info]   - cancellation from Pending has no assignedTo
+[info]   variance calculation
+[info]   - handles zero actual quantity
+[info] CountTaskActorSuite:
+[info] CountTaskActor
+[info]   Create
+[info]   - persists CountTaskCreated event and sets Pending state
+[info]   GetState
+[info]   - returns None when empty
+[info]   - returns Some after creation
+[info]   Assign
+[info]   - transitions Pending to Assigned
+[info]   - rejects Assign in EmptyState
+[info]   Record
+[info]   - transitions Assigned to Recorded
+[info]   - rejects Record on Pending
+[info]   Cancel
+[info]   - cancels a Pending count task
+[info]   - cancels an Assigned count task
+[info]   - rejects Cancel on Recorded
+[info]   event replay
+[info]   - recovers Pending state from journal
+[info]   - recovers Assigned state from journal
+[info] Run completed in 6 seconds, 477 milliseconds.
+[info] Total number of tests run: 29
+[info] Suites: completed 2, aborted 0
+[info] Tests: succeeded 29, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.counttask.CountTaskActorSuite
+[debug] 	neon.counttask.CountTaskSuite

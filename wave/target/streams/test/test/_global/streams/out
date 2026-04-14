@@ -1,0 +1,79 @@
+[debug] Running TaskDef(neon.wave.WaveSuite, org.scalatest.tools.Framework$$anon$1@f4a0b75, false, [SuiteSelector])
+[debug] Running TaskDef(neon.wave.UomExpansionSuite, org.scalatest.tools.Framework$$anon$1@f4a0b75, false, [SuiteSelector])
+[debug] Running TaskDef(neon.wave.WavePlannerSuite, org.scalatest.tools.Framework$$anon$1@f4a0b75, false, [SuiteSelector])
+[debug] Running TaskDef(neon.wave.PekkoWaveRepositorySuite, org.scalatest.tools.Framework$$anon$1@f4a0b75, false, [SuiteSelector])
+[debug] Running TaskDef(neon.wave.WaveActorSuite, org.scalatest.tools.Framework$$anon$1@f4a0b75, false, [SuiteSelector])
+[info] WaveSuite:
+[info] Wave
+[info]   releasing
+[info]   - authorizes work to begin
+[info]   - carries order IDs for task creation
+[info]   - records when the wave was released
+[info]   completing
+[info]   - marks all work as done
+[info]   cancelling
+[info]   - can be cancelled before release
+[info]   - can be cancelled after release
+[info]   - cancellation event carries orderGrouping for downstream routing
+[info]   order grouping
+[info]   - is carried in events for downstream routing
+[info] WavePlannerSuite:
+[info] WavePlanner
+[info] - produces one task request per order line by default
+[info] - tags every task request with the source order ID
+[info] - tags every task request with the wave ID
+[info] - rejects an empty order list
+[info] - flattens lines across multiple orders
+[info] - emits a WaveReleased event with grouping, order IDs, and timestamp
+[info]   lineResolution
+[info]   - defaults to 1:1 pass-through
+[info]   - delegates to custom strategy when provided
+[info] UomExpansionSuite:
+[info] UomExpansion
+[info]   Each-level input
+[info]   - splits into Pallet + Case + Each using greedy top-down
+[info]   - produces a single Each request when hierarchy is empty
+[info]   - uses only tiers present in hierarchy
+[info]   - produces exact Pallet with no remainder when quantity is a multiple
+[info]   - falls through to pure Each when below all tier thresholds
+[info]   - handles non-contiguous hierarchy levels
+[info]   non-Each input
+[info]   - converts Cases to eaches then expands to coarser tiers
+[info]   - produces mixed tiers from non-Each input
+[info]   - stays at same level when quantity is too small for coarser tiers
+[info]   - passes through when level is absent from hierarchy
+[info]   invariants
+[info]   - conserves total eaches across all tiers
+[info]   - produces results in descending packaging level order
+[info]   - carries wave ID and order ID in every request
+[info] WaveActorSuite:
+[info] WaveActor
+[info]   Create
+[info]   - persists WaveReleased event and sets Released state
+[info]   GetState
+[info]   - returns None when empty
+[info]   - returns Some after creation
+[info]   Complete
+[info]   - transitions Released to Completed
+[info]   - rejects Complete in EmptyState
+[info]   Cancel
+[info]   - cancels a Released wave
+[info]   - rejects Cancel on Completed wave
+[info]   event replay
+[info]   - recovers Released state from journal
+[info] PekkoWaveRepositorySuite:
+[info] PekkoWaveRepository
+[info]   save and findById
+[info]   - persists a Released wave via Create command and retrieves it
+[info]   - returns None for a non-existent wave
+[info] Run completed in 6 seconds, 634 milliseconds.
+[info] Total number of tests run: 39
+[info] Suites: completed 5, aborted 0
+[info] Tests: succeeded 39, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.wave.PekkoWaveRepositorySuite
+[debug] 	neon.wave.WavePlannerSuite
+[debug] 	neon.wave.UomExpansionSuite
+[debug] 	neon.wave.WaveActorSuite
+[debug] 	neon.wave.WaveSuite

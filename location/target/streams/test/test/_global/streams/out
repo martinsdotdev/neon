@@ -1,0 +1,15 @@
+[debug] Running TaskDef(neon.location.LocationSuite, org.scalatest.tools.Framework$$anon$1@4d1e2709, false, [SuiteSelector])
+[info] LocationSuite:
+[info] Location
+[info]   construction
+[info]   - carries reference data and zone assignment
+[info]   - defaults pickingSequence to None
+[info]   picking sequence
+[info]   - carries route-optimized ordering index when assigned
+[info] Run completed in 6 seconds, 430 milliseconds.
+[info] Total number of tests run: 3
+[info] Suites: completed 1, aborted 0
+[info] Tests: succeeded 3, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.location.LocationSuite

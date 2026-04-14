@@ -1,0 +1,11 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/handling-unit-stock/src/main/scala/neon/handlingunitstock/HandlingUnitStockRepository.scala, /home/martins/Projects/neon/handling-unit-stock/src/main/scala/neon/handlingunitstock/HandlingUnitStockActor.scala, /home/martins/Projects/neon/handling-unit-stock/src/main/scala/neon/handlingunitstock/PekkoHandlingUnitStockRepository.scala, /home/martins/Projects/neon/handling-unit-stock/src/main/scala/neon/handlingunitstock/AsyncHandlingUnitStockRepository.scala, /home/martins/Projects/neon/handling-unit-stock/src/main/scala/neon/handlingunitstock/HandlingUnitStock.scala, /home/martins/Projects/neon/handling-unit-stock/src/main/scala/neon/handlingunitstock/HandlingUnitStockEvent.scala
+[debug] 	Modified: /home/martins/Projects/neon/handling-unit-stock/src/main/scala/neon/handlingunitstock/PekkoHandlingUnitStockRepository.scala
+[debug] 	Unmodified: /home/martins/Projects/neon/handling-unit-stock/src/main/scala/neon/handlingunitstock/HandlingUnitStockRepository.scala, /home/martins/Projects/neon/handling-unit-stock/src/main/scala/neon/handlingunitstock/HandlingUnitStockActor.scala, /home/martins/Projects/neon/handling-unit-stock/src/main/scala/neon/handlingunitstock/AsyncHandlingUnitStockRepository.scala, /home/martins/Projects/neon/handling-unit-stock/src/main/scala/neon/handlingunitstock/HandlingUnitStock.scala, /home/martins/Projects/neon/handling-unit-stock/src/main/scala/neon/handlingunitstock/HandlingUnitStockEvent.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[info] scalafmt: Formatting 1 Scala sources (/home/martins/Projects/neon/handling-unit-stock)...
+[debug] scalafmt: Unchanged 1 Scala sources

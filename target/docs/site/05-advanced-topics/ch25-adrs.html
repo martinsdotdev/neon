@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Architecture Decision Records</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Architecture Decision Records</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#what-are-adrs">What Are ADRs?</a></li>
+    <li class="level1 nav-node"><a href="#the-neon-wes-catalogue">The Neon WES Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="#adr-0001-typestate-encoded-aggregates">ADR-0001: Typestate-Encoded Aggregates</a></li>
+    <li class="level2 nav-leaf"><a href="#adr-0002-policy-service-repository-pattern">ADR-0002: Policy-Service-Repository Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="#adr-0003-opaque-type-ids-with-uuid-v7">ADR-0003: Opaque Type IDs with UUID v7</a></li>
+    <li class="level2 nav-leaf"><a href="#adr-0004-either-based-error-handling">ADR-0004: Either-Based Error Handling</a></li>
+    <li class="level2 nav-leaf"><a href="#adr-0005-domain-driven-sbt-modules">ADR-0005: Domain-Driven sbt Modules</a></li>
+    <li class="level2 nav-leaf"><a href="#adr-0006-tanstack-start-react-frontend">ADR-0006: TanStack Start React Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="#adr-0007-shadcn-base-ui-component-system">ADR-0007: shadcn + Base UI Component System</a></li>
+    <li class="level2 nav-leaf"><a href="#adr-0008-session-based-authentication">ADR-0008: Session-Based Authentication</a></li>
+    <li class="level2 nav-leaf"><a href="#adr-0009-rbac-with-per-user-permission-overrides">ADR-0009: RBAC with Per-User Permission Overrides</a></li>
+    <li class="level2 nav-leaf"><a href="#adr-0010-structured-logging-with-wide-events">ADR-0010: Structured Logging with Wide Events</a></li>
+    <li class="level1 nav-leaf"><a href="#cross-reference-map">Cross-Reference Map</a></li>
+    <li class="level1 nav-leaf"><a href="#writing-your-own-adrs">Writing Your Own ADRs</a></li>
+    <li class="level1 nav-leaf"><a href="#adrs-and-the-codebase">ADRs and the Codebase</a></li>
+    <li class="level1 nav-leaf"><a href="#summary">Summary</a></li>
+    <li class="level1 nav-leaf"><a href="#what-comes-next">What Comes Next</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="architecture-decision-records" class="title">Architecture Decision Records</h1>
+        <p>Throughout this book, we have made dozens of choices: typestate encoding over
+        status enums, <code>Either</code> over exceptions, opaque types over raw UUIDs, Pekko
+        over Akka, sessions over JWTs. Each choice had alternatives, tradeoffs, and
+        reasoning. But where does that reasoning live?</p>
+        <p>If it lives only in someone&#39;s head, it is lost the moment they leave the
+        project. If it lives in a Slack thread, it is buried within a week. If it
+        lives in a commit message, no one will find it.</p>
+        <p>Architecture Decision Records (ADRs) solve this by making architectural
+        decisions explicit, permanent, and discoverable. In this chapter, we will
+        look at the ADR format, walk through every ADR in the Neon WES catalogue,
+        and discuss how to write your own.</p>
+        
+        <h2 id="what-are-adrs" class="section"><a class="anchor-link left" href="#what-are-adrs"><i class="icofont-laika link">&#xef71;</i></a>What Are ADRs?</h2>
+        <p>An ADR is a short document that captures a single architectural decision.
+        The format was popularized by Michael Nygard in a 2011 blog post and has
+        since become a standard practice in software projects of all sizes. Each
+        ADR answers three questions:</p>
+        <ol class="arabic">
+          <li><strong>What is the context?</strong> What problem are we solving? What forces are
+          at play?</li>
+          <li><strong>What did we decide?</strong> Which option did we choose, and why?</li>
+          <li><strong>What are the consequences?</strong> What are the benefits and tradeoffs of
+          this choice?</li>
+        </ol>
+        <p>Neon WES uses a structured template for all ADRs:</p>
+        <pre><code class="nohighlight"><span class="markup-headline"># {Short Title of Solved Problem and Found Solution}</span><span>
+
+</span><span class="markup-headline">## Status</span><span>
+
+{Proposed | Accepted | Rejected | Deprecated | Superseded}
+
+</span><span class="markup-headline">## Context and Problem Statement</span><span>
+
+{Two to three sentences. Frame the problem as a question.}
+
+</span><span class="markup-headline">## Decision Drivers</span><span>
+
+- {A desired quality, constraint, or force}
+
+</span><span class="markup-headline">## Considered Options</span><span>
+
+- {Option 1}
+- {Option 2}
+
+</span><span class="markup-headline">## Decision Outcome</span><span>
+
+Chosen option: &quot;{title}&quot;, because {justification}.
+
+</span><span class="markup-headline">### Consequences</span><span>
+
+</span><span class="markup-headline">#### Positive</span><span>
+- {Benefit}
+
+</span><span class="markup-headline">#### Negative</span><span>
+- {Tradeoff}
+
+</span><span class="markup-headline">### Confirmation</span><span>
+- {How the decision is verified: test suite, code review, fitness function}</span></code></pre>
+        <p>&lt;small&gt;<em>File: docs/decisions/adr-template.md</em>&lt;/small&gt;</p>
+        <p>The template is concise by design. An ADR should take 10 to 15 minutes to
+        write. If it takes longer, the decision probably needs to be broken down
+        into smaller parts.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>ADRs are numbered sequentially (0001, 0002, ...) and never
+          deleted. If a decision is reversed, the old ADR is marked as &quot;Deprecated&quot;
+          or &quot;Superseded by ADR NNNN&quot; and a new ADR explains the reversal. This
+          preserves the history of reasoning, including reasoning that turned out
+          to be wrong.</p>
+        </div>
+        
+        <h2 id="the-neon-wes-catalogue" class="section"><a class="anchor-link left" href="#the-neon-wes-catalogue"><i class="icofont-laika link">&#xef71;</i></a>The Neon WES Catalogue</h2>
+        <p>All ADRs live in <code>docs/decisions/</code> and follow the naming convention
+        <code>NNNN-title-with-kebab-case.md</code>. As of now, the project has ten ADRs
+        covering domain modeling, infrastructure, error handling, frontend
+        technology, security, and observability. Let&#39;s walk through each one.</p>
+        
+        <h3 id="adr-0001-typestate-encoded-aggregates" class="section"><a class="anchor-link left" href="#adr-0001-typestate-encoded-aggregates"><i class="icofont-laika link">&#xef71;</i></a>ADR-0001: Typestate-Encoded Aggregates</h3>
+        <p>Domain aggregates model state machines (a task moves through Planned,
+        Allocated, Assigned, Completed). This ADR chose typestate encoding over a
+        status enum with runtime checks. Each state is a distinct case class, and
+        transition methods exist only on valid source states. The compiler catches
+        illegal transitions at compile time rather than at runtime.</p>
+        <p><em>See: <a href="../02-the-domain-model/ch04-typestates.html">Chapter 4: Modeling State with Typestates</a></em></p>
+        <p>&lt;small&gt;<em>File: docs/decisions/0001-use-typestate-encoded-aggregates.md</em>&lt;/small&gt;</p>
+        
+        <h3 id="adr-0002-policy-service-repository-pattern" class="section"><a class="anchor-link left" href="#adr-0002-policy-service-repository-pattern"><i class="icofont-laika link">&#xef71;</i></a>ADR-0002: Policy-Service-Repository Pattern</h3>
+        <p>The core module orchestrates business logic across multiple aggregates. A
+        single operation like task completion can cascade through tasks, waves,
+        transport orders, and consolidation groups. This ADR chose to separate
+        stateless decision objects (policies) from orchestration (services) and
+        persistence (repositories), rather than combining everything into &quot;fat
+        services.&quot; Policies are pure functions with no dependencies, trivially
+        testable in isolation. Services inject repositories and policies, managing
+        the cascade. Repositories define abstract port traits with no concrete
+        implementations in the domain.</p>
+        <p><em>See: <a href="../02-the-domain-model/ch06-policies.html">Chapter 6: Policies</a>, <a href="../02-the-domain-model/ch07-services.html">Chapter 7: Services</a>, <a href="../02-the-domain-model/ch08-repositories.html">Chapter 8: Repositories</a></em></p>
+        <p>&lt;small&gt;<em>File: docs/decisions/0002-use-policy-service-repository-pattern.md</em>&lt;/small&gt;</p>
+        
+        <h3 id="adr-0003-opaque-type-ids-with-uuid-v7" class="section"><a class="anchor-link left" href="#adr-0003-opaque-type-ids-with-uuid-v7"><i class="icofont-laika link">&#xef71;</i></a>ADR-0003: Opaque Type IDs with UUID v7</h3>
+        <p>Every domain entity needs an identifier. Raw <code>UUID</code> is type-unsafe: nothing
+        prevents passing a <code>WaveId</code> where a <code>TaskId</code> is expected. This ADR chose
+        Scala 3 opaque types wrapping UUID, providing compile-time type distinction
+        with zero runtime overhead (no boxing, no wrapper objects). UUID v7
+        (time-ordered epoch via the uuid-creator library) provides natural
+        chronological ordering and better database index performance.</p>
+        <p><em>See: <a href="../02-the-domain-model/ch03-common-foundation.html">Chapter 3: The Common Foundation</a></em></p>
+        <p>&lt;small&gt;<em>File: docs/decisions/0003-use-opaque-type-ids-with-uuid-v7.md</em>&lt;/small&gt;</p>
+        
+        <h3 id="adr-0004-either-based-error-handling" class="section"><a class="anchor-link left" href="#adr-0004-either-based-error-handling"><i class="icofont-laika link">&#xef71;</i></a>ADR-0004: Either-Based Error Handling</h3>
+        <p>Domain operations can fail for business reasons. This ADR chose
+        <code>Either[Error, Result]</code> with sealed trait error ADTs over exceptions or
+        <code>Option</code>. Errors are visible in type signatures, forcing callers to handle
+        them. Exhaustive pattern matching ensures all error cases are addressed.
+        Each error case class carries relevant context (the ID that was not found,
+        the invalid quantity). No hidden control flow from thrown exceptions.</p>
+        <p><em>See: <a href="../04-system-concerns/ch18-error-handling.html">Chapter 18: Error Handling Patterns</a></em></p>
+        <p>&lt;small&gt;<em>File: docs/decisions/0004-use-either-based-error-handling.md</em>&lt;/small&gt;</p>
+        
+        <h3 id="adr-0005-domain-driven-sbt-modules" class="section"><a class="anchor-link left" href="#adr-0005-domain-driven-sbt-modules"><i class="icofont-laika link">&#xef71;</i></a>ADR-0005: Domain-Driven sbt Modules</h3>
+        <p>The WES domain has many aggregates. This ADR chose sbt multi-project builds
+        where each top-level directory is a domain aggregate, over a single project
+        organized by packages. Dependencies between modules are declared explicitly
+        in <code>build.sbt</code>, providing compile-time enforcement of dependency boundaries.
+        A module cannot accidentally import from a sibling. Incremental compilation
+        is faster because changing one module does not recompile others.</p>
+        <p><em>See: <a href="../01-the-domain/ch02-getting-started.html">Chapter 2: Getting Started</a></em></p>
+        <p>&lt;small&gt;<em>File: docs/decisions/0005-use-domain-driven-sbt-modules.md</em>&lt;/small&gt;</p>
+        
+        <h3 id="adr-0006-tanstack-start-react-frontend" class="section"><a class="anchor-link left" href="#adr-0006-tanstack-start-react-frontend"><i class="icofont-laika link">&#xef71;</i></a>ADR-0006: TanStack Start React Frontend</h3>
+        <p>The WES needs a web frontend for warehouse operators. This ADR chose
+        TanStack Start with React 19, TypeScript, and Vite over Next.js and
+        SvelteKit. TanStack Start provides type-safe file-based routing with an
+        auto-generated route tree, fast development via Vite HMR, and tight
+        integration with TanStack Router and TanStack Query for data fetching.
+        The tradeoff is a smaller ecosystem and community compared to Next.js.</p>
+        <p><em>See: <a href="ch24-frontend.html">Chapter 24: The Frontend</a></em></p>
+        <p>&lt;small&gt;<em>File: docs/decisions/0006-use-tanstack-start-react-frontend.md</em>&lt;/small&gt;</p>
+        
+        <h3 id="adr-0007-shadcn-base-ui-component-system" class="section"><a class="anchor-link left" href="#adr-0007-shadcn-base-ui-component-system"><i class="icofont-laika link">&#xef71;</i></a>ADR-0007: shadcn + Base UI Component System</h3>
+        <p>The frontend needs accessible, customizable UI components without a rigid
+        design system. This ADR chose shadcn/ui configured with Base UI primitives
+        (not Radix), styled with Tailwind CSS v4 and Class Variance Authority (CVA).
+        Components are copy-pasted into <code>src/components/ui/</code> and become fully
+        ownable project code. Base UI provides accessible primitives (ARIA, keyboard
+        navigation), and Tailwind v4 with OKLch color tokens enables perceptually
+        uniform theming.</p>
+        <p><em>See: <a href="ch24-frontend.html">Chapter 24: The Frontend</a></em></p>
+        <p>&lt;small&gt;<em>File: docs/decisions/0007-use-shadcn-base-ui-component-system.md</em>&lt;/small&gt;</p>
+        
+        <h3 id="adr-0008-session-based-authentication" class="section"><a class="anchor-link left" href="#adr-0008-session-based-authentication"><i class="icofont-laika link">&#xef71;</i></a>ADR-0008: Session-Based Authentication</h3>
+        <p>Neon WES needs authentication for all HTTP endpoints. This ADR chose
+        server-side sessions following The Copenhagen Book over stateless JWTs and
+        the pekko-http-session library. Session tokens (160 bits of entropy from
+        SecureRandom) are SHA-256 hashed before PostgreSQL storage. Cookies are
+        HttpOnly, Secure, SameSite=Lax with 30-day expiry and 15-day sliding
+        renewal. Passwords are hashed with Argon2id. The key benefit is immediate
+        session revocation on logout or security incidents, which JWT cannot
+        provide without a blocklist.</p>
+        <p><em>See: <a href="../03-the-infrastructure/ch13-http-api.html">Chapter 13: The HTTP API</a></em></p>
+        <p>&lt;small&gt;<em>File: docs/decisions/0008-use-session-based-authentication.md</em>&lt;/small&gt;</p>
+        
+        <h3 id="adr-0009-rbac-with-per-user-permission-overrides" class="section"><a class="anchor-link left" href="#adr-0009-rbac-with-per-user-permission-overrides"><i class="icofont-laika link">&#xef71;</i></a>ADR-0009: RBAC with Per-User Permission Overrides</h3>
+        <p>The WES has clear role hierarchies (Admin, Supervisor, Operator, Viewer) but
+        occasionally needs per-user exceptions: an operator promoted to handle wave
+        planning, or a supervisor denied access to user management. This ADR chose
+        RBAC with per-user permission overrides (deny wins) over plain RBAC and
+        Zanzibar/ReBAC. Roles define default permission sets. Per-user overrides add
+        or remove individual permissions. Effective permissions are role defaults
+        plus or minus overrides, with deny always winning. This is implemented with
+        two PostgreSQL tables (<code>role_permissions</code>, <code>user_permission_overrides</code>) and
+        a custom Pekko HTTP directive (<code>requirePermission</code>).</p>
+        <p><em>See: <a href="../03-the-infrastructure/ch13-http-api.html">Chapter 13: The HTTP API</a></em></p>
+        <p>&lt;small&gt;<em>File: docs/decisions/0009-use-rbac-with-per-user-permission-overrides.md</em>&lt;/small&gt;</p>
+        
+        <h3 id="adr-0010-structured-logging-with-wide-events" class="section"><a class="anchor-link left" href="#adr-0010-structured-logging-with-wide-events"><i class="icofont-laika link">&#xef71;</i></a>ADR-0010: Structured Logging with Wide Events</h3>
+        <p>Neon WES needed observability: request tracing, structured logging, and
+        context propagation across async boundaries. This ADR chose Logback with
+        logstash-logback-encoder and scala-logging over Scribe (Scala-native
+        logging) and OpenTelemetry auto-instrumentation. The system emits one
+        canonical log line per HTTP request with trace ID, method, path, status,
+        duration, and user ID. MDC propagation uses three layers:
+        <code>RequestLoggingDirective</code> (HTTP), <code>MdcExecutionContext</code> (Futures), and
+        <code>Behaviors.withMdc</code> (actors). Production output is structured JSON via
+        LogstashEncoder, directly ingestible by Loki, Elasticsearch, or Datadog.</p>
+        <p><em>See: <a href="../04-system-concerns/ch19-observability.html">Chapter 19: Observability and Logging</a></em></p>
+        <p>&lt;small&gt;<em>File: docs/decisions/0010-use-structured-logging-with-wide-events.md</em>&lt;/small&gt;</p>
+        
+        <h2 id="cross-reference-map" class="section"><a class="anchor-link left" href="#cross-reference-map"><i class="icofont-laika link">&#xef71;</i></a>Cross-Reference Map</h2>
+        <p>For quick navigation, here is the complete mapping between ADRs and book
+        chapters:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>ADR</th>
+              <th>Decision</th>
+              <th>Primary Chapter</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>0001</td>
+              <td>Typestate-Encoded Aggregates</td>
+              <td><a href="../02-the-domain-model/ch04-typestates.html">Ch 4: Typestates</a></td>
+            </tr>
+            <tr>
+              <td>0002</td>
+              <td>Policy-Service-Repository Pattern</td>
+              <td><a href="../02-the-domain-model/ch06-policies.html">Ch 6</a>, <a href="../02-the-domain-model/ch07-services.html">Ch 7</a>, <a href="../02-the-domain-model/ch08-repositories.html">Ch 8</a></td>
+            </tr>
+            <tr>
+              <td>0003</td>
+              <td>Opaque Type IDs with UUID v7</td>
+              <td><a href="../02-the-domain-model/ch03-common-foundation.html">Ch 3: Common Foundation</a></td>
+            </tr>
+            <tr>
+              <td>0004</td>
+              <td>Either-Based Error Handling</td>
+              <td><a href="../04-system-concerns/ch18-error-handling.html">Ch 18: Error Handling</a></td>
+            </tr>
+            <tr>
+              <td>0005</td>
+              <td>Domain-Driven sbt Modules</td>
+              <td><a href="../01-the-domain/ch02-getting-started.html">Ch 2: Getting Started</a></td>
+            </tr>
+            <tr>
+              <td>0006</td>
+              <td>TanStack Start React Frontend</td>
+              <td><a href="ch24-frontend.html">Ch 24: Frontend</a></td>
+            </tr>
+            <tr>
+              <td>0007</td>
+              <td>shadcn + Base UI Component System</td>
+              <td><a href="ch24-frontend.html">Ch 24: Frontend</a></td>
+            </tr>
+            <tr>
+              <td>0008</td>
+              <td>Session-Based Authentication</td>
+              <td><a href="../03-the-infrastructure/ch13-http-api.html">Ch 13: HTTP API</a></td>
+            </tr>
+            <tr>
+              <td>0009</td>
+              <td>RBAC with Permission Overrides</td>
+              <td><a href="../03-the-infrastructure/ch13-http-api.html">Ch 13: HTTP API</a></td>
+            </tr>
+            <tr>
+              <td>0010</td>
+              <td>Structured Logging with Wide Events</td>
+              <td><a href="../04-system-concerns/ch19-observability.html">Ch 19: Observability</a></td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h2 id="writing-your-own-adrs" class="section"><a class="anchor-link left" href="#writing-your-own-adrs"><i class="icofont-laika link">&#xef71;</i></a>Writing Your Own ADRs</h2>
+        <p>When should you write an ADR? The rule of thumb is: if you considered more
+        than one option, write it down. If someone is likely to ask &quot;why did we do
+        it this way?&quot; in six months, write it down now while the reasoning is fresh.</p>
+        <p>Here are some practical guidelines:</p>
+        <p><strong>Keep them short.</strong> An ADR is not a design document. It captures a
+        decision, not a design. Two to three sentences of context, a list of
+        options, a one-sentence decision, and bullet-pointed consequences. If you
+        are writing more than a page, consider splitting the decision.</p>
+        <p><strong>Be honest about tradeoffs.</strong> Every decision has a downside. ADR-0001
+        acknowledges that typestate encoding creates more boilerplate than a status
+        enum. ADR-0003 notes that opaque types require extension methods for access.
+        ADR-0008 admits that server-side sessions require a database lookup per
+        request. Recording tradeoffs honestly helps future readers understand
+        whether the decision still applies when circumstances change.</p>
+        <p><strong>Include the confirmation section.</strong> How will you know this decision was
+        implemented correctly? ADR-0008 lists specific test suites:
+        <code>PasswordHasherSuite</code>, <code>AuthenticationServiceSuite</code>, <code>AuthRoutesSuite</code>, and
+        manual curl verification. This turns the ADR from a document into a
+        verifiable commitment.</p>
+        <p><strong>Number sequentially, never delete.</strong> ADRs are append-only. When a
+        decision is reversed, mark the old ADR as &quot;Deprecated&quot; or &quot;Superseded by
+        ADR NNNN&quot; and write a new ADR explaining why the old decision no longer
+        holds. The history of reasoning is as valuable as the current decision.</p>
+        <p><strong>Use the template.</strong> Consistency makes ADRs scannable. When every ADR
+        follows the same structure, readers can quickly find the context, decision,
+        and consequences without reading the full text. The Neon WES template lives
+        at <code>docs/decisions/adr-template.md</code>.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Some teams also record &quot;Rejected&quot; ADRs for options they
+          seriously considered but decided against. This prevents the same debate
+          from resurfacing. If someone proposes JWTs for authentication, pointing
+          them to ADR-0008 (which evaluated and rejected JWTs with detailed
+          reasoning) saves everyone&#39;s time.</p>
+        </div>
+        
+        <h2 id="adrs-and-the-codebase" class="section"><a class="anchor-link left" href="#adrs-and-the-codebase"><i class="icofont-laika link">&#xef71;</i></a>ADRs and the Codebase</h2>
+        <p>One question that comes up frequently: should ADRs reference code, and
+        should code reference ADRs?</p>
+        <p>In Neon WES, the answer to both is yes, but lightly. ADR-0001 includes a
+        Mermaid state diagram of the Task aggregate. ADR-0008 includes the SQL
+        schema for the sessions table. ADR-0010 includes log output examples. These
+        code fragments make the ADR self-contained; a reader does not need to go
+        find the source code to understand the decision.</p>
+        <p>In the other direction, some source files reference their ADR in comments:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">/** Marker trait for types serialized via Jackson CBOR in the Pekko
+  * journal and cluster. All actor commands, responses, state wrappers,
+  * and event envelopes must mix in this trait.
+  *
+  * The binding to JacksonCborSerializer is declared in serialization.conf.
+  */</span><span>
+</span><span class="keyword">trait</span><span> </span><span class="type-name">CborSerializable</span></code></pre>
+        <p>And service files reference the pattern ADR:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// Policy-Service-Repository pattern (ADR-0002)</span></code></pre>
+        <p>These references create a navigable web between decisions and
+        implementations. When you encounter code and wonder why it was written that
+        way, the ADR reference points you to the reasoning.</p>
+        
+        <h2 id="summary" class="section"><a class="anchor-link left" href="#summary"><i class="icofont-laika link">&#xef71;</i></a>Summary</h2>
+        <ul>
+          <li><strong>ADRs are short documents</strong> that capture architectural decisions: the
+          context, the options considered, the choice made, and the consequences.</li>
+          <li><strong>Neon WES has ten ADRs</strong> covering domain modeling (typestates, opaque
+          type IDs, modular sbt structure), core patterns (Policy-Service-Repository,
+          Either-based errors), infrastructure (sessions, RBAC, structured logging),
+          and the frontend stack (TanStack Start, shadcn/ui).</li>
+          <li><strong>ADRs are append-only.</strong> Reversed decisions are superseded, never deleted.</li>
+          <li><strong>Use the template.</strong> Consistency makes ADRs scannable and useful.</li>
+          <li><strong>Cross-reference.</strong> ADRs reference code, code references ADRs, and the
+          book cross-references both.</li>
+        </ul>
+        
+        <h2 id="what-comes-next" class="section"><a class="anchor-link left" href="#what-comes-next"><i class="icofont-laika link">&#xef71;</i></a>What Comes Next</h2>
+        <p>This is the final technical chapter. In Chapter 26, we will step back and
+        look at the complete arc of what we have built: from domain types to a
+        running distributed system. We will revisit the five architectural patterns
+        that tie the system together, point to further reading, and discuss where
+        Neon WES goes from here.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

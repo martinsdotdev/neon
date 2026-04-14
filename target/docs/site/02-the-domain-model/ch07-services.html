@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Services: Orchestrating the Domain</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Services: Orchestrating the Domain</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#the-service-layer-s-role">The Service Layer&#39;s Role</a></li>
+    <li class="level1 nav-leaf"><a href="#error-handling-with-sealed-trait-adts">Error Handling with Sealed Trait ADTs</a></li>
+    <li class="level1 nav-leaf"><a href="#the-result-type">The Result Type</a></li>
+    <li class="level1 nav-node"><a href="#walkthrough-taskcompletionservice">Walkthrough: TaskCompletionService</a></li>
+    <li class="level2 nav-leaf"><a href="#step-0-validation">Step 0: Validation</a></li>
+    <li class="level2 nav-leaf"><a href="#step-1-complete-the-task">Step 1: Complete the task</a></li>
+    <li class="level2 nav-leaf"><a href="#step-2-stock-consumption">Step 2: Stock consumption</a></li>
+    <li class="level2 nav-leaf"><a href="#step-3-shortpick-detection">Step 3: Shortpick detection</a></li>
+    <li class="level2 nav-leaf"><a href="#step-4-routing">Step 4: Routing</a></li>
+    <li class="level2 nav-leaf"><a href="#step-5-wave-and-picking-completion-detection">Step 5: Wave and picking completion detection</a></li>
+    <li class="level2 nav-leaf"><a href="#the-result">The result</a></li>
+    <li class="level1 nav-leaf"><a href="#walkthrough-wavereleaseservice">Walkthrough: WaveReleaseService</a></li>
+    <li class="level1 nav-leaf"><a href="#walkthrough-wavecancellationservice">Walkthrough: WaveCancellationService</a></li>
+    <li class="level1 nav-leaf"><a href="#architecture-note-railway-oriented-programming">Architecture Note: Railway-Oriented Programming</a></li>
+    <li class="level1 nav-leaf"><a href="#what-comes-next">What Comes Next</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="services-orchestrating-the-domain" class="title">Services: Orchestrating the Domain</h1>
+        <p>Policies decide what should happen. Aggregates enforce valid transitions. But
+        neither can read from a database, save a result, or coordinate work across
+        multiple entities. For that, we need <em>services</em>.</p>
+        <p>A service is an orchestrator: it loads data from repositories, calls policies,
+        and persists the results. We have spent four chapters building the pieces
+        (types, typestates, events, policies). In this chapter, we will see how those
+        pieces compose into real business operations.</p>
+        
+        <h2 id="the-service-layer-s-role" class="section"><a class="anchor-link left" href="#the-service-layer-s-role"><i class="icofont-laika link">&#xef71;</i></a>The Service Layer&#39;s Role</h2>
+        <p>In the Policy-Service-Repository pattern, services sit in the middle. They have
+        three responsibilities:</p>
+        <ol class="arabic">
+          <li><strong>Read.</strong> Load aggregates from repositories.</li>
+          <li><strong>Decide.</strong> Pass domain values to policies and typestate transition methods.</li>
+          <li><strong>Write.</strong> Persist new states and events back through repositories.</li>
+        </ol>
+        <p>Services inject repository traits and policy objects through their constructors.
+        They return <code>Either[Error, Result]</code> for synchronous operations, or
+        <code>Future[Either[Error, Result]]</code> for async ones. They manage cascading state
+        transitions: a single service call might update a task, create a transport
+        order, complete a wave, and transition a consolidation group.</p>
+        <p>This creates a clean three-layer sandwich that you will see repeated throughout
+        the codebase:</p>
+        <ul>
+          <li><strong>Impure</strong>: read from repositories (side effects)</li>
+          <li><strong>Pure</strong>: call policies and transition methods (no side effects)</li>
+          <li><strong>Impure</strong>: write results to repositories (side effects)</li>
+        </ul>
+        <p>The impure layers handle the messy reality of I/O. The pure layer in the middle
+        is where the actual business logic lives. This sandwich is a direct consequence
+        of the Functional Core, Imperative Shell architecture we discussed at the end
+        of Chapter 6. Policies are the functional core. Services are the imperative
+        shell.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The Policy-Service-Repository pattern is documented in
+          ADR-0002.
+          Services are the orchestration layer: they call policies but never contain
+          business rules themselves.</p>
+        </div>
+        
+        <h2 id="error-handling-with-sealed-trait-adts" class="section"><a class="anchor-link left" href="#error-handling-with-sealed-trait-adts"><i class="icofont-laika link">&#xef71;</i></a>Error Handling with Sealed Trait ADTs</h2>
+        <p>Before we look at a full service, let&#39;s examine how services communicate
+        failure. Consider <code>TaskCompletionService</code>. Completing a task can fail for
+        several distinct reasons, and we need the caller to know exactly which one
+        occurred. Here is the error type:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">TaskCompletionError</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">TaskCompletionError</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">TaskNotFound</span><span>(</span><span class="identifier">taskId</span><span>: </span><span class="type-name">TaskId</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">TaskCompletionError</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">TaskNotAssigned</span><span>(</span><span class="identifier">taskId</span><span>: </span><span class="type-name">TaskId</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">TaskCompletionError</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InvalidActualQuantity</span><span>(</span><span class="identifier">taskId</span><span>: </span><span class="type-name">TaskId</span><span>, </span><span class="identifier">actualQuantity</span><span>: </span><span class="type-name">Int</span><span>)
+      </span><span class="keyword">extends</span><span> </span><span class="type-name">TaskCompletionError</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">VerificationRequired</span><span>(</span><span class="identifier">taskId</span><span>: </span><span class="type-name">TaskId</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">TaskCompletionError</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskCompletionService.scala</em>&lt;/small&gt;</p>
+        <p>Four things to notice here.</p>
+        <p><strong>Sealed trait hierarchy.</strong> The <code>sealed</code> keyword means the compiler knows every
+        possible subtype. When a caller pattern matches on a <code>TaskCompletionError</code>, the
+        compiler can warn if a case is missing. Add a new error variant, and every
+        unhandled match in the codebase lights up.</p>
+        <p><strong>Each error carries context.</strong> <code>TaskNotFound</code> carries the <code>TaskId</code> that was not
+        found. <code>InvalidActualQuantity</code> carries both the ID and the offending quantity.
+        This is not just for logging; the HTTP layer can use these values to construct
+        meaningful error responses.</p>
+        <p><strong>No exceptions for domain logic.</strong> The service returns <code>Either[TaskCompletionError, TaskCompletionResult]</code>. The error is a value, not a thrown
+        exception. It appears in the type signature, so callers cannot accidentally
+        ignore it. There is no hidden control flow, no stack unwinding, no catch blocks
+        to forget.</p>
+        <p><strong>One error ADT per service.</strong> <code>TaskCompletionError</code> and
+        <code>WaveCancellationError</code> are separate sealed traits. Each describes exactly the
+        failures that can occur in its service, nothing more.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>We will explore error handling patterns in depth in Chapter 18.
+          The <code>Either</code>-based approach and its rationale are documented in
+          ADR-0004.</p>
+        </div>
+        
+        <h2 id="the-result-type" class="section"><a class="anchor-link left" href="#the-result-type"><i class="icofont-laika link">&#xef71;</i></a>The Result Type</h2>
+        <p>When a service succeeds, it returns a result that bundles every state transition
+        and event produced by the operation. Here is the result type for task
+        completion:</p>
+        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">TaskCompletionResult</span><span>(
+    </span><span class="identifier">completed</span><span>: </span><span class="type-name">Task</span><span>.</span><span class="type-name">Completed</span><span>,
+    </span><span class="identifier">completedEvent</span><span>: </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCompleted</span><span>,
+    </span><span class="identifier">shortpick</span><span>: </span><span class="type-name">Option</span><span>[(</span><span class="type-name">Task</span><span>.</span><span class="type-name">Planned</span><span>, </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCreated</span><span>)],
+    </span><span class="identifier">transportOrder</span><span>: </span><span class="type-name">Option</span><span>[
+      (</span><span class="type-name">TransportOrder</span><span>.</span><span class="type-name">Pending</span><span>, </span><span class="type-name">TransportOrderEvent</span><span>.</span><span class="type-name">TransportOrderCreated</span><span>)
+    ],
+    </span><span class="identifier">waveCompletion</span><span>: </span><span class="type-name">Option</span><span>[(</span><span class="type-name">Wave</span><span>.</span><span class="type-name">Completed</span><span>, </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveCompleted</span><span>)],
+    </span><span class="identifier">pickingCompletion</span><span>: </span><span class="type-name">Option</span><span>[
+      (</span><span class="type-name">ConsolidationGroup</span><span>.</span><span class="type-name">Picked</span><span>,
+       </span><span class="type-name">ConsolidationGroupEvent</span><span>.</span><span class="type-name">ConsolidationGroupPicked</span><span>)
+    ],
+    </span><span class="identifier">stockConsumption</span><span>: </span><span class="type-name">Option</span><span>[(</span><span class="type-name">StockPosition</span><span>, </span><span class="type-name">StockPositionEvent</span><span>)] = </span><span class="type-name">None</span><span>
+)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskCompletionService.scala</em>&lt;/small&gt;</p>
+        <p>This result captures <em>everything</em> that happened. The primary action (task
+        completed) is always present. The cascade effects are each <code>Option</code> because
+        they do not always fire: no shortpick means <code>shortpick = None</code>, no handling
+        unit means <code>transportOrder = None</code>, and so on. This gives callers full
+        visibility. The HTTP layer can choose which fields to include in a response.
+        The test layer can assert on exactly which cascades fired. Nothing is hidden.</p>
+        
+        <h2 id="walkthrough-taskcompletionservice" class="section"><a class="anchor-link left" href="#walkthrough-taskcompletionservice"><i class="icofont-laika link">&#xef71;</i></a>Walkthrough: TaskCompletionService</h2>
+        <p><code>TaskCompletionService</code> is the centerpiece of this chapter. A single call to
+        <code>complete()</code> can trigger up to five downstream effects, all coordinated within
+        one service method. Let&#39;s look at the constructor first, then walk through the
+        method step by step.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">TaskCompletionService</span><span>(
+    </span><span class="identifier">taskRepository</span><span>: </span><span class="type-name">TaskRepository</span><span>,
+    </span><span class="identifier">waveRepository</span><span>: </span><span class="type-name">WaveRepository</span><span>,
+    </span><span class="identifier">consolidationGroupRepository</span><span>: </span><span class="type-name">ConsolidationGroupRepository</span><span>,
+    </span><span class="identifier">transportOrderRepository</span><span>: </span><span class="type-name">TransportOrderRepository</span><span>,
+    </span><span class="identifier">verificationProfile</span><span>: </span><span class="type-name">VerificationProfile</span><span>,
+    </span><span class="identifier">stockPositionRepository</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">StockPositionRepository</span><span>] = </span><span class="type-name">None</span><span>
+):</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskCompletionService.scala</em>&lt;/small&gt;</p>
+        <p>The constructor takes five repository traits and one configuration object.
+        Notice that <code>stockPositionRepository</code> is <code>Option</code>: stock management is not
+        required for all warehouse configurations, so when the repository is <code>None</code>,
+        the service simply skips the stock consumption step.</p>
+        <p><code>VerificationProfile</code> is a lightweight configuration case class that defines
+        which packaging levels require scan verification:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">VerificationProfile</span><span>(</span><span class="identifier">requiredFor</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">PackagingLevel</span><span>]):
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">requiresVerification</span><span>(</span><span class="identifier">packagingLevel</span><span>: </span><span class="type-name">PackagingLevel</span><span>): </span><span class="type-name">Boolean</span><span> =
+    </span><span class="identifier">requiredFor</span><span>.</span><span class="identifier">contains</span><span>(</span><span class="identifier">packagingLevel</span><span>)
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">VerificationProfile</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">disabled</span><span>: </span><span class="type-name">VerificationProfile</span><span> = </span><span class="type-name">VerificationProfile</span><span>(</span><span class="type-name">Set</span><span>.</span><span class="identifier">empty</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/VerificationProfile.scala</em>&lt;/small&gt;</p>
+        <p>A warehouse that requires verification for each-level picks passes
+        <code>VerificationProfile(Set(PackagingLevel.Each))</code>. A warehouse with no
+        verification requirements passes <code>VerificationProfile.disabled</code>.</p>
+        
+        <h3 id="step-0-validation" class="section"><a class="anchor-link left" href="#step-0-validation"><i class="icofont-laika link">&#xef71;</i></a>Step 0: Validation</h3>
+        <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">complete</span><span>(
+    </span><span class="identifier">taskId</span><span>: </span><span class="type-name">TaskId</span><span>,
+    </span><span class="identifier">actualQuantity</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">verified</span><span>: </span><span class="type-name">Boolean</span><span>,
+    </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+): </span><span class="type-name">Either</span><span>[</span><span class="type-name">TaskCompletionError</span><span>, </span><span class="type-name">TaskCompletionResult</span><span>] =
+  </span><span class="keyword">if</span><span> </span><span class="identifier">actualQuantity</span><span> &lt; </span><span class="number-literal">0</span><span> </span><span class="identifier">then</span><span>
+    </span><span class="keyword">return</span><span> </span><span class="type-name">Left</span><span>(</span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">InvalidActualQuantity</span><span>(</span><span class="identifier">taskId</span><span>, </span><span class="identifier">actualQuantity</span><span>))
+
+  </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">findById</span><span>(</span><span class="identifier">taskId</span><span>) </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span>                          =&gt; </span><span class="type-name">Left</span><span>(</span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">TaskNotFound</span><span>(</span><span class="identifier">taskId</span><span>))
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">assigned</span><span>: </span><span class="type-name">Task</span><span>.</span><span class="type-name">Assigned</span><span>) =&gt;
+      </span><span class="keyword">if</span><span> </span><span class="identifier">verificationProfile</span><span>.</span><span class="identifier">requiresVerification</span><span>(</span><span class="identifier">assigned</span><span>.</span><span class="identifier">packagingLevel</span><span>) &amp;&amp; !</span><span class="identifier">verified</span><span>
+      </span><span class="identifier">then</span><span> </span><span class="type-name">Left</span><span>(</span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">VerificationRequired</span><span>(</span><span class="identifier">taskId</span><span>))
+      </span><span class="keyword">else</span><span> </span><span class="identifier">completeAssigned</span><span>(</span><span class="identifier">assigned</span><span>, </span><span class="identifier">actualQuantity</span><span>, </span><span class="identifier">at</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>) =&gt; </span><span class="type-name">Left</span><span>(</span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">TaskNotAssigned</span><span>(</span><span class="identifier">taskId</span><span>))</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskCompletionService.scala</em>&lt;/small&gt;</p>
+        <p>Before any business logic runs, the service validates inputs and loads the
+        aggregate. There are four ways to reach the failure track:</p>
+        <ol class="arabic">
+          <li><strong>Negative quantity.</strong> The <code>actualQuantity &lt; 0</code> guard uses an early return.
+          Zero is valid (it represents a full shortpick where the worker found nothing
+          at the location).</li>
+          <li><strong>Task not found.</strong> The repository returned <code>None</code>.</li>
+          <li><strong>Wrong state.</strong> The repository found a task, but it is not <code>Assigned</code>. The
+          typed pattern match <code>Some(assigned: Task.Assigned)</code> only matches the one
+          valid state. Every other state (Planned, Allocated, Completed, Cancelled)
+          falls through to <code>TaskNotAssigned</code>.</li>
+          <li><strong>Verification required.</strong> The task&#39;s packaging level requires a
+          verification scan, and the caller did not provide one.</li>
+        </ol>
+        <p>Only after passing all four checks does execution continue to <code>completeAssigned</code>.</p>
+        
+        <h3 id="step-1-complete-the-task" class="section"><a class="anchor-link left" href="#step-1-complete-the-task"><i class="icofont-laika link">&#xef71;</i></a>Step 1: Complete the task</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">completeAssigned</span><span>(
+    </span><span class="identifier">assigned</span><span>: </span><span class="type-name">Task</span><span>.</span><span class="type-name">Assigned</span><span>,
+    </span><span class="identifier">actualQuantity</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+): </span><span class="type-name">Either</span><span>[</span><span class="type-name">TaskCompletionError</span><span>, </span><span class="type-name">TaskCompletionResult</span><span>] =
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">completed</span><span>, </span><span class="identifier">completedEvent</span><span>) = </span><span class="identifier">assigned</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">actualQuantity</span><span>, </span><span class="identifier">at</span><span>)
+  </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">completed</span><span>, </span><span class="identifier">completedEvent</span><span>)</span></code></pre>
+        <p>The <code>assigned.complete(actualQuantity, at)</code> call is the typestate transition
+        from Chapter 4. It returns <code>(Task.Completed, TaskEvent.TaskCompleted)</code>. The
+        service destructures the tuple, saves both the new state and the event to the
+        repository, and continues with the cascade.</p>
+        
+        <h3 id="step-2-stock-consumption" class="section"><a class="anchor-link left" href="#step-2-stock-consumption"><i class="icofont-laika link">&#xef71;</i></a>Step 2: Stock consumption</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">stockConsumption</span><span> = </span><span class="identifier">consumeOrDeallocateStock</span><span>(</span><span class="identifier">completed</span><span>, </span><span class="identifier">at</span><span>)</span></code></pre>
+        <p>The <code>consumeOrDeallocateStock</code> helper handles three scenarios based on what
+        actually happened during the pick:</p>
+        <pre><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">consumeOrDeallocateStock</span><span>(
+    </span><span class="identifier">completed</span><span>: </span><span class="type-name">Task</span><span>.</span><span class="type-name">Completed</span><span>,
+    </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+): </span><span class="type-name">Option</span><span>[(</span><span class="type-name">StockPosition</span><span>, </span><span class="type-name">StockPositionEvent</span><span>)] =
+  (</span><span class="identifier">stockPositionRepository</span><span>, </span><span class="identifier">completed</span><span>.</span><span class="identifier">stockPositionId</span><span>) </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> (</span><span class="type-name">Some</span><span>(</span><span class="identifier">spRepo</span><span>), </span><span class="type-name">Some</span><span>(</span><span class="identifier">spId</span><span>)) =&gt;
+      </span><span class="identifier">spRepo</span><span>.</span><span class="identifier">findById</span><span>(</span><span class="identifier">spId</span><span>).</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">sp</span><span> =&gt;
+        </span><span class="keyword">val</span><span> </span><span class="identifier">remainder</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">requestedQuantity</span><span> - </span><span class="identifier">completed</span><span>.</span><span class="identifier">actualQuantity</span><span>
+        </span><span class="keyword">if</span><span> </span><span class="identifier">completed</span><span>.</span><span class="identifier">actualQuantity</span><span> &gt; </span><span class="number-literal">0</span><span> &amp;&amp; </span><span class="identifier">remainder</span><span> &gt; </span><span class="number-literal">0</span><span> </span><span class="identifier">then</span><span>
+          </span><span class="comment">// Partial pick: consume actual, then deallocate remainder
+</span><span>          </span><span class="keyword">val</span><span> (</span><span class="identifier">afterConsume</span><span>, </span><span class="identifier">consumeEvent</span><span>) =
+            </span><span class="identifier">sp</span><span>.</span><span class="identifier">consumeAllocated</span><span>(</span><span class="identifier">completed</span><span>.</span><span class="identifier">actualQuantity</span><span>, </span><span class="identifier">at</span><span>)
+          </span><span class="identifier">spRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">afterConsume</span><span>, </span><span class="identifier">consumeEvent</span><span>)
+          </span><span class="keyword">val</span><span> (</span><span class="identifier">afterDeallocate</span><span>, </span><span class="identifier">deallocateEvent</span><span>) =
+            </span><span class="identifier">afterConsume</span><span>.</span><span class="identifier">deallocate</span><span>(</span><span class="identifier">remainder</span><span>, </span><span class="identifier">at</span><span>)
+          </span><span class="identifier">spRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">afterDeallocate</span><span>, </span><span class="identifier">deallocateEvent</span><span>)
+          </span><span class="type-name">Some</span><span>((</span><span class="identifier">afterDeallocate</span><span>, </span><span class="identifier">deallocateEvent</span><span>))
+        </span><span class="keyword">else</span><span> </span><span class="keyword">if</span><span> </span><span class="identifier">completed</span><span>.</span><span class="identifier">actualQuantity</span><span> &gt; </span><span class="number-literal">0</span><span> </span><span class="identifier">then</span><span>
+          </span><span class="comment">// Full pick: consume all
+</span><span>          </span><span class="keyword">val</span><span> (</span><span class="identifier">updated</span><span>, </span><span class="identifier">event</span><span>) =
+            </span><span class="identifier">sp</span><span>.</span><span class="identifier">consumeAllocated</span><span>(</span><span class="identifier">completed</span><span>.</span><span class="identifier">actualQuantity</span><span>, </span><span class="identifier">at</span><span>)
+          </span><span class="identifier">spRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">updated</span><span>, </span><span class="identifier">event</span><span>)
+          </span><span class="type-name">Some</span><span>((</span><span class="identifier">updated</span><span>, </span><span class="identifier">event</span><span>))
+        </span><span class="keyword">else</span><span> </span><span class="keyword">if</span><span> </span><span class="identifier">completed</span><span>.</span><span class="identifier">requestedQuantity</span><span> &gt; </span><span class="number-literal">0</span><span> </span><span class="identifier">then</span><span>
+          </span><span class="comment">// Zero pick (full shortpick): deallocate all back to available
+</span><span>          </span><span class="keyword">val</span><span> (</span><span class="identifier">updated</span><span>, </span><span class="identifier">event</span><span>) =
+            </span><span class="identifier">sp</span><span>.</span><span class="identifier">deallocate</span><span>(</span><span class="identifier">completed</span><span>.</span><span class="identifier">requestedQuantity</span><span>, </span><span class="identifier">at</span><span>)
+          </span><span class="identifier">spRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">updated</span><span>, </span><span class="identifier">event</span><span>)
+          </span><span class="type-name">Some</span><span>((</span><span class="identifier">updated</span><span>, </span><span class="identifier">event</span><span>))
+        </span><span class="keyword">else</span><span> </span><span class="type-name">None</span><span>
+      }
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskCompletionService.scala</em>&lt;/small&gt;</p>
+        <p>The three branches cover every outcome. <strong>Partial pick</strong> (requested 10,
+        picked 7): consume 7 from allocated stock, deallocate 3 back to available.
+        <strong>Full pick</strong> (requested 10, picked 10): consume the full amount. <strong>Zero pick</strong>
+        (requested 10, picked 0): the worker found nothing, so deallocate everything
+        back. The outer <code>match</code> on <code>(stockPositionRepository, completed.stockPositionId)</code>
+        guards the entire block; if stock management is not configured or the task has
+        no stock position, the method returns <code>None</code> and the cascade continues.</p>
+        
+        <h3 id="step-3-shortpick-detection" class="section"><a class="anchor-link left" href="#step-3-shortpick-detection"><i class="icofont-laika link">&#xef71;</i></a>Step 3: Shortpick detection</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">shortpick</span><span> = </span><span class="type-name">ShortpickPolicy</span><span>(</span><span class="identifier">completed</span><span>, </span><span class="identifier">at</span><span>)
+</span><span class="identifier">shortpick</span><span>.</span><span class="identifier">foreach</span><span> { (</span><span class="identifier">replacement</span><span>, </span><span class="identifier">event</span><span>) =&gt; </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">replacement</span><span>, </span><span class="identifier">event</span><span>) }</span></code></pre>
+        <p>This is the impure/pure/impure sandwich in action. The service calls
+        <code>ShortpickPolicy</code> (a pure function from Chapter 6), which examines the
+        completed task and decides whether a replacement is needed. If the policy
+        returns <code>Some</code>, the service saves the replacement task. If it returns <code>None</code>,
+        <code>.foreach</code> does nothing. The service contains no shortpick logic itself; that
+        lives entirely in the policy.</p>
+        
+        <h3 id="step-4-routing" class="section"><a class="anchor-link left" href="#step-4-routing"><i class="icofont-laika link">&#xef71;</i></a>Step 4: Routing</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">routing</span><span> = </span><span class="type-name">RoutingPolicy</span><span>(</span><span class="identifier">completedEvent</span><span>, </span><span class="identifier">at</span><span>)
+</span><span class="identifier">routing</span><span>.</span><span class="identifier">foreach</span><span> { (</span><span class="identifier">pending</span><span>, </span><span class="identifier">event</span><span>) =&gt; </span><span class="identifier">transportOrderRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">pending</span><span>, </span><span class="identifier">event</span><span>) }</span></code></pre>
+        <p>Same pattern, different policy. <code>RoutingPolicy</code> checks whether the completed
+        task had a handling unit and, if so, creates a transport order to move it to
+        the destination. As we discussed in Chapter 6, the policy takes the <em>event</em>
+        rather than the <em>state</em> because routing is a reaction to something that just
+        happened.</p>
+        
+        <h3 id="step-5-wave-and-picking-completion-detection" class="section"><a class="anchor-link left" href="#step-5-wave-and-picking-completion-detection"><i class="icofont-laika link">&#xef71;</i></a>Step 5: Wave and picking completion detection</h3>
+        <pre><code class="nohighlight"><span class="keyword">val</span><span> (</span><span class="identifier">waveCompletion</span><span>, </span><span class="identifier">pickingCompletion</span><span>) = </span><span class="identifier">completed</span><span>.</span><span class="identifier">waveId</span><span> </span><span class="keyword">match</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span>         =&gt; (</span><span class="type-name">None</span><span>, </span><span class="type-name">None</span><span>)
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">waveId</span><span>) =&gt;
+    </span><span class="keyword">val</span><span> </span><span class="identifier">waveTasks</span><span> = </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">findByWaveId</span><span>(</span><span class="identifier">waveId</span><span>)
+
+    </span><span class="keyword">val</span><span> </span><span class="identifier">completedWave</span><span> = </span><span class="identifier">waveRepository</span><span>
+      .</span><span class="identifier">findById</span><span>(</span><span class="identifier">waveId</span><span>)
+      .</span><span class="identifier">collect</span><span> { </span><span class="keyword">case</span><span> </span><span class="identifier">released</span><span>: </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Released</span><span> =&gt;
+        </span><span class="type-name">WaveCompletionPolicy</span><span>(</span><span class="identifier">waveTasks</span><span>, </span><span class="identifier">released</span><span>, </span><span class="identifier">at</span><span>)
+      }
+      .</span><span class="identifier">flatten</span><span>
+    </span><span class="identifier">completedWave</span><span>.</span><span class="identifier">foreach</span><span> { (</span><span class="identifier">wave</span><span>, </span><span class="identifier">event</span><span>) =&gt; </span><span class="identifier">waveRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">wave</span><span>, </span><span class="identifier">event</span><span>) }
+
+    </span><span class="keyword">val</span><span> </span><span class="identifier">pickedConsolidationGroup</span><span> = </span><span class="identifier">consolidationGroupRepository</span><span>
+      .</span><span class="identifier">findByWaveId</span><span>(</span><span class="identifier">waveId</span><span>)
+      .</span><span class="identifier">collectFirst</span><span> {
+        </span><span class="keyword">case</span><span> </span><span class="identifier">consolidationGroup</span><span>: </span><span class="type-name">ConsolidationGroup</span><span>.</span><span class="type-name">Created</span><span>
+            </span><span class="keyword">if</span><span> </span><span class="identifier">consolidationGroup</span><span>.</span><span class="identifier">orderIds</span><span>.</span><span class="identifier">contains</span><span>(</span><span class="identifier">completed</span><span>.</span><span class="identifier">orderId</span><span>) =&gt;
+          </span><span class="identifier">consolidationGroup</span><span>
+      }
+      .</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">consolidationGroup</span><span> =&gt;
+        </span><span class="keyword">val</span><span> </span><span class="identifier">consolidationGroupOrderIds</span><span> = </span><span class="identifier">consolidationGroup</span><span>.</span><span class="identifier">orderIds</span><span>.</span><span class="identifier">toSet</span><span>
+        </span><span class="keyword">val</span><span> </span><span class="identifier">consolidationGroupTasks</span><span> =
+          </span><span class="identifier">waveTasks</span><span>.</span><span class="identifier">filter</span><span>(</span><span class="identifier">t</span><span> =&gt; </span><span class="identifier">consolidationGroupOrderIds</span><span>.</span><span class="identifier">contains</span><span>(</span><span class="identifier">t</span><span>.</span><span class="identifier">orderId</span><span>))
+        </span><span class="type-name">PickingCompletionPolicy</span><span>(</span><span class="identifier">consolidationGroupTasks</span><span>, </span><span class="identifier">consolidationGroup</span><span>, </span><span class="identifier">at</span><span>)
+      }
+    </span><span class="identifier">pickedConsolidationGroup</span><span>.</span><span class="identifier">foreach</span><span> { (</span><span class="identifier">consolidationGroup</span><span>, </span><span class="identifier">event</span><span>) =&gt;
+      </span><span class="identifier">consolidationGroupRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">consolidationGroup</span><span>, </span><span class="identifier">event</span><span>)
+    }
+
+    (</span><span class="identifier">completedWave</span><span>, </span><span class="identifier">pickedConsolidationGroup</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskCompletionService.scala</em>&lt;/small&gt;</p>
+        <p>This is the most complex part of the cascade, and it deserves a careful reading.</p>
+        <p>First, the outer <code>match</code> on <code>completed.waveId</code>. Not every task belongs to a
+        wave (standalone tasks exist), so if there is no wave, both completion checks
+        are skipped.</p>
+        <p>For wave completion, the service loads all tasks for the wave, then loads the
+        wave itself. The <code>.collect</code> filters to <code>Wave.Released</code> because only a released
+        wave can be completed (a planned wave has not started, and a completed or
+        cancelled wave is already terminal). <code>WaveCompletionPolicy</code> checks whether all
+        tasks have reached a terminal state. If so, it returns the completed wave and
+        event.</p>
+        <p>For picking completion, the service looks for the consolidation group that
+        contains this task&#39;s order. The <code>.collectFirst</code> finds the first <code>Created</code>
+        consolidation group whose <code>orderIds</code> includes the completed task&#39;s <code>orderId</code>.
+        Then <code>PickingCompletionPolicy</code> checks whether all tasks for that group&#39;s orders
+        are terminal. If they are, the group transitions to <code>Picked</code>.</p>
+        <p>Notice that both policies reuse the <code>waveTasks</code> list loaded once at the top of
+        the block. The service does not query the repository twice. Small detail, but
+        it matters for both performance and consistency.</p>
+        
+        <h3 id="the-result" class="section"><a class="anchor-link left" href="#the-result"><i class="icofont-laika link">&#xef71;</i></a>The result</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Right</span><span>(
+  </span><span class="type-name">TaskCompletionResult</span><span>(
+    </span><span class="identifier">completed</span><span> = </span><span class="identifier">completed</span><span>,
+    </span><span class="identifier">completedEvent</span><span> = </span><span class="identifier">completedEvent</span><span>,
+    </span><span class="identifier">shortpick</span><span> = </span><span class="identifier">shortpick</span><span>,
+    </span><span class="identifier">transportOrder</span><span> = </span><span class="identifier">routing</span><span>,
+    </span><span class="identifier">waveCompletion</span><span> = </span><span class="identifier">waveCompletion</span><span>,
+    </span><span class="identifier">pickingCompletion</span><span> = </span><span class="identifier">pickingCompletion</span><span>,
+    </span><span class="identifier">stockConsumption</span><span> = </span><span class="identifier">stockConsumption</span><span>
+  )
+)</span></code></pre>
+        <p>Everything is bundled into <code>TaskCompletionResult</code> and returned as <code>Right</code>. One
+        task completion can produce up to five downstream effects: stock adjustment,
+        shortpick replacement, transport order, wave completion, and consolidation
+        group transition. All of them are visible in a single return value.</p>
+        
+        <h2 id="walkthrough-wavereleaseservice" class="section"><a class="anchor-link left" href="#walkthrough-wavereleaseservice"><i class="icofont-laika link">&#xef71;</i></a>Walkthrough: WaveReleaseService</h2>
+        <p><code>TaskCompletionService</code> orchestrates the <em>end</em> of a task&#39;s lifecycle.
+        <code>WaveReleaseService</code> orchestrates the <em>beginning</em>. When a wave plan is
+        released, the service creates tasks, optionally allocates stock, and forms
+        consolidation groups.</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">WaveReleaseService</span><span>(
+    </span><span class="identifier">waveRepository</span><span>: </span><span class="type-name">WaveRepository</span><span>,
+    </span><span class="identifier">taskRepository</span><span>: </span><span class="type-name">TaskRepository</span><span>,
+    </span><span class="identifier">consolidationGroupRepository</span><span>: </span><span class="type-name">ConsolidationGroupRepository</span><span>,
+    </span><span class="identifier">stockPositionRepository</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">StockPositionRepository</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="identifier">allocationStrategy</span><span>: </span><span class="type-name">AllocationStrategy</span><span> = </span><span class="type-name">AllocationStrategy</span><span>.</span><span class="type-name">Fifo</span><span>,
+    </span><span class="identifier">referenceDate</span><span>: </span><span class="type-name">LocalDate</span><span> = </span><span class="type-name">LocalDate</span><span>.</span><span class="identifier">now</span><span>()
+):
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">release</span><span>(
+      </span><span class="identifier">wavePlan</span><span>: </span><span class="type-name">WavePlan</span><span>,
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>,
+      </span><span class="identifier">warehouseAreaId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">WarehouseAreaId</span><span>] = </span><span class="type-name">None</span><span>
+  ): </span><span class="type-name">WaveReleaseResult</span><span> =
+    </span><span class="identifier">waveRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">wave</span><span>, </span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">event</span><span>)
+
+    </span><span class="keyword">val</span><span> </span><span class="identifier">baseTasks</span><span> = </span><span class="type-name">TaskCreationPolicy</span><span>(</span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">taskRequests</span><span>, </span><span class="identifier">at</span><span>)
+
+    </span><span class="keyword">val</span><span> (</span><span class="identifier">tasks</span><span>, </span><span class="identifier">stockAllocations</span><span>) =
+      (</span><span class="identifier">stockPositionRepository</span><span>, </span><span class="identifier">warehouseAreaId</span><span>) </span><span class="keyword">match</span><span>
+        </span><span class="keyword">case</span><span> (</span><span class="type-name">Some</span><span>(</span><span class="identifier">spRepo</span><span>), </span><span class="type-name">Some</span><span>(</span><span class="identifier">areaId</span><span>)) =&gt;
+          </span><span class="identifier">allocateAndEnrich</span><span>(</span><span class="identifier">spRepo</span><span>, </span><span class="identifier">areaId</span><span>, </span><span class="identifier">baseTasks</span><span>, </span><span class="identifier">at</span><span>)
+        </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; (</span><span class="identifier">baseTasks</span><span>, </span><span class="type-name">Nil</span><span>)
+
+    </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">saveAll</span><span>(</span><span class="identifier">tasks</span><span>)
+
+    </span><span class="keyword">val</span><span> </span><span class="identifier">consolidationGroups</span><span> =
+      </span><span class="type-name">ConsolidationGroupFormationPolicy</span><span>(</span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">event</span><span>, </span><span class="identifier">at</span><span>)
+    </span><span class="identifier">consolidationGroupRepository</span><span>.</span><span class="identifier">saveAll</span><span>(</span><span class="identifier">consolidationGroups</span><span>)
+
+    </span><span class="type-name">WaveReleaseResult</span><span>(
+      </span><span class="identifier">wave</span><span> = </span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">wave</span><span>,
+      </span><span class="identifier">event</span><span> = </span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">event</span><span>,
+      </span><span class="identifier">tasks</span><span> = </span><span class="identifier">tasks</span><span>,
+      </span><span class="identifier">consolidationGroups</span><span> = </span><span class="identifier">consolidationGroups</span><span>,
+      </span><span class="identifier">stockAllocations</span><span> = </span><span class="identifier">stockAllocations</span><span>
+    )</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/WaveReleaseService.scala</em>&lt;/small&gt;</p>
+        <p>The five steps mirror the impure/pure/impure sandwich. (1) Persist the
+        released wave. (2) Create tasks via <code>TaskCreationPolicy</code> (Chapter 6). (3) If
+        both a stock repository and warehouse area are provided, run
+        <code>StockAllocationPolicy</code>, lock stock positions, and enrich tasks with stock
+        position IDs; otherwise skip. (4) Persist all tasks in batch. (5) Form
+        consolidation groups via <code>ConsolidationGroupFormationPolicy</code> and persist them.</p>
+        <p>Notice the difference from <code>TaskCompletionService</code>. The release service does
+        not return <code>Either</code> because it has no validation to fail. The <code>WavePlan</code> is
+        already validated by the time it reaches the service, so the return type is a
+        plain <code>WaveReleaseResult</code> containing every entity that was created.</p>
+        
+        <h2 id="walkthrough-wavecancellationservice" class="section"><a class="anchor-link left" href="#walkthrough-wavecancellationservice"><i class="icofont-laika link">&#xef71;</i></a>Walkthrough: WaveCancellationService</h2>
+        <p>Where <code>WaveReleaseService</code> creates a cascade of new entities,
+        <code>WaveCancellationService</code> tears one down. Cancelling a released wave must also
+        cancel all of its downstream aggregates: tasks, transport orders, and
+        consolidation groups.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">WaveCancellationError</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">WaveCancellationError</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">WaveNotFound</span><span>(</span><span class="identifier">waveId</span><span>: </span><span class="type-name">WaveId</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">WaveCancellationError</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">WaveAlreadyTerminal</span><span>(</span><span class="identifier">waveId</span><span>: </span><span class="type-name">WaveId</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">WaveCancellationError</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/WaveCancellationService.scala</em>&lt;/small&gt;</p>
+        <p>The error ADT is compact: the wave does not exist, or it is already terminal.</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">WaveCancellationService</span><span>(
+    </span><span class="identifier">waveRepository</span><span>: </span><span class="type-name">WaveRepository</span><span>,
+    </span><span class="identifier">taskRepository</span><span>: </span><span class="type-name">TaskRepository</span><span>,
+    </span><span class="identifier">transportOrderRepository</span><span>: </span><span class="type-name">TransportOrderRepository</span><span>,
+    </span><span class="identifier">consolidationGroupRepository</span><span>: </span><span class="type-name">ConsolidationGroupRepository</span><span>
+):
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cancel</span><span>(
+      </span><span class="identifier">waveId</span><span>: </span><span class="type-name">WaveId</span><span>,
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+  ): </span><span class="type-name">Either</span><span>[</span><span class="type-name">WaveCancellationError</span><span>, </span><span class="type-name">WaveCancellationResult</span><span>] =
+    </span><span class="identifier">waveRepository</span><span>.</span><span class="identifier">findById</span><span>(</span><span class="identifier">waveId</span><span>) </span><span class="keyword">match</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span>                          =&gt;
+        </span><span class="type-name">Left</span><span>(</span><span class="type-name">WaveCancellationError</span><span>.</span><span class="type-name">WaveNotFound</span><span>(</span><span class="identifier">waveId</span><span>))
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">planned</span><span>: </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Planned</span><span>)   =&gt; </span><span class="identifier">cancelPlanned</span><span>(</span><span class="identifier">planned</span><span>, </span><span class="identifier">at</span><span>)
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">released</span><span>: </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Released</span><span>) =&gt; </span><span class="identifier">cancelReleased</span><span>(</span><span class="identifier">released</span><span>, </span><span class="identifier">at</span><span>)
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>: </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Completed</span><span>)       =&gt;
+        </span><span class="type-name">Left</span><span>(</span><span class="type-name">WaveCancellationError</span><span>.</span><span class="type-name">WaveAlreadyTerminal</span><span>(</span><span class="identifier">waveId</span><span>))
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>: </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Cancelled</span><span>)       =&gt;
+        </span><span class="type-name">Left</span><span>(</span><span class="type-name">WaveCancellationError</span><span>.</span><span class="type-name">WaveAlreadyTerminal</span><span>(</span><span class="identifier">waveId</span><span>))</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/WaveCancellationService.scala</em>&lt;/small&gt;</p>
+        <p>The <code>cancel</code> method pattern matches on the wave&#39;s current state. A planned wave
+        has no downstream entities, so cancellation is a single state transition:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">cancelPlanned</span><span>(
+    </span><span class="identifier">planned</span><span>: </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Planned</span><span>,
+    </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+): </span><span class="type-name">Either</span><span>[</span><span class="type-name">WaveCancellationError</span><span>, </span><span class="type-name">WaveCancellationResult</span><span>] =
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">cancelled</span><span>, </span><span class="identifier">cancelledEvent</span><span>) = </span><span class="identifier">planned</span><span>.</span><span class="identifier">cancel</span><span>(</span><span class="identifier">at</span><span>)
+  </span><span class="identifier">waveRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">cancelled</span><span>, </span><span class="identifier">cancelledEvent</span><span>)
+  </span><span class="type-name">Right</span><span>(</span><span class="type-name">WaveCancellationResult</span><span>(</span><span class="identifier">cancelled</span><span>, </span><span class="identifier">cancelledEvent</span><span>, </span><span class="type-name">Nil</span><span>, </span><span class="type-name">Nil</span><span>, </span><span class="type-name">Nil</span><span>))</span></code></pre>
+        <p>The three <code>Nil</code> values in the result tell the caller that no cascading
+        cancellations occurred. Clean and explicit.</p>
+        <p><strong>Released wave: cancel with cascade.</strong> A released wave has downstream entities
+        that must also be cancelled:</p>
+        <pre><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">cancelReleased</span><span>(
+    </span><span class="identifier">released</span><span>: </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Released</span><span>,
+    </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+): </span><span class="type-name">Either</span><span>[</span><span class="type-name">WaveCancellationError</span><span>, </span><span class="type-name">WaveCancellationResult</span><span>] =
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">cancelled</span><span>, </span><span class="identifier">cancelledEvent</span><span>) = </span><span class="identifier">released</span><span>.</span><span class="identifier">cancel</span><span>(</span><span class="identifier">at</span><span>)
+  </span><span class="identifier">waveRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">cancelled</span><span>, </span><span class="identifier">cancelledEvent</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">waveTasks</span><span> = </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">findByWaveId</span><span>(</span><span class="identifier">released</span><span>.</span><span class="identifier">id</span><span>)
+  </span><span class="keyword">val</span><span> </span><span class="identifier">cancelledTasks</span><span> = </span><span class="type-name">TaskCancellationPolicy</span><span>(</span><span class="identifier">waveTasks</span><span>, </span><span class="identifier">at</span><span>)
+  </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">saveAll</span><span>(</span><span class="identifier">cancelledTasks</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">handlingUnitIds</span><span> = </span><span class="identifier">waveTasks</span><span>.</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">handlingUnitId</span><span>).</span><span class="identifier">distinct</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">transportOrders</span><span> =
+    </span><span class="identifier">handlingUnitIds</span><span>.</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">transportOrderRepository</span><span>.</span><span class="identifier">findByHandlingUnitId</span><span>)
+  </span><span class="keyword">val</span><span> </span><span class="identifier">cancelledTransportOrders</span><span> =
+    </span><span class="type-name">TransportOrderCancellationPolicy</span><span>(</span><span class="identifier">transportOrders</span><span>, </span><span class="identifier">at</span><span>)
+  </span><span class="identifier">transportOrderRepository</span><span>.</span><span class="identifier">saveAll</span><span>(</span><span class="identifier">cancelledTransportOrders</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">consolidationGroups</span><span> =
+    </span><span class="identifier">consolidationGroupRepository</span><span>.</span><span class="identifier">findByWaveId</span><span>(</span><span class="identifier">released</span><span>.</span><span class="identifier">id</span><span>)
+  </span><span class="keyword">val</span><span> </span><span class="identifier">cancelledConsolidationGroups</span><span> =
+    </span><span class="type-name">ConsolidationGroupCancellationPolicy</span><span>(</span><span class="identifier">consolidationGroups</span><span>, </span><span class="identifier">at</span><span>)
+  </span><span class="identifier">consolidationGroupRepository</span><span>.</span><span class="identifier">saveAll</span><span>(</span><span class="identifier">cancelledConsolidationGroups</span><span>)
+
+  </span><span class="type-name">Right</span><span>(
+    </span><span class="type-name">WaveCancellationResult</span><span>(
+      </span><span class="identifier">cancelled</span><span> = </span><span class="identifier">cancelled</span><span>,
+      </span><span class="identifier">cancelledEvent</span><span> = </span><span class="identifier">cancelledEvent</span><span>,
+      </span><span class="identifier">cancelledTasks</span><span> = </span><span class="identifier">cancelledTasks</span><span>,
+      </span><span class="identifier">cancelledTransportOrders</span><span> = </span><span class="identifier">cancelledTransportOrders</span><span>,
+      </span><span class="identifier">cancelledConsolidationGroups</span><span> = </span><span class="identifier">cancelledConsolidationGroups</span><span>
+    )
+  )</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/WaveCancellationService.scala</em>&lt;/small&gt;</p>
+        <p>The cascade follows the dependency graph downward: cancel the wave, then
+        cancel all non-terminal tasks via <code>TaskCancellationPolicy</code>, then find and
+        cancel associated transport orders via <code>TransportOrderCancellationPolicy</code>,
+        then cancel consolidation groups via <code>ConsolidationGroupCancellationPolicy</code>.
+        Each step follows the same load/decide/save pattern. The policies handle the
+        filtering (skipping already-terminal entities) so the service does not need to.</p>
+        
+        <h2 id="architecture-note-railway-oriented-programming" class="section"><a class="anchor-link left" href="#architecture-note-railway-oriented-programming"><i class="icofont-laika link">&#xef71;</i></a>Architecture Note: Railway-Oriented Programming</h2>
+        <p>If you have read Scott Wlaschin&#39;s writing on functional error handling, the
+        service pattern here will look familiar. Wlaschin describes <em>Railway-Oriented
+        Programming</em> (ROP): treating a computation as a two-track railway where each
+        step can continue on the success track or divert to the failure track.</p>
+        <p>In Neon WES, the two tracks are the two sides of <code>Either</code>:</p>
+        <ul>
+          <li><strong>Right track (success):</strong> the operation produced a result. Continue to the
+          next step.</li>
+          <li><strong>Left track (failure):</strong> something went wrong. Skip all remaining steps and
+          return the error.</li>
+        </ul>
+        <p>Each step in a service is a &quot;switch function&quot; that can route to the failure
+        track. The repository lookup returns <code>None</code>, and we switch to
+        <code>Left(TaskNotFound(...))</code>. The state pattern match finds a non-Assigned task,
+        and we switch to <code>Left(TaskNotAssigned(...))</code>. Once on the failure track, the
+        cascade steps never run.</p>
+        <p>In the async counterpart (which we will see in Chapter 11), <code>for</code>-comprehensions
+        over <code>Future[Either[...]]</code> achieve the same two-track flow:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">for</span><span>
+  </span><span class="identifier">task</span><span>      &lt;- </span><span class="identifier">findTask</span><span>(</span><span class="identifier">taskId</span><span>)        </span><span class="comment">// Left if not found
+</span><span>  </span><span class="identifier">assigned</span><span>  &lt;- </span><span class="identifier">ensureAssigned</span><span>(</span><span class="identifier">task</span><span>)    </span><span class="comment">// Left if wrong state
+</span><span>  </span><span class="identifier">result</span><span>    &lt;- </span><span class="identifier">completeAssigned</span><span>(</span><span class="identifier">assigned</span><span>, </span><span class="identifier">qty</span><span>, </span><span class="identifier">at</span><span>)
+</span><span class="keyword">yield</span><span> </span><span class="identifier">result</span></code></pre>
+        <p>The shape is the same whether the operations are synchronous or asynchronous.
+        <code>Either</code> provides the railway. Pattern matching and <code>for</code>-comprehensions provide
+        the track switching. No exceptions, no try-catch, no hidden control flow.</p>
+        
+        <h2 id="what-comes-next" class="section"><a class="anchor-link left" href="#what-comes-next"><i class="icofont-laika link">&#xef71;</i></a>What Comes Next</h2>
+        <p>Services orchestrate policies and repositories, but we have been using
+        repository traits without seeing their implementations. In the next chapter,
+        we will explore the dual-interface pattern: sync port traits for fast
+        in-memory testing and async port traits for production infrastructure backed
+        by Pekko Cluster Sharding.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

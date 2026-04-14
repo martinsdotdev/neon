@@ -1,0 +1,94 @@
+[debug] Running TaskDef(neon.handlingunitstock.HandlingUnitStockSuite, org.scalatest.tools.Framework$$anon$1@4d94c801, false, [SuiteSelector])
+[debug] Running TaskDef(neon.handlingunitstock.HandlingUnitStockActorSuite, org.scalatest.tools.Framework$$anon$1@4d94c801, false, [SuiteSelector])
+[info] HandlingUnitStockSuite:
+[info] HandlingUnitStock
+[info]   creating
+[info]   - produces a HandlingUnitStock with available equal to onHand and a Created event
+[info]   - sets available equal to onHand with all other buckets at zero
+[info]   - rejects negative initial quantity
+[info]   - accepts zero initial quantity
+[info]   - supports logical containers with physicalContainer set to false
+[info]   - Created event carries all identity fields and quantity
+[info]   allocating
+[info]   - moves quantity from available to allocated
+[info]   - maintains the onHand invariant after allocation
+[info]   - returns Allocated event with quantity and timestamp
+[info]   - supports multiple sequential allocations
+[info]   - rejects allocation exceeding available quantity
+[info]   - rejects zero allocation quantity
+[info]   - rejects negative allocation quantity
+[info]   deallocating
+[info]   - moves quantity from allocated back to available
+[info]   - returns Deallocated event
+[info]   - rejects deallocation exceeding allocated quantity
+[info]   adding quantity
+[info]   - increases both onHand and available by the added amount
+[info]   - preserves existing allocations when adding
+[info]   - returns QuantityAdded event
+[info]   - rejects zero quantity
+[info]   - rejects negative quantity
+[info]   consuming allocated
+[info]   - decreases both onHand and allocated by consumed amount
+[info]   - leaves available unchanged when consuming allocated
+[info]   - returns AllocatedConsumed event
+[info]   - rejects consumption exceeding allocated quantity
+[info]   reserving
+[info]   - moves quantity from available to reserved
+[info]   - carries lock type on the Reserved event
+[info]   - rejects reservation exceeding available quantity
+[info]   releasing reservation
+[info]   - moves quantity from reserved back to available
+[info]   - carries lock type on the ReservationReleased event
+[info]   - rejects release exceeding reserved quantity
+[info]   blocking
+[info]   - moves quantity from available to blocked
+[info]   - returns Blocked event
+[info]   - rejects blocking more than available
+[info]   unblocking
+[info]   - moves quantity from blocked back to available
+[info]   - rejects unblocking more than blocked
+[info]   adjusting
+[info]   - increases onHand and available for positive delta
+[info]   - decreases onHand and available for negative delta
+[info]   - carries reason code on Adjusted event
+[info]   - rejects adjustment that would make available negative
+[info]   changing status
+[info]   - transitions to new status and returns StatusChanged event
+[info]   - carries handling unit stock id and timestamp on event
+[info] HandlingUnitStockActorSuite:
+[info] HandlingUnitStockActor
+[info]   Create
+[info]   - accepts Create command and transitions to ActiveState
+[info]   - rejects Create when already active
+[info]   Allocate
+[info]   - allocates and returns updated handling unit stock
+[info]   - rejects Allocate on empty state
+[info]   Deallocate
+[info]   - deallocates and returns updated handling unit stock
+[info]   AddQuantity
+[info]   - adds quantity and returns updated handling unit stock
+[info]   ConsumeAllocated
+[info]   - consumes allocated and returns updated handling unit stock
+[info]   Reserve
+[info]   - reserves and returns updated handling unit stock with lock type
+[info]   ReleaseReservation
+[info]   - releases reservation and returns updated handling unit stock
+[info]   Block and Unblock
+[info]   - blocks and unblocks quantity
+[info]   Adjust
+[info]   - adjusts quantity with reason code
+[info]   ChangeStatus
+[info]   - changes status and returns updated handling unit stock
+[info]   GetState
+[info]   - returns None on empty state
+[info]   - returns handling unit stock on active state
+[info]   event replay
+[info]   - recovers handling unit stock with correct quantities after restart
+[info] Run completed in 10 seconds, 28 milliseconds.
+[info] Total number of tests run: 57
+[info] Suites: completed 2, aborted 0
+[info] Tests: succeeded 57, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.handlingunitstock.HandlingUnitStockActorSuite
+[debug] 	neon.handlingunitstock.HandlingUnitStockSuite

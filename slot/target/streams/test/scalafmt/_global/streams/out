@@ -1,0 +1,10 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/slot/src/test/scala/neon/slot/PekkoSlotRepositorySuite.scala, /home/martins/Projects/neon/slot/src/test/scala/neon/slot/SlotSuite.scala, /home/martins/Projects/neon/slot/src/test/scala/neon/slot/SlotActorSuite.scala
+[debug] 	Modified: 
+[debug] 	Unmodified: /home/martins/Projects/neon/slot/src/test/scala/neon/slot/PekkoSlotRepositorySuite.scala, /home/martins/Projects/neon/slot/src/test/scala/neon/slot/SlotSuite.scala, /home/martins/Projects/neon/slot/src/test/scala/neon/slot/SlotActorSuite.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[debug] scalafmt: Unchanged 0 Scala sources

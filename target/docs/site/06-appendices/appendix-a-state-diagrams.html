@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Appendix A: State Machine Diagrams</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+    <script type="module">
+
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({ 
+  startOnLoad: true,
+  theme: "base",
+  themeVariables: {
+    'darkMode': dark,
+    'primaryColor': dark ? '#125d75' : '#eef5f6', 
+    'primaryTextColor': dark ? '#a7d4de' : '#007c99',
+    'primaryBorderColor': dark ? '#a7d4de' : '#a7d4de',
+    'lineColor': dark ? '#a7d4de' : '#007c99',
+    'background': dark ? '#064458' : '#ffffff',
+  }
+});
+
+</script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 active nav-leaf"><a href="#">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Appendix A: State Machine Diagrams</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#wave">Wave</a></li>
+    <li class="level1 nav-leaf"><a href="#task">Task</a></li>
+    <li class="level1 nav-leaf"><a href="#consolidationgroup">ConsolidationGroup</a></li>
+    <li class="level1 nav-node"><a href="#handlingunit">HandlingUnit</a></li>
+    <li class="level2 nav-leaf"><a href="#pick-stream">Pick Stream</a></li>
+    <li class="level2 nav-leaf"><a href="#ship-stream">Ship Stream</a></li>
+    <li class="level1 nav-leaf"><a href="#transportorder">TransportOrder</a></li>
+    <li class="level1 nav-leaf"><a href="#workstation">Workstation</a></li>
+    <li class="level1 nav-leaf"><a href="#slot">Slot</a></li>
+    <li class="level1 nav-leaf"><a href="#inbounddelivery">InboundDelivery</a></li>
+    <li class="level1 nav-leaf"><a href="#goodsreceipt">GoodsReceipt</a></li>
+    <li class="level1 nav-leaf"><a href="#cyclecount">CycleCount</a></li>
+    <li class="level1 nav-leaf"><a href="#counttask">CountTask</a></li>
+    <li class="level1 nav-leaf"><a href="#stockposition-4-bucket-model">StockPosition (4-Bucket Model)</a></li>
+    <li class="level1 nav-leaf"><a href="#handlingunitstock-4-bucket-model">HandlingUnitStock (4-Bucket Model)</a></li>
+    <li class="level1 nav-leaf"><a href="#inventory-2-bucket-model">Inventory (2-Bucket Model)</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="appendix-a-state-machine-diagrams" class="title">Appendix A: State Machine Diagrams</h1>
+        <p>Every domain aggregate in Neon WES is listed below with its state machine. Aggregates that use the typestate pattern encode states as case classes inside a sealed trait hierarchy; transition methods exist only on valid source states.</p>
+        <hr>
+        
+        <h2 id="wave" class="section"><a class="anchor-link left" href="#wave"><i class="icofont-laika link">&#xef71;</i></a>Wave</h2>
+        <p>A wave groups orders for batch processing through the warehouse. Planned waves are released to trigger task creation, then complete when all tasks finish.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Planned
+    Planned --&gt; Released : release(at)
+    Planned --&gt; Cancelled : cancel(at)
+    Released --&gt; Completed : complete(at)
+    Released --&gt; Cancelled : cancel(at)
+    Completed --&gt; [*]
+    Cancelled --&gt; [*]</pre>
+        <hr>
+        
+        <h2 id="task" class="section"><a class="anchor-link left" href="#task"><i class="icofont-laika link">&#xef71;</i></a>Task</h2>
+        <p>A task represents a single atomic warehouse operation (pick, putaway, replenish, or transfer) for one SKU. Shortpick handling occurs at the Assigned-to-Completed transition when <code>actualQuantity &lt; requestedQuantity</code>.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Planned : create(...)
+    Planned --&gt; Allocated : allocate(src, dest, at)
+    Planned --&gt; Cancelled : cancel(at)
+    Allocated --&gt; Assigned : assign(userId, at)
+    Allocated --&gt; Cancelled : cancel(at)
+    Assigned --&gt; Completed : complete(actualQty, at)
+    Assigned --&gt; Cancelled : cancel(at)
+    Completed --&gt; [*]
+    Cancelled --&gt; [*]</pre>
+        <hr>
+        
+        <h2 id="consolidationgroup" class="section"><a class="anchor-link left" href="#consolidationgroup"><i class="icofont-laika link">&#xef71;</i></a>ConsolidationGroup</h2>
+        <p>A consolidation group batches orders from a wave for workstation processing. It progresses through picking, buffer arrival, workstation assignment, and completion.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Created : create(waveId, orderIds, at)
+    Created --&gt; Picked : pick(at)
+    Created --&gt; Cancelled : cancel(at)
+    Picked --&gt; ReadyForWorkstation : readyForWorkstation(at)
+    Picked --&gt; Cancelled : cancel(at)
+    ReadyForWorkstation --&gt; Assigned : assign(workstationId, at)
+    ReadyForWorkstation --&gt; Cancelled : cancel(at)
+    Assigned --&gt; Completed : complete(at)
+    Assigned --&gt; Cancelled : cancel(at)
+    Completed --&gt; [*]
+    Cancelled --&gt; [*]</pre>
+        <hr>
+        
+        <h2 id="handlingunit" class="section"><a class="anchor-link left" href="#handlingunit"><i class="icofont-laika link">&#xef71;</i></a>HandlingUnit</h2>
+        <p>A handling unit is a physical container that moves through the warehouse. Two independent lifecycle streams share the same sealed trait.</p>
+        
+        <h3 id="pick-stream" class="section"><a class="anchor-link left" href="#pick-stream"><i class="icofont-laika link">&#xef71;</i></a>Pick Stream</h3>
+        <p>Pick handling units transport picked items from storage to a consolidation buffer, then are emptied after deconsolidation.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; PickCreated
+    PickCreated --&gt; InBuffer : moveToBuffer(locationId, at)
+    InBuffer --&gt; Empty : empty(at)
+    Empty --&gt; [*]</pre>
+        
+        <h3 id="ship-stream" class="section"><a class="anchor-link left" href="#ship-stream"><i class="icofont-laika link">&#xef71;</i></a>Ship Stream</h3>
+        <p>Ship handling units carry packed orders from workstations through outbound shipping.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; ShipCreated
+    ShipCreated --&gt; Packed : pack(at)
+    Packed --&gt; ReadyToShip : readyToShip(at)
+    ReadyToShip --&gt; Shipped : ship(at)
+    Shipped --&gt; [*]</pre>
+        <hr>
+        
+        <h2 id="transportorder" class="section"><a class="anchor-link left" href="#transportorder"><i class="icofont-laika link">&#xef71;</i></a>TransportOrder</h2>
+        <p>A transport order routes a handling unit to a destination. It represents the temporal gap between task completion and operator confirmation at the destination.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Pending : create(huId, dest, at)
+    Pending --&gt; Confirmed : confirm(at)
+    Pending --&gt; Cancelled : cancel(at)
+    Confirmed --&gt; [*]
+    Cancelled --&gt; [*]</pre>
+        <hr>
+        
+        <h2 id="workstation" class="section"><a class="anchor-link left" href="#workstation"><i class="icofont-laika link">&#xef71;</i></a>Workstation</h2>
+        <p>A workstation is a physical station (put-wall or pack station) where consolidation and packing operations occur. It cycles between Idle and Active and can be disabled from either state.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Disabled
+    Disabled --&gt; Idle : enable(at)
+    Idle --&gt; Active : assign(assignmentId, at)
+    Idle --&gt; Idle : switchMode(newMode, at)
+    Idle --&gt; Disabled : disable(at)
+    Active --&gt; Idle : release(at)
+    Active --&gt; Disabled : disable(at)</pre>
+        <hr>
+        
+        <h2 id="slot" class="section"><a class="anchor-link left" href="#slot"><i class="icofont-laika link">&#xef71;</i></a>Slot</h2>
+        <p>A slot is a put-wall position within a workstation. Each slot is bound to one order at a time.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Available
+    Available --&gt; Reserved : reserve(orderId, huId, at)
+    Reserved --&gt; Completed : complete(at)
+    Reserved --&gt; Available : release(at)
+    Completed --&gt; [*]</pre>
+        <hr>
+        
+        <h2 id="inbounddelivery" class="section"><a class="anchor-link left" href="#inbounddelivery"><i class="icofont-laika link">&#xef71;</i></a>InboundDelivery</h2>
+        <p>An inbound delivery represents an expected receipt of goods into the warehouse. It tracks expected, received, and rejected quantities through the receiving process.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; New
+    New --&gt; Receiving : startReceiving(at)
+    New --&gt; Cancelled : cancel(at)
+    Receiving --&gt; Receiving : receive(qty, rejected, at)
+    Receiving --&gt; Received : complete(at)
+    Receiving --&gt; Closed : close(at)
+    Received --&gt; [*]
+    Closed --&gt; [*]
+    Cancelled --&gt; [*]</pre>
+        <hr>
+        
+        <h2 id="goodsreceipt" class="section"><a class="anchor-link left" href="#goodsreceipt"><i class="icofont-laika link">&#xef71;</i></a>GoodsReceipt</h2>
+        <p>A goods receipt represents a physical receiving session against an inbound delivery. Lines are recorded incrementally before confirmation.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Open
+    Open --&gt; Open : recordLine(line, at)
+    Open --&gt; Confirmed : confirm(at)
+    Open --&gt; Cancelled : cancel(at)
+    Confirmed --&gt; [*]
+    Cancelled --&gt; [*]</pre>
+        <hr>
+        
+        <h2 id="cyclecount" class="section"><a class="anchor-link left" href="#cyclecount"><i class="icofont-laika link">&#xef71;</i></a>CycleCount</h2>
+        <p>A cycle count represents a scheduled or ad-hoc inventory verification for a set of SKUs within a warehouse area. It groups individual count tasks.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; New
+    New --&gt; InProgress : start(at)
+    New --&gt; Cancelled : cancel(at)
+    InProgress --&gt; Completed : complete(at)
+    InProgress --&gt; Cancelled : cancel(at)
+    Completed --&gt; [*]
+    Cancelled --&gt; [*]</pre>
+        <hr>
+        
+        <h2 id="counttask" class="section"><a class="anchor-link left" href="#counttask"><i class="icofont-laika link">&#xef71;</i></a>CountTask</h2>
+        <p>A count task represents a single SKU-location count within a cycle count. The counter records the actual quantity; variance is computed automatically.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Pending
+    Pending --&gt; Assigned : assign(userId, at)
+    Pending --&gt; Cancelled : cancel(at)
+    Assigned --&gt; Recorded : record(actualQty, at)
+    Assigned --&gt; Cancelled : cancel(at)
+    Recorded --&gt; [*]
+    Cancelled --&gt; [*]</pre>
+        <hr>
+        
+        <h2 id="stockposition-4-bucket-model" class="section"><a class="anchor-link left" href="#stockposition-4-bucket-model"><i class="icofont-laika link">&#xef71;</i></a>StockPosition (4-Bucket Model)</h2>
+        <p>A stock position is an area-level inventory position keyed by (SKU, warehouse area, lot attributes). It does not follow a state machine; instead, it maintains a 4-bucket quantity model with an enforced invariant.</p>
+        <pre class="mermaid">stateDiagram-v2
+    state &quot;StockPosition&quot; as sp {
+        state &quot;onHandQuantity&quot; as oh
+        state &quot;availableQuantity&quot; as avail
+        state &quot;allocatedQuantity&quot; as alloc
+        state &quot;reservedQuantity&quot; as res
+        state &quot;blockedQuantity&quot; as blk
+    }
+    note right of sp
+        Invariant: onHand == available + allocated + reserved + blocked
+        All quantities &gt;= 0
+    end note</pre>
+        <p><strong>Bucket transitions:</strong></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Operation</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Trigger</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>allocate</code></td>
+              <td>available</td>
+              <td>allocated</td>
+              <td>Outbound order allocation</td>
+            </tr>
+            <tr>
+              <td><code>deallocate</code></td>
+              <td>allocated</td>
+              <td>available</td>
+              <td>Task cancellation</td>
+            </tr>
+            <tr>
+              <td><code>consumeAllocated</code></td>
+              <td>allocated (and onHand)</td>
+              <td>removed</td>
+              <td>Task completion</td>
+            </tr>
+            <tr>
+              <td><code>addQuantity</code></td>
+              <td>(external)</td>
+              <td>onHand + available</td>
+              <td>Inbound receiving</td>
+            </tr>
+            <tr>
+              <td><code>reserve</code></td>
+              <td>available</td>
+              <td>reserved</td>
+              <td>Internal ops (counting, relocation)</td>
+            </tr>
+            <tr>
+              <td><code>releaseReservation</code></td>
+              <td>reserved</td>
+              <td>available</td>
+              <td>Internal ops complete</td>
+            </tr>
+            <tr>
+              <td><code>block</code></td>
+              <td>available</td>
+              <td>blocked</td>
+              <td>Administrative hold</td>
+            </tr>
+            <tr>
+              <td><code>unblock</code></td>
+              <td>blocked</td>
+              <td>available</td>
+              <td>Hold released</td>
+            </tr>
+            <tr>
+              <td><code>adjust</code></td>
+              <td>onHand + available</td>
+              <td>adjusted</td>
+              <td>SOX-compliant correction</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="handlingunitstock-4-bucket-model" class="section"><a class="anchor-link left" href="#handlingunitstock-4-bucket-model"><i class="icofont-laika link">&#xef71;</i></a>HandlingUnitStock (4-Bucket Model)</h2>
+        <p>A handling unit stock is a container-level inventory position keyed by (container, slot, stock position). It mirrors the StockPosition 4-bucket model at the physical container level.</p>
+        <pre class="mermaid">stateDiagram-v2
+    state &quot;HandlingUnitStock&quot; as hus {
+        state &quot;onHandQuantity&quot; as oh2
+        state &quot;availableQuantity&quot; as avail2
+        state &quot;allocatedQuantity&quot; as alloc2
+        state &quot;reservedQuantity&quot; as res2
+        state &quot;blockedQuantity&quot; as blk2
+    }
+    note right of hus
+        Invariant: onHand == available + allocated + reserved + blocked
+        All quantities &gt;= 0
+    end note</pre>
+        <p>The operations are identical to StockPosition: <code>allocate</code>, <code>deallocate</code>, <code>addQuantity</code>, <code>consumeAllocated</code>, <code>reserve</code>, <code>releaseReservation</code>, <code>block</code>, <code>unblock</code>, <code>adjust</code>, and <code>changeStatus</code>.</p>
+        <hr>
+        
+        <h2 id="inventory-2-bucket-model" class="section"><a class="anchor-link left" href="#inventory-2-bucket-model"><i class="icofont-laika link">&#xef71;</i></a>Inventory (2-Bucket Model)</h2>
+        <p>An inventory position is identified by the (location, SKU, lot) triad and tracks on-hand and reserved quantities. Available is a computed value, not a stored bucket.</p>
+        <pre class="mermaid">stateDiagram-v2
+    state &quot;Inventory&quot; as inv {
+        state &quot;onHand&quot; as oh3
+        state &quot;reserved&quot; as res3
+        state &quot;available = onHand - reserved&quot; as avail3
+    }</pre>
+        <table>
+          <thead>
+            <tr>
+              <th>Operation</th>
+              <th>Effect</th>
+              <th>Trigger</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>reserve</code></td>
+              <td>reserved += qty</td>
+              <td>Outbound allocation</td>
+            </tr>
+            <tr>
+              <td><code>release</code></td>
+              <td>reserved -= qty</td>
+              <td>Task cancellation</td>
+            </tr>
+            <tr>
+              <td><code>consume</code></td>
+              <td>onHand -= qty, reserved -= qty</td>
+              <td>Task completion</td>
+            </tr>
+            <tr>
+              <td><code>correctLot</code></td>
+              <td>lot updated</td>
+              <td>Lot correction (requires reserved == 0)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

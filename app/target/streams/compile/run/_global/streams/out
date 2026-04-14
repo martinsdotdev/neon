@@ -1,0 +1,3 @@
+[debug] javaOptions: List(-DEVA_AUTH_SECURE_COOKIES=false)
+[error] nonzero exit code returned from runner: 143
+[error] (app / Compile / run) nonzero exit code returned from runner: 143

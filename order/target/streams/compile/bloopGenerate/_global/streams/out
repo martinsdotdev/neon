@@ -1,0 +1,4 @@
+[debug] [order] Classpath dependencies List(common)
+[debug] [order] Dependencies from configurations List()
+[debug] Bloop wrote the configuration of project 'order' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/order.json'
+[success] Generated .bloop/order.json

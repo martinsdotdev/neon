@@ -1,0 +1,1 @@
+["sbt.Task[scala.collection.Seq[java.nio.file.Path]]",["/home/martins/Projects/neon/count-task/target/scala-3.8.2/test-classes/neon/counttask/CountTaskActorSuite.class","/home/martins/Projects/neon/count-task/target/scala-3.8.2/test-classes/neon/counttask/CountTaskSuite.class","/home/martins/Projects/neon/count-task/target/scala-3.8.2/test-zinc/inc_compile_3.zip"]]

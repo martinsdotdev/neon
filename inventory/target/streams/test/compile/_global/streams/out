@@ -1,0 +1,19 @@
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inventory/src/test/scala/eva/inventory/InventoryActorSuite.scala:170:15 
+[error] 170 |        assert(inventory.onHand == 100)
+[error]     |               ^^^^^^^^^
+[error]     |               Not found: inventory
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inventory/src/test/scala/eva/inventory/InventoryActorSuite.scala:171:15 
+[error] 171 |        assert(inventory.reserved == 25)
+[error]     |               ^^^^^^^^^
+[error]     |               Not found: inventory
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/inventory/src/test/scala/eva/inventory/InventoryActorSuite.scala:172:15 
+[error] 172 |        assert(inventory.available == 75)
+[error]     |               ^^^^^^^^^
+[error]     |               Not found: inventory
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] three errors found

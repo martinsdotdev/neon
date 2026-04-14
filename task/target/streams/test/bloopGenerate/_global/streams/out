@@ -1,0 +1,4 @@
+[debug] [task-test] Classpath dependencies List(common)
+[debug] [task-test] Dependencies from configurations List(task)
+[debug] Bloop wrote the configuration of project 'task-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/task-test.json'
+[success] Generated .bloop/task-test.json

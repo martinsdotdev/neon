@@ -1,0 +1,10 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDeliveryActor.scala, /home/martins/Projects/neon/inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDeliveryRepository.scala, /home/martins/Projects/neon/inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDeliveryEvent.scala, /home/martins/Projects/neon/inbound-delivery/src/main/scala/neon/inbounddelivery/AsyncInboundDeliveryRepository.scala, /home/martins/Projects/neon/inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDelivery.scala, /home/martins/Projects/neon/inbound-delivery/src/main/scala/neon/inbounddelivery/PekkoInboundDeliveryRepository.scala
+[debug] 	Modified: 
+[debug] 	Unmodified: /home/martins/Projects/neon/inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDeliveryActor.scala, /home/martins/Projects/neon/inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDeliveryRepository.scala, /home/martins/Projects/neon/inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDeliveryEvent.scala, /home/martins/Projects/neon/inbound-delivery/src/main/scala/neon/inbounddelivery/AsyncInboundDeliveryRepository.scala, /home/martins/Projects/neon/inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDelivery.scala, /home/martins/Projects/neon/inbound-delivery/src/main/scala/neon/inbounddelivery/PekkoInboundDeliveryRepository.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[debug] scalafmt: Unchanged 0 Scala sources

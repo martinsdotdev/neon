@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>The Frontend</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 active nav-leaf"><a href="#">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">The Frontend</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#the-planned-stack">The Planned Stack</a></li>
+    <li class="level1 nav-leaf"><a href="#ui-framework">UI Framework</a></li>
+    <li class="level1 nav-leaf"><a href="#routing-and-path-aliases">Routing and Path Aliases</a></li>
+    <li class="level1 nav-leaf"><a href="#theming">Theming</a></li>
+    <li class="level1 nav-leaf"><a href="#formatting-conventions">Formatting Conventions</a></li>
+    <li class="level1 nav-leaf"><a href="#what-comes-next">What Comes Next</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="the-frontend" class="title">The Frontend</h1>
+        <p>Throughout this book, we have built the entire backend of Neon WES: domain
+        aggregates, event sourcing, policies, services, actors, cluster sharding, CQRS
+        projections, and an HTTP API. Now it is time to talk about how warehouse
+        operators will actually interact with the system.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The frontend has not been built yet. This chapter describes the
+          planned technology stack and conventions. It will be expanded with
+          implementation details, code examples, and walkthroughs once the <code>web/</code>
+          directory takes shape.</p>
+        </div>
+        
+        <h2 id="the-planned-stack" class="section"><a class="anchor-link left" href="#the-planned-stack"><i class="icofont-laika link">&#xef71;</i></a>The Planned Stack</h2>
+        <p>The Neon WES frontend will use <strong>React 19</strong> with <strong>TanStack Start</strong>, a
+        full-stack React framework built on Vite and Nitro. TypeScript is the language
+        for all frontend code. TanStack Start gives us type-safe file-based routing with
+        an auto-generated route tree, fast HMR via Vite, and tight integration with
+        TanStack Router and TanStack Query for data fetching.</p>
+        
+        <h2 id="ui-framework" class="section"><a class="anchor-link left" href="#ui-framework"><i class="icofont-laika link">&#xef71;</i></a>UI Framework</h2>
+        <p>For the component layer, we will use <strong>shadcn/ui</strong> configured with <strong>Base UI</strong>
+        primitives (not Radix). Components are copy-pasted into <code>src/components/ui/</code> and
+        become fully ownable project code. Styling uses <strong>Tailwind CSS v4</strong> with <strong>Class
+        Variance Authority (CVA)</strong> for type-safe variant definitions.</p>
+        <p>The <code>cn()</code> utility, built from <code>clsx</code> and <code>tailwind-merge</code>, prevents Tailwind
+        class conflicts when composing component styles:</p>
+        <pre class="keep-together pdf epub"><code class="ts">import { clsx, type ClassValue } from &quot;clsx&quot;
+import { twMerge } from &quot;tailwind-merge&quot;
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}</code></pre>
+        
+        <h2 id="routing-and-path-aliases" class="section"><a class="anchor-link left" href="#routing-and-path-aliases"><i class="icofont-laika link">&#xef71;</i></a>Routing and Path Aliases</h2>
+        <p>Routes live in <code>src/routes/</code> and follow TanStack Start&#39;s file-based routing
+        convention. The path alias <code>@/*</code> maps to <code>src/*</code>, keeping imports clean and
+        consistent across the codebase.</p>
+        
+        <h2 id="theming" class="section"><a class="anchor-link left" href="#theming"><i class="icofont-laika link">&#xef71;</i></a>Theming</h2>
+        <p>Color tokens use the <strong>OKLch</strong> color space for perceptually uniform theming,
+        with full light and dark mode support. This ensures that colors look consistent
+        across different hues and brightness levels.</p>
+        
+        <h2 id="formatting-conventions" class="section"><a class="anchor-link left" href="#formatting-conventions"><i class="icofont-laika link">&#xef71;</i></a>Formatting Conventions</h2>
+        <p>The frontend follows its own formatting rules: no semicolons, double quotes, and
+        an 80-character line width. Prettier handles formatting; ESLint handles linting.</p>
+        
+        <h2 id="what-comes-next" class="section"><a class="anchor-link left" href="#what-comes-next"><i class="icofont-laika link">&#xef71;</i></a>What Comes Next</h2>
+        <p>Once the frontend is built, this chapter will walk through the full vertical
+        slice: route definition, data fetching with TanStack Query, component
+        composition with shadcn/ui, and how the frontend connects to the HTTP API we
+        built in <a href="../03-the-infrastructure/ch13-http-api.html">Chapter 13</a>. For now, the backend is ready and
+        waiting.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

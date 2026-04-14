@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Foreword</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="helium/site/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="helium/site/landing-page.css" />
+  <script src="helium/site/laika-helium.js"></script>
+    <script type="module">
+
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({ 
+  startOnLoad: true,
+  theme: "base",
+  themeVariables: {
+    'darkMode': dark,
+    'primaryColor': dark ? '#125d75' : '#eef5f6', 
+    'primaryTextColor': dark ? '#a7d4de' : '#007c99',
+    'primaryBorderColor': dark ? '#a7d4de' : '#a7d4de',
+    'lineColor': dark ? '#a7d4de' : '#007c99',
+    'background': dark ? '#064458' : '#ffffff',
+  }
+});
+
+</script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="#"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Foreword</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#who-this-book-is-for">Who This Book Is For</a></li>
+    <li class="level1 nav-leaf"><a href="#what-you-will-learn">What You Will Learn</a></li>
+    <li class="level1 nav-leaf"><a href="#how-to-read-this-book">How to Read This Book</a></li>
+    <li class="level1 nav-leaf"><a href="#the-ideas-behind-the-architecture">The Ideas Behind the Architecture</a></li>
+    <li class="level1 nav-leaf"><a href="#conventions-used-in-this-book">Conventions Used in This Book</a></li>
+    <li class="level1 nav-leaf"><a href="#let-s-get-started">Let&#39;s Get Started</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="foreword" class="title">Foreword</h1>
+        <p>Warehouses are fascinating places. Every day, thousands of orders flow in, each
+        one triggering a cascade of decisions: which items to pick, from which locations,
+        in what sequence, and how to group them for efficient movement through the
+        building. The software that orchestrates all of this is called a <em>Warehouse
+        Execution System</em>, or WES for short.</p>
+        <p>Neon WES is one such system. It is built in Scala 3, powered by event sourcing
+        and the actor model, and structured around the principles of domain-driven
+        design. This book will walk you through every layer of its architecture, from
+        the domain aggregates at the center to the HTTP API at the edge.</p>
+        
+        <h2 id="who-this-book-is-for" class="section"><a class="anchor-link left" href="#who-this-book-is-for"><i class="icofont-laika link">&#xef71;</i></a>Who This Book Is For</h2>
+        <p><strong>Developers learning event sourcing and DDD.</strong> If you have read about event
+        sourcing, CQRS, or domain-driven design but want to see how they fit together
+        in a real, complete system (not a toy example), this book walks through every
+        layer of a production-grade implementation. We do not shy away from the
+        tradeoffs. Where a pattern introduces complexity, we explain what we gain in
+        return.</p>
+        <p><strong>Scala developers exploring advanced patterns.</strong> If you are comfortable with
+        Scala 3 and curious about typestate encoding, Pekko actors, cluster sharding,
+        or functional domain modeling, this book gives you working code to study. Every
+        concept is illustrated with real source files, not simplified snippets.</p>
+        <p><strong>Anyone curious about warehouse software.</strong> Every time you order something
+        online, software like this orchestrates the physical movement of goods from
+        shelf to shipping dock. If you have ever wondered what that software looks like
+        on the inside, this book opens the hood. No warehouse domain knowledge is
+        assumed; we start from first principles.</p>
+        <p>We do expect basic familiarity with Scala 3 syntax: case classes, sealed traits,
+        pattern matching, and the <code>Either</code> type. If you have worked through any
+        introductory Scala 3 resource, you will be well prepared.</p>
+        
+        <h2 id="what-you-will-learn" class="section"><a class="anchor-link left" href="#what-you-will-learn"><i class="icofont-laika link">&#xef71;</i></a>What You Will Learn</h2>
+        <p>This is not a toy example. Neon WES is a real system with over a dozen domain
+        modules, eight event-sourced aggregates, cluster sharding, CQRS projections,
+        and a full HTTP API. Over the course of this book, we will cover:</p>
+        <ul>
+          <li><strong>Domain modeling</strong> with typestate-encoded aggregates, where the Scala
+          compiler itself prevents invalid state transitions.</li>
+          <li><strong>Event sourcing</strong>, where every change to the system is captured as an
+          immutable event, giving us a complete audit trail and the ability to
+          reconstruct state at any point in time.</li>
+          <li><strong>Policies and services</strong>, the pure-logic and orchestration layers that keep
+          business rules testable and composable.</li>
+          <li><strong>The actor model</strong> with Apache Pekko, including persistent actors, cluster
+          sharding, and the mechanics of distributing aggregates across nodes.</li>
+          <li><strong>CQRS projections</strong> that consume event streams and maintain read-optimized
+          views in PostgreSQL.</li>
+          <li><strong>Testing at every layer</strong>, from simple unit tests on pure domain functions to
+          integration tests with <code>EventSourcedBehaviorTestKit</code> and full HTTP route tests.</li>
+          <li><strong>System wiring</strong>, serialization, error handling, and observability.</li>
+        </ul>
+        <p>Each concept is illustrated with code from the actual codebase. File paths are
+        included so you can follow along in your editor.</p>
+        
+        <h2 id="how-to-read-this-book" class="section"><a class="anchor-link left" href="#how-to-read-this-book"><i class="icofont-laika link">&#xef71;</i></a>How to Read This Book</h2>
+        <p>The chapters are organized into five parts, and they are designed to be read
+        sequentially. Concepts build on one another: Part II introduces domain patterns
+        that Part III then maps onto infrastructure, and Part IV addresses the
+        cross-cutting concerns that tie everything together.</p>
+        <p>That said, if you are already familiar with event sourcing or the actor model,
+        feel free to skip ahead. Each chapter opens with a brief summary of what it
+        covers and what it assumes you know.</p>
+        <p>Three chapters are project chapters:</p>
+        <ul>
+          <li><strong>Chapter 9</strong> walks through the wave release flow end to end, synthesizing the
+          domain patterns from Part II.</li>
+          <li><strong>Chapter 15</strong> follows a single order through an entire warehouse day, touching
+          every layer of the system.</li>
+          <li><strong>Chapter 20</strong> guides you through adding a completely new aggregate module,
+          reinforcing the patterns from Parts II through IV.</li>
+        </ul>
+        <p>These project chapters are where everything comes together. If you are short on
+        time, reading the pattern chapters and then jumping to the corresponding project
+        chapter is a good strategy.</p>
+        
+        <h2 id="the-ideas-behind-the-architecture" class="section"><a class="anchor-link left" href="#the-ideas-behind-the-architecture"><i class="icofont-laika link">&#xef71;</i></a>The Ideas Behind the Architecture</h2>
+        <p>Neon WES did not emerge from a single flash of inspiration. Its architecture
+        draws on five foundational patterns, each of which has shaped a different aspect
+        of the system. We mention them briefly here so you know what to look for as you
+        read. Each one will be explored in depth in the relevant chapters.</p>
+        <p><strong>The Decider pattern</strong> (Jrme Chassaing). This pattern separates <em>deciding</em>
+        what should happen from <em>executing</em> the decision. In Neon WES, our policies are
+        pure functions that examine current state and return an optional state
+        transition paired with an event. No side effects, no I/O, just decisions. This
+        is the beating heart of our domain logic.</p>
+        <p><strong>Railway Oriented Programming</strong> (Scott Wlaschin). Inspired by the functional
+        programming community&#39;s approach to error handling, we use <code>Either[Error, Result]</code>
+        throughout the codebase. Errors are values, not exceptions. They compose through
+        <code>for</code>-comprehensions, and they are exhaustively checked by the compiler. When
+        you see a chain of <code>flatMap</code> calls in a service, you are looking at a railway.</p>
+        <p><strong>Functional Core / Imperative Shell</strong> (Gary Bernhardt). The domain model is
+        pure: aggregates, events, and policies contain no I/O, no database access, no
+        network calls. All side effects live at the edges, in the actor layer and the
+        HTTP routes. This separation makes the core trivially testable and the shell
+        replaceable.</p>
+        <p><strong>The Elm Architecture.</strong> If you have used Elm (or Redux, or any
+        Model-View-Update framework), you will recognize the shape of our actors:
+        a state, a set of commands, and an update function that takes (state, command)
+        and returns (new state, events). The event-sourced actor is, in essence, an Elm
+        program with persistence.</p>
+        <p><strong>Hexagonal Architecture</strong> (Alistair Cockburn). Repositories in Neon WES are
+        abstract trait ports. The domain depends on the port; the infrastructure
+        provides the adapter. In tests we use simple in-memory implementations. In
+        production we use Pekko Cluster Sharding. The domain never knows the
+        difference.</p>
+        <p>You do not need to study these patterns before reading this book. We introduce
+        each one at the point where it becomes relevant, with enough context to
+        understand the motivation and the mechanics.</p>
+        
+        <h2 id="conventions-used-in-this-book" class="section"><a class="anchor-link left" href="#conventions-used-in-this-book"><i class="icofont-laika link">&#xef71;</i></a>Conventions Used in This Book</h2>
+        <p>Throughout the text, we follow a few conventions to help you navigate.</p>
+        <p><strong>Code snippets</strong> include the file path relative to the project root, so you can
+        open the file in your editor and see the full context:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// wave/src/main/scala/neon/wave/Wave.scala
+</span><span>
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Wave</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">id</span><span>: </span><span class="type-name">WaveId</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Wave</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Planned</span><span>(
+      </span><span class="identifier">id</span><span>: </span><span class="type-name">WaveId</span><span>,
+      </span><span class="identifier">orderGrouping</span><span>: </span><span class="type-name">OrderGrouping</span><span>,
+      </span><span class="identifier">orderIds</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">OrderId</span><span>]
+  ) </span><span class="keyword">extends</span><span> </span><span class="type-name">Wave</span></code></pre>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Callout blocks like this one highlight important details, common
+          pitfalls, or connections to other chapters.</p>
+        </div>
+        <p><em>Italics</em> mark the first use of a domain term or technical concept. These terms
+        are also collected in the Glossary (Appendix F) for quick reference.</p>
+        <p><strong>State machine diagrams</strong> use Mermaid syntax and are rendered inline:</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Planned
+    Planned --&gt; Released
+    Released --&gt; Completed
+    Planned --&gt; Cancelled
+    Released --&gt; Cancelled</pre>
+        
+        <h2 id="let-s-get-started" class="section"><a class="anchor-link left" href="#let-s-get-started"><i class="icofont-laika link">&#xef71;</i></a>Let&#39;s Get Started</h2>
+        <p>Building a warehouse execution system is a journey that spans two worlds: the
+        physical world of shelves, bins, and forklifts, and the software world of
+        aggregates, events, and actors. Both worlds have their own complexity, and the
+        place where they meet is where the most interesting problems live.</p>
+        <p>If you are new to the domain, we hope this book makes the warehouse feel
+        approachable. If you are new to these technical patterns, we hope it makes
+        event sourcing and the actor model feel practical rather than theoretical.</p>
+        <p>Either way, let&#39;s dig in.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,6 @@
+[debug] [zinc] IncrementalCompile -----------
+[debug] IncrementalCompile.incrementalCompile
+[debug] previous = Stamps for: 46 products, 6 sources, 7 libraries
+[debug] current source = Set(${BASE}/cycle-count/src/main/scala/neon/cyclecount/PekkoCycleCountRepository.scala, ${BASE}/cycle-count/src/main/scala/neon/cyclecount/CycleCountRepository.scala, ${BASE}/cycle-count/src/main/scala/neon/cyclecount/AsyncCycleCountRepository.scala, ${BASE}/cycle-count/src/main/scala/neon/cyclecount/CycleCountActor.scala, ${BASE}/cycle-count/src/main/scala/neon/cyclecount/CycleCountEvent.scala, ${BASE}/cycle-count/src/main/scala/neon/cyclecount/CycleCount.scala)
+[debug] > initialChanges = InitialChanges(Changes(added = Set(), removed = Set(), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())
+[debug] No changes

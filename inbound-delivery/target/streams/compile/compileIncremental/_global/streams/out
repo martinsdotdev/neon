@@ -1,0 +1,6 @@
+[debug] [zinc] IncrementalCompile -----------
+[debug] IncrementalCompile.incrementalCompile
+[debug] previous = Stamps for: 60 products, 6 sources, 7 libraries
+[debug] current source = Set(${BASE}/inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDeliveryRepository.scala, ${BASE}/inbound-delivery/src/main/scala/neon/inbounddelivery/PekkoInboundDeliveryRepository.scala, ${BASE}/inbound-delivery/src/main/scala/neon/inbounddelivery/AsyncInboundDeliveryRepository.scala, ${BASE}/inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDeliveryEvent.scala, ${BASE}/inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDelivery.scala, ${BASE}/inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDeliveryActor.scala)
+[debug] > initialChanges = InitialChanges(Changes(added = Set(), removed = Set(), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())
+[debug] No changes

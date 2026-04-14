@@ -1,0 +1,4 @@
+[debug] [core] Classpath dependencies List(common, wave, task, consolidationGroup, handlingUnit, transportOrder, workstation, slot, inventory, stockPosition, handlingUnitStock, inboundDelivery, goodsReceipt, cycleCount, countTask, location, carrier, user)
+[debug] [core] Dependencies from configurations List()
+[debug] Bloop wrote the configuration of project 'core' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/core.json'
+[success] Generated .bloop/core.json

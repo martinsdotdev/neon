@@ -1,0 +1,266 @@
+[debug] Running TaskDef(neon.app.http.SlotRoutesSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] SlotRoutesSuite:
+[info] SlotRoutes
+[info]   POST /slots/:id/reserve
+[info]   - returns 200 with reserved response on success
+[info]   - returns 404 when slot not found
+[info]   - returns 409 when slot is in wrong state
+[info]   - returns 401 without session cookie
+[debug] Running TaskDef(neon.app.repository.R2dbcLocationRepositorySuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] R2dbcLocationRepositorySuite:
+[info] R2dbcLocationRepository
+[info]   findById
+[info]   - should return a pick location with zone and picking sequence
+[info]   - should return a dock location with no zone
+[info]   - should return a reserve location with null picking sequence
+[info]   - should return None for an unknown id
+[debug] Running TaskDef(neon.app.auth.SessionTokenSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] SessionTokenSuite:
+[info] SessionToken
+[info] - generates tokens with at least 160 bits of entropy
+[info] - produces a deterministic 64-char SHA-256 hex hash
+[info] - produces different hashes for different tokens
+[debug] Running TaskDef(neon.app.testkit.PostgresContainerSmokeTestSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] PostgresContainerSmokeTestSuite:
+[info] PostgresContainerSuite
+[info] - connects to PostgreSQL and verifies Flyway migrations ran
+[info] - verifies seed data was loaded
+[debug] Running TaskDef(neon.app.projection.SlotProjectionHandlerSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] SlotProjectionHandlerSuite:
+[info] SlotProjectionHandler
+[info] - inserts into slot_by_workstation on Initialized
+[info] - updates state to Reserved on SlotReserved
+[info] - updates state to Available on SlotReleased
+[debug] Running TaskDef(neon.app.repository.R2dbcUserRepositorySuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] R2dbcUserRepositorySuite:
+[info] R2dbcUserRepository
+[info]   findById
+[info]   - should return an active user by id
+[info]   - should return an inactive user by id
+[info]   - should return None for an unknown id
+[info]   findByLogin
+[info]   - should return a user by login
+[info]   - should return None for an unknown login
+[debug] Running TaskDef(neon.app.logging.MdcExecutionContextSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] MdcExecutionContextSuite:
+[info] MdcExecutionContext
+[info] - propagates MDC values into Future bodies
+[info] - propagates MDC through flatMap chains
+[info] - does not leak MDC between unrelated futures
+[info] - handles absent MDC gracefully
+[debug] Running TaskDef(neon.app.projection.HandlingUnitProjectionHandlerSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] HandlingUnitProjectionHandlerSuite:
+[info] HandlingUnitProjectionHandler
+[info] - inserts into handling_unit_lookup on Initialized
+[info] - updates state and location on HandlingUnitMovedToBuffer
+[info] - updates state to Empty on HandlingUnitEmptied
+[debug] Running TaskDef(neon.app.http.WorkstationRoutesSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] WorkstationRoutesSuite:
+[info] WorkstationRoutes
+[info]   POST /workstations/assign
+[info]   - returns 200 with assignment response on success
+[info]   - returns 404 when consolidation group not found
+[info]   - returns 409 when consolidation group not ready
+[info]   - returns 503 when no workstation available
+[info]   POST /workstations
+[info]   - returns 200 with created response on success
+[info]   - returns 401 without session cookie
+[info]   POST /workstations/:id/enable
+[info]   - returns 200 with enabled response on success
+[info]   - returns 404 when workstation not found
+[info]   - returns 409 when workstation is in wrong state
+[debug] Running TaskDef(neon.app.repository.R2dbcCarrierRepositorySuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] R2dbcCarrierRepositorySuite:
+[info] R2dbcCarrierRepository
+[info]   findById
+[info]   - should return an active carrier by id
+[info]   - should return an inactive carrier by id
+[info]   - should return None for an unknown id
+[debug] Running TaskDef(neon.app.http.TaskRoutesSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] TaskRoutesSuite:
+[info] TaskRoutes
+[info]   POST /tasks/:id/complete
+[info]   - returns 200 with completed task on success
+[info]   - returns 404 when task not found
+[info]   - returns 409 when task is not in Assigned state
+[info]   - returns 401 without session cookie
+[debug] Running TaskDef(neon.app.http.HandlingUnitRoutesSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] HandlingUnitRoutesSuite:
+[info] HandlingUnitRoutes
+[info]   POST /handling-units/:id/pack
+[info]   - returns 200 with packed response on success
+[info]   - returns 404 when handling unit not found
+[info]   - returns 409 when handling unit is in wrong state
+[info]   - returns 401 without session cookie
+[debug] Running TaskDef(neon.app.http.InventoryRoutesSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] InventoryRoutesSuite:
+[info] InventoryRoutes
+[info]   POST /inventory
+[info]   - returns 200 with created response on success
+[info]   POST /inventory/:id/reserve
+[info]   - returns 404 when inventory not found
+[info]   - returns 409 when insufficient available
+[info]   - returns 401 without session cookie
+[debug] Running TaskDef(neon.app.projection.WorkstationProjectionHandlerSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] WorkstationProjectionHandlerSuite:
+[info] WorkstationProjectionHandler
+[info] - inserts into workstation_by_type_and_state on Initialized
+[info] - updates state to Idle on WorkstationEnabled
+[info] - updates state to Active on WorkstationAssigned
+[debug] Running TaskDef(neon.app.auth.AuthRoutesSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] AuthRoutesSuite:
+[info] AuthRoutes
+[info]   POST /auth/login
+[info]   - returns 200 and sets session cookie on success
+[info]   - returns 401 on wrong password
+[info]   - returns 401 on unknown user
+[info]   GET /auth/me
+[info]   - returns auth context when authenticated
+[info]   - returns 401 without session cookie
+[info]   POST /auth/logout
+[info]   - clears session from server
+[info]   - returns 200 even without session cookie
+[debug] Running TaskDef(neon.app.repository.R2dbcOrderRepositorySuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] R2dbcOrderRepositorySuite:
+[info] R2dbcOrderRepository
+[info]   findById
+[info]   - should return an order with multiple lines
+[info]   - should return a high priority order with a single line
+[info]   - should return None for an unknown id
+[info]   findByIds
+[info]   - should return multiple orders
+[info]   - should return an empty list for empty input
+[info]   - should return only existing orders when some ids are unknown
+[debug] Running TaskDef(neon.app.repository.R2dbcWaveDispatchAssignmentRepositorySuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] R2dbcWaveDispatchAssignmentRepositorySuite:
+[info] R2dbcWaveDispatchAssignmentRepository
+[info]   findActiveByDock
+[info]   - returns an empty list when no active assignments exist
+[info]   - returns empty for a nonexistent dock
+[info]   reserveForWave
+[info]   - succeeds for an empty assignment list
+[debug] Running TaskDef(neon.app.http.TransportOrderRoutesSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] TransportOrderRoutesSuite:
+[info] TransportOrderRoutes
+[info]   POST /transport-orders/:id/confirm
+[info]   - returns 200 with confirmation response on success
+[info]   - returns 404 when transport order not found
+[info]   - returns 409 when transport order is not pending
+[info]   DELETE /transport-orders/:id
+[info]   - returns 200 with cancellation response on success
+[info]   - returns 404 when transport order not found
+[info]   - returns 401 without session cookie
+[debug] Running TaskDef(neon.app.projection.TaskProjectionHandlerSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] TaskProjectionHandlerSuite:
+[info] TaskProjectionHandler
+[info] - inserts into task_by_wave on TaskCreated
+[info] - inserts into task_by_handling_unit on TaskCreated
+[info] - updates state to Allocated on TaskAllocated
+[info] - updates state to Completed on TaskCompleted
+[debug] Running TaskDef(neon.app.projection.TransportOrderProjectionHandlerSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] TransportOrderProjectionHandlerSuite:
+[info] TransportOrderProjectionHandler
+[info] - inserts into transport_order_by_handling_unit on TransportOrderCreated
+[info] - updates state to Confirmed on TransportOrderConfirmed
+[info] - updates state to Cancelled on TransportOrderCancelled
+[debug] Running TaskDef(neon.app.repository.R2dbcSkuRepositorySuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] R2dbcSkuRepositorySuite:
+[info] R2dbcSkuRepository
+[info]   findById
+[info]   - should return a non-lot-managed sku
+[info]   - should return a lot-managed sku
+[info]   - should return None for an unknown id
+[debug] Running TaskDef(neon.app.http.ConsolidationGroupRoutesSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] ConsolidationGroupRoutesSuite:
+[info] ConsolidationGroupRoutes
+[info]   POST /consolidation-groups/:id/complete
+[info]   - returns 200 with completion response on success
+[info]   - returns 404 when consolidation group not found
+[info]   - returns 409 when consolidation group is not assigned
+[info]   DELETE /consolidation-groups/:id
+[info]   - returns 200 with cancellation response on success
+[info]   - returns 404 when consolidation group not found
+[info]   - returns 401 without session cookie
+[debug] Running TaskDef(neon.app.projection.InventoryProjectionHandlerSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] InventoryProjectionHandlerSuite:
+[info] InventoryProjectionHandler
+[info] - inserts into inventory_by_location_sku_lot on InventoryCreated
+[info] - inserts with null lot on InventoryCreated without lot
+[info] - increments reserved on InventoryReserved
+[info] - decrements on_hand and reserved on InventoryConsumed
+[info] - updates lot on LotCorrected
+[debug] Running TaskDef(neon.app.http.WaveRoutesSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] WaveRoutesSuite:
+[info] WaveRoutes
+[info]   DELETE /waves/:id
+[info]   - returns 200 with cancellation response on success
+[info]   - returns 404 when wave not found
+[info]   - returns 409 when wave is already terminal
+[info]   - returns 401 without session cookie
+[debug] Running TaskDef(neon.app.auth.AuthenticationServiceSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] AuthenticationServiceSuite:
+[info] AuthenticationService
+[info]   login
+[info]   - succeeds with valid credentials and returns a session token
+[info]   - fails with unknown login
+[info]   - fails with wrong password
+[info]   - fails for inactive user
+[info]   - fails for user without password hash
+[info]   - includes effective permissions in the returned context
+[info]   validateSession
+[info]   - validates a token returned from login
+[info]   - rejects an unknown token
+[info]   - rejects an expired session
+[info]   - rejects a session for a deactivated user
+[info]   logout
+[info]   - invalidates the session token
+[info]   logoutAll
+[info]   - invalidates all sessions for a user
+[info]   effective permissions
+[info]   - returns role default permissions
+[info]   - adds permissions granted by user override
+[info]   - removes permissions denied by user override
+[debug] Running TaskDef(neon.app.projection.ConsolidationGroupProjectionHandlerSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] ConsolidationGroupProjectionHandlerSuite:
+[info] ConsolidationGroupProjectionHandler
+[info] - inserts into consolidation_group_by_wave on ConsolidationGroupCreated
+[info] - updates state to Picked on ConsolidationGroupPicked
+[info] - updates state to Completed on ConsolidationGroupCompleted
+[debug] Running TaskDef(neon.app.auth.PasswordHasherSuite, org.scalatest.tools.Framework$$anon$1@57c23388, false, [SuiteSelector])
+[info] PasswordHasherSuite:
+[info] PasswordHasher
+[info] - verifies a correct password against its hash
+[info] - rejects an incorrect password
+[info] Run completed in 45 seconds, 187 milliseconds.
+[info] Total number of tests run: 122
+[info] Suites: completed 27, aborted 0
+[info] Tests: succeeded 122, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.app.http.SlotRoutesSuite
+[debug] 	neon.app.repository.R2dbcLocationRepositorySuite
+[debug] 	neon.app.auth.SessionTokenSuite
+[debug] 	neon.app.testkit.PostgresContainerSmokeTestSuite
+[debug] 	neon.app.projection.SlotProjectionHandlerSuite
+[debug] 	neon.app.repository.R2dbcUserRepositorySuite
+[debug] 	neon.app.logging.MdcExecutionContextSuite
+[debug] 	neon.app.projection.HandlingUnitProjectionHandlerSuite
+[debug] 	neon.app.http.WorkstationRoutesSuite
+[debug] 	neon.app.repository.R2dbcCarrierRepositorySuite
+[debug] 	neon.app.http.TaskRoutesSuite
+[debug] 	neon.app.http.HandlingUnitRoutesSuite
+[debug] 	neon.app.http.InventoryRoutesSuite
+[debug] 	neon.app.projection.WorkstationProjectionHandlerSuite
+[debug] 	neon.app.auth.AuthRoutesSuite
+[debug] 	neon.app.repository.R2dbcOrderRepositorySuite
+[debug] 	neon.app.repository.R2dbcWaveDispatchAssignmentRepositorySuite
+[debug] 	neon.app.http.TransportOrderRoutesSuite
+[debug] 	neon.app.projection.TaskProjectionHandlerSuite
+[debug] 	neon.app.projection.TransportOrderProjectionHandlerSuite
+[debug] 	neon.app.repository.R2dbcSkuRepositorySuite
+[debug] 	neon.app.http.ConsolidationGroupRoutesSuite
+[debug] 	neon.app.projection.InventoryProjectionHandlerSuite
+[debug] 	neon.app.http.WaveRoutesSuite
+[debug] 	neon.app.auth.AuthenticationServiceSuite
+[debug] 	neon.app.projection.ConsolidationGroupProjectionHandlerSuite
+[debug] 	neon.app.auth.PasswordHasherSuite

@@ -1,0 +1,5 @@
+[warn] -- [E198] Unused Symbol Warning: /home/martins/Work/Mais/Eva/Neon/eva-wes/goods-receipt/src/test/scala/eva/goodsreceipt/GoodsReceiptActorSuite.scala:5:2 
+[warn] 5 |  ContainerId,
+[warn]   |  ^^^^^^^^^^^
+[warn]   |  unused import
+[warn] one warning found

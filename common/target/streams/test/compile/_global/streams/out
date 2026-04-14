@@ -1,0 +1,67 @@
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/common/src/test/scala/eva/common/LotAttributesSuite.scala:14:20 
+[error] 14 |        val attrs = LotAttributes()
+[error]    |                    ^^^^^^^^^^^^^
+[error]    |                    Not found: LotAttributes
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/common/src/test/scala/eva/common/LotAttributesSuite.scala:21:20 
+[error] 21 |        val attrs = LotAttributes(
+[error]    |                    ^^^^^^^^^^^^^
+[error]    |                    Not found: LotAttributes
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/common/src/test/scala/eva/common/LotAttributesSuite.scala:29:20 
+[error] 29 |        val attrs = LotAttributes(
+[error]    |                    ^^^^^^^^^^^^^
+[error]    |                    Not found: LotAttributes
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/common/src/test/scala/eva/common/LotAttributesSuite.scala:43:20 
+[error] 43 |        val attrs = LotAttributes(expirationDate = Some(LocalDate.of(2027, 1, 10)))
+[error]    |                    ^^^^^^^^^^^^^
+[error]    |                    Not found: LotAttributes
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/common/src/test/scala/eva/common/LotAttributesSuite.scala:47:20 
+[error] 47 |        val attrs = LotAttributes(expirationDate = Some(LocalDate.of(2027, 1, 1)))
+[error]    |                    ^^^^^^^^^^^^^
+[error]    |                    Not found: LotAttributes
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/common/src/test/scala/eva/common/LotAttributesSuite.scala:51:20 
+[error] 51 |        val attrs = LotAttributes(expirationDate = Some(LocalDate.of(2026, 12, 31)))
+[error]    |                    ^^^^^^^^^^^^^
+[error]    |                    Not found: LotAttributes
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/common/src/test/scala/eva/common/LotAttributesSuite.scala:55:20 
+[error] 55 |        val attrs = LotAttributes()
+[error]    |                    ^^^^^^^^^^^^^
+[error]    |                    Not found: LotAttributes
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/common/src/test/scala/eva/common/LotAttributesSuite.scala:61:20 
+[error] 61 |        val attrs = LotAttributes(expirationDate = Some(LocalDate.of(2027, 6, 30)))
+[error]    |                    ^^^^^^^^^^^^^
+[error]    |                    Not found: LotAttributes
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/common/src/test/scala/eva/common/LotAttributesSuite.scala:65:20 
+[error] 65 |        val attrs = LotAttributes(expirationDate = Some(LocalDate.of(2026, 12, 31)))
+[error]    |                    ^^^^^^^^^^^^^
+[error]    |                    Not found: LotAttributes
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/common/src/test/scala/eva/common/LotAttributesSuite.scala:69:20 
+[error] 69 |        val attrs = LotAttributes(expirationDate = Some(LocalDate.of(2027, 1, 1)))
+[error]    |                    ^^^^^^^^^^^^^
+[error]    |                    Not found: LotAttributes
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] -- [E006] Not Found Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/common/src/test/scala/eva/common/LotAttributesSuite.scala:73:20 
+[error] 73 |        val attrs = LotAttributes()
+[error]    |                    ^^^^^^^^^^^^^
+[error]    |                    Not found: LotAttributes
+[error]    |
+[error]    | longer explanation available when compiling with `-explain`
+[error] 11 errors found

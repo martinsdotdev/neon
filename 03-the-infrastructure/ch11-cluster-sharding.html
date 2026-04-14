@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Cluster Sharding and Persistence</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Cluster Sharding and Persistence</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#cluster-sharding-in-5-minutes">Cluster Sharding in 5 Minutes</a></li>
+    <li class="level1 nav-leaf"><a href="#the-pekkorepository-pattern">The PekkoRepository Pattern</a></li>
+    <li class="level1 nav-node"><a href="#cross-entity-queries">Cross-Entity Queries</a></li>
+    <li class="level2 nav-leaf"><a href="#the-r2dbcprojectionqueries-trait">The R2dbcProjectionQueries Trait</a></li>
+    <li class="level1 nav-leaf"><a href="#non-transactional-saveall">Non-Transactional saveAll</a></li>
+    <li class="level1 nav-leaf"><a href="#r2dbc-persistence-configuration">R2DBC Persistence Configuration</a></li>
+    <li class="level1 nav-node"><a href="#testing-actors-with-eventsourcedbehaviortestkit">Testing Actors with EventSourcedBehaviorTestKit</a></li>
+    <li class="level2 nav-leaf"><a href="#testing-command-rejection">Testing Command Rejection</a></li>
+    <li class="level2 nav-leaf"><a href="#testing-recovery">Testing Recovery</a></li>
+    <li class="level2 nav-leaf"><a href="#the-beforeeach-reset">The beforeEach Reset</a></li>
+    <li class="level1 nav-leaf"><a href="#what-comes-next">What Comes Next</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="cluster-sharding-and-persistence" class="title">Cluster Sharding and Persistence</h1>
+        <p>In Chapter 10, we built an event-sourced actor for the Wave aggregate. A single
+        <code>WaveActor</code> can persist events, replay them on recovery, and handle commands
+        through the ask pattern. But in production, we might have millions of waves,
+        each with its own actor. How do we route a command to the correct actor,
+        potentially running on a different cluster node? The answer is Pekko Cluster
+        Sharding.</p>
+        <p>Cluster Sharding solves a deceptively hard problem: given an entity identifier
+        (like a WaveId), find the actor responsible for that entity, start it if it does
+        not exist yet, and deliver the command, regardless of which node in the cluster
+        the actor happens to live on. The caller does not need to know the actor&#39;s
+        physical location. Sharding handles all of it.</p>
+        <p>In this chapter, we will see how <code>PekkoRepository</code> bridges the domain layer to
+        the cluster, how cross-entity queries combine CQRS projection tables with actor
+        fan-out, and how to test actors with <code>EventSourcedBehaviorTestKit</code> without a
+        running cluster.</p>
+        
+        <h2 id="cluster-sharding-in-5-minutes" class="section"><a class="anchor-link left" href="#cluster-sharding-in-5-minutes"><i class="icofont-laika link">&#xef71;</i></a>Cluster Sharding in 5 Minutes</h2>
+        <p>Before we look at code, let&#39;s build a mental model with four concepts.</p>
+        <p><strong>EntityTypeKey</strong> identifies a <em>type</em> of entity. In Neon WES, each aggregate has
+        its own key: <code>&quot;Wave&quot;</code>, <code>&quot;Task&quot;</code>, <code>&quot;ConsolidationGroup&quot;</code>, and so on. The key is
+        defined as a constant in the actor&#39;s companion object:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="type-name">EntityKey</span><span>: </span><span class="type-name">EntityTypeKey</span><span>[</span><span class="type-name">Command</span><span>] =
+  </span><span class="type-name">EntityTypeKey</span><span>[</span><span class="type-name">Command</span><span>](</span><span class="string-literal">&quot;Wave&quot;</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/main/scala/neon/wave/WaveActor.scala</em>&lt;/small&gt;</p>
+        <p>The type parameter <code>[Command]</code> tells sharding what message type this entity
+        accepts. The string <code>&quot;Wave&quot;</code> is the logical name used for persistence IDs and
+        shard routing.</p>
+        <p><strong>Entity ID</strong> identifies a <em>specific instance</em> within a type. For waves, this
+        is the UUID rendered as a string. For tasks, it is the task&#39;s UUID string. The
+        entity ID is the second coordinate in the two-dimensional address space that
+        sharding maintains: type key plus entity ID uniquely identifies one actor in the
+        entire cluster.</p>
+        <p><strong>EntityRef</strong> is a reference to a specific entity. You obtain one by calling
+        <code>sharding.entityRefFor(EntityKey, entityId)</code>. An <code>EntityRef</code> behaves like a
+        typed <code>ActorRef</code>, but with a critical difference: it routes messages through the
+        sharding infrastructure. If the target actor is not running, sharding starts it.
+        If it lives on another node, sharding delivers the message over the network. The
+        caller never has to think about any of this.</p>
+        <p><strong>Shard management</strong> is the lifecycle layer underneath. Sharding divides
+        entities into shards (groups), distributes shards across cluster nodes, and
+        handles rebalancing when nodes join or leave. Actors that have been idle for
+        a configurable period are <em>passivated</em> (stopped to free memory) and will be
+        restarted on demand when the next message arrives. From the caller&#39;s
+        perspective, the entity is always &quot;there&quot;; sharding makes it so.</p>
+        <p>These four concepts form a clean addressing scheme:</p>
+        <pre><code>EntityTypeKey(&quot;Wave&quot;) + EntityId(&quot;550e8400-...&quot;) --&gt; EntityRef --&gt; WaveActor</code></pre>
+        <p>The caller says &quot;I want the Wave entity with this ID.&quot; Sharding returns a
+        reference. That reference might point to an actor on the local node, on a
+        remote node, or one that does not exist yet. The caller does not need to
+        distinguish between these cases.</p>
+        
+        <h2 id="the-pekkorepository-pattern" class="section"><a class="anchor-link left" href="#the-pekkorepository-pattern"><i class="icofont-laika link">&#xef71;</i></a>The PekkoRepository Pattern</h2>
+        <p>With the sharding concepts in place, let&#39;s see how Neon WES uses them in
+        practice. The bridge between the domain layer and the actor cluster is the
+        <code>PekkoRepository</code>: a class that implements the <code>AsyncRepository</code> port trait
+        from Chapter 8 by translating each repository method into a Cluster Sharding
+        ask.</p>
+        <p>Here is <code>PekkoWaveRepository</code> in full:</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">PekkoWaveRepository</span><span>(</span><span class="identifier">system</span><span>: </span><span class="type-name">ActorSystem</span><span>[?])(</span><span class="identifier">using</span><span> </span><span class="type-name">Timeout</span><span>)
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">AsyncWaveRepository</span><span>:
+
+  </span><span class="keyword">private</span><span> </span><span class="identifier">given</span><span> </span><span class="type-name">ExecutionContext</span><span> = </span><span class="identifier">system</span><span>.</span><span class="identifier">executionContext</span><span>
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">sharding</span><span> = </span><span class="type-name">ClusterSharding</span><span>(</span><span class="identifier">system</span><span>)
+
+  </span><span class="identifier">sharding</span><span>.</span><span class="identifier">init</span><span>(</span><span class="type-name">Entity</span><span>(</span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">EntityKey</span><span>)(</span><span class="identifier">ctx</span><span> =&gt; </span><span class="type-name">WaveActor</span><span>(</span><span class="identifier">ctx</span><span>.</span><span class="identifier">entityId</span><span>)))
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">WaveId</span><span>): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Wave</span><span>]] =
+    </span><span class="identifier">sharding</span><span>
+      .</span><span class="identifier">entityRefFor</span><span>(</span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">EntityKey</span><span>, </span><span class="identifier">id</span><span>.</span><span class="identifier">value</span><span>.</span><span class="identifier">toString</span><span>)
+      .</span><span class="identifier">ask</span><span>(</span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">GetState</span><span>(</span><span class="identifier">_</span><span>))
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">wave</span><span>: </span><span class="type-name">Wave</span><span>, </span><span class="identifier">event</span><span>: </span><span class="type-name">WaveEvent</span><span>): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Unit</span><span>] =
+    </span><span class="keyword">val</span><span> </span><span class="identifier">entityRef</span><span> = </span><span class="identifier">sharding</span><span>.</span><span class="identifier">entityRefFor</span><span>(
+      </span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">EntityKey</span><span>,
+      </span><span class="identifier">wave</span><span>.</span><span class="identifier">id</span><span>.</span><span class="identifier">value</span><span>.</span><span class="identifier">toString</span><span>
+    )
+    </span><span class="identifier">event</span><span> </span><span class="keyword">match</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveReleased</span><span> =&gt;
+        </span><span class="identifier">entityRef</span><span>
+          .</span><span class="identifier">askWithStatus</span><span>(
+            </span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">Create</span><span>(</span><span class="type-name">Wave</span><span>.</span><span class="type-name">Planned</span><span>(</span><span class="identifier">wave</span><span>.</span><span class="identifier">id</span><span>, </span><span class="identifier">wave</span><span>.</span><span class="identifier">orderGrouping</span><span>, </span><span class="identifier">e</span><span>.</span><span class="identifier">orderIds</span><span>), </span><span class="identifier">e</span><span>, </span><span class="identifier">_</span><span>)
+          )
+          .</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span> =&gt; ())
+      </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveCompleted</span><span> =&gt;
+        </span><span class="identifier">entityRef</span><span>
+          .</span><span class="identifier">askWithStatus</span><span>[</span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">CompleteResponse</span><span>](
+            </span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">Complete</span><span>(</span><span class="identifier">e</span><span>.</span><span class="identifier">occurredAt</span><span>, </span><span class="identifier">_</span><span>)
+          )
+          .</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span> =&gt; ())
+      </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveCancelled</span><span> =&gt;
+        </span><span class="identifier">entityRef</span><span>
+          .</span><span class="identifier">askWithStatus</span><span>[</span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">CancelResponse</span><span>](
+            </span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">Cancel</span><span>(</span><span class="identifier">e</span><span>.</span><span class="identifier">occurredAt</span><span>, </span><span class="identifier">_</span><span>)
+          )
+          .</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span> =&gt; ())</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/main/scala/neon/wave/PekkoWaveRepository.scala</em>&lt;/small&gt;</p>
+        <p>Let&#39;s walk through this piece by piece.</p>
+        <p><strong>Constructor and initialization.</strong> The repository receives an <code>ActorSystem</code> and
+        an implicit <code>Timeout</code> (for ask operations). In the constructor body, it calls
+        <code>sharding.init(Entity(...))</code>, which registers the Wave entity type with Cluster
+        Sharding and tells it how to create actors. The factory function
+        <code>ctx =&gt; WaveActor(ctx.entityId)</code> receives the entity context and passes the
+        entity ID string to the <code>WaveActor.apply</code> method we saw in Chapter 10.</p>
+        <p>This <code>init</code> call is idempotent. If another part of the system has already
+        initialized the Wave entity type, the call is a no-op. This is important because
+        multiple components might need Wave entity references, and each one calls <code>init</code>
+        defensively.</p>
+        <p><strong><code>findById</code></strong> gets an <code>EntityRef</code> for the requested wave ID, sends a <code>GetState</code>
+        command via <code>ask</code>, and returns the <code>Future[Option[Wave]]</code> reply. If the actor
+        does not exist yet, sharding starts it, it initializes with <code>EmptyState</code>, and
+        replies with <code>None</code>. If the actor holds a wave, it replies with <code>Some(wave)</code>.</p>
+        <p><strong><code>save</code></strong> is more interesting. It pattern-matches on the event type to determine
+        which command to send. A <code>WaveReleased</code> event means we are creating the wave in
+        the actor for the first time, so we send a <code>Create</code> command. A <code>WaveCompleted</code>
+        event triggers a <code>Complete</code> command. A <code>WaveCancelled</code> event triggers a <code>Cancel</code>
+        command. Each branch uses <code>askWithStatus</code>, which wraps the reply in a
+        <code>StatusReply</code>. If the actor rejects the command (for example, trying to complete
+        a wave that is already cancelled), the <code>Future</code> fails with the error message.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The <code>save</code> method does not blindly forward the wave and event. It
+          translates domain-level intent (an event) into actor-level commands. This
+          translation is the adapter&#39;s job in hexagonal architecture. The domain layer
+          produces events; the Pekko adapter maps those events to the specific actor
+          commands that will persist them.</p>
+        </div>
+        <p><strong>The hexagonal connection.</strong> In Chapter 8, we saw how <code>AsyncWaveRepository</code> is
+        a driven port. <code>PekkoWaveRepository</code> is the adapter that wires the abstract
+        <code>findById</code> and <code>save</code> operations to Cluster Sharding asks. The domain layer
+        calls <code>repository.save(wave, event)</code> and gets a <code>Future[Unit]</code> back. It has no
+        idea that Pekko or sharding exist.</p>
+        
+        <h2 id="cross-entity-queries" class="section"><a class="anchor-link left" href="#cross-entity-queries"><i class="icofont-laika link">&#xef71;</i></a>Cross-Entity Queries</h2>
+        <p>Single-entity operations are straightforward: get an <code>EntityRef</code> by ID, send a
+        command, get a reply. But what about queries that span many entities? Consider
+        <code>findByWaveId</code> on the task repository: &quot;find all tasks that belong to wave X.&quot;
+        We cannot iterate over every task actor in the cluster and ask each one which
+        wave it belongs to. That would be absurdly slow and would not scale.</p>
+        <p>The solution combines two techniques: a CQRS projection table for discovery,
+        followed by actor fan-out for current state.</p>
+        <p>Here is <code>PekkoTaskRepository</code>, which demonstrates the pattern:</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">PekkoTaskRepository</span><span>(
+    </span><span class="identifier">actorSystem</span><span>: </span><span class="type-name">ActorSystem</span><span>[?],
+    </span><span class="keyword">val</span><span> </span><span class="identifier">connectionFactory</span><span>: </span><span class="type-name">ConnectionFactory</span><span>
+)(</span><span class="identifier">using</span><span> </span><span class="type-name">Timeout</span><span>)
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">AsyncTaskRepository</span><span>
+    </span><span class="keyword">with</span><span> </span><span class="type-name">R2dbcProjectionQueries</span><span>:
+
+  </span><span class="keyword">protected</span><span> </span><span class="identifier">given</span><span> </span><span class="identifier">system</span><span>: </span><span class="type-name">ActorSystem</span><span>[?] = </span><span class="identifier">actorSystem</span><span>
+  </span><span class="keyword">protected</span><span> </span><span class="identifier">given</span><span> </span><span class="identifier">ec</span><span>: </span><span class="type-name">ExecutionContext</span><span> = </span><span class="identifier">actorSystem</span><span>.</span><span class="identifier">executionContext</span><span>
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">sharding</span><span> = </span><span class="type-name">ClusterSharding</span><span>(</span><span class="identifier">system</span><span>)
+
+  </span><span class="identifier">sharding</span><span>.</span><span class="identifier">init</span><span>(</span><span class="type-name">Entity</span><span>(</span><span class="type-name">TaskActor</span><span>.</span><span class="type-name">EntityKey</span><span>)(</span><span class="identifier">ctx</span><span> =&gt; </span><span class="type-name">TaskActor</span><span>(</span><span class="identifier">ctx</span><span>.</span><span class="identifier">entityId</span><span>)))
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">TaskId</span><span>): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Task</span><span>]] =
+    </span><span class="identifier">sharding</span><span>.</span><span class="identifier">entityRefFor</span><span>(</span><span class="type-name">TaskActor</span><span>.</span><span class="type-name">EntityKey</span><span>, </span><span class="identifier">id</span><span>.</span><span class="identifier">value</span><span>.</span><span class="identifier">toString</span><span>)
+      .</span><span class="identifier">ask</span><span>(</span><span class="type-name">TaskActor</span><span>.</span><span class="type-name">GetState</span><span>(</span><span class="identifier">_</span><span>))
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findByWaveId</span><span>(</span><span class="identifier">waveId</span><span>: </span><span class="type-name">WaveId</span><span>): </span><span class="type-name">Future</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">Task</span><span>]] =
+    </span><span class="identifier">queryProjectionIds</span><span>(
+      </span><span class="string-literal">&quot;SELECT task_id FROM task_by_wave WHERE wave_id = $1&quot;</span><span>,
+      </span><span class="identifier">waveId</span><span>.</span><span class="identifier">value</span><span>,
+      </span><span class="string-literal">&quot;task_id&quot;</span><span>
+    ).</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">ids</span><span> =&gt;
+      </span><span class="type-name">Future</span><span>.</span><span class="identifier">sequence</span><span>(</span><span class="identifier">ids</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">id</span><span> =&gt; </span><span class="identifier">findById</span><span>(</span><span class="type-name">TaskId</span><span>(</span><span class="identifier">id</span><span>)))).</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">flatten</span><span>)
+    )</span></code></pre>
+        <p>&lt;small&gt;<em>File: task/src/main/scala/neon/task/PekkoTaskRepository.scala</em>&lt;/small&gt;</p>
+        <p>Let&#39;s trace the <code>findByWaveId</code> call step by step.</p>
+        <p><strong>Step 1: Query the projection table.</strong> The method calls <code>queryProjectionIds</code>,
+        a helper from the <code>R2dbcProjectionQueries</code> trait. This executes a raw SQL query
+        against a read-side table called <code>task_by_wave</code>. The projection table maps wave
+        IDs to task IDs. It is populated by a projection handler (Chapter 12) that
+        consumes task events and writes the mapping whenever a task is created. The query
+        returns a <code>Future[List[UUID]]</code>, the list of task IDs belonging to this wave.</p>
+        <p><strong>Step 2: Fan out to actors.</strong> For each task ID, <code>findById</code> sends a <code>GetState</code>
+        command to the corresponding <code>TaskActor</code> via Cluster Sharding. <code>Future.sequence</code>
+        executes all the asks in parallel. The <code>.flatten</code> filters out any <code>None</code> results
+        (which could occur if a task was deleted after the projection was written but
+        before the fan-out reached the actor).</p>
+        <p>The caller receives a <code>Future[List[Task]]</code> containing the current state of every
+        task belonging to the wave, fetched directly from the authoritative actors.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>This two-step pattern is eventually consistent. There is a small
+          window between when an event is persisted by the actor and when the projection
+          handler updates the <code>task_by_wave</code> table. During that window, <code>findByWaveId</code>
+          might return a stale list. In practice, this lag is measured in milliseconds
+          and is acceptable for the read-heavy queries that use this pattern (dashboards,
+          wave completion checks, reporting).</p>
+        </div>
+        
+        <h3 id="the-r2dbcprojectionqueries-trait" class="section"><a class="anchor-link left" href="#the-r2dbcprojectionqueries-trait"><i class="icofont-laika link">&#xef71;</i></a>The R2dbcProjectionQueries Trait</h3>
+        <p>The <code>queryProjectionIds</code> helper lives in the <code>R2dbcProjectionQueries</code> trait in
+        the <code>common</code> module:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">R2dbcProjectionQueries</span><span>:
+  </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">connectionFactory</span><span>: </span><span class="type-name">ConnectionFactory</span><span>
+  </span><span class="keyword">protected</span><span> </span><span class="identifier">given</span><span> </span><span class="identifier">system</span><span>: </span><span class="type-name">ActorSystem</span><span>[?]
+  </span><span class="keyword">protected</span><span> </span><span class="identifier">given</span><span> </span><span class="identifier">ec</span><span>: </span><span class="type-name">ExecutionContext</span><span>
+
+  </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">queryProjectionIds</span><span>(
+      </span><span class="identifier">sql</span><span>: </span><span class="type-name">String</span><span>,
+      </span><span class="identifier">params</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Any</span><span>],
+      </span><span class="identifier">idColumn</span><span>: </span><span class="type-name">String</span><span>
+  ): </span><span class="type-name">Future</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">UUID</span><span>]]</span></code></pre>
+        <p>&lt;small&gt;<em>File: common/src/main/scala/neon/common/R2dbcProjectionQueries.scala</em>&lt;/small&gt;</p>
+        <p>The implementation acquires an R2DBC connection, binds the query parameters,
+        streams the result rows into a list of UUIDs via Pekko Streams, and closes the
+        connection in an <code>andThen</code> block (which runs regardless of success or failure).
+        Everything is non-blocking: <code>Source.fromPublisher</code> wraps R2DBC&#39;s reactive
+        <code>Publisher</code> into a Pekko Streams <code>Source</code>.</p>
+        <p>Any <code>PekkoRepository</code> that needs cross-entity queries mixes in this trait,
+        provides a <code>ConnectionFactory</code>, and calls <code>queryProjectionIds</code> with the
+        appropriate SQL.</p>
+        
+        <h2 id="non-transactional-saveall" class="section"><a class="anchor-link left" href="#non-transactional-saveall"><i class="icofont-laika link">&#xef71;</i></a>Non-Transactional saveAll</h2>
+        <p>Some service operations produce multiple events for multiple entities in a
+        single logical step. For example, releasing a wave creates one task per order
+        line, each task being its own entity. The <code>AsyncTaskRepository</code> defines a
+        <code>saveAll</code> method for this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">/** Persists multiple entries by fanning out to individual entity actors.
+  * Not transactional: individual entries may succeed or fail independently.
+  */</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">saveAll</span><span>(</span><span class="identifier">entries</span><span>: </span><span class="type-name">List</span><span>[(</span><span class="type-name">Task</span><span>, </span><span class="type-name">TaskEvent</span><span>)]): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Unit</span><span>]</span></code></pre>
+        <p>&lt;small&gt;<em>File: task/src/main/scala/neon/task/AsyncTaskRepository.scala</em>&lt;/small&gt;</p>
+        <p>The Scaladoc makes the contract explicit: this is not transactional. Here is the
+        implementation in <code>PekkoTaskRepository</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">saveAll</span><span>(</span><span class="identifier">entries</span><span>: </span><span class="type-name">List</span><span>[(</span><span class="type-name">Task</span><span>, </span><span class="type-name">TaskEvent</span><span>)]): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Unit</span><span>] =
+  </span><span class="type-name">Future</span><span>.</span><span class="identifier">sequence</span><span>(</span><span class="identifier">entries</span><span>.</span><span class="identifier">map</span><span>((</span><span class="identifier">task</span><span>, </span><span class="identifier">event</span><span>) =&gt; </span><span class="identifier">save</span><span>(</span><span class="identifier">task</span><span>, </span><span class="identifier">event</span><span>))).</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span> =&gt; ())</span></code></pre>
+        <p>&lt;small&gt;<em>File: task/src/main/scala/neon/task/PekkoTaskRepository.scala</em>&lt;/small&gt;</p>
+        <p><code>Future.sequence</code> launches all individual <code>save</code> calls in parallel. Each <code>save</code>
+        sends a command to its respective task actor via Cluster Sharding. If one actor
+        rejects its command (perhaps due to a serialization error or an invalid state
+        transition), that individual <code>Future</code> fails, but the others may succeed.</p>
+        <p>Why not use a distributed transaction? Because distributed transactions across
+        event-sourced actors are complex, introduce coordination overhead, and conflict
+        with the eventual consistency model that event sourcing embraces. The design
+        accepts that <code>saveAll</code> may partially succeed. The service layer handles this by
+        making operations idempotent where possible, so a retry can safely re-apply any
+        entries that failed on the first attempt.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The non-transactional nature of <code>saveAll</code> is a deliberate
+          architectural choice, not an oversight. The Scaladoc makes the contract
+          visible to every caller. When you see <code>saveAll</code> in a service, you know it
+          fans out independently.</p>
+        </div>
+        
+        <h2 id="r2dbc-persistence-configuration" class="section"><a class="anchor-link left" href="#r2dbc-persistence-configuration"><i class="icofont-laika link">&#xef71;</i></a>R2DBC Persistence Configuration</h2>
+        <p>The event-sourced actors need a journal to store events and a snapshot store for
+        periodic state snapshots. In production, Neon WES uses the Pekko R2DBC plugin
+        backed by PostgreSQL. The relevant configuration lives in <code>application.conf</code>:</p>
+        <pre><code class="nohighlight"><span class="attribute-name">pekko.persistence</span><span> {
+  </span><span class="attribute-name">journal.plugin</span><span> = </span><span class="string-literal">&quot;pekko.persistence.r2dbc.journal&quot;</span><span>
+  </span><span class="attribute-name">snapshot-store.plugin</span><span> = </span><span class="string-literal">&quot;pekko.persistence.r2dbc.snapshot&quot;</span><span>
+  </span><span class="attribute-name">r2dbc</span><span> {
+    </span><span class="attribute-name">connection-factory</span><span> = </span><span class="substitution">${pekko.persistence.r2dbc.postgres}</span><span>
+    </span><span class="attribute-name">connection-factory</span><span> {
+      </span><span class="attribute-name">host</span><span> = </span><span class="substitution">${POSTGRES_HOST}</span><span>
+      </span><span class="attribute-name">port</span><span> = </span><span class="substitution">${POSTGRES_PORT}</span><span>
+      </span><span class="attribute-name">database</span><span> = </span><span class="substitution">${POSTGRES_DB}</span><span>
+      </span><span class="attribute-name">user</span><span> = </span><span class="substitution">${POSTGRES_USER}</span><span>
+      </span><span class="attribute-name">password</span><span> = </span><span class="substitution">${POSTGRES_PASSWORD}</span><span>
+    }
+  }
+}</span></code></pre>
+        <p>Events are stored as rows in the <code>event_journal</code> table with the serialized
+        payload in a CBOR binary column. Snapshots go to the <code>snapshot</code> table, keyed
+        by persistence ID and sequence number. Each actor configures its retention:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">EventSourcedBehavior</span><span>
+  .</span><span class="identifier">withEnforcedReplies</span><span>[</span><span class="type-name">Command</span><span>, </span><span class="type-name">WaveEvent</span><span>, </span><span class="type-name">State</span><span>](
+    </span><span class="identifier">persistenceId</span><span> = </span><span class="type-name">PersistenceId</span><span>(</span><span class="type-name">EntityKey</span><span>.</span><span class="identifier">name</span><span>, </span><span class="identifier">entityId</span><span>),
+    </span><span class="identifier">emptyState</span><span> = </span><span class="type-name">EmptyState</span><span>,
+    </span><span class="identifier">commandHandler</span><span> = </span><span class="identifier">commandHandler</span><span>(</span><span class="identifier">context</span><span>),
+    </span><span class="identifier">eventHandler</span><span> = </span><span class="identifier">eventHandler</span><span>
+  )
+  .</span><span class="identifier">withRetention</span><span>(
+    </span><span class="type-name">RetentionCriteria</span><span>.</span><span class="identifier">snapshotEvery</span><span>(</span><span class="number-literal">100</span><span>, </span><span class="number-literal">2</span><span>)
+  )</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/main/scala/neon/wave/WaveActor.scala</em>&lt;/small&gt;</p>
+        <p><code>snapshotEvery(100, 2)</code> means: take a snapshot every 100 events, and keep the
+        2 most recent snapshots. On recovery, the actor loads the latest snapshot and
+        replays only the events that came after it, rather than replaying the entire
+        history from the beginning. For an aggregate that has processed thousands of
+        events, this dramatically reduces recovery time.</p>
+        <p>The <code>PersistenceId</code> combines the entity type name and the entity ID:
+        <code>PersistenceId(&quot;Wave&quot;, &quot;550e8400-...&quot;)</code>. This string is the primary key in the
+        journal table, uniquely identifying the event stream for one specific wave.</p>
+        
+        <h2 id="testing-actors-with-eventsourcedbehaviortestkit" class="section"><a class="anchor-link left" href="#testing-actors-with-eventsourcedbehaviortestkit"><i class="icofont-laika link">&#xef71;</i></a>Testing Actors with EventSourcedBehaviorTestKit</h2>
+        <p>We now have event-sourced actors managed by Cluster Sharding, persisting to
+        PostgreSQL via R2DBC. How do we test all of this without standing up a database
+        or a cluster? Pekko provides <code>EventSourcedBehaviorTestKit</code>, a testing harness
+        that runs a single actor in-process with an in-memory journal.</p>
+        <p>Here is the test setup for <code>WaveActorSuite</code>:</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">WaveActorSuite</span><span>
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">ScalaTestWithActorTestKit</span><span>(
+      </span><span class="type-name">ConfigFactory</span><span>
+        .</span><span class="identifier">parseString</span><span>(</span><span class="string-literal">&quot;&quot;&quot;
+          pekko.actor {
+            provider = local
+            serialization-bindings {
+              &quot;neon.common.serialization.CborSerializable&quot; = jackson-cbor
+            }
+          }
+        &quot;&quot;&quot;</span><span>)
+        .</span><span class="identifier">withFallback</span><span>(</span><span class="type-name">EventSourcedBehaviorTestKit</span><span>.</span><span class="identifier">config</span><span>)
+        .</span><span class="identifier">resolve</span><span>()
+    )
+    </span><span class="keyword">with</span><span> </span><span class="type-name">AnyFunSpecLike</span><span>
+    </span><span class="keyword">with</span><span> </span><span class="type-name">BeforeAndAfterEach</span><span>:
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">waveId</span><span> = </span><span class="type-name">WaveId</span><span>()
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">orderIds</span><span> = </span><span class="type-name">List</span><span>(</span><span class="type-name">OrderId</span><span>(), </span><span class="type-name">OrderId</span><span>())
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">at</span><span> = </span><span class="type-name">Instant</span><span>.</span><span class="identifier">now</span><span>()
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">serializationSettings</span><span> =
+    </span><span class="type-name">EventSourcedBehaviorTestKit</span><span>.</span><span class="type-name">SerializationSettings</span><span>.</span><span class="identifier">disabled</span><span>
+      .</span><span class="identifier">withVerifyEvents</span><span>(</span><span class="boolean-literal">true</span><span>)
+      .</span><span class="identifier">withVerifyState</span><span>(</span><span class="boolean-literal">true</span><span>)
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">esTestKit</span><span> = </span><span class="type-name">EventSourcedBehaviorTestKit</span><span>[
+    </span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">Command</span><span>,
+    </span><span class="type-name">WaveEvent</span><span>,
+    </span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">State</span><span>
+  ](
+    </span><span class="identifier">system</span><span>,
+    </span><span class="type-name">WaveActor</span><span>(</span><span class="identifier">waveId</span><span>.</span><span class="identifier">value</span><span>.</span><span class="identifier">toString</span><span>),
+    </span><span class="identifier">serializationSettings</span><span>
+  )</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/test/scala/neon/wave/WaveActorSuite.scala</em>&lt;/small&gt;</p>
+        <p>Let&#39;s unpack this.</p>
+        <p><strong>The configuration stack.</strong> The test merges two configs. The inline block sets
+        the actor provider to <code>local</code> (no cluster) and registers the CBOR serialization
+        binding. The <code>EventSourcedBehaviorTestKit.config</code> fallback provides an in-memory
+        journal and a local snapshot store. Together, they create a minimal environment
+        where the actor can persist and recover events without external dependencies.</p>
+        <p><strong>Serialization verification.</strong> When <code>withVerifyEvents(true)</code> is set, every
+        persisted event is serialized to CBOR bytes and deserialized back. If the
+        round-trip produces a different object, the test fails. The same applies to
+        state via <code>withVerifyState(true)</code>. This catches serialization bugs at test time
+        rather than in production, where they would corrupt the journal.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Serialization verification is one of the most valuable testing
+          features. A common mistake is adding a new field to an event class but
+          forgetting to annotate it for Jackson. Without verification, the field
+          silently drops during serialization, and the bug only surfaces when the
+          actor recovers from the journal weeks later.</p>
+        </div>
+        <p><strong>The test kit instance.</strong> <code>EventSourcedBehaviorTestKit</code> is parameterized with
+        the actor&#39;s three types: <code>Command</code>, <code>WaveEvent</code>, and <code>State</code>. It wraps a single
+        actor instance and provides methods for sending commands and inspecting results.</p>
+        <p>Now let&#39;s look at the tests:</p>
+        <pre><code class="nohighlight"><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;WaveActor&quot;</span><span>):
+  </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;Create&quot;</span><span>):
+    </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;persists WaveReleased event and sets Released state&quot;</span><span>):
+      </span><span class="keyword">val</span><span> </span><span class="identifier">planned</span><span> =
+        </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Planned</span><span>(</span><span class="identifier">waveId</span><span>, </span><span class="type-name">OrderGrouping</span><span>.</span><span class="type-name">Single</span><span>, </span><span class="identifier">orderIds</span><span>)
+      </span><span class="keyword">val</span><span> </span><span class="identifier">event</span><span> = </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveReleased</span><span>(
+        </span><span class="identifier">waveId</span><span>, </span><span class="type-name">OrderGrouping</span><span>.</span><span class="type-name">Single</span><span>, </span><span class="identifier">orderIds</span><span>, </span><span class="identifier">at</span><span>
+      )
+      </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> =
+        </span><span class="identifier">esTestKit</span><span>.</span><span class="identifier">runCommand</span><span>[</span><span class="type-name">StatusReply</span><span>[</span><span class="identifier">org</span><span>.</span><span class="identifier">apache</span><span>.</span><span class="identifier">pekko</span><span>.</span><span class="type-name">Done</span><span>]](
+          </span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">Create</span><span>(</span><span class="identifier">planned</span><span>, </span><span class="identifier">event</span><span>, </span><span class="identifier">_</span><span>)
+        )
+      </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">event</span><span> == </span><span class="identifier">event</span><span>)
+      </span><span class="identifier">assert</span><span>(
+        </span><span class="identifier">result</span><span>
+          .</span><span class="identifier">stateOfType</span><span>[</span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">ActiveState</span><span>]
+          .</span><span class="identifier">wave</span><span>
+          .</span><span class="identifier">isInstanceOf</span><span>[</span><span class="type-name">Wave</span><span>.</span><span class="type-name">Released</span><span>]
+      )</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/test/scala/neon/wave/WaveActorSuite.scala</em>&lt;/small&gt;</p>
+        <p><code>runCommand</code> sends a command and returns a <code>CommandResult</code> containing the reply,
+        the persisted events, and the resulting state. Unlike a normal <code>ask</code> (which only
+        gives the reply), <code>CommandResult</code> lets us assert that the correct event was
+        persisted (<code>result.event == event</code>) and that the state transitioned to the
+        expected type (<code>ActiveState</code> containing a <code>Wave.Released</code>).</p>
+        
+        <h3 id="testing-command-rejection" class="section"><a class="anchor-link left" href="#testing-command-rejection"><i class="icofont-laika link">&#xef71;</i></a>Testing Command Rejection</h3>
+        <p>Not all commands should succeed. The suite verifies that invalid commands are
+        rejected:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;rejects Complete in EmptyState&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> =
+    </span><span class="identifier">esTestKit</span><span>
+      .</span><span class="identifier">runCommand</span><span>[</span><span class="type-name">StatusReply</span><span>[</span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">CompleteResponse</span><span>]](
+        </span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">Complete</span><span>(</span><span class="identifier">at</span><span>, </span><span class="identifier">_</span><span>)
+      )
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">reply</span><span>.</span><span class="identifier">isError</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">hasNoEvents</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/test/scala/neon/wave/WaveActorSuite.scala</em>&lt;/small&gt;</p>
+        <p>Sending <code>Complete</code> to an actor in <code>EmptyState</code> (no wave created yet) must fail.
+        The test verifies two things: the reply is an error, and no events were
+        persisted. The second assertion is critical. A rejected command must never write
+        to the journal. If it did, the actor would recover into an inconsistent state.</p>
+        
+        <h3 id="testing-recovery" class="section"><a class="anchor-link left" href="#testing-recovery"><i class="icofont-laika link">&#xef71;</i></a>Testing Recovery</h3>
+        <p>The most important test for an event-sourced actor verifies that recovery works:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;event replay&quot;</span><span>):
+  </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;recovers Released state from journal&quot;</span><span>):
+    </span><span class="identifier">createWave</span><span>()
+    </span><span class="identifier">esTestKit</span><span>.</span><span class="identifier">restart</span><span>()
+    </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> =
+      </span><span class="identifier">esTestKit</span><span>.</span><span class="identifier">runCommand</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Wave</span><span>]](</span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">GetState</span><span>(</span><span class="identifier">_</span><span>))
+    </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">reply</span><span>.</span><span class="identifier">isDefined</span><span>)
+    </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">reply</span><span>.</span><span class="identifier">get</span><span>.</span><span class="identifier">isInstanceOf</span><span>[</span><span class="type-name">Wave</span><span>.</span><span class="type-name">Released</span><span>])</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/test/scala/neon/wave/WaveActorSuite.scala</em>&lt;/small&gt;</p>
+        <p>This test creates a wave, then calls <code>esTestKit.restart()</code>. The restart stops
+        the actor and starts a fresh instance, which reconstructs its state by replaying
+        events from the in-memory journal. After the restart, <code>GetState</code> should return
+        the same <code>Wave.Released</code> that existed before. If the event handler has a bug
+        (for example, it does not handle <code>WaveReleased</code>), the actor starts in
+        <code>EmptyState</code> and <code>GetState</code> returns <code>None</code>.</p>
+        <p>This pattern verifies the entire event sourcing lifecycle: command handling
+        produces correct events, persistence writes them to the journal (verified by
+        serialization), and replay reconstructs the correct state on recovery. If any
+        step is broken, the recovery test catches it.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Every event-sourced actor in Neon WES has a recovery test. It is
+          the single most important test for event-sourced systems. An actor that
+          cannot recover from its own journal is fundamentally broken, no matter how
+          correctly it handles commands on the first run.</p>
+        </div>
+        
+        <h3 id="the-beforeeach-reset" class="section"><a class="anchor-link left" href="#the-beforeeach-reset"><i class="icofont-laika link">&#xef71;</i></a>The beforeEach Reset</h3>
+        <p>One subtle detail: the <code>beforeEach</code> method calls <code>esTestKit.clear()</code>, which
+        resets the in-memory journal and restarts the actor before each test. Without
+        this, events from one test would leak into the next. Each test starts with a
+        clean slate: an empty journal and an actor in <code>EmptyState</code>.</p>
+        
+        <h2 id="what-comes-next" class="section"><a class="anchor-link left" href="#what-comes-next"><i class="icofont-laika link">&#xef71;</i></a>What Comes Next</h2>
+        <p>Cluster Sharding distributes our write model across nodes. Each entity lives
+        on exactly one node at a time, processes commands sequentially, and persists
+        events to a durable journal. The <code>PekkoRepository</code> pattern adapts this
+        infrastructure to the domain&#39;s port traits, keeping the domain layer clean of
+        any Pekko dependencies.</p>
+        <p>But read-heavy queries, like loading a dashboard of all active waves or listing
+        every task in a specific state, cannot fan out to thousands of actors. The
+        cross-entity query pattern we saw in this chapter already hints at the solution:
+        projection tables. In the next chapter, we will build the read side with CQRS
+        projections, consuming events from the journal and materializing them into
+        denormalized PostgreSQL tables optimized for the queries our application needs.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

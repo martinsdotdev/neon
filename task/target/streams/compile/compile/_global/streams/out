@@ -1,0 +1,78 @@
+[error] -- [E007] Type Mismatch Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/task/src/main/scala/eva/task/TaskActor.scala:236:20 
+[error] 236 |                  e.sourceLocationId,
+[error]     |                  ^^^^^^^^^^^^^^^^^^
+[error]     |                Found:    (e.sourceLocationId : eva.common.LocationId)
+[error]     |                Required: Option[eva.common.StockPositionId]
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E007] Type Mismatch Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/task/src/main/scala/eva/task/TaskActor.scala:256:28 
+[error] 256 |                  allocated.sourceLocationId,
+[error]     |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[error]     |        Found:    (allocated.sourceLocationId : eva.common.LocationId)
+[error]     |        Required: Option[eva.common.StockPositionId]
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E007] Type Mismatch Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/task/src/main/scala/eva/task/TaskActor.scala:258:20 
+[error] 258 |                  e.userId
+[error]     |                  ^^^^^^^^
+[error]     |                  Found:    (e.userId : eva.common.UserId)
+[error]     |                  Required: eva.common.LocationId
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E007] Type Mismatch Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/task/src/main/scala/eva/task/TaskActor.scala:278:27 
+[error] 278 |                  assigned.sourceLocationId,
+[error]     |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+[error]     |         Found:    (assigned.sourceLocationId : eva.common.LocationId)
+[error]     |         Required: Option[eva.common.StockPositionId]
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E007] Type Mismatch Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/task/src/main/scala/eva/task/TaskActor.scala:280:27 
+[error] 280 |                  assigned.assignedTo
+[error]     |                  ^^^^^^^^^^^^^^^^^^^
+[error]     |                  Found:    (assigned.assignedTo : eva.common.UserId)
+[error]     |                  Required: eva.common.LocationId
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E007] Type Mismatch Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/task/src/main/scala/eva/task/TaskActor.scala:298:20 
+[error] 298 |                  e.sourceLocationId,
+[error]     |                  ^^^^^^^^^^^^^^^^^^
+[error]     |        Found:    (e.sourceLocationId : Option[eva.common.LocationId])
+[error]     |        Required: Option[eva.common.StockPositionId]
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E007] Type Mismatch Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/task/src/main/scala/eva/task/TaskActor.scala:300:20 
+[error] 300 |                  e.assignedTo
+[error]     |                  ^^^^^^^^^^^^
+[error]     |                  Found:    (e.assignedTo : Option[eva.common.UserId])
+[error]     |                  Required: Option[eva.common.LocationId]
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E007] Type Mismatch Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/task/src/main/scala/eva/task/TaskActor.scala:314:20 
+[error] 314 |                  e.sourceLocationId,
+[error]     |                  ^^^^^^^^^^^^^^^^^^
+[error]     |        Found:    (e.sourceLocationId : Option[eva.common.LocationId])
+[error]     |        Required: Option[eva.common.StockPositionId]
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E007] Type Mismatch Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/task/src/main/scala/eva/task/TaskActor.scala:316:20 
+[error] 316 |                  e.assignedTo
+[error]     |                  ^^^^^^^^^^^^
+[error]     |                  Found:    (e.assignedTo : Option[eva.common.UserId])
+[error]     |                  Required: Option[eva.common.LocationId]
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E007] Type Mismatch Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/task/src/main/scala/eva/task/TaskActor.scala:330:20 
+[error] 330 |                  e.sourceLocationId,
+[error]     |                  ^^^^^^^^^^^^^^^^^^
+[error]     |        Found:    (e.sourceLocationId : Option[eva.common.LocationId])
+[error]     |        Required: Option[eva.common.StockPositionId]
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] -- [E007] Type Mismatch Error: /home/martins/Work/Mais/Eva/Neon/eva-wes/task/src/main/scala/eva/task/TaskActor.scala:332:20 
+[error] 332 |                  e.assignedTo
+[error]     |                  ^^^^^^^^^^^^
+[error]     |                  Found:    (e.assignedTo : Option[eva.common.UserId])
+[error]     |                  Required: Option[eva.common.LocationId]
+[error]     |
+[error]     | longer explanation available when compiling with `-explain`
+[error] 11 errors found

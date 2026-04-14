@@ -1,0 +1,4 @@
+[debug] [goodsReceipt-test] Classpath dependencies List(common)
+[debug] [goodsReceipt-test] Dependencies from configurations List(goodsReceipt)
+[debug] Bloop wrote the configuration of project 'goodsReceipt-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/goodsReceipt-test.json'
+[success] Generated .bloop/goodsReceipt-test.json

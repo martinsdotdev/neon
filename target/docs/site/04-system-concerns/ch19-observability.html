@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Observability and Logging</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Observability and Logging</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#the-wide-events-philosophy">The Wide Events Philosophy</a></li>
+    <li class="level1 nav-node"><a href="#mdc-propagation-across-three-layers">MDC Propagation Across Three Layers</a></li>
+    <li class="level2 nav-leaf"><a href="#layer-1-requestloggingdirective">Layer 1: RequestLoggingDirective</a></li>
+    <li class="level2 nav-leaf"><a href="#layer-2-mdcexecutioncontext">Layer 2: MdcExecutionContext</a></li>
+    <li class="level2 nav-leaf"><a href="#layer-3-behaviors-withmdc-for-actors">Layer 3: Behaviors.withMdc for Actors</a></li>
+    <li class="level1 nav-leaf"><a href="#structured-json-in-production">Structured JSON in Production</a></li>
+    <li class="level1 nav-leaf"><a href="#dev-vs-prod-configuration">Dev vs. Prod Configuration</a></li>
+    <li class="level1 nav-leaf"><a href="#projection-logging">Projection Logging</a></li>
+    <li class="level1 nav-leaf"><a href="#summary">Summary</a></li>
+    <li class="level1 nav-leaf"><a href="#what-comes-next">What Comes Next</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="observability-and-logging" class="title">Observability and Logging</h1>
+        <p>A system you cannot observe is a system you cannot operate. In this chapter,
+        we will build the observability layer of Neon WES, following the &quot;wide
+        event&quot; philosophy across three layers: HTTP, services, and actors. The
+        result is a system where every request leaves a structured trail from the
+        route handler all the way into the event-sourced actor.</p>
+        
+        <h2 id="the-wide-events-philosophy" class="section"><a class="anchor-link left" href="#the-wide-events-philosophy"><i class="icofont-laika link">&#xef71;</i></a>The Wide Events Philosophy</h2>
+        <p>Traditional logging scatters <code>printf</code>-style messages throughout the
+        codebase. In a concurrent system with multiple requests in flight, the
+        messages interleave and become nearly useless.</p>
+        <p>The wide events philosophy (sometimes called &quot;canonical log lines,&quot; as
+        described by Stripe&#39;s engineering blog) takes a different approach: emit
+        <strong>one rich structured event per HTTP request</strong> that contains all the
+        context you need. A single line tells you what endpoint was called, who
+        called it, how long it took, and whether it succeeded. In structured JSON
+        form (which we use in production), every field is independently queryable.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The wide events philosophy is documented in
+          ADR-0010.
+          The core references are loggingsucks.com for the philosophy and Stripe&#39;s
+          &quot;Canonical Log Lines&quot; blog post for the practical pattern.</p>
+        </div>
+        <p>Neon WES implements wide events through three cooperating pieces:
+        <code>RequestLoggingDirective</code> at the HTTP boundary, <code>MdcExecutionContext</code> for
+        async propagation, and <code>Behaviors.withMdc</code> for actor context. Let&#39;s examine
+        each one.</p>
+        
+        <h2 id="mdc-propagation-across-three-layers" class="section"><a class="anchor-link left" href="#mdc-propagation-across-three-layers"><i class="icofont-laika link">&#xef71;</i></a>MDC Propagation Across Three Layers</h2>
+        <p>The SLF4J Mapped Diagnostic Context (MDC) is a thread-local map of
+        key-value pairs. Any code running on the current thread can read MDC values,
+        and logging frameworks include them automatically in every log line. The
+        challenge in an async system is that MDC is thread-local, but <code>Future</code>
+        chains hop between threads. Neon WES solves this with a three-layer
+        propagation strategy.</p>
+        
+        <h3 id="layer-1-requestloggingdirective" class="section"><a class="anchor-link left" href="#layer-1-requestloggingdirective"><i class="icofont-laika link">&#xef71;</i></a>Layer 1: RequestLoggingDirective</h3>
+        <p>The first layer sets the MDC at the HTTP boundary. Every request passes
+        through <code>RequestLoggingDirective</code>, which generates a trace ID and
+        populates the MDC:</p>
+        <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">withRequestLogging</span><span>: </span><span class="type-name">Directive0</span><span> =
+  </span><span class="identifier">extractRequest</span><span>.</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">request</span><span> =&gt;
+    </span><span class="keyword">val</span><span> </span><span class="identifier">traceId</span><span> = </span><span class="type-name">UuidCreator</span><span>.</span><span class="identifier">getTimeOrderedEpoch</span><span>().</span><span class="identifier">toString</span><span>
+    </span><span class="keyword">val</span><span> </span><span class="identifier">startNanos</span><span> = </span><span class="type-name">System</span><span>.</span><span class="identifier">nanoTime</span><span>()
+
+    </span><span class="type-name">MDC</span><span>.</span><span class="identifier">put</span><span>(</span><span class="string-literal">&quot;traceId&quot;</span><span>, </span><span class="identifier">traceId</span><span>)
+    </span><span class="type-name">MDC</span><span>.</span><span class="identifier">put</span><span>(</span><span class="string-literal">&quot;httpMethod&quot;</span><span>, </span><span class="identifier">request</span><span>.</span><span class="identifier">method</span><span>.</span><span class="identifier">value</span><span>)
+    </span><span class="type-name">MDC</span><span>.</span><span class="identifier">put</span><span>(</span><span class="string-literal">&quot;httpPath&quot;</span><span>, </span><span class="identifier">request</span><span>.</span><span class="identifier">uri</span><span>.</span><span class="identifier">path</span><span>.</span><span class="identifier">toString</span><span>)
+
+    </span><span class="identifier">handleExceptions</span><span>(</span><span class="identifier">loggingExceptionHandler</span><span>(...)) &amp;
+      </span><span class="identifier">mapResponse</span><span> { </span><span class="identifier">response</span><span> =&gt;
+        </span><span class="keyword">val</span><span> </span><span class="identifier">durationMs</span><span> =
+          (</span><span class="type-name">System</span><span>.</span><span class="identifier">nanoTime</span><span>() - </span><span class="identifier">startNanos</span><span>) / </span><span class="number-literal">1_000_000</span><span>
+        </span><span class="comment">// ... emit canonical log line with all fields ...
+</span><span>        </span><span class="identifier">response</span><span>
+      }
+  }</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/scala/neon/app/http/RequestLoggingDirective.scala</em>&lt;/small&gt;</p>
+        <p>Three things happen here. First, a UUID v7 trace ID is generated for every
+        request (time-ordered for chronological sorting). Second, MDC fields
+        (<code>traceId</code>, <code>httpMethod</code>, <code>httpPath</code>) are set so that all downstream log
+        statements include them. Third, the <code>mapResponse</code> callback fires after the
+        route handler completes, emitting a single structured log line with the
+        accumulated fields (including <code>userId</code>, which <code>AuthDirectives</code> adds during
+        authentication). Log levels are chosen by status code: INFO for 2xx/3xx,
+        WARN for 4xx, ERROR for 5xx.</p>
+        
+        <h3 id="layer-2-mdcexecutioncontext" class="section"><a class="anchor-link left" href="#layer-2-mdcexecutioncontext"><i class="icofont-laika link">&#xef71;</i></a>Layer 2: MdcExecutionContext</h3>
+        <p>The second layer ensures that MDC values survive <code>Future</code> chains. Scala
+        <code>Future</code> operations (<code>map</code>, <code>flatMap</code>, <code>recover</code>) can execute on any thread
+        in the pool. When a <code>Future</code> switches threads, the MDC on the new thread is
+        empty, and the trace ID is lost.</p>
+        <p><code>MdcExecutionContext</code> solves this by wrapping every task submission:</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">MdcExecutionContext</span><span>(</span><span class="identifier">delegate</span><span>: </span><span class="type-name">ExecutionContext</span><span>)
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">ExecutionContext</span><span>:
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">execute</span><span>(</span><span class="identifier">runnable</span><span>: </span><span class="type-name">Runnable</span><span>): </span><span class="type-name">Unit</span><span> =
+    </span><span class="keyword">val</span><span> </span><span class="identifier">callerMdc</span><span> = </span><span class="type-name">Option</span><span>(</span><span class="type-name">MDC</span><span>.</span><span class="identifier">getCopyOfContextMap</span><span>)
+    </span><span class="identifier">delegate</span><span>.</span><span class="identifier">execute</span><span>(() =&gt;
+      </span><span class="keyword">val</span><span> </span><span class="identifier">previous</span><span> = </span><span class="type-name">Option</span><span>(</span><span class="type-name">MDC</span><span>.</span><span class="identifier">getCopyOfContextMap</span><span>)
+      </span><span class="keyword">try</span><span>
+        </span><span class="identifier">callerMdc</span><span>.</span><span class="identifier">fold</span><span>(</span><span class="type-name">MDC</span><span>.</span><span class="identifier">clear</span><span>())(</span><span class="type-name">MDC</span><span>.</span><span class="identifier">setContextMap</span><span>)
+        </span><span class="identifier">runnable</span><span>.</span><span class="identifier">run</span><span>()
+      </span><span class="keyword">finally</span><span> </span><span class="identifier">previous</span><span>.</span><span class="identifier">fold</span><span>(</span><span class="type-name">MDC</span><span>.</span><span class="identifier">clear</span><span>())(</span><span class="type-name">MDC</span><span>.</span><span class="identifier">setContextMap</span><span>)
+    )
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">reportFailure</span><span>(</span><span class="identifier">cause</span><span>: </span><span class="type-name">Throwable</span><span>): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">delegate</span><span>.</span><span class="identifier">reportFailure</span><span>(</span><span class="identifier">cause</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/scala/neon/app/logging/MdcExecutionContext.scala</em>&lt;/small&gt;</p>
+        <p>The pattern is snapshot-restore:</p>
+        <ol class="arabic">
+          <li><strong>On submission:</strong> Snapshot the caller&#39;s MDC (<code>callerMdc</code>).</li>
+          <li><strong>On execution:</strong> Save the executing thread&#39;s current MDC (<code>previous</code>),
+          install the caller&#39;s MDC, run the task.</li>
+          <li><strong>On completion:</strong> Restore the executing thread&#39;s original MDC.</li>
+        </ol>
+        <p>This means that when a service method logs inside a <code>Future.flatMap</code>, the
+        log line carries the <code>traceId</code> that was set by <code>RequestLoggingDirective</code>,
+        even though the code is running on a different thread.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p><code>MdcExecutionContext</code> adds a small overhead per task: one MDC
+          copy on submission and one save/restore on execution. At WES throughput
+          levels (hundreds to low thousands of requests per second), this overhead
+          is negligible. For extremely high-throughput systems, you might consider
+          context-passing approaches instead.</p>
+        </div>
+        
+        <h3 id="layer-3-behaviors-withmdc-for-actors" class="section"><a class="anchor-link left" href="#layer-3-behaviors-withmdc-for-actors"><i class="icofont-laika link">&#xef71;</i></a>Layer 3: Behaviors.withMdc for Actors</h3>
+        <p>The third layer provides context inside Pekko actors. Actors process messages
+        on their own dispatcher threads, which are separate from the HTTP thread pool.
+        The MDC propagated by <code>MdcExecutionContext</code> does not reach them. Instead,
+        each actor sets its own MDC fields via <code>Behaviors.withMdc</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">entityId</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Behavior</span><span>[</span><span class="type-name">Command</span><span>] =
+  </span><span class="type-name">Behaviors</span><span>.</span><span class="identifier">withMdc</span><span>[</span><span class="type-name">Command</span><span>](
+    </span><span class="type-name">Map</span><span>(</span><span class="string-literal">&quot;entityType&quot;</span><span> -&gt; </span><span class="string-literal">&quot;Wave&quot;</span><span>, </span><span class="string-literal">&quot;entityId&quot;</span><span> -&gt; </span><span class="identifier">entityId</span><span>)
+  ):
+    </span><span class="type-name">Behaviors</span><span>.</span><span class="identifier">setup</span><span>: </span><span class="identifier">context</span><span> =&gt;
+      </span><span class="type-name">EventSourcedBehavior</span><span>
+        .</span><span class="identifier">withEnforcedReplies</span><span>[</span><span class="type-name">Command</span><span>, </span><span class="type-name">WaveEvent</span><span>, </span><span class="type-name">State</span><span>](...)</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/main/scala/neon/wave/WaveActor.scala</em>&lt;/small&gt;</p>
+        <p>Every actor in the system follows this pattern. The <code>Behaviors.withMdc</code> call
+        takes a static map of MDC fields that are installed before every message is
+        processed and cleared afterward. Every log line emitted by the actor
+        includes <code>entityType</code> (e.g., &quot;Wave&quot;, &quot;Task&quot;) and <code>entityId</code> (the specific
+        entity&#39;s persistence ID).</p>
+        <p>All 14 event-sourced actors in Neon WES use this pattern.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>There is a gap between Layer 2 and Layer 3. The HTTP trace ID
+          does not automatically flow into actor log lines, because actor messages
+          do not carry MDC context. If you need end-to-end trace correlation from
+          HTTP to actor, you would add the trace ID as a field on the actor command
+          and include it in the <code>Behaviors.withMdc</code> map. Neon WES currently relies
+          on correlating by timestamp and entity ID.</p>
+        </div>
+        
+        <h2 id="structured-json-in-production" class="section"><a class="anchor-link left" href="#structured-json-in-production"><i class="icofont-laika link">&#xef71;</i></a>Structured JSON in Production</h2>
+        <p>The development and production environments use different logback
+        configurations. The development configuration uses a colored console
+        appender for human readability:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="tag-punctuation">&lt;</span><span class="tag-name">appender</span><span class="tag-punctuation"> </span><span class="attribute-name">name</span><span class="tag-punctuation">=</span><span class="string-literal">&quot;CONSOLE&quot;</span><span class="tag-punctuation">
+          </span><span class="attribute-name">class</span><span class="tag-punctuation">=</span><span class="string-literal">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span class="tag-punctuation">&gt;</span><span>
+  </span><span class="tag-punctuation">&lt;</span><span class="tag-name">encoder</span><span class="tag-punctuation">&gt;</span><span>
+    </span><span class="tag-punctuation">&lt;</span><span class="tag-name">pattern</span><span class="tag-punctuation">&gt;</span><span>
+      %d{HH:mm:ss.SSS} %highlight(%-5level)
+      %cyan(%-40logger{40})
+      [%X{traceId:-}]
+      [%X{entityType:-}:%X{entityId:-}]
+      | %msg%n
+    </span><span class="tag-punctuation">&lt;/</span><span class="tag-name">pattern</span><span class="tag-punctuation">&gt;</span><span>
+  </span><span class="tag-punctuation">&lt;/</span><span class="tag-name">encoder</span><span class="tag-punctuation">&gt;</span><span>
+</span><span class="tag-punctuation">&lt;/</span><span class="tag-name">appender</span><span class="tag-punctuation">&gt;</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/resources/logback.xml</em>&lt;/small&gt;</p>
+        <p>The pattern includes MDC fields inline: <code>[%X{traceId:-}]</code> prints the trace
+        ID (or nothing if absent), and <code>[%X{entityType:-}:%X{entityId:-}]</code> prints
+        the actor context.</p>
+        <p>The production configuration (<code>logback-prod.xml</code>) replaces the console
+        appender with <code>LogstashEncoder</code>, which emits structured JSON:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>{
+  </span><span class="attribute-name">&quot;@timestamp&quot;</span><span>: </span><span class="string-literal">&quot;2026-04-14T14:23:45.123Z&quot;</span><span>,
+  </span><span class="attribute-name">&quot;level&quot;</span><span>: </span><span class="string-literal">&quot;INFO&quot;</span><span>,
+  </span><span class="attribute-name">&quot;logger_name&quot;</span><span>: </span><span class="string-literal">&quot;neon.http.access&quot;</span><span>,
+  </span><span class="attribute-name">&quot;message&quot;</span><span>: </span><span class="string-literal">&quot;POST /tasks/.../complete 200 45ms&quot;</span><span>,
+  </span><span class="attribute-name">&quot;traceId&quot;</span><span>: </span><span class="string-literal">&quot;0195def...&quot;</span><span>,
+  </span><span class="attribute-name">&quot;method&quot;</span><span>: </span><span class="string-literal">&quot;POST&quot;</span><span>,
+  </span><span class="attribute-name">&quot;path&quot;</span><span>: </span><span class="string-literal">&quot;/tasks/.../complete&quot;</span><span>,
+  </span><span class="attribute-name">&quot;status&quot;</span><span>: </span><span class="number-literal">200</span><span>,
+  </span><span class="attribute-name">&quot;durationMs&quot;</span><span>: </span><span class="number-literal">45</span><span>,
+  </span><span class="attribute-name">&quot;userId&quot;</span><span>: </span><span class="string-literal">&quot;0195...&quot;</span><span>
+}</span></code></pre>
+        <p>This JSON is directly ingestible by Loki, Elasticsearch, Datadog, or any
+        other log aggregator. The production appender is wrapped in an
+        <code>AsyncAppender</code> with <code>neverBlock=true</code>, ensuring log output never blocks
+        application threads.</p>
+        
+        <h2 id="dev-vs-prod-configuration" class="section"><a class="anchor-link left" href="#dev-vs-prod-configuration"><i class="icofont-laika link">&#xef71;</i></a>Dev vs. Prod Configuration</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Configuration</th>
+              <th>File</th>
+              <th>Appender</th>
+              <th>Level</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Development</td>
+              <td><code>logback.xml</code></td>
+              <td>Colored console</td>
+              <td>neon=DEBUG, root=INFO</td>
+              <td>Human-readable, verbose</td>
+            </tr>
+            <tr>
+              <td>Production</td>
+              <td><code>logback-prod.xml</code></td>
+              <td>Async JSON</td>
+              <td>neon=INFO, root=WARN</td>
+              <td>Machine-parseable, performant</td>
+            </tr>
+            <tr>
+              <td>Test</td>
+              <td><code>logback-test.xml</code></td>
+              <td>Plain console</td>
+              <td>root=WARN</td>
+              <td>Quiet, only errors during tests</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Tests produce no log output unless something goes wrong at WARN level or
+        above. Switching between configurations uses the standard Logback mechanism:
+        <code>logback.xml</code> is the default, and production deploys set
+        <code>-Dlogback.configurationFile=logback-prod.xml</code> as a JVM argument.</p>
+        
+        <h2 id="projection-logging" class="section"><a class="anchor-link left" href="#projection-logging"><i class="icofont-laika link">&#xef71;</i></a>Projection Logging</h2>
+        <p>CQRS projection handlers have their own logging concern. Each handler
+        processes events asynchronously on daemon threads managed by
+        <code>ShardedDaemonProcess</code>. The <code>LoggingProjectionHandler</code> base class
+        standardizes logging across all 14 projection handlers:</p>
+        <pre><code class="nohighlight"><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">LoggingProjectionHandler</span><span>[</span><span class="type-name">E</span><span>](</span><span class="identifier">using</span><span>
+    </span><span class="type-name">ExecutionContext</span><span>
+) </span><span class="keyword">extends</span><span> </span><span class="type-name">R2dbcHandler</span><span>[</span><span class="type-name">EventEnvelope</span><span>[</span><span class="type-name">E</span><span>]]
+    </span><span class="keyword">with</span><span> </span><span class="type-name">LazyLogging</span><span>:
+
+  </span><span class="keyword">final</span><span> </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">process</span><span>(
+      </span><span class="identifier">session</span><span>: </span><span class="type-name">R2dbcSession</span><span>,
+      </span><span class="identifier">envelope</span><span>: </span><span class="type-name">EventEnvelope</span><span>[</span><span class="type-name">E</span><span>]
+  ): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Done</span><span>] =
+    </span><span class="identifier">logger</span><span>.</span><span class="identifier">debug</span><span>(
+      </span><span class="string-literal">&quot;Processing {} for {}&quot;</span><span>,
+      </span><span class="identifier">envelope</span><span>.</span><span class="identifier">event</span><span>.</span><span class="identifier">getClass</span><span>.</span><span class="identifier">getSimpleName</span><span>,
+      </span><span class="identifier">envelope</span><span>.</span><span class="identifier">persistenceId</span><span>
+    )
+    </span><span class="identifier">processEvent</span><span>(</span><span class="identifier">session</span><span>, </span><span class="identifier">envelope</span><span>).</span><span class="identifier">recoverWith</span><span> {
+      </span><span class="keyword">case</span><span> </span><span class="identifier">exception</span><span> =&gt;
+        </span><span class="identifier">logger</span><span>.</span><span class="identifier">error</span><span>(
+          </span><span class="string-literal">&quot;Projection failed for {}&quot;</span><span>,
+          </span><span class="identifier">envelope</span><span>.</span><span class="identifier">persistenceId</span><span>,
+          </span><span class="identifier">exception</span><span>
+        )
+        </span><span class="type-name">Future</span><span>.</span><span class="identifier">failed</span><span>(</span><span class="identifier">exception</span><span>)
+    }
+
+  </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">processEvent</span><span>(
+      </span><span class="identifier">session</span><span>: </span><span class="type-name">R2dbcSession</span><span>,
+      </span><span class="identifier">envelope</span><span>: </span><span class="type-name">EventEnvelope</span><span>[</span><span class="type-name">E</span><span>]
+  ): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Done</span><span>]</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/main/scala/neon/app/projection/LoggingProjectionHandler.scala</em>&lt;/small&gt;</p>
+        <p>The base class provides two things:</p>
+        <ol class="arabic">
+          <li>
+            <p><strong>DEBUG logging on every event.</strong> The event class name and persistence ID
+            are logged before processing. This creates an audit trail of every event
+            the projection consumes.</p>
+          </li>
+          <li>
+            <p><strong>ERROR logging on failure with stack trace.</strong> If <code>processEvent</code> fails,
+            the error is logged with the persistence ID and full exception before the
+            failure is propagated. Pekko&#39;s projection infrastructure handles retries
+            and restart; the handler just needs to report what went wrong.</p>
+          </li>
+        </ol>
+        <p>Subclasses implement <code>processEvent</code> and get logging for free. All 14
+        projection handlers in Neon WES extend this base class.</p>
+        
+        <h2 id="summary" class="section"><a class="anchor-link left" href="#summary"><i class="icofont-laika link">&#xef71;</i></a>Summary</h2>
+        <ul>
+          <li><strong>Wide events:</strong> one canonical log line per HTTP request with trace ID,
+          method, path, status, duration, and user ID.</li>
+          <li><strong>MDC propagation in three layers:</strong> <code>RequestLoggingDirective</code> at the
+          HTTP boundary, <code>MdcExecutionContext</code> across <code>Future</code> chains,
+          <code>Behaviors.withMdc</code> in actors.</li>
+          <li><strong>Dual configuration:</strong> colored console for dev, structured JSON for
+          production, quiet WARN-only for tests.</li>
+          <li><strong>LoggingProjectionHandler:</strong> base class providing DEBUG entry logging
+          and ERROR failure logging for all projection handlers.</li>
+        </ul>
+        
+        <h2 id="what-comes-next" class="section"><a class="anchor-link left" href="#what-comes-next"><i class="icofont-laika link">&#xef71;</i></a>What Comes Next</h2>
+        <p>In the next chapter, we will bring together everything we have learned by
+        building a complete new aggregate module from scratch: domain type, events,
+        actor, projection, HTTP routes, and the observability patterns from this
+        chapter.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

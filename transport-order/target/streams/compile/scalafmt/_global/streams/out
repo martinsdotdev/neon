@@ -1,0 +1,11 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/transport-order/src/main/scala/neon/transportorder/PekkoTransportOrderRepository.scala, /home/martins/Projects/neon/transport-order/src/main/scala/neon/transportorder/TransportOrderEvent.scala, /home/martins/Projects/neon/transport-order/src/main/scala/neon/transportorder/TransportOrder.scala, /home/martins/Projects/neon/transport-order/src/main/scala/neon/transportorder/TransportOrderActor.scala, /home/martins/Projects/neon/transport-order/src/main/scala/neon/transportorder/TransportOrderRepository.scala, /home/martins/Projects/neon/transport-order/src/main/scala/neon/transportorder/AsyncTransportOrderRepository.scala
+[debug] 	Modified: /home/martins/Projects/neon/transport-order/src/main/scala/neon/transportorder/PekkoTransportOrderRepository.scala
+[debug] 	Unmodified: /home/martins/Projects/neon/transport-order/src/main/scala/neon/transportorder/TransportOrderEvent.scala, /home/martins/Projects/neon/transport-order/src/main/scala/neon/transportorder/TransportOrder.scala, /home/martins/Projects/neon/transport-order/src/main/scala/neon/transportorder/TransportOrderActor.scala, /home/martins/Projects/neon/transport-order/src/main/scala/neon/transportorder/TransportOrderRepository.scala, /home/martins/Projects/neon/transport-order/src/main/scala/neon/transportorder/AsyncTransportOrderRepository.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[info] scalafmt: Formatting 1 Scala sources (/home/martins/Projects/neon/transport-order)...
+[debug] scalafmt: Unchanged 1 Scala sources

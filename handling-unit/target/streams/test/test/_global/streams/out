@@ -1,0 +1,56 @@
+[debug] Running TaskDef(neon.handlingunit.PekkoHandlingUnitRepositorySuite, org.scalatest.tools.Framework$$anon$1@137a67bf, false, [SuiteSelector])
+[debug] Running TaskDef(neon.handlingunit.HandlingUnitSuite, org.scalatest.tools.Framework$$anon$1@137a67bf, false, [SuiteSelector])
+[debug] Running TaskDef(neon.handlingunit.HandlingUnitActorSuite, org.scalatest.tools.Framework$$anon$1@137a67bf, false, [SuiteSelector])
+[info] HandlingUnitSuite:
+[info] HandlingUnit
+[info]   Pick lifecycle
+[info]   - fills at pick face, moves to buffer, empties at put-wall
+[info]   Ship lifecycle
+[info]   - packs at station, clears for shipping, ships
+[info]   location tracking
+[info]   - moveToBuffer updates location from pick face to buffer
+[info]   - pack preserves the station location
+[info]   - readyToShip preserves station location through the ship stream
+[info]   packaging level
+[info]   - carries through the Pick path
+[info]   - carries through the Ship path
+[info]   order identity
+[info]   - threads orderId through the Ship lifecycle
+[info]   - ship events carry orderId for downstream routing
+[info]   events
+[info]   - identify the handling unit for downstream routing
+[info]   - moveToBuffer records the destination for transport order creation
+[info]   - emptied event identifies the handling unit
+[info]   - ship lifecycle events identify the handling unit
+[info] HandlingUnitActorSuite:
+[info] HandlingUnitActor
+[info]   pick flow: PickCreated -> InBuffer -> Empty
+[info]   - transitions through the pick stream
+[info]   ship flow: ShipCreated -> Packed -> ReadyToShip -> Shipped
+[info]   - transitions through the ship stream
+[info]   cross-flow rejection
+[info]   - rejects Pack on PickCreated
+[info]   - rejects MoveToBuffer on ShipCreated
+[info]   - rejects Ship on Packed
+[info]   idempotent Create
+[info]   - acks on second Create without error
+[info]   event replay
+[info]   - recovers InBuffer state from journal
+[info]   - recovers Packed state from journal
+[info] PekkoHandlingUnitRepositorySuite:
+[info] PekkoHandlingUnitRepository
+[info]   save and findById
+[info]   - persists a PickCreated handling unit and retrieves it
+[info]   - persists a ShipCreated handling unit
+[info]   - returns None for a non-existent handling unit
+[info]   findByIds
+[info]   - returns multiple handling units
+[info] Run completed in 12 seconds, 796 milliseconds.
+[info] Total number of tests run: 25
+[info] Suites: completed 3, aborted 0
+[info] Tests: succeeded 25, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.handlingunit.PekkoHandlingUnitRepositorySuite
+[debug] 	neon.handlingunit.HandlingUnitSuite
+[debug] 	neon.handlingunit.HandlingUnitActorSuite

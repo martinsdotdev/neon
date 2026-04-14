@@ -1,0 +1,20 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/task/src/main/scala/neon/task/TaskActor.scala, /home/martins/Projects/neon/task/src/main/scala/neon/task/PekkoTaskRepository.scala, /home/martins/Projects/neon/task/src/main/scala/neon/task/TaskRepository.scala, /home/martins/Projects/neon/task/src/main/scala/neon/task/Task.scala, /home/martins/Projects/neon/task/src/main/scala/neon/task/TaskEvent.scala, /home/martins/Projects/neon/task/src/main/scala/neon/task/TaskType.scala, /home/martins/Projects/neon/task/src/main/scala/neon/task/AsyncTaskRepository.scala
+[debug] 	Modified: 
+[debug] 	Unmodified: /home/martins/Projects/neon/task/src/main/scala/neon/task/TaskActor.scala, /home/martins/Projects/neon/task/src/main/scala/neon/task/PekkoTaskRepository.scala, /home/martins/Projects/neon/task/src/main/scala/neon/task/TaskRepository.scala, /home/martins/Projects/neon/task/src/main/scala/neon/task/Task.scala, /home/martins/Projects/neon/task/src/main/scala/neon/task/TaskEvent.scala, /home/martins/Projects/neon/task/src/main/scala/neon/task/TaskType.scala, /home/martins/Projects/neon/task/src/main/scala/neon/task/AsyncTaskRepository.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[debug] scalafmt: Unchanged 0 Scala sources
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/task/src/test/scala/neon/task/TaskSuite.scala, /home/martins/Projects/neon/task/src/test/scala/neon/task/PekkoTaskRepositorySuite.scala, /home/martins/Projects/neon/task/src/test/scala/neon/task/TaskActorSuite.scala
+[debug] 	Modified: 
+[debug] 	Unmodified: /home/martins/Projects/neon/task/src/test/scala/neon/task/TaskSuite.scala, /home/martins/Projects/neon/task/src/test/scala/neon/task/PekkoTaskRepositorySuite.scala, /home/martins/Projects/neon/task/src/test/scala/neon/task/TaskActorSuite.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[debug] scalafmt: Unchanged 0 Scala sources

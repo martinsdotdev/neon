@@ -1,0 +1,77 @@
+[debug] Running TaskDef(eva.inventory.InventoryActorSuite, org.scalatest.tools.Framework$$anon$1@126fb0d0, false, [SuiteSelector])
+[info] InventoryActorSuite:
+[info] InventoryActor
+[info]   Reserve
+[info]   - reserves quantity from available stock
+[info]   Release
+[info]   - releases reserved quantity back to available
+[info]   Consume
+[info]   - reduces both on-hand and reserved
+[info]   CorrectLot
+[info]   - corrects lot when reserved is zero
+[info]   validation errors
+[info]   - rejects reserve exceeding available *** FAILED ***
+[info]     java.lang.AssertionError: Missing expected reply for command [Reserve(5,2026-04-09T17:31:28.632801775Z,Actor[pekko://InventoryActorSuite/system/testProbe-15#-738880743])].
+[info]     at org.apache.pekko.persistence.testkit.internal.EventSourcedBehaviorTestKitImpl.runCommand(EventSourcedBehaviorTestKitImpl.scala:165)
+[info]     at eva.inventory.InventoryActorSuite.testFun$proxy5$1(InventoryActorSuite.scala:148)
+[info]     at eva.inventory.InventoryActorSuite.fun$proxy5$1$$anonfun$1(InventoryActorSuite.scala:138)
+[info]     at org.scalatest.Transformer.apply$$anonfun$1(Transformer.scala:22)
+[info]     at org.scalatest.OutcomeOf.outcomeOf(OutcomeOf.scala:85)
+[info]     at org.scalatest.OutcomeOf.outcomeOf$(OutcomeOf.scala:31)
+[info]     at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)
+[info]     at org.scalatest.Transformer.apply(Transformer.scala:22)
+[info]     at org.scalatest.Transformer.apply(Transformer.scala:21)
+[info]     at org.scalatest.funspec.AnyFunSpecLike$$anon$1.apply(AnyFunSpecLike.scala:485)
+[info]     ...
+[info]   - rejects release exceeding reserved *** FAILED ***
+[info]     java.lang.AssertionError: Missing expected reply for command [Release(15,2026-04-09T17:31:28.632801775Z,Actor[pekko://InventoryActorSuite/system/testProbe-18#1020465260])].
+[info]     at org.apache.pekko.persistence.testkit.internal.EventSourcedBehaviorTestKitImpl.runCommand(EventSourcedBehaviorTestKitImpl.scala:165)
+[info]     at eva.inventory.InventoryActorSuite.testFun$proxy6$1(InventoryActorSuite.scala:163)
+[info]     at eva.inventory.InventoryActorSuite.fun$proxy5$1$$anonfun$2(InventoryActorSuite.scala:153)
+[info]     at org.scalatest.Transformer.apply$$anonfun$1(Transformer.scala:22)
+[info]     at org.scalatest.OutcomeOf.outcomeOf(OutcomeOf.scala:85)
+[info]     at org.scalatest.OutcomeOf.outcomeOf$(OutcomeOf.scala:31)
+[info]     at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)
+[info]     at org.scalatest.Transformer.apply(Transformer.scala:22)
+[info]     at org.scalatest.Transformer.apply(Transformer.scala:21)
+[info]     at org.scalatest.funspec.AnyFunSpecLike$$anon$1.apply(AnyFunSpecLike.scala:485)
+[info]     ...
+[info]   - rejects consume exceeding reserved *** FAILED ***
+[info]     java.lang.AssertionError: Missing expected reply for command [Consume(15,2026-04-09T17:31:28.632801775Z,Actor[pekko://InventoryActorSuite/system/testProbe-21#-1124120670])].
+[info]     at org.apache.pekko.persistence.testkit.internal.EventSourcedBehaviorTestKitImpl.runCommand(EventSourcedBehaviorTestKitImpl.scala:165)
+[info]     at eva.inventory.InventoryActorSuite.testFun$proxy7$1(InventoryActorSuite.scala:178)
+[info]     at eva.inventory.InventoryActorSuite.fun$proxy5$1$$anonfun$3(InventoryActorSuite.scala:168)
+[info]     at org.scalatest.Transformer.apply$$anonfun$1(Transformer.scala:22)
+[info]     at org.scalatest.OutcomeOf.outcomeOf(OutcomeOf.scala:85)
+[info]     at org.scalatest.OutcomeOf.outcomeOf$(OutcomeOf.scala:31)
+[info]     at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)
+[info]     at org.scalatest.Transformer.apply(Transformer.scala:22)
+[info]     at org.scalatest.Transformer.apply(Transformer.scala:21)
+[info]     at org.scalatest.funspec.AnyFunSpecLike$$anon$1.apply(AnyFunSpecLike.scala:485)
+[info]     ...
+[info]   - rejects CorrectLot with nonzero reserved *** FAILED ***
+[info]     java.lang.AssertionError: Missing expected reply for command [CorrectLot(Some(LOT-X),2026-04-09T17:31:28.632801775Z,Actor[pekko://InventoryActorSuite/system/testProbe-24#606007577])].
+[info]     at org.apache.pekko.persistence.testkit.internal.EventSourcedBehaviorTestKitImpl.runCommand(EventSourcedBehaviorTestKitImpl.scala:165)
+[info]     at eva.inventory.InventoryActorSuite.testFun$proxy8$1(InventoryActorSuite.scala:193)
+[info]     at eva.inventory.InventoryActorSuite.fun$proxy5$1$$anonfun$4(InventoryActorSuite.scala:183)
+[info]     at org.scalatest.Transformer.apply$$anonfun$1(Transformer.scala:22)
+[info]     at org.scalatest.OutcomeOf.outcomeOf(OutcomeOf.scala:85)
+[info]     at org.scalatest.OutcomeOf.outcomeOf$(OutcomeOf.scala:31)
+[info]     at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)
+[info]     at org.scalatest.Transformer.apply(Transformer.scala:22)
+[info]     at org.scalatest.Transformer.apply(Transformer.scala:21)
+[info]     at org.scalatest.funspec.AnyFunSpecLike$$anon$1.apply(AnyFunSpecLike.scala:485)
+[info]     ...
+[info]   commands on empty state
+[info]   - rejects Reserve on empty state
+[info]   - GetState returns None on empty state
+[info]   event replay
+[info]   - recovers inventory with reserved quantity
+[info] Run completed in 13 seconds, 343 milliseconds.
+[info] Total number of tests run: 11
+[info] Suites: completed 1, aborted 0
+[info] Tests: succeeded 7, failed 4, canceled 0, ignored 0, pending 0
+[info] *** 4 TESTS FAILED ***
+[error] Failed tests:
+[error] 	eva.inventory.InventoryActorSuite
+[error] (inventory / Test / testOnly) sbt.TestsFailedException: Tests unsuccessful

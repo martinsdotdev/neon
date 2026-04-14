@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Repositories: The Dual Interface Pattern</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Repositories: The Dual Interface Pattern</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#the-port-trait-pattern">The Port Trait Pattern</a></li>
+    <li class="level1 nav-leaf"><a href="#sync-vs-async-two-traits-for-two-worlds">Sync vs Async: Two Traits for Two Worlds</a></li>
+    <li class="level1 nav-leaf"><a href="#a-richer-port-taskrepository">A Richer Port: TaskRepository</a></li>
+    <li class="level1 nav-leaf"><a href="#in-memory-implementations-for-testing">In-Memory Implementations for Testing</a></li>
+    <li class="level1 nav-leaf"><a href="#how-services-use-repositories">How Services Use Repositories</a></li>
+    <li class="level1 nav-leaf"><a href="#the-async-service-pattern">The Async Service Pattern</a></li>
+    <li class="level1 nav-leaf"><a href="#architecture-note-hexagonal-architecture">Architecture Note: Hexagonal Architecture</a></li>
+    <li class="level1 nav-leaf"><a href="#the-complete-repository-catalogue">The Complete Repository Catalogue</a></li>
+    <li class="level1 nav-leaf"><a href="#what-comes-next">What Comes Next</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="repositories-the-dual-interface-pattern" class="title">Repositories: The Dual Interface Pattern</h1>
+        <p>In Chapter 7, we saw services reading and writing through repository traits
+        like <code>TaskRepository</code> and <code>WaveRepository</code>. But we never opened those traits to
+        look inside. Where does the data actually go? The answer depends on context: in
+        tests, it goes into a mutable map; in production, it flows through Pekko
+        Cluster Sharding to an event-sourced actor. The same service works with both,
+        because it depends only on the trait, never on the implementation. This is the
+        dual interface pattern.</p>
+        
+        <h2 id="the-port-trait-pattern" class="section"><a class="anchor-link left" href="#the-port-trait-pattern"><i class="icofont-laika link">&#xef71;</i></a>The Port Trait Pattern</h2>
+        <p>Let&#39;s start with the simplest repository in the system:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">package</span><span> </span><span class="identifier">neon</span><span>.</span><span class="identifier">wave</span><span>
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">neon</span><span>.</span><span class="identifier">common</span><span>.</span><span class="type-name">WaveId</span><span>
+
+</span><span class="comment">/** Port trait for [[Wave]] aggregate persistence and queries. */</span><span>
+</span><span class="keyword">trait</span><span> </span><span class="type-name">WaveRepository</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">WaveId</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Wave</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">wave</span><span>: </span><span class="type-name">Wave</span><span>, </span><span class="identifier">event</span><span>: </span><span class="type-name">WaveEvent</span><span>): </span><span class="type-name">Unit</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/main/scala/neon/wave/WaveRepository.scala</em>&lt;/small&gt;</p>
+        <p>Two methods. That is the entire persistence interface for the wave aggregate.
+        <code>findById</code> retrieves a wave by its identifier, returning <code>Option[Wave]</code> because
+        the wave might not exist. <code>save</code> persists a wave together with the event that
+        caused the state transition. Neither method mentions a database, a connection
+        pool, an actor system, or any other infrastructure concept. The vocabulary is
+        pure domain: <code>WaveId</code>, <code>Wave</code>, <code>WaveEvent</code>.</p>
+        <p>Notice where this trait lives: in the <code>neon.wave</code> package, inside the <code>wave</code>
+        module. Not in an infrastructure module. Not in the <code>app</code> module. The
+        repository port belongs to the domain it serves. This is a deliberate choice.
+        The domain module defines <em>what</em> persistence operations it needs, and some
+        other module provides the <em>how</em>.</p>
+        <p>The Scaladoc comment says &quot;Port trait.&quot; This naming is intentional. In
+        hexagonal architecture (which we will discuss later in this chapter), a <em>port</em>
+        is an interface that the application defines for communicating with the outside
+        world. The domain says &quot;I need to find waves by ID and save them.&quot; It does not
+        say how that happens. That is the adapter&#39;s job.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>A repository port always takes both the aggregate state and the
+          event in its <code>save</code> method. This is because the Pekko production
+          implementation needs the event for its event-sourced journal, while the
+          in-memory test implementation needs it for event tracking. The dual
+          requirement is baked into the signature.</p>
+        </div>
+        
+        <h2 id="sync-vs-async-two-traits-for-two-worlds" class="section"><a class="anchor-link left" href="#sync-vs-async-two-traits-for-two-worlds"><i class="icofont-laika link">&#xef71;</i></a>Sync vs Async: Two Traits for Two Worlds</h2>
+        <p>Here is the async counterpart of <code>WaveRepository</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">package</span><span> </span><span class="identifier">neon</span><span>.</span><span class="identifier">wave</span><span>
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">neon</span><span>.</span><span class="identifier">common</span><span>.</span><span class="type-name">WaveId</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="type-name">Future</span><span>
+
+</span><span class="comment">/** Async port trait for [[Wave]] aggregate persistence and queries. */</span><span>
+</span><span class="keyword">trait</span><span> </span><span class="type-name">AsyncWaveRepository</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">WaveId</span><span>): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Wave</span><span>]]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">wave</span><span>: </span><span class="type-name">Wave</span><span>, </span><span class="identifier">event</span><span>: </span><span class="type-name">WaveEvent</span><span>): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Unit</span><span>]</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/main/scala/neon/wave/AsyncWaveRepository.scala</em>&lt;/small&gt;</p>
+        <p>The two traits define the same operations. The only difference is the return
+        type: <code>Option[Wave]</code> becomes <code>Future[Option[Wave]]</code>, and <code>Unit</code> becomes
+        <code>Future[Unit]</code>. Every operation in the async trait is wrapped in a <code>Future</code>,
+        because in production, repository calls cross the network to reach a Pekko
+        Cluster Sharding entity on a potentially different node.</p>
+        <p>Why not use only the async trait everywhere? Because sync tests are simpler,
+        faster, and more debuggable. Consider the difference:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// Sync test: direct and readable
+</span><span class="keyword">val</span><span> </span><span class="identifier">task</span><span> = </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">findById</span><span>(</span><span class="identifier">taskId</span><span>).</span><span class="identifier">value</span><span>
+</span><span class="identifier">assert</span><span>(</span><span class="identifier">task</span><span>.</span><span class="identifier">isInstanceOf</span><span>[</span><span class="type-name">Task</span><span>.</span><span class="type-name">Completed</span><span>])</span></code></pre>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// If we had only async: needs Await, an executor, and timeout handling
+</span><span class="keyword">val</span><span> </span><span class="identifier">task</span><span> = </span><span class="type-name">Await</span><span>.</span><span class="identifier">result</span><span>(</span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">findById</span><span>(</span><span class="identifier">taskId</span><span>), </span><span class="number-literal">5</span><span>.</span><span class="identifier">seconds</span><span>).</span><span class="identifier">value</span><span>
+</span><span class="identifier">assert</span><span>(</span><span class="identifier">task</span><span>.</span><span class="identifier">isInstanceOf</span><span>[</span><span class="type-name">Task</span><span>.</span><span class="type-name">Completed</span><span>])</span></code></pre>
+        <p>With synchronous repositories, tests run without an <code>ExecutionContext</code>, without
+        <code>Await.result</code> calls, without timing issues. You call a method, you get a
+        value, you assert on it. The test reads like a specification, not like
+        infrastructure plumbing.</p>
+        <p>The cost of maintaining two traits is low. Each trait is a handful of method
+        signatures. The sync services in the <code>core</code> module use sync traits. The async
+        services (also in <code>core</code>) use async traits. Both service variants contain the
+        same business logic; they differ only in how they sequence repository calls
+        (sequential statements vs. <code>Future</code> for-comprehensions). We will see this in
+        detail later in this chapter.</p>
+        
+        <h2 id="a-richer-port-taskrepository" class="section"><a class="anchor-link left" href="#a-richer-port-taskrepository"><i class="icofont-laika link">&#xef71;</i></a>A Richer Port: TaskRepository</h2>
+        <p>Not every repository is as minimal as <code>WaveRepository</code>. Some aggregates need
+        more complex query patterns. Here is <code>TaskRepository</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">TaskRepository</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">TaskId</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Task</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findByWaveId</span><span>(</span><span class="identifier">waveId</span><span>: </span><span class="type-name">WaveId</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">Task</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findByHandlingUnitId</span><span>(</span><span class="identifier">handlingUnitId</span><span>: </span><span class="type-name">HandlingUnitId</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">Task</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">task</span><span>: </span><span class="type-name">Task</span><span>, </span><span class="identifier">event</span><span>: </span><span class="type-name">TaskEvent</span><span>): </span><span class="type-name">Unit</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">saveAll</span><span>(</span><span class="identifier">entries</span><span>: </span><span class="type-name">List</span><span>[(</span><span class="type-name">Task</span><span>, </span><span class="type-name">TaskEvent</span><span>)]): </span><span class="type-name">Unit</span></code></pre>
+        <p>&lt;small&gt;<em>File: task/src/main/scala/neon/task/TaskRepository.scala</em>&lt;/small&gt;</p>
+        <p>This trait has three kinds of operations:</p>
+        <p><strong>Single-entity lookup.</strong> <code>findById</code> is the same pattern as <code>WaveRepository</code>.
+        Every repository has this method.</p>
+        <p><strong>Cross-entity queries.</strong> <code>findByWaveId</code> returns all tasks belonging to a
+        wave. <code>findByHandlingUnitId</code> returns all tasks associated with a handling unit.
+        These methods exist because services need them. <code>WaveCompletionPolicy</code> (from
+        Chapter 6) needs every task in a wave to check whether they are all terminal.
+        The policy cannot answer the question without this data, and the data comes
+        through the repository.</p>
+        <p><strong>Batch persistence.</strong> <code>saveAll</code> saves multiple tasks and events in a single
+        call. This is used during wave release, when <code>TaskCreationPolicy</code> produces a
+        batch of planned tasks that all need to be persisted at once.</p>
+        <p>The async counterpart mirrors every operation:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">AsyncTaskRepository</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">TaskId</span><span>): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Task</span><span>]]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findByWaveId</span><span>(</span><span class="identifier">waveId</span><span>: </span><span class="type-name">WaveId</span><span>): </span><span class="type-name">Future</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">Task</span><span>]]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findByHandlingUnitId</span><span>(</span><span class="identifier">handlingUnitId</span><span>: </span><span class="type-name">HandlingUnitId</span><span>): </span><span class="type-name">Future</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">Task</span><span>]]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">task</span><span>: </span><span class="type-name">Task</span><span>, </span><span class="identifier">event</span><span>: </span><span class="type-name">TaskEvent</span><span>): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Unit</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">saveAll</span><span>(</span><span class="identifier">entries</span><span>: </span><span class="type-name">List</span><span>[(</span><span class="type-name">Task</span><span>, </span><span class="type-name">TaskEvent</span><span>)]): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Unit</span><span>]</span></code></pre>
+        <p>&lt;small&gt;<em>File: task/src/main/scala/neon/task/AsyncTaskRepository.scala</em>&lt;/small&gt;</p>
+        <p>Note the Scaladoc on <code>saveAll</code> in the async trait: &quot;Not transactional:
+        individual entries may succeed or fail independently.&quot; This is a critical
+        production constraint. In the Pekko implementation, <code>saveAll</code> fans out to
+        individual entity actors. Each actor persists its own events independently.
+        There is no distributed transaction wrapping the batch. If one actor fails,
+        the others may still succeed.</p>
+        <p>This is an honest interface. The trait does not promise transactional semantics
+        it cannot deliver. The caller knows that a partial failure is possible and can
+        design accordingly. The sync in-memory implementation, by contrast, is
+        inherently atomic (it runs in a single thread with a single mutable map), but
+        the interface contract is defined by the most constrained implementation:
+        production.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Cross-entity queries like <code>findByWaveId</code> behave differently in
+          production than in tests. The in-memory implementation filters a map. The
+          Pekko implementation queries a CQRS projection table, then fans out to
+          individual actors. The interface hides this complexity, but understanding
+          it matters for performance tuning. We will explore the production
+          implementation in Chapter 11.</p>
+        </div>
+        
+        <h2 id="in-memory-implementations-for-testing" class="section"><a class="anchor-link left" href="#in-memory-implementations-for-testing"><i class="icofont-laika link">&#xef71;</i></a>In-Memory Implementations for Testing</h2>
+        <p>Here is the in-memory implementation of <code>TaskRepository</code>, taken directly from
+        the test suite:</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">InMemoryTaskRepository</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">TaskRepository</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">store</span><span>: </span><span class="identifier">mutable</span><span>.</span><span class="type-name">Map</span><span>[</span><span class="type-name">TaskId</span><span>, </span><span class="type-name">Task</span><span>] = </span><span class="identifier">mutable</span><span>.</span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">events</span><span>: </span><span class="identifier">mutable</span><span>.</span><span class="type-name">ListBuffer</span><span>[</span><span class="type-name">TaskEvent</span><span>] = </span><span class="identifier">mutable</span><span>.</span><span class="type-name">ListBuffer</span><span>.</span><span class="identifier">empty</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">TaskId</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Task</span><span>] = </span><span class="identifier">store</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">id</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findByWaveId</span><span>(</span><span class="identifier">waveId</span><span>: </span><span class="type-name">WaveId</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">Task</span><span>] =
+    </span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>.</span><span class="identifier">filter</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">waveId</span><span>.</span><span class="identifier">contains</span><span>(</span><span class="identifier">waveId</span><span>)).</span><span class="identifier">toList</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findByHandlingUnitId</span><span>(</span><span class="identifier">handlingUnitId</span><span>: </span><span class="type-name">HandlingUnitId</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">Task</span><span>] =
+    </span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>.</span><span class="identifier">filter</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">handlingUnitId</span><span>.</span><span class="identifier">contains</span><span>(</span><span class="identifier">handlingUnitId</span><span>)).</span><span class="identifier">toList</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">task</span><span>: </span><span class="type-name">Task</span><span>, </span><span class="identifier">event</span><span>: </span><span class="type-name">TaskEvent</span><span>): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">store</span><span>(</span><span class="identifier">task</span><span>.</span><span class="identifier">id</span><span>) = </span><span class="identifier">task</span><span>
+    </span><span class="identifier">events</span><span> += </span><span class="identifier">event</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">saveAll</span><span>(</span><span class="identifier">entries</span><span>: </span><span class="type-name">List</span><span>[(</span><span class="type-name">Task</span><span>, </span><span class="type-name">TaskEvent</span><span>)]): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">entries</span><span>.</span><span class="identifier">foreach</span><span>((</span><span class="identifier">task</span><span>, </span><span class="identifier">event</span><span>) =&gt; </span><span class="identifier">save</span><span>(</span><span class="identifier">task</span><span>, </span><span class="identifier">event</span><span>))</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala</em>&lt;/small&gt;</p>
+        <p>Every method is one to three lines. <code>findById</code> delegates to <code>Map.get</code>.
+        <code>findByWaveId</code> filters the map values by a predicate. <code>save</code> puts the task in
+        the map and appends the event to a list buffer. <code>saveAll</code> loops over the
+        entries and delegates to <code>save</code>.</p>
+        <p>Two mutable collections drive the entire implementation:</p>
+        <p><strong><code>mutable.Map[TaskId, Task]</code></strong> stores the current state of each task. When
+        <code>save</code> is called, the map is updated. If a task already exists, its state is
+        replaced. The map always reflects the latest state, just like a real database
+        would.</p>
+        <p><strong><code>mutable.ListBuffer[TaskEvent]</code></strong> stores every event that was produced. This
+        list is append-only during a test. Unlike the map (which overwrites previous
+        state), the event buffer retains the full history.</p>
+        <p>Why track events separately? Because tests need to assert on <em>what happened</em>,
+        not just the final state. Consider a task completion test: after the service
+        runs, we want to verify that a <code>TaskCompleted</code> event was produced, that a
+        <code>TaskCreated</code> event was produced for the shortpick replacement, and that a
+        <code>TransportOrderCreated</code> event was produced for routing. The final state of the
+        task (it is <code>Completed</code>) tells us part of the story. The event buffer tells us
+        the rest.</p>
+        <p>Here is how the test suite uses these collections:</p>
+        <pre><code class="nohighlight"><span class="comment">// Seed the repository with test data
+</span><span class="keyword">val</span><span> </span><span class="identifier">taskRepo</span><span> = </span><span class="type-name">InMemoryTaskRepository</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">task</span><span> = </span><span class="identifier">assignedTask</span><span>()
+</span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">store</span><span>(</span><span class="identifier">task</span><span>.</span><span class="identifier">id</span><span>) = </span><span class="identifier">task</span><span>
+
+</span><span class="comment">// Run the service
+</span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> = </span><span class="identifier">service</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">task</span><span>.</span><span class="identifier">id</span><span>, </span><span class="number-literal">7</span><span>, </span><span class="boolean-literal">true</span><span>, </span><span class="identifier">at</span><span>).</span><span class="identifier">value</span><span>
+
+</span><span class="comment">// Assert on state
+</span><span class="identifier">assert</span><span>(</span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">store</span><span>(</span><span class="identifier">task</span><span>.</span><span class="identifier">id</span><span>).</span><span class="identifier">isInstanceOf</span><span>[</span><span class="type-name">Task</span><span>.</span><span class="type-name">Completed</span><span>])
+
+</span><span class="comment">// Assert on events
+</span><span class="identifier">assert</span><span>(</span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">events</span><span>.</span><span class="identifier">exists</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">isInstanceOf</span><span>[</span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCompleted</span><span>]))
+</span><span class="identifier">assert</span><span>(</span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">events</span><span>.</span><span class="identifier">exists</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">isInstanceOf</span><span>[</span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCreated</span><span>]))</span></code></pre>
+        <p>The <code>store</code> field is public, so tests can seed initial state by writing
+        directly to the map. The <code>events</code> field is public, so tests can inspect the
+        full event history after the service runs. This is deliberate: in-memory
+        repositories are test infrastructure, not production code. They prioritize
+        transparency over encapsulation.</p>
+        <p>Every repository in the system follows this same in-memory pattern. Here is the
+        wave equivalent:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">InMemoryWaveRepository</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">WaveRepository</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">store</span><span>: </span><span class="identifier">mutable</span><span>.</span><span class="type-name">Map</span><span>[</span><span class="type-name">WaveId</span><span>, </span><span class="type-name">Wave</span><span>] = </span><span class="identifier">mutable</span><span>.</span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">events</span><span>: </span><span class="identifier">mutable</span><span>.</span><span class="type-name">ListBuffer</span><span>[</span><span class="type-name">WaveEvent</span><span>] = </span><span class="identifier">mutable</span><span>.</span><span class="type-name">ListBuffer</span><span>.</span><span class="identifier">empty</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">WaveId</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Wave</span><span>] = </span><span class="identifier">store</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">id</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">wave</span><span>: </span><span class="type-name">Wave</span><span>, </span><span class="identifier">event</span><span>: </span><span class="type-name">WaveEvent</span><span>): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">store</span><span>(</span><span class="identifier">wave</span><span>.</span><span class="identifier">id</span><span>) = </span><span class="identifier">wave</span><span>
+    </span><span class="identifier">events</span><span> += </span><span class="identifier">event</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala</em>&lt;/small&gt;</p>
+        <p>Four lines of implementation. The structural repetition is a feature. When you
+        have seen one in-memory repository, you have seen them all. A new aggregate
+        module can have a working test repository in under a minute.</p>
+        
+        <h2 id="how-services-use-repositories" class="section"><a class="anchor-link left" href="#how-services-use-repositories"><i class="icofont-laika link">&#xef71;</i></a>How Services Use Repositories</h2>
+        <p>Let&#39;s revisit how services depend on repository traits. Here is the constructor
+        of <code>TaskCompletionService</code> from Chapter 7:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">TaskCompletionService</span><span>(
+    </span><span class="identifier">taskRepository</span><span>: </span><span class="type-name">TaskRepository</span><span>,
+    </span><span class="identifier">waveRepository</span><span>: </span><span class="type-name">WaveRepository</span><span>,
+    </span><span class="identifier">consolidationGroupRepository</span><span>: </span><span class="type-name">ConsolidationGroupRepository</span><span>,
+    </span><span class="identifier">transportOrderRepository</span><span>: </span><span class="type-name">TransportOrderRepository</span><span>,
+    </span><span class="identifier">verificationProfile</span><span>: </span><span class="type-name">VerificationProfile</span><span>
+):</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskCompletionService.scala</em>&lt;/small&gt;</p>
+        <p>Four repository traits, injected through the constructor. The service does not
+        know whether it is talking to a mutable map or a Pekko actor cluster. It calls
+        <code>taskRepository.findById(taskId)</code> and gets back an <code>Option[Task]</code>. It calls
+        <code>waveRepository.save(wave, event)</code> and the wave is persisted somewhere.</p>
+        <p>In tests, the wiring looks like this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">taskRepo</span><span> = </span><span class="type-name">InMemoryTaskRepository</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">waveRepo</span><span> = </span><span class="type-name">InMemoryWaveRepository</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">consolidationGroupRepo</span><span> = </span><span class="type-name">InMemoryConsolidationGroupRepository</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">transportOrderRepo</span><span> = </span><span class="type-name">InMemoryTransportOrderRepository</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">verificationProfile</span><span> = </span><span class="type-name">VerificationProfile</span><span>.</span><span class="keyword">default</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">service</span><span> = </span><span class="type-name">TaskCompletionService</span><span>(
+  </span><span class="identifier">taskRepo</span><span>, </span><span class="identifier">waveRepo</span><span>, </span><span class="identifier">consolidationGroupRepo</span><span>,
+  </span><span class="identifier">transportOrderRepo</span><span>, </span><span class="identifier">verificationProfile</span><span>
+)</span></code></pre>
+        <p>In production, the wiring happens in <code>ServiceRegistry</code> (Chapter 16), which
+        passes <code>PekkoTaskRepository</code>, <code>PekkoWaveRepository</code>, and so on. The service
+        class is identical in both cases. Same source file, same compiled bytecode,
+        same business logic. Only the adapters change.</p>
+        <p>This is the core benefit of the port trait pattern. The service embodies the
+        business rules. The repository adapters embody the persistence strategy. The
+        two concerns are completely decoupled. You can test business logic without a
+        database. You can swap persistence strategies without touching business logic.</p>
+        
+        <h2 id="the-async-service-pattern" class="section"><a class="anchor-link left" href="#the-async-service-pattern"><i class="icofont-laika link">&#xef71;</i></a>The Async Service Pattern</h2>
+        <p>When a service needs to run in production with Pekko actors, it uses async
+        repositories and returns <code>Future</code> values. Here is <code>AsyncTaskCompletionService</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">AsyncTaskCompletionService</span><span>(
+    </span><span class="identifier">taskRepository</span><span>: </span><span class="type-name">AsyncTaskRepository</span><span>,
+    </span><span class="identifier">waveRepository</span><span>: </span><span class="type-name">AsyncWaveRepository</span><span>,
+    </span><span class="identifier">consolidationGroupRepository</span><span>: </span><span class="type-name">AsyncConsolidationGroupRepository</span><span>,
+    </span><span class="identifier">transportOrderRepository</span><span>: </span><span class="type-name">AsyncTransportOrderRepository</span><span>,
+    </span><span class="identifier">verificationProfile</span><span>: </span><span class="type-name">VerificationProfile</span><span>
+)(</span><span class="identifier">using</span><span> </span><span class="type-name">ExecutionContext</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">LazyLogging</span><span>:</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/AsyncTaskCompletionService.scala</em>&lt;/small&gt;</p>
+        <p>The constructor mirrors the sync version, but every repository trait is the
+        <code>Async</code> variant. The <code>(using ExecutionContext)</code> is a Scala 3 context parameter:
+        <code>Future</code> needs an execution context to schedule its callbacks, and this
+        parameter lets the caller provide one without explicit passing at every call
+        site.</p>
+        <p>The business logic is the same as the sync version. The difference is in how
+        operations are sequenced. Where the sync service uses sequential statements,
+        the async service uses a <code>for</code>-comprehension over <code>Future</code>:</p>
+        <pre><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">completeAssigned</span><span>(
+    </span><span class="identifier">assigned</span><span>: </span><span class="type-name">Task</span><span>.</span><span class="type-name">Assigned</span><span>,
+    </span><span class="identifier">actualQuantity</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+): </span><span class="type-name">Future</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">TaskCompletionError</span><span>, </span><span class="type-name">TaskCompletionResult</span><span>]] =
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">completed</span><span>, </span><span class="identifier">completedEvent</span><span>) = </span><span class="identifier">assigned</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">actualQuantity</span><span>, </span><span class="identifier">at</span><span>)
+  </span><span class="keyword">for</span><span>
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">completed</span><span>, </span><span class="identifier">completedEvent</span><span>)
+    </span><span class="identifier">shortpick</span><span> &lt;- </span><span class="identifier">persistShortpick</span><span>(</span><span class="identifier">completed</span><span>, </span><span class="identifier">at</span><span>)
+    </span><span class="identifier">routing</span><span> &lt;- </span><span class="identifier">persistRouting</span><span>(</span><span class="identifier">completedEvent</span><span>, </span><span class="identifier">at</span><span>)
+    (</span><span class="identifier">waveCompletion</span><span>, </span><span class="identifier">pickingCompletion</span><span>) &lt;-
+      </span><span class="identifier">detectWaveAndPickingCompletion</span><span>(</span><span class="identifier">completed</span><span>, </span><span class="identifier">at</span><span>)
+  </span><span class="keyword">yield</span><span> </span><span class="type-name">Right</span><span>(
+    </span><span class="type-name">TaskCompletionResult</span><span>(
+      </span><span class="identifier">completed</span><span>, </span><span class="identifier">completedEvent</span><span>, </span><span class="identifier">shortpick</span><span>, </span><span class="identifier">routing</span><span>,
+      </span><span class="identifier">waveCompletion</span><span>, </span><span class="identifier">pickingCompletion</span><span>
+    )
+  )</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/AsyncTaskCompletionService.scala</em>&lt;/small&gt;</p>
+        <p>Let&#39;s read this line by line.</p>
+        <p>The first line is synchronous and pure: <code>assigned.complete(actualQuantity, at)</code>
+        is a typestate transition method (Chapter 4) that returns a <code>(Completed, Event)</code>
+        tuple. No <code>Future</code> here. The domain logic does not change just because we are
+        in an async context.</p>
+        <p>Then the <code>for</code>-comprehension sequences four async operations:</p>
+        <ol class="arabic">
+          <li><strong>Save the completed task.</strong> The <code>_ &lt;-</code> discards the <code>Unit</code> result; we
+          only care that the save succeeds.</li>
+          <li><strong>Persist the shortpick replacement</strong> (if any). <code>persistShortpick</code> calls
+          <code>ShortpickPolicy</code>, and if the policy returns <code>Some</code>, saves the replacement
+          task through the async repository.</li>
+          <li><strong>Persist the routing transport order</strong> (if any). Same pattern: call
+          <code>RoutingPolicy</code>, save if there is a result.</li>
+          <li><strong>Detect wave and picking completion.</strong> This step calls
+          <code>taskRepository.findByWaveId</code> to load all wave tasks, then runs
+          <code>WaveCompletionPolicy</code> and <code>PickingCompletionPolicy</code>.</li>
+        </ol>
+        <p>Each <code>&lt;-</code> arrow in the <code>for</code>-comprehension is a <code>flatMap</code> under the hood. If
+        any step fails (the <code>Future</code> completes with an exception), the remaining steps
+        are skipped. The <code>yield</code> at the end wraps the successful result in <code>Right</code>.</p>
+        <p>The important insight is this: the policies themselves (<code>ShortpickPolicy</code>,
+        <code>RoutingPolicy</code>, <code>WaveCompletionPolicy</code>) are still synchronous and pure. They
+        are called inside async helper methods, but the policy invocation is a simple
+        function call that returns immediately. Only the repository interactions are
+        async. The domain logic sits at the center, untouched by the async machinery
+        around it.</p>
+        
+        <h2 id="architecture-note-hexagonal-architecture" class="section"><a class="anchor-link left" href="#architecture-note-hexagonal-architecture"><i class="icofont-laika link">&#xef71;</i></a>Architecture Note: Hexagonal Architecture</h2>
+        <p>The repository pattern in Neon WES is a direct application of Alistair
+        Cockburn&#39;s hexagonal architecture, also known as Ports and Adapters. The core
+        idea: the application defines interfaces (ports) for everything it needs from
+        the outside world, and different implementations (adapters) plug into those
+        interfaces for different contexts.</p>
+        <p>In Neon WES, the pieces map as follows:</p>
+        <p><strong>Driven ports</strong> are the repository traits. The application <em>drives</em> outward
+        through them to persist and query data. <code>WaveRepository</code>, <code>TaskRepository</code>,
+        <code>AsyncWaveRepository</code>, <code>AsyncTaskRepository</code> are all driven ports.</p>
+        <p><strong>Adapters for driven ports</strong> are the concrete implementations.
+        <code>InMemoryTaskRepository</code> is a test adapter. <code>PekkoTaskRepository</code> (Chapter 11)
+        is the production adapter. Both implement the same port trait.</p>
+        <p><strong>Driving adapters</strong> sit on the other side. HTTP routes (Chapter 13) are
+        driving adapters: they receive external requests and translate them into
+        service calls. The service does not know whether it was called by an HTTP
+        request, a test method, or a scheduler.</p>
+        <p><strong>The dependency rule</strong> enforces the direction of knowledge. Domain modules
+        (<code>wave</code>, <code>task</code>, <code>consolidation-group</code>) define port traits. They import nothing
+        from Pekko, nothing from HTTP, nothing from any database library. The <code>core</code>
+        module depends on domain modules and uses their port traits. The <code>app</code> module
+        provides the adapters and wires everything together.</p>
+        <p>This rule is visible in the import statements. Open any file in <code>core</code> and you
+        will find imports like <code>neon.task.TaskRepository</code> and <code>neon.wave.WaveRepository</code>.
+        You will never find <code>org.apache.pekko</code> or <code>io.r2dbc</code>. The <code>core</code> module is
+        pure domain orchestration. Infrastructure lives in <code>app</code>.</p>
+        <p><strong><code>ServiceRegistry</code></strong> (Chapter 16) is the <em>composition root</em>: the single place
+        where adapters are created and wired to ports. In test suites, the test itself
+        is the composition root. In production, <code>ServiceRegistry</code> does the wiring
+        inside the <code>app</code> module.</p>
+        <p>Here is how the layers connect:</p>
+        <pre><code>[HTTP Routes]  --&gt;  [Services]  --&gt;  [Repository Traits]
+  (driving           (core)          (driven ports)
+   adapter)                               |
+                                    ______│______
+                                   |             |
+                              [InMemory]   [Pekko Adapter]
+                              (test)       (production)</code></pre>
+        <p>The services in the center depend only on the port traits (the thin line
+        pointing right). The adapters on the bottom implement those traits. The HTTP
+        routes on the left call into services. At no point does any arrow point from
+        a domain module toward an infrastructure module. Dependencies always point
+        inward, toward the domain.</p>
+        <p>This is why we can test business logic without starting a database, without
+        booting an actor system, without configuring a network. The in-memory adapters
+        are trivial to construct, and the services cannot tell the difference. The
+        hexagonal boundary is not just an architectural diagram; it is enforced by the
+        module dependency graph and by the import statements in every source file.</p>
+        
+        <h2 id="the-complete-repository-catalogue" class="section"><a class="anchor-link left" href="#the-complete-repository-catalogue"><i class="icofont-laika link">&#xef71;</i></a>The Complete Repository Catalogue</h2>
+        <p>Let&#39;s survey all the repository traits in the system. Each event-sourced
+        aggregate defines both a sync and an async port:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Aggregate</th>
+              <th>Sync Port</th>
+              <th>Async Port</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Wave</td>
+              <td><code>WaveRepository</code></td>
+              <td><code>AsyncWaveRepository</code></td>
+            </tr>
+            <tr>
+              <td>Task</td>
+              <td><code>TaskRepository</code></td>
+              <td><code>AsyncTaskRepository</code></td>
+            </tr>
+            <tr>
+              <td>ConsolidationGroup</td>
+              <td><code>ConsolidationGroupRepository</code></td>
+              <td><code>AsyncConsolidationGroupRepository</code></td>
+            </tr>
+            <tr>
+              <td>TransportOrder</td>
+              <td><code>TransportOrderRepository</code></td>
+              <td><code>AsyncTransportOrderRepository</code></td>
+            </tr>
+            <tr>
+              <td>HandlingUnit</td>
+              <td><code>HandlingUnitRepository</code></td>
+              <td><code>AsyncHandlingUnitRepository</code></td>
+            </tr>
+            <tr>
+              <td>Workstation</td>
+              <td><code>WorkstationRepository</code></td>
+              <td><code>AsyncWorkstationRepository</code></td>
+            </tr>
+            <tr>
+              <td>Slot</td>
+              <td><code>SlotRepository</code></td>
+              <td><code>AsyncSlotRepository</code></td>
+            </tr>
+            <tr>
+              <td>StockPosition</td>
+              <td><code>StockPositionRepository</code></td>
+              <td>(wired through sync in current scope)</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Every sync port follows the same structure: <code>findById</code> for single-entity
+        lookup, <code>save</code> for persisting a state-event pair, and optional query methods
+        (<code>findByWaveId</code>, <code>findByHandlingUnitId</code>) where services need them. Every async
+        port mirrors the sync one with <code>Future</code> wrappers.</p>
+        <p>The consistency across ports means that learning one repository teaches you
+        all of them. A developer adding a new aggregate module (Chapter 20) can look
+        at <code>WaveRepository</code> as a template and have a working port trait in minutes.</p>
+        
+        <h2 id="what-comes-next" class="section"><a class="anchor-link left" href="#what-comes-next"><i class="icofont-laika link">&#xef71;</i></a>What Comes Next</h2>
+        <p>We have now covered the complete domain layer: types (Chapter 3), state
+        machines (Chapter 4), events (Chapter 5), policies (Chapter 6), services
+        (Chapter 7), and repositories (Chapter 8). In the next chapter, we will bring
+        it all together by tracing the complete wave release flow from order selection
+        through task creation, allocation, assignment, and completion, seeing every
+        layer collaborate in a single end-to-end scenario.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

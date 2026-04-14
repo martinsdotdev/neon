@@ -1,0 +1,6 @@
+[debug] [zinc] IncrementalCompile -----------
+[debug] IncrementalCompile.incrementalCompile
+[debug] previous = Stamps for: 46 products, 7 sources, 7 libraries
+[debug] current source = Set(${BASE}/goods-receipt/src/main/scala/neon/goodsreceipt/GoodsReceiptActor.scala, ${BASE}/goods-receipt/src/main/scala/neon/goodsreceipt/GoodsReceiptEvent.scala, ${BASE}/goods-receipt/src/main/scala/neon/goodsreceipt/AsyncGoodsReceiptRepository.scala, ${BASE}/goods-receipt/src/main/scala/neon/goodsreceipt/PekkoGoodsReceiptRepository.scala, ${BASE}/goods-receipt/src/main/scala/neon/goodsreceipt/GoodsReceipt.scala, ${BASE}/goods-receipt/src/main/scala/neon/goodsreceipt/GoodsReceiptRepository.scala, ${BASE}/goods-receipt/src/main/scala/neon/goodsreceipt/ReceivedLine.scala)
+[debug] > initialChanges = InitialChanges(Changes(added = Set(), removed = Set(), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())
+[debug] No changes

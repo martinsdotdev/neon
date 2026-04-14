@@ -1,0 +1,4 @@
+[debug] [cycleCount] Classpath dependencies List(common)
+[debug] [cycleCount] Dependencies from configurations List()
+[debug] Bloop wrote the configuration of project 'cycleCount' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/cycleCount.json'
+[success] Generated .bloop/cycleCount.json

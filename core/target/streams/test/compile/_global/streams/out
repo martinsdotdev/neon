@@ -1,0 +1,25 @@
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m-- [E198] Unused Symbol Warning: /home/martins/Projects/neon/core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala:14:2 [0m[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m14 |[0m  [33mHandlingUnitStockId[0m,[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m   |[0m  ^^^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0m  unused import[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m-- [E198] Unused Symbol Warning: /home/martins/Projects/neon/core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala:16:2 [0m[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m16 |[0m  [33mInventoryStatus[0m,[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m   |[0m  ^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0m  unused import[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m-- [E198] Unused Symbol Warning: /home/martins/Projects/neon/core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala:24:2 [0m[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m24 |[0m  [33mSlotCode[0m,[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m   |[0m  ^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0m  unused import[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m-- [E198] Unused Symbol Warning: /home/martins/Projects/neon/core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala:25:2 [0m[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m25 |[0m  [33mStockLockType[0m,[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m   |[0m  ^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0m  unused import[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m-- [E198] Unused Symbol Warning: /home/martins/Projects/neon/core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala:41:40 [0m[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m41 |[0m[33mimport[0m neon.goodsreceipt.{[33mGoodsReceipt[0m, [33mGoodsReceiptEvent[0m, [33mReceivedLine[0m}[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m   |[0m                                        ^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0m                                        unused import[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m-- [E198] Unused Symbol Warning: /home/martins/Projects/neon/core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala:42:30 [0m[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m42 |[0m[33mimport[0m neon.handlingunitstock.[33mHandlingUnitStock[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m   |[0m                              ^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0m                              unused import[0m
+[0m[[0m[33mwarn[0m] [0m[0m6 warnings found[0m

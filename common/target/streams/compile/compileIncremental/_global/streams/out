@@ -1,0 +1,42 @@
+[debug] [zinc] IncrementalCompile -----------
+[debug] IncrementalCompile.incrementalCompile
+[debug] previous = Stamps for: 131 products, 39 sources, 7 libraries
+[debug] current source = Set(${BASE}/common/src/main/scala/neon/common/CarrierId.scala, ${BASE}/common/src/main/scala/neon/common/LocationId.scala, ${BASE}/common/src/main/scala/neon/common/CountType.scala, ${BASE}/common/src/main/scala/neon/common/AdjustmentReasonCode.scala, ${BASE}/common/src/main/scala/neon/common/WaveId.scala, ${BASE}/common/src/main/scala/neon/common/UomHierarchy.scala, ${BASE}/common/src/main/scala/neon/common/OrderId.scala, ${BASE}/common/src/main/scala/neon/common/WarehouseAreaId.scala, ${BASE}/common/src/main/scala/neon/common/StockPositionId.scala, ${BASE}/common/src/main/scala/neon/common/InventoryId.scala, ${BASE}/common/src/main/scala/neon/common/CycleCountId.scala, ${BASE}/common/src/main/scala/neon/common/SkuId.scala, ${BASE}/common/src/main/scala/neon/common/Priority.scala, ${BASE}/common/src/main/scala/neon/common/CountTaskId.scala, ${BASE}/common/src/main/scala/neon/common/GoodsReceiptId.scala, ${BASE}/common/src/main/scala/neon/common/R2dbcProjectionQueries.scala, ${BASE}/common/src/main/scala/neon/common/SlotCode.scala, ${BASE}/common/src/main/scala/neon/common/HandlingUnitStockId.scala, ${BASE}/common/src/main/scala/neon/common/AllocationStrategy.scala, ${BASE}/common/src/main/scala/neon/common/Lot.scala, ${BASE}/common/src/main/scala/neon/common/Permission.scala, ${BASE}/common/src/main/scala/neon/common/TransportOrderId.scala, ${BASE}/common/src/main/scala/neon/common/WorkstationId.scala, ${BASE}/common/src/main/scala/neon/common/InboundDeliveryId.scala, ${BASE}/common/src/main/scala/neon/common/UserId.scala, ${BASE}/common/src/main/scala/neon/common/SlotId.scala, ${BASE}/common/src/main/scala/neon/common/StockLockType.scala, ${BASE}/common/src/main/scala/neon/common/HandlingUnitId.scala, ${BASE}/common/src/main/scala/neon/common/ContainerId.scala, ${BASE}/common/src/main/scala/neon/common/ConsolidationGroupId.scala, ${BASE}/common/src/main/scala/neon/common/WorkstationMode.scala, ${BASE}/common/src/main/scala/neon/common/TaskId.scala, ${BASE}/common/src/main/scala/neon/common/serialization/CborSerializable.scala, ${BASE}/common/src/main/scala/neon/common/ZoneId.scala, ${BASE}/common/src/main/scala/neon/common/Role.scala, ${BASE}/common/src/main/scala/neon/common/LotAttributes.scala, ${BASE}/common/src/main/scala/neon/common/CountMethod.scala, ${BASE}/common/src/main/scala/neon/common/PackagingLevel.scala, ${BASE}/common/src/main/scala/neon/common/InventoryStatus.scala)
+[debug] > initialChanges = InitialChanges(Changes(added = Set(), removed = Set(), changed = Set(${BASE}/common/src/main/scala/neon/common/TransportOrderId.scala, ${BASE}/common/src/main/scala/neon/common/InventoryId.scala), unmodified = ...),Set(),Set(),API Changes: Set())
+[debug] 
+[debug] Initial source changes:
+[debug] 	removed: Set()
+[debug] 	added: Set()
+[debug] 	modified: Set(${BASE}/common/src/main/scala/neon/common/TransportOrderId.scala, ${BASE}/common/src/main/scala/neon/common/InventoryId.scala)
+[debug] Invalidated products: Set()
+[debug] External API changes: API Changes: Set()
+[debug] Modified binary dependencies: Set()
+[debug] Initial directly invalidated classes: Set(neon.common.TransportOrderId$package$.TransportOrderId, neon.common.TransportOrderId$package, neon.common.InventoryId$package$.InventoryId, neon.common.InventoryId$package)
+[debug] Sources indirectly invalidated by:
+[debug] 	product: Set()
+[debug] 	binary dep: Set()
+[debug] 	external source: Set()
+[debug] All initially invalidated classes: Set(neon.common.TransportOrderId$package$.TransportOrderId, neon.common.TransportOrderId$package, neon.common.InventoryId$package$.InventoryId, neon.common.InventoryId$package)
+[debug] All initially invalidated sources:Set(${BASE}/common/src/main/scala/neon/common/TransportOrderId.scala, ${BASE}/common/src/main/scala/neon/common/InventoryId.scala)
+[debug] Initial set of included nodes: neon.common.TransportOrderId$package$.TransportOrderId, neon.common.TransportOrderId$package, neon.common.InventoryId$package$.InventoryId, neon.common.InventoryId$package
+[debug] compilation cycle 1
+[info] compiling 2 Scala sources to /home/martins/Projects/neon/common/target/scala-3.8.2/classes ...
+[debug] Returning already retrieved and compiled bridge: /home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala3-sbt-bridge/3.8.2/scala3-sbt-bridge-3.8.2.jar.
+[debug] [zinc] Running cached compiler 118972b2 for Scala Compiler version 3.8.2
+[debug] [zinc] The Scala compiler is invoked with:
+[debug] 	-Wunused:imports
+[debug] 	-Xsemanticdb
+[debug] 	-semanticdb-target
+[debug] 	/home/martins/Projects/neon/common/target/scala-3.8.2/meta
+[debug] 	-classpath
+[debug] 	/home/martins/Projects/neon/common/target/scala-3.8.2/classes:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala3-library_3/3.8.2/scala3-library_3-3.8.2.jar:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/github/f4b6a3/uuid-creator/6.1.1/uuid-creator-6.1.1.jar:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/io/r2dbc/r2dbc-spi/1.0.0.RELEASE/r2dbc-spi-1.0.0.RELEASE.jar:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-actor-typed_3/1.2.0/pekko-actor-typed_3-1.2.0.jar:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-stream_3/1.2.0/pekko-stream_3-1.2.0.jar:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/3.8.2/scala-library-3.8.2.jar:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-actor_3/1.2.0/pekko-actor_3-1.2.0.jar:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-slf4j_3/1.2.0/pekko-slf4j_3-1.2.0.jar:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-protobuf-v3_3/1.2.0/pekko-protobuf-v3_3-1.2.0.jar:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/ssl-config-core_3/0.6.1/ssl-config-core_3-0.6.1.jar:/home/martins/.cache/coursier/v1/https/repo1.maven.org/maven2/com/typesafe/config/1.4.4/config-1.4.4.jar
+[debug] Scala compilation took 4.460082233 s
+[info] done compiling
+[debug] New invalidations:
+[debug] Initial set of included nodes: 
+[debug] Previously invalidated, but (transitively) depend on new invalidations:
+[debug] Final step, transitive dependencies:
+[debug] 	Set()
+[debug] Initial set of included nodes: neon.common.TransportOrderId$package$.TransportOrderId, neon.common.TransportOrderId$package, neon.common.InventoryId$package$.InventoryId, neon.common.InventoryId$package
+[debug] Invalidated macros due to upstream dependencies change: Set()
+[debug] No classes were invalidated.

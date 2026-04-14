@@ -1,0 +1,17 @@
+[debug] Created transactional ClassFileManager with tempDir = /home/martins/Projects/neon/workstation/target/scala-3.8.2/classes.bak
+[debug] About to delete class files:
+[debug] 	PekkoWorkstationRepository$$anon$1.class
+[debug] 	PekkoWorkstationRepository.class
+[debug] 	PekkoWorkstationRepository$$anon$1.tasty
+[debug] 	PekkoWorkstationRepository.tasty
+[debug] We backup class files:
+[debug] 	PekkoWorkstationRepository$$anon$1.class
+[debug] 	PekkoWorkstationRepository.class
+[debug] 	PekkoWorkstationRepository$$anon$1.tasty
+[debug] 	PekkoWorkstationRepository.tasty
+[debug] Registering generated classes:
+[debug] 	PekkoWorkstationRepository.class
+[debug] 	PekkoWorkstationRepository$$anon$1.class
+[debug] 	PekkoWorkstationRepository.tasty
+[debug] 	PekkoWorkstationRepository$$anon$1.tasty
+[debug] Removing the temporary directory used for backing up class files: /home/martins/Projects/neon/workstation/target/scala-3.8.2/classes.bak

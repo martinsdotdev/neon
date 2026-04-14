@@ -1,0 +1,60 @@
+[debug] Running TaskDef(neon.inbounddelivery.InboundDeliverySuite, org.scalatest.tools.Framework$$anon$1@2c365184, false, [SuiteSelector])
+[debug] Running TaskDef(neon.inbounddelivery.InboundDeliveryActorSuite, org.scalatest.tools.Framework$$anon$1@2c365184, false, [SuiteSelector])
+[info] InboundDeliverySuite:
+[info] InboundDelivery
+[info]   creation
+[info]   - validates expectedQuantity is positive
+[info]   - validates expectedQuantity is not negative
+[info]   starting to receive
+[info]   - transitions from New to Receiving
+[info]   - emits ReceivingStarted event
+[info]   receiving quantity
+[info]   - increments received quantity
+[info]   - increments rejected quantity
+[info]   - accumulates across multiple receives
+[info]   - emits QuantityReceived event with correct quantities
+[info]   - rejects when received + rejected exceeds expected
+[info]   - allows receiving up to exactly expected quantity
+[info]   - rejects zero quantity when rejected is also zero
+[info]   isFullyReceived
+[info]   - returns true when received + rejected equals expected
+[info]   - returns false when quantities do not match expected
+[info]   completing
+[info]   - transitions to Received when fully received
+[info]   - emits Received event
+[info]   - rejects completion when not fully received
+[info]   closing
+[info]   - forces remaining quantity as rejected
+[info]   - emits Closed event
+[info]   cancelling
+[info]   - transitions from New to Cancelled
+[info] InboundDeliveryActorSuite:
+[info] InboundDeliveryActor
+[info]   Create
+[info]   - persists InboundDeliveryCreated event and sets New state
+[info]   GetState
+[info]   - returns None when empty
+[info]   - returns Some after creation
+[info]   StartReceiving
+[info]   - transitions New to Receiving
+[info]   - rejects StartReceiving in EmptyState
+[info]   Receive
+[info]   - increments received quantity
+[info]   - rejects Receive when not in Receiving state
+[info]   Complete
+[info]   - transitions Receiving to Received when fully received
+[info]   Close
+[info]   - forces remaining as rejected and transitions to Closed
+[info]   Cancel
+[info]   - cancels a New delivery
+[info]   - rejects Cancel on Receiving delivery
+[info]   event replay
+[info]   - recovers New state from journal
+[info] Run completed in 12 seconds, 546 milliseconds.
+[info] Total number of tests run: 31
+[info] Suites: completed 2, aborted 0
+[info] Tests: succeeded 31, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.inbounddelivery.InboundDeliverySuite
+[debug] 	neon.inbounddelivery.InboundDeliveryActorSuite

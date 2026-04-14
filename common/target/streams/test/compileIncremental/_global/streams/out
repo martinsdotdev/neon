@@ -1,0 +1,6 @@
+[debug] [zinc] IncrementalCompile -----------
+[debug] IncrementalCompile.incrementalCompile
+[debug] previous = Stamps for: 4 products, 4 sources, 5 libraries
+[debug] current source = Set(${BASE}/common/src/test/scala/neon/common/LotSuite.scala, ${BASE}/common/src/test/scala/neon/common/LotAttributesSuite.scala, ${BASE}/common/src/test/scala/neon/common/UomHierarchySuite.scala, ${BASE}/common/src/test/scala/neon/common/PermissionSuite.scala)
+[debug] > initialChanges = InitialChanges(Changes(added = Set(), removed = Set(), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())
+[debug] No changes

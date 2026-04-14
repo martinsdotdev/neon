@@ -1,0 +1,11 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/inventory/src/main/scala/neon/inventory/InventoryEvent.scala, /home/martins/Projects/neon/inventory/src/main/scala/neon/inventory/PekkoInventoryRepository.scala, /home/martins/Projects/neon/inventory/src/main/scala/neon/inventory/InventoryRepository.scala, /home/martins/Projects/neon/inventory/src/main/scala/neon/inventory/InventoryActor.scala, /home/martins/Projects/neon/inventory/src/main/scala/neon/inventory/Inventory.scala, /home/martins/Projects/neon/inventory/src/main/scala/neon/inventory/AsyncInventoryRepository.scala
+[debug] 	Modified: /home/martins/Projects/neon/inventory/src/main/scala/neon/inventory/PekkoInventoryRepository.scala
+[debug] 	Unmodified: /home/martins/Projects/neon/inventory/src/main/scala/neon/inventory/InventoryEvent.scala, /home/martins/Projects/neon/inventory/src/main/scala/neon/inventory/InventoryRepository.scala, /home/martins/Projects/neon/inventory/src/main/scala/neon/inventory/InventoryActor.scala, /home/martins/Projects/neon/inventory/src/main/scala/neon/inventory/Inventory.scala, /home/martins/Projects/neon/inventory/src/main/scala/neon/inventory/AsyncInventoryRepository.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[info] scalafmt: Formatting 1 Scala sources (/home/martins/Projects/neon/inventory)...
+[debug] scalafmt: Unchanged 1 Scala sources

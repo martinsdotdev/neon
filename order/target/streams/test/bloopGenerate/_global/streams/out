@@ -1,0 +1,4 @@
+[debug] [order-test] Classpath dependencies List(common)
+[debug] [order-test] Dependencies from configurations List(order)
+[debug] Bloop wrote the configuration of project 'order-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/order-test.json'
+[success] Generated .bloop/order-test.json

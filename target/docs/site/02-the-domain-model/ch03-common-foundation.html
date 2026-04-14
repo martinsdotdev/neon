@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>The Common Foundation</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 active nav-leaf"><a href="#">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">The Common Foundation</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#the-problem-of-primitive-types">The Problem of Primitive Types</a></li>
+    <li class="level1 nav-node"><a href="#opaque-type-ids">Opaque Type IDs</a></li>
+    <li class="level2 nav-leaf"><a href="#why-uuid-v7">Why UUID v7?</a></li>
+    <li class="level2 nav-leaf"><a href="#the-full-id-catalogue">The Full ID Catalogue</a></li>
+    <li class="level1 nav-node"><a href="#shared-enums">Shared Enums</a></li>
+    <li class="level2 nav-leaf"><a href="#priority">Priority</a></li>
+    <li class="level2 nav-leaf"><a href="#packaginglevel">PackagingLevel</a></li>
+    <li class="level2 nav-leaf"><a href="#inventorystatus">InventoryStatus</a></li>
+    <li class="level2 nav-leaf"><a href="#allocationstrategy">AllocationStrategy</a></li>
+    <li class="level2 nav-leaf"><a href="#stocklocktype">StockLockType</a></li>
+    <li class="level2 nav-leaf"><a href="#other-shared-enums">Other Shared Enums</a></li>
+    <li class="level1 nav-node"><a href="#utility-types">Utility Types</a></li>
+    <li class="level2 nav-leaf"><a href="#lotattributes">LotAttributes</a></li>
+    <li class="level2 nav-leaf"><a href="#uomhierarchy">UomHierarchy</a></li>
+    <li class="level1 nav-leaf"><a href="#the-cborserializable-marker-trait">The CborSerializable Marker Trait</a></li>
+    <li class="level1 nav-leaf"><a href="#r2dbcprojectionqueries">R2dbcProjectionQueries</a></li>
+    <li class="level1 nav-leaf"><a href="#what-comes-next">What Comes Next</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="the-common-foundation" class="title">The Common Foundation</h1>
+        <p>Every module in Neon WES depends on the <code>common</code> module. It provides the
+        shared vocabulary: identity types that prevent you from mixing up a <code>WaveId</code>
+        with a <code>TaskId</code>, enums that name concepts like priority and packaging level,
+        and utility types that encode warehouse knowledge about lots and units of
+        measure. Let&#39;s explore what lives here and why each type exists.</p>
+        
+        <h2 id="the-problem-of-primitive-types" class="section"><a class="anchor-link left" href="#the-problem-of-primitive-types"><i class="icofont-laika link">&#xef71;</i></a>The Problem of Primitive Types</h2>
+        <p>Imagine a function that assigns a warehouse task to a user:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">assignTaskToUser</span><span>(</span><span class="identifier">taskId</span><span>: </span><span class="type-name">UUID</span><span>, </span><span class="identifier">userId</span><span>: </span><span class="type-name">UUID</span><span>): </span><span class="type-name">Unit</span></code></pre>
+        <p>Both parameters are <code>UUID</code>s. The compiler is perfectly happy if you call this
+        with the arguments reversed:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// Compiles without complaint, fails silently at runtime.
+</span><span class="identifier">assignTaskToUser</span><span>(</span><span class="identifier">userId</span><span>, </span><span class="identifier">taskId</span><span>)</span></code></pre>
+        <p>This is the <em>primitive obsession</em> problem. When you represent distinct domain
+        concepts with the same underlying type, the compiler cannot help you keep them
+        apart. The bug above will not produce a compile error, a warning, or even an
+        exception. It will silently assign the wrong task to the wrong user, and you
+        will discover the mistake in production when a worker&#39;s RF scanner shows
+        someone else&#39;s picks.</p>
+        <p>In a system with over twenty distinct identifier types, this is not a
+        theoretical concern. We need the compiler to reject these mistakes at the call
+        site, before the code ever runs.</p>
+        
+        <h2 id="opaque-type-ids" class="section"><a class="anchor-link left" href="#opaque-type-ids"><i class="icofont-laika link">&#xef71;</i></a>Opaque Type IDs</h2>
+        <p>Scala 3 provides a feature called <em>opaque types</em> that solves this problem with
+        zero runtime overhead. An opaque type is a compile-time alias that the compiler
+        treats as a distinct type, but at runtime the JVM sees the underlying type
+        directly. No wrapper object, no boxing, no extra allocation.</p>
+        <p>Here is how Neon WES defines <code>WaveId</code>:</p>
+        <pre><code class="nohighlight"><span class="keyword">package</span><span> </span><span class="identifier">neon</span><span>.</span><span class="identifier">common</span><span>
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">com</span><span>.</span><span class="identifier">github</span><span>.</span><span class="identifier">f4b6a3</span><span>.</span><span class="identifier">uuid</span><span>.</span><span class="type-name">UuidCreator</span><span>
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">UUID</span><span>
+
+</span><span class="identifier">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">WaveId</span><span> = </span><span class="type-name">UUID</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">WaveId</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(): </span><span class="type-name">WaveId</span><span>         = </span><span class="type-name">UuidCreator</span><span>.</span><span class="identifier">getTimeOrderedEpoch</span><span>()
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">value</span><span>: </span><span class="type-name">UUID</span><span>): </span><span class="type-name">WaveId</span><span> = </span><span class="identifier">value</span><span>
+
+  </span><span class="identifier">extension</span><span> (</span><span class="identifier">id</span><span>: </span><span class="type-name">WaveId</span><span>) </span><span class="keyword">def</span><span> </span><span class="declaration-name">value</span><span>: </span><span class="type-name">UUID</span><span> = </span><span class="identifier">id</span></code></pre>
+        <p>&lt;small&gt;<em>File: common/src/main/scala/neon/common/WaveId.scala</em>&lt;/small&gt;</p>
+        <p>Let&#39;s walk through each piece.</p>
+        <p><strong>The opaque type declaration.</strong> <code>opaque type WaveId = UUID</code> tells the compiler
+        that <code>WaveId</code> is a <code>UUID</code> inside this file, but everywhere else it is its own
+        distinct type. Outside of the <code>WaveId</code> companion object, you cannot treat a
+        <code>WaveId</code> as a <code>UUID</code> or vice versa without an explicit conversion.</p>
+        <p><strong>The two <code>apply</code> overloads.</strong> <code>apply()</code> generates a fresh identifier.
+        <code>apply(value: UUID)</code> wraps an existing <code>UUID</code> as a <code>WaveId</code>, which you need
+        when reconstructing identifiers from a database or a serialized message.</p>
+        <p><strong>The <code>extension</code> for <code>.value</code>.</strong> Since the outside world cannot see that
+        <code>WaveId</code> is a <code>UUID</code>, we provide an extension method that returns the
+        underlying value. This is the escape hatch for when you genuinely need the raw
+        <code>UUID</code>, for example when binding a query parameter to a SQL statement.</p>
+        <p>Now our function signature becomes:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">assignTaskToUser</span><span>(</span><span class="identifier">taskId</span><span>: </span><span class="type-name">TaskId</span><span>, </span><span class="identifier">userId</span><span>: </span><span class="type-name">UserId</span><span>): </span><span class="type-name">Unit</span></code></pre>
+        <p>And the accidental swap becomes a compile error:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// Does not compile: found UserId, required TaskId.
+</span><span class="identifier">assignTaskToUser</span><span>(</span><span class="identifier">userId</span><span>, </span><span class="identifier">taskId</span><span>)</span></code></pre>
+        <p>The compiler catches the bug instantly. At runtime, both <code>TaskId</code> and <code>UserId</code>
+        are still plain <code>UUID</code>s with no wrapper overhead. We get the safety of distinct
+        types for free.</p>
+        
+        <h3 id="why-uuid-v7" class="section"><a class="anchor-link left" href="#why-uuid-v7"><i class="icofont-laika link">&#xef71;</i></a>Why UUID v7?</h3>
+        <p>You may have noticed that the <code>apply()</code> factory calls
+        <code>UuidCreator.getTimeOrderedEpoch()</code> rather than <code>UUID.randomUUID()</code>. This
+        generates a <em>UUID v7</em>, which encodes the current timestamp in its most
+        significant bits.</p>
+        <p>UUID v7 matters for two practical reasons:</p>
+        <ol class="arabic">
+          <li>
+            <p><strong>Database index performance.</strong> B-tree indexes perform best when new values
+            are approximately sequential. Random UUID v4 values scatter inserts across
+            the entire index, causing page splits and write amplification. UUID v7
+            values are monotonically increasing, so new rows land near the end of the
+            index. For a system that creates thousands of tasks per hour, this
+            difference is significant.</p>
+          </li>
+          <li>
+            <p><strong>Natural ordering.</strong> Because the timestamp is embedded in the ID, you can
+            sort entities by their identifier to get approximate creation order. This
+            is useful for debugging, for &quot;most recent first&quot; projection queries, and
+            for Pekko&#39;s event journal.</p>
+          </li>
+        </ol>
+        
+        <h3 id="the-full-id-catalogue" class="section"><a class="anchor-link left" href="#the-full-id-catalogue"><i class="icofont-laika link">&#xef71;</i></a>The Full ID Catalogue</h3>
+        <p>Every identifier in Neon WES follows the exact same pattern as <code>WaveId</code>. Here
+        is the complete list, grouped by the domain area they belong to:</p>
+        <p><strong>Outbound execution:</strong>
+        <code>WaveId</code>, <code>TaskId</code>, <code>OrderId</code>, <code>ConsolidationGroupId</code></p>
+        <p><strong>Physical inventory:</strong>
+        <code>HandlingUnitId</code>, <code>HandlingUnitStockId</code>, <code>InventoryId</code>, <code>StockPositionId</code>,
+        <code>ContainerId</code></p>
+        <p><strong>Warehouse movement:</strong>
+        <code>TransportOrderId</code>, <code>WorkstationId</code>, <code>SlotId</code>, <code>SlotCode</code></p>
+        <p><strong>Warehouse topology:</strong>
+        <code>LocationId</code>, <code>WarehouseAreaId</code>, <code>ZoneId</code>, <code>CarrierId</code></p>
+        <p><strong>Inbound and quality:</strong>
+        <code>InboundDeliveryId</code>, <code>GoodsReceiptId</code>, <code>CycleCountId</code>, <code>CountTaskId</code></p>
+        <p><strong>Master data:</strong>
+        <code>SkuId</code>, <code>UserId</code></p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Most of these are <code>opaque type X = UUID</code>, but two break the
+          pattern. <code>Lot</code> is <code>opaque type Lot = String</code> because lot codes are
+          human-readable alphanumeric strings, not UUIDs. <code>SlotCode</code> is also
+          <code>opaque type SlotCode = String</code> because slot positions within a container
+          are identified by short codes like <code>&quot;A1&quot;</code> or <code>&quot;B3&quot;</code>, not generated
+          identifiers. Both include <code>require</code> preconditions to reject empty strings.</p>
+        </div>
+        <p>The consistency is deliberate. When you add a new aggregate, you create a new
+        opaque type file following the same three-line structure: the type alias, the
+        companion with two <code>apply</code> overloads, and the <code>.value</code> extension.</p>
+        
+        <h2 id="shared-enums" class="section"><a class="anchor-link left" href="#shared-enums"><i class="icofont-laika link">&#xef71;</i></a>Shared Enums</h2>
+        <p>Beyond identifiers, the <code>common</code> module defines enums for categorical domain
+        concepts. These appear in aggregate constructors, event payloads, and service
+        parameters across the entire system.</p>
+        
+        <h3 id="priority" class="section"><a class="anchor-link left" href="#priority"><i class="icofont-laika link">&#xef71;</i></a>Priority</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">enum</span><span> </span><span class="type-name">Priority</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Low</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Normal</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">High</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Critical</span></code></pre>
+        <p>&lt;small&gt;<em>File: common/src/main/scala/neon/common/Priority.scala</em>&lt;/small&gt;</p>
+        <p><em>Priority</em> determines the urgency of orders and tasks. A <code>Normal</code> order follows
+        the standard warehouse workflow. A <code>High</code> order is expedited for same-day
+        delivery promises. A <code>Critical</code> order jumps to the front of every queue, for
+        situations like VIP escalations or regulatory recall shipments. During wave
+        planning, priority influences which orders get released first. During task
+        allocation, it determines which tasks workers receive before others.</p>
+        
+        <h3 id="packaginglevel" class="section"><a class="anchor-link left" href="#packaginglevel"><i class="icofont-laika link">&#xef71;</i></a>PackagingLevel</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">enum</span><span> </span><span class="type-name">PackagingLevel</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Pallet</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Case</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">InnerPack</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Each</span></code></pre>
+        <p>&lt;small&gt;<em>File: common/src/main/scala/neon/common/PackagingLevel.scala</em>&lt;/small&gt;</p>
+        <p><em>PackagingLevel</em> models the GS1 packaging hierarchy from Chapter 1. A pallet
+        contains cases, a case contains inner packs, and an inner pack contains
+        individual eaches. This enum appears wherever the system reasons about
+        packaging: in handling units, inventory records, and order lines.</p>
+        <p>The hierarchy runs from coarsest (<code>Pallet</code>) to finest (<code>Each</code>). When the
+        system needs to convert between levels, it uses the <code>UomHierarchy</code> type that
+        we will see shortly.</p>
+        
+        <h3 id="inventorystatus" class="section"><a class="anchor-link left" href="#inventorystatus"><i class="icofont-laika link">&#xef71;</i></a>InventoryStatus</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">enum</span><span> </span><span class="type-name">InventoryStatus</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Available</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">QualityHold</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Damaged</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Blocked</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Expired</span></code></pre>
+        <p>&lt;small&gt;<em>File: common/src/main/scala/neon/common/InventoryStatus.scala</em>&lt;/small&gt;</p>
+        <p><em>InventoryStatus</em> represents the disposition of stock. Only <code>Available</code> stock
+        can be allocated to outbound orders. The other statuses represent restrictions:
+        <code>QualityHold</code> (awaiting inspection), <code>Damaged</code> (physically harmed), <code>Blocked</code>
+        (administrative holds such as regulatory recalls), and <code>Expired</code> (past shelf
+        life). These categories align with the ISA-95 material model and SAP EWM
+        stock types. When the allocation service searches for inventory to fulfill an
+        order, it filters on <code>InventoryStatus.Available</code> before anything else.</p>
+        
+        <h3 id="allocationstrategy" class="section"><a class="anchor-link left" href="#allocationstrategy"><i class="icofont-laika link">&#xef71;</i></a>AllocationStrategy</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">enum</span><span> </span><span class="type-name">AllocationStrategy</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Fefo</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Fifo</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">NearestLocation</span></code></pre>
+        <p>&lt;small&gt;<em>File: common/src/main/scala/neon/common/AllocationStrategy.scala</em>&lt;/small&gt;</p>
+        <p><em>AllocationStrategy</em> controls how the system selects inventory positions when
+        fulfilling demand. We discussed FEFO and FIFO in Chapter 1; here they become
+        concrete enum values:</p>
+        <ul>
+          <li><code>Fefo</code> (First Expired, First Out) sorts by expiration date ascending.
+          Mandatory for pharmaceutical and food warehouses under FDA and EU GDP.</li>
+          <li><code>Fifo</code> (First In, First Out) sorts by production date ascending. The
+          standard approach for non-perishable goods under GAAP (ASC 330).</li>
+          <li><code>NearestLocation</code> minimizes pick travel distance by selecting the closest
+          available stock.</li>
+        </ul>
+        <p>A strategy is typically configured per SKU or SKU category. A pharmaceutical
+        warehouse might use <code>Fefo</code> for medications and <code>NearestLocation</code> for packaging
+        materials.</p>
+        
+        <h3 id="stocklocktype" class="section"><a class="anchor-link left" href="#stocklocktype"><i class="icofont-laika link">&#xef71;</i></a>StockLockType</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">enum</span><span> </span><span class="type-name">StockLockType</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Outbound</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Inbound</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">InternalMove</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Count</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Adjustment</span></code></pre>
+        <p>&lt;small&gt;<em>File: common/src/main/scala/neon/common/StockLockType.scala</em>&lt;/small&gt;</p>
+        <p>When stock is reserved for an operation but not yet physically moved,
+        <em>StockLockType</em> records the reason. <code>Outbound</code> locks route to the allocated
+        quantity bucket (stock promised to a specific order). All other lock types
+        route to the reserved quantity bucket (stock temporarily held for an internal
+        process).</p>
+        
+        <h3 id="other-shared-enums" class="section"><a class="anchor-link left" href="#other-shared-enums"><i class="icofont-laika link">&#xef71;</i></a>Other Shared Enums</h3>
+        <p>The <code>common</code> module contains several additional enums that we will meet in
+        later chapters:</p>
+        <ul>
+          <li><code>CountMethod</code> (<code>Blind</code>, <code>Informed</code>) and <code>CountType</code> (<code>Planned</code>, <code>Random</code>,
+          <code>Triggered</code>, <code>Recount</code>) support the cycle count subsystem.</li>
+          <li><code>WorkstationMode</code> (<code>Receiving</code>, <code>Picking</code>, <code>Counting</code>, <code>Relocation</code>)
+          determines what type of work a workstation processes.</li>
+          <li><code>AdjustmentReasonCode</code> provides a detailed taxonomy of inventory adjustment
+          reasons, required for SOX Section 404 audit trails.</li>
+          <li><code>Role</code> (<code>Admin</code>, <code>Supervisor</code>, <code>Operator</code>, <code>Viewer</code>) and <code>Permission</code>
+          define the authorization model. Each <code>Permission</code> carries a string key like
+          <code>&quot;wave:plan&quot;</code> or <code>&quot;task:complete&quot;</code> that maps to a specific operation.</li>
+        </ul>
+        <p>All of these live in <code>common</code> because they are referenced by multiple modules.</p>
+        
+        <h2 id="utility-types" class="section"><a class="anchor-link left" href="#utility-types"><i class="icofont-laika link">&#xef71;</i></a>Utility Types</h2>
+        
+        <h3 id="lotattributes" class="section"><a class="anchor-link left" href="#lotattributes"><i class="icofont-laika link">&#xef71;</i></a>LotAttributes</h3>
+        <p>Warehouses that handle perishable goods or serialized products need to track
+        more than just &quot;how many units are here.&quot; They need the batch number, the
+        manufacture date, the expiration date, and sometimes the serial number. The
+        <code>LotAttributes</code> case class captures all of this:</p>
+        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">LotAttributes</span><span>(
+    </span><span class="identifier">lot</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Lot</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="identifier">expirationDate</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">LocalDate</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="identifier">productionDate</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">LocalDate</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="identifier">serialNumber</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">None</span><span>
+):
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">remainingShelfLifeDays</span><span>(</span><span class="identifier">referenceDate</span><span>: </span><span class="type-name">LocalDate</span><span>): </span><span class="type-name">Int</span><span> =
+    </span><span class="identifier">expirationDate</span><span> </span><span class="keyword">match</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span>       =&gt; </span><span class="type-name">Int</span><span>.</span><span class="type-name">MaxValue</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">date</span><span>) =&gt;
+        </span><span class="keyword">val</span><span> </span><span class="identifier">days</span><span> = </span><span class="type-name">ChronoUnit</span><span>.</span><span class="type-name">DAYS</span><span>.</span><span class="identifier">between</span><span>(</span><span class="identifier">referenceDate</span><span>, </span><span class="identifier">date</span><span>).</span><span class="identifier">toInt</span><span>
+        </span><span class="keyword">if</span><span> </span><span class="identifier">days</span><span> &lt; </span><span class="number-literal">0</span><span> </span><span class="identifier">then</span><span> </span><span class="number-literal">0</span><span> </span><span class="keyword">else</span><span> </span><span class="identifier">days</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">isExpired</span><span>(</span><span class="identifier">referenceDate</span><span>: </span><span class="type-name">LocalDate</span><span>): </span><span class="type-name">Boolean</span><span> =
+    </span><span class="identifier">expirationDate</span><span>.</span><span class="identifier">exists</span><span>(</span><span class="identifier">date</span><span> =&gt; !</span><span class="identifier">referenceDate</span><span>.</span><span class="identifier">isBefore</span><span>(</span><span class="identifier">date</span><span>))</span></code></pre>
+        <p>&lt;small&gt;<em>File: common/src/main/scala/neon/common/LotAttributes.scala</em>&lt;/small&gt;</p>
+        <p>Each field maps to a GS1 Application Identifier (AI):</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>GS1 AI</th>
+              <th>Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>lot</code></td>
+              <td>AI 10</td>
+              <td>Batch or lot number</td>
+            </tr>
+            <tr>
+              <td><code>expirationDate</code></td>
+              <td>AI 17</td>
+              <td>Shelf life expiration date</td>
+            </tr>
+            <tr>
+              <td><code>productionDate</code></td>
+              <td>AI 11</td>
+              <td>Date of manufacture</td>
+            </tr>
+            <tr>
+              <td><code>serialNumber</code></td>
+              <td>AI 21</td>
+              <td>Item-level serial number</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>All fields are <code>Option</code>s because not every product requires every attribute. A
+        bag of bolts has no expiration date. A non-serialized consumer product has no
+        serial number. A warehouse that does not track lots at all simply leaves every
+        field as <code>None</code>.</p>
+        <p>The two methods support the FEFO allocation strategy.
+        <code>remainingShelfLifeDays</code> computes how many days of shelf life remain from a
+        reference date, returning <code>Int.MaxValue</code> for non-perishable stock. <code>isExpired</code>
+        returns <code>true</code> if stock is at or past its expiration date. Together, they let
+        the allocation service sort candidates by remaining shelf life and exclude
+        expired stock in a single pass.</p>
+        
+        <h3 id="uomhierarchy" class="section"><a class="anchor-link left" href="#uomhierarchy"><i class="icofont-laika link">&#xef71;</i></a>UomHierarchy</h3>
+        <p>When a customer orders &quot;2 cases&quot; of a product, the system needs to know how
+        many individual eaches that represents. This conversion is what
+        <em>UomHierarchy</em> (Unit-of-Measure Hierarchy) encodes:</p>
+        <pre><code class="nohighlight"><span class="identifier">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">UomHierarchy</span><span> = </span><span class="type-name">Map</span><span>[</span><span class="type-name">PackagingLevel</span><span>, </span><span class="type-name">Int</span><span>]
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">UomHierarchy</span><span>:
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">empty</span><span>: </span><span class="type-name">UomHierarchy</span><span> = </span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">entries</span><span>: (</span><span class="type-name">PackagingLevel</span><span>, </span><span class="type-name">Int</span><span>)*): </span><span class="type-name">UomHierarchy</span><span> =
+    </span><span class="keyword">val</span><span> </span><span class="identifier">m</span><span> = </span><span class="type-name">Map</span><span>(</span><span class="identifier">entries</span><span>*)
+    </span><span class="identifier">require</span><span>(
+      !</span><span class="identifier">m</span><span>.</span><span class="identifier">contains</span><span>(</span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Each</span><span>),
+      </span><span class="string-literal">&quot;Each is the implicit base unit and must not appear in the hierarchy&quot;</span><span>
+    )
+    </span><span class="identifier">require</span><span>(</span><span class="identifier">m</span><span>.</span><span class="identifier">values</span><span>.</span><span class="identifier">forall</span><span>(</span><span class="identifier">_</span><span> &gt; </span><span class="number-literal">0</span><span>), </span><span class="string-literal">&quot;all eaches-per-unit values must be positive&quot;</span><span>)
+    </span><span class="identifier">m</span><span>
+
+  </span><span class="identifier">extension</span><span> (</span><span class="identifier">h</span><span>: </span><span class="type-name">UomHierarchy</span><span>)
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">level</span><span>: </span><span class="type-name">PackagingLevel</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="identifier">h</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">level</span><span>)
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">level</span><span>: </span><span class="type-name">PackagingLevel</span><span>): </span><span class="type-name">Int</span><span>       = </span><span class="identifier">h</span><span>(</span><span class="identifier">level</span><span>)
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">contains</span><span>(</span><span class="identifier">level</span><span>: </span><span class="type-name">PackagingLevel</span><span>): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">h</span><span>.</span><span class="identifier">contains</span><span>(</span><span class="identifier">level</span><span>)
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">nonEmpty</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">h</span><span>.</span><span class="identifier">nonEmpty</span><span>
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">isEmpty</span><span>: </span><span class="type-name">Boolean</span><span>  = </span><span class="identifier">h</span><span>.</span><span class="identifier">isEmpty</span></code></pre>
+        <p>&lt;small&gt;<em>File: common/src/main/scala/neon/common/UomHierarchy.scala</em>&lt;/small&gt;</p>
+        <p><code>UomHierarchy</code> is another opaque type, wrapping a <code>Map[PackagingLevel, Int]</code>.
+        Each entry maps a packaging level to the number of eaches it contains. The
+        <code>Each</code> level is the implicit base unit and must not appear as a key.</p>
+        <p>Here is a concrete example. A product where one pallet holds 48 eaches and one
+        case holds 12 eaches:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">hierarchy</span><span> = </span><span class="type-name">UomHierarchy</span><span>(
+  </span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Pallet</span><span> -&gt; </span><span class="number-literal">48</span><span>,
+  </span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Case</span><span>   -&gt; </span><span class="number-literal">12</span><span>
+)</span></code></pre>
+        <p>Now <code>hierarchy(PackagingLevel.Case)</code> returns <code>12</code>, meaning one case equals 12
+        eaches. During wave planning, the <code>UomExpansion</code> module in the <code>wave</code> project
+        uses these hierarchies to convert order line quantities into eaches, the
+        common denomination used for inventory tracking and task creation.</p>
+        <p>The <code>require</code> preconditions enforce two invariants: <code>Each</code> cannot appear in the
+        map (it is always implicitly 1), and every conversion factor must be positive.
+        These checks catch configuration errors at construction time rather than
+        letting invalid data propagate through the system.</p>
+        
+        <h2 id="the-cborserializable-marker-trait" class="section"><a class="anchor-link left" href="#the-cborserializable-marker-trait"><i class="icofont-laika link">&#xef71;</i></a>The CborSerializable Marker Trait</h2>
+        <p>In the <code>serialization</code> subpackage lives a trait with no methods at all:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">package</span><span> </span><span class="identifier">neon</span><span>.</span><span class="identifier">common</span><span>.</span><span class="identifier">serialization</span><span>
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">CborSerializable</span></code></pre>
+        <p>&lt;small&gt;<em>File: common/src/main/scala/neon/common/serialization/CborSerializable.scala</em>&lt;/small&gt;</p>
+        <p>This <em>marker trait</em> serves a single purpose: it binds types to the Jackson CBOR
+        serializer in Pekko&#39;s configuration. Every actor command, every command
+        response, every state wrapper, and every event envelope in the system extends
+        <code>CborSerializable</code>. When Pekko needs to serialize one of these types (to
+        persist an event, to send a message across the cluster, or to take a snapshot),
+        it looks up the serializer binding and finds Jackson CBOR.</p>
+        <p>We will see <code>extends CborSerializable</code> on dozens of types in the chapters
+        ahead. For now, know that it exists and that it lives in <code>common</code> so every
+        module can reference it. Chapter 17 covers Pekko serialization in depth.</p>
+        
+        <h2 id="r2dbcprojectionqueries" class="section"><a class="anchor-link left" href="#r2dbcprojectionqueries"><i class="icofont-laika link">&#xef71;</i></a>R2dbcProjectionQueries</h2>
+        <p>The final shared piece in <code>common</code> is the <code>R2dbcProjectionQueries</code> trait:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">R2dbcProjectionQueries</span><span>:
+
+  </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">connectionFactory</span><span>: </span><span class="type-name">ConnectionFactory</span><span>
+  </span><span class="keyword">protected</span><span> </span><span class="identifier">given</span><span> </span><span class="identifier">system</span><span>: </span><span class="type-name">ActorSystem</span><span>[?]
+  </span><span class="keyword">protected</span><span> </span><span class="identifier">given</span><span> </span><span class="identifier">ec</span><span>: </span><span class="type-name">ExecutionContext</span><span>
+
+  </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">queryProjectionIds</span><span>(
+      </span><span class="identifier">sql</span><span>: </span><span class="type-name">String</span><span>,
+      </span><span class="identifier">param</span><span>: </span><span class="type-name">Any</span><span>,
+      </span><span class="identifier">idColumn</span><span>: </span><span class="type-name">String</span><span>
+  ): </span><span class="type-name">Future</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">UUID</span><span>]]</span></code></pre>
+        <p>&lt;small&gt;<em>File: common/src/main/scala/neon/common/R2dbcProjectionQueries.scala</em>&lt;/small&gt;</p>
+        <p>This trait provides helper methods for querying CQRS read-side projection
+        tables via raw R2DBC and Pekko Streams. Several <code>PekkoXxxRepository</code>
+        implementations need to answer the same question: &quot;give me all entity IDs
+        matching some criteria in a projection table, so I can fan out commands to
+        individual actors.&quot; For example, finding all task IDs belonging to a wave so
+        that each task actor can receive a cancellation command.</p>
+        <p>We will see <code>R2dbcProjectionQueries</code> mixed into Pekko repository
+        implementations in Chapters 11 and 12.</p>
+        
+        <h2 id="what-comes-next" class="section"><a class="anchor-link left" href="#what-comes-next"><i class="icofont-laika link">&#xef71;</i></a>What Comes Next</h2>
+        <p>With the common types in hand, we are ready to build domain aggregates. In the
+        next chapter, we will learn how Neon WES models state machines at compile time
+        using a pattern called <em>typestate encoding</em>, turning invalid state transitions
+        into compile errors.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

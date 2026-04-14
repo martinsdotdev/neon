@@ -1,0 +1,2 @@
+[info] Running scalafix on 7 Scala sources (incremental)
+[debug] running List(PrintStream(...), ToolClasspath(...), PrintStream(...), Config(...), Rules(...), ScalaVersion(...), ScalacOptions(List(-Wunused:imports, -Xsemanticdb, -semanticdb-target, /home/martins/Projects/neon/task/target/scala-3.8.2/meta)), ParsedArgs(...), Paths(...), Classpath(...), Paths(...))

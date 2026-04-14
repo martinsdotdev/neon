@@ -1,0 +1,10 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/location/src/main/scala/neon/location/LocationRepository.scala, /home/martins/Projects/neon/location/src/main/scala/neon/location/Zone.scala, /home/martins/Projects/neon/location/src/main/scala/neon/location/AsyncLocationRepository.scala, /home/martins/Projects/neon/location/src/main/scala/neon/location/Location.scala, /home/martins/Projects/neon/location/src/main/scala/neon/location/LocationType.scala
+[debug] 	Modified: 
+[debug] 	Unmodified: /home/martins/Projects/neon/location/src/main/scala/neon/location/LocationRepository.scala, /home/martins/Projects/neon/location/src/main/scala/neon/location/Zone.scala, /home/martins/Projects/neon/location/src/main/scala/neon/location/AsyncLocationRepository.scala, /home/martins/Projects/neon/location/src/main/scala/neon/location/Location.scala, /home/martins/Projects/neon/location/src/main/scala/neon/location/LocationType.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[debug] scalafmt: Unchanged 0 Scala sources

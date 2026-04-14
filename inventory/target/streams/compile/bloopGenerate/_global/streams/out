@@ -1,0 +1,4 @@
+[debug] [inventory] Classpath dependencies List(common)
+[debug] [inventory] Dependencies from configurations List()
+[debug] Bloop wrote the configuration of project 'inventory' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/inventory.json'
+[success] Generated .bloop/inventory.json

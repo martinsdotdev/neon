@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Modeling State with Typestates</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+    <script type="module">
+
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({ 
+  startOnLoad: true,
+  theme: "base",
+  themeVariables: {
+    'darkMode': dark,
+    'primaryColor': dark ? '#125d75' : '#eef5f6', 
+    'primaryTextColor': dark ? '#a7d4de' : '#007c99',
+    'primaryBorderColor': dark ? '#a7d4de' : '#a7d4de',
+    'lineColor': dark ? '#a7d4de' : '#007c99',
+    'background': dark ? '#064458' : '#ffffff',
+  }
+});
+
+</script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Modeling State with Typestates</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#the-state-machine-problem">The State Machine Problem</a></li>
+    <li class="level1 nav-leaf"><a href="#typestate-encoding-in-scala-3">Typestate Encoding in Scala 3</a></li>
+    <li class="level1 nav-node"><a href="#your-first-aggregate-wave">Your First Aggregate: Wave</a></li>
+    <li class="level2 nav-leaf"><a href="#the-sealed-trait">The sealed trait</a></li>
+    <li class="level2 nav-leaf"><a href="#the-annotations">The annotations</a></li>
+    <li class="level2 nav-leaf"><a href="#the-planned-state-and-its-transitions">The <code>Planned</code> state and its transitions</a></li>
+    <li class="level2 nav-leaf"><a href="#terminal-states-and-cancellation">Terminal states and cancellation</a></li>
+    <li class="level1 nav-node"><a href="#a-more-complex-aggregate-task">A More Complex Aggregate: Task</a></li>
+    <li class="level2 nav-leaf"><a href="#the-sealed-trait-and-factory-method">The sealed trait and factory method</a></li>
+    <li class="level2 nav-leaf"><a href="#fields-accumulate-as-the-state-progresses">Fields accumulate as the state progresses</a></li>
+    <li class="level2 nav-leaf"><a href="#the-transition-chain">The transition chain</a></li>
+    <li class="level2 nav-leaf"><a href="#cancellation-from-any-non-terminal-state-1">Cancellation from any non-terminal state</a></li>
+    <li class="level1 nav-node"><a href="#the-full-catalogue-of-state-machines">The Full Catalogue of State Machines</a></li>
+    <li class="level2 nav-leaf"><a href="#consolidationgroup">ConsolidationGroup</a></li>
+    <li class="level2 nav-leaf"><a href="#handlingunit">HandlingUnit</a></li>
+    <li class="level2 nav-leaf"><a href="#transportorder">TransportOrder</a></li>
+    <li class="level2 nav-leaf"><a href="#workstation">Workstation</a></li>
+    <li class="level2 nav-leaf"><a href="#slot">Slot</a></li>
+    <li class="level1 nav-node"><a href="#patterns-and-principles">Patterns and Principles</a></li>
+    <li class="level2 nav-leaf"><a href="#terminal-states-have-no-methods">Terminal states have no methods</a></li>
+    <li class="level2 nav-leaf"><a href="#cancellation-from-any-non-terminal-state-2">Cancellation from any non-terminal state</a></li>
+    <li class="level2 nav-leaf"><a href="#fields-accumulate">Fields accumulate</a></li>
+    <li class="level2 nav-leaf"><a href="#require-for-creation-time-invariants"><code>require()</code> for creation-time invariants</a></li>
+    <li class="level2 nav-leaf"><a href="#the-newstate-event-tuple">The <code>(NewState, Event)</code> tuple</a></li>
+    <li class="level1 nav-leaf"><a href="#architecture-note-the-decider-pattern">Architecture Note: The Decider Pattern</a></li>
+    <li class="level1 nav-leaf"><a href="#what-comes-next">What Comes Next</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="modeling-state-with-typestates" class="title">Modeling State with Typestates</h1>
+        <p>A task in a warehouse moves through a well-defined lifecycle: it is planned,
+        allocated to a location, assigned to a worker, and then completed. What happens
+        if our code tries to assign a worker to a task that has not been allocated yet?
+        In a typical codebase, the answer is a runtime exception, discovered in testing
+        if you are lucky and in production if you are not. In this chapter, we will
+        learn how Neon WES makes that mistake impossible at compile time.</p>
+        <p>In Chapter 3 we built the shared foundation: opaque type IDs, enums, and utility
+        types. Those are the nouns of our domain. Now it is time to give them behavior,
+        to model how entities change over time and to make illegal transitions
+        unrepresentable in code.</p>
+        
+        <h2 id="the-state-machine-problem" class="section"><a class="anchor-link left" href="#the-state-machine-problem"><i class="icofont-laika link">&#xef71;</i></a>The State Machine Problem</h2>
+        <p>Every domain aggregate in a warehouse system has a lifecycle. A wave is planned,
+        then released, then completed. A task is planned, allocated, assigned, and
+        completed. These lifecycles are state machines, and the most straightforward way
+        to model them is with a status field and runtime checks.</p>
+        <p>Here is a naive approach:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// The fragile approach
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Task</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">TaskId</span><span>, </span><span class="identifier">status</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">assignedTo</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">UserId</span><span>]):
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">assign</span><span>(</span><span class="identifier">userId</span><span>: </span><span class="type-name">UserId</span><span>): </span><span class="type-name">Task</span><span> =
+    </span><span class="keyword">if</span><span> </span><span class="identifier">status</span><span> != </span><span class="string-literal">&quot;allocated&quot;</span><span> </span><span class="identifier">then</span><span>
+      </span><span class="keyword">throw</span><span> </span><span class="type-name">IllegalStateException</span><span>(</span><span class="string-literal">&quot;Cannot assign&quot;</span><span>)
+    </span><span class="keyword">else</span><span> </span><span class="identifier">copy</span><span>(</span><span class="identifier">status</span><span> = </span><span class="string-literal">&quot;assigned&quot;</span><span>, </span><span class="identifier">assignedTo</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="identifier">userId</span><span>))</span></code></pre>
+        <p>This compiles. It might even work most of the time. But it has three serious
+        problems:</p>
+        <ol class="arabic">
+          <li>
+            <p><strong>The status is stringly typed.</strong> A typo like <code>&quot;alocated&quot;</code> will not be caught
+            until runtime. You could use an enum to fix this specific issue, but the
+            deeper problem remains.</p>
+          </li>
+          <li>
+            <p><strong>Every transition method is available on every instance.</strong> Nothing in the
+            type system prevents calling <code>assign()</code> on a completed task. The method
+            exists; the check is inside the body. You have to read the implementation to
+            know which calls are valid.</p>
+          </li>
+          <li>
+            <p><strong>The compiler cannot help you.</strong> Tests can catch invalid transitions if you
+            remember to write them. But the type system, which could verify these rules
+            across your entire codebase for free, sits idle.</p>
+          </li>
+        </ol>
+        <p>We can do better.</p>
+        
+        <h2 id="typestate-encoding-in-scala-3" class="section"><a class="anchor-link left" href="#typestate-encoding-in-scala-3"><i class="icofont-laika link">&#xef71;</i></a>Typestate Encoding in Scala 3</h2>
+        <p>The idea behind <em>typestate encoding</em> is simple: instead of representing the
+        lifecycle as a single type with a status field, we represent each state as its
+        own type. Transition methods exist only on the types where they are valid. If
+        you try to call a method that does not belong to the current state, the code
+        does not compile.</p>
+        <p>Neon WES uses three building blocks for every typestate-encoded aggregate:</p>
+        <ol class="arabic">
+          <li>
+            <p><strong>A sealed trait as the universe of all states.</strong> This is the base type that
+            the rest of the system can reference when it needs &quot;a Task in any state.&quot;</p>
+          </li>
+          <li>
+            <p><strong>Case classes nested in the companion object, one per state.</strong> Each case
+            class carries exactly the fields that make sense in that state.</p>
+          </li>
+          <li>
+            <p><strong>Transition methods that return <code>(NewState, Event)</code> tuples.</strong> Every state
+            change produces both a new instance in the target state and an event recording
+            what happened.</p>
+          </li>
+        </ol>
+        <p>Let&#39;s see how this works in practice.</p>
+        
+        <h2 id="your-first-aggregate-wave" class="section"><a class="anchor-link left" href="#your-first-aggregate-wave"><i class="icofont-laika link">&#xef71;</i></a>Your First Aggregate: Wave</h2>
+        <p>A wave groups orders for batch processing through the warehouse. Its lifecycle
+        is the simplest in Neon WES: planned, released, completed, or cancelled. Here
+        is the state diagram:</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Planned
+    Planned --&gt; Released: release()
+    Planned --&gt; Cancelled: cancel()
+    Released --&gt; Completed: complete()
+    Released --&gt; Cancelled: cancel()
+    Completed --&gt; [*]
+    Cancelled --&gt; [*]</pre>
+        <p>And here is the code:</p>
+        <pre><code class="nohighlight"><span class="annotation">@JsonTypeInfo</span><span>(</span><span class="identifier">use</span><span> = </span><span class="type-name">JsonTypeInfo</span><span>.</span><span class="type-name">Id</span><span>.</span><span class="type-name">CLASS</span><span>)
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Wave</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">id</span><span>: </span><span class="type-name">WaveId</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">orderGrouping</span><span>: </span><span class="type-name">OrderGrouping</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Wave</span><span>:
+
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Planned</span><span>(
+      </span><span class="identifier">id</span><span>: </span><span class="type-name">WaveId</span><span>,
+      </span><span class="identifier">orderGrouping</span><span>: </span><span class="type-name">OrderGrouping</span><span>,
+      </span><span class="identifier">orderIds</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">OrderId</span><span>]
+  ) </span><span class="keyword">extends</span><span> </span><span class="type-name">Wave</span><span>:
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">release</span><span>(</span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>): (</span><span class="type-name">Released</span><span>, </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveReleased</span><span>) =
+      </span><span class="keyword">val</span><span> </span><span class="identifier">released</span><span> = </span><span class="type-name">Released</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">orderGrouping</span><span>, </span><span class="identifier">orderIds</span><span>)
+      </span><span class="keyword">val</span><span> </span><span class="identifier">event</span><span> = </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveReleased</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">orderGrouping</span><span>, </span><span class="identifier">orderIds</span><span>, </span><span class="identifier">at</span><span>)
+      (</span><span class="identifier">released</span><span>, </span><span class="identifier">event</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">cancel</span><span>(</span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>): (</span><span class="type-name">Cancelled</span><span>, </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveCancelled</span><span>) =
+      </span><span class="keyword">val</span><span> </span><span class="identifier">cancelled</span><span> = </span><span class="type-name">Cancelled</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">orderGrouping</span><span>)
+      </span><span class="keyword">val</span><span> </span><span class="identifier">event</span><span> = </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveCancelled</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">orderGrouping</span><span>, </span><span class="identifier">at</span><span>)
+      (</span><span class="identifier">cancelled</span><span>, </span><span class="identifier">event</span><span>)
+
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Released</span><span>(
+      </span><span class="identifier">id</span><span>: </span><span class="type-name">WaveId</span><span>,
+      </span><span class="identifier">orderGrouping</span><span>: </span><span class="type-name">OrderGrouping</span><span>,
+      </span><span class="identifier">orderIds</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">OrderId</span><span>]
+  ) </span><span class="keyword">extends</span><span> </span><span class="type-name">Wave</span><span>:
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">complete</span><span>(</span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>): (</span><span class="type-name">Completed</span><span>, </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveCompleted</span><span>) =
+      </span><span class="keyword">val</span><span> </span><span class="identifier">completed</span><span> = </span><span class="type-name">Completed</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">orderGrouping</span><span>)
+      </span><span class="keyword">val</span><span> </span><span class="identifier">event</span><span> = </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveCompleted</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">orderGrouping</span><span>, </span><span class="identifier">at</span><span>)
+      (</span><span class="identifier">completed</span><span>, </span><span class="identifier">event</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">cancel</span><span>(</span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>): (</span><span class="type-name">Cancelled</span><span>, </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveCancelled</span><span>) =
+      </span><span class="keyword">val</span><span> </span><span class="identifier">cancelled</span><span> = </span><span class="type-name">Cancelled</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">orderGrouping</span><span>)
+      </span><span class="keyword">val</span><span> </span><span class="identifier">event</span><span> = </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveCancelled</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">orderGrouping</span><span>, </span><span class="identifier">at</span><span>)
+      (</span><span class="identifier">cancelled</span><span>, </span><span class="identifier">event</span><span>)
+
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Completed</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">WaveId</span><span>, </span><span class="identifier">orderGrouping</span><span>: </span><span class="type-name">OrderGrouping</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">Wave</span><span>
+
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Cancelled</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">WaveId</span><span>, </span><span class="identifier">orderGrouping</span><span>: </span><span class="type-name">OrderGrouping</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">Wave</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/main/scala/neon/wave/Wave.scala</em>&lt;/small&gt;</p>
+        <p>Let&#39;s break this down piece by piece.</p>
+        
+        <h3 id="the-sealed-trait" class="section"><a class="anchor-link left" href="#the-sealed-trait"><i class="icofont-laika link">&#xef71;</i></a>The sealed trait</h3>
+        <p>The <code>sealed trait Wave</code> defines the <em>universe</em> of all wave states. Any code
+        that accepts a <code>Wave</code> can receive a wave in any state. The trait declares the
+        fields common to every state: <code>id</code> and <code>orderGrouping</code>.</p>
+        <p>The <code>sealed</code> keyword is critical. It tells the compiler that all subtypes of
+        <code>Wave</code> are defined in this file and nowhere else. This makes pattern matching
+        exhaustive: if you forget to handle a state, the compiler warns you.</p>
+        
+        <h3 id="the-annotations" class="section"><a class="anchor-link left" href="#the-annotations"><i class="icofont-laika link">&#xef71;</i></a>The annotations</h3>
+        <p>The <code>@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)</code> annotation tells the
+        serialization layer to include the concrete class name when serializing a
+        <code>Wave</code> value. Without it, a snapshot containing a <code>Wave.Released</code> would be
+        deserialized as a bare <code>Wave</code>, losing the state information. We will revisit
+        serialization in Chapter 17; for now, just know that every typestate-encoded
+        aggregate needs this annotation.</p>
+        <p>In the actual source file, the sealed trait also extends <code>CborSerializable</code>,
+        the marker trait from Chapter 3. We omit it from the listing to keep the
+        focus on the typestate structure.</p>
+        
+        <h3 id="the-planned-state-and-its-transitions" class="section"><a class="anchor-link left" href="#the-planned-state-and-its-transitions"><i class="icofont-laika link">&#xef71;</i></a>The <code>Planned</code> state and its transitions</h3>
+        <p><code>Planned</code> carries <code>orderIds</code> because a planned wave still knows which orders it
+        contains. It exposes two transition methods: <code>release()</code> and <code>cancel()</code>. Each
+        returns a tuple of <code>(NewState, Event)</code>.</p>
+        <p>Look at the return type of <code>release()</code>: it is <code>(Released, WaveEvent.WaveReleased)</code>.
+        Not <code>(Wave, WaveEvent)</code>. The return type is as specific as possible. The caller
+        knows, at the type level, that the result is a <code>Released</code> wave.</p>
+        <p><code>Released</code> has its own transition methods: <code>complete()</code> and <code>cancel()</code>. Notice
+        what it does <em>not</em> have: a <code>release()</code> method. You cannot release a wave that
+        is already released. The compiler enforces this.</p>
+        
+        <h3 id="terminal-states-and-cancellation" class="section"><a class="anchor-link left" href="#terminal-states-and-cancellation"><i class="icofont-laika link">&#xef71;</i></a>Terminal states and cancellation</h3>
+        <p><code>Completed</code> and <code>Cancelled</code> are <em>terminal states</em>. They have no transition
+        methods at all. The case class declarations have no body. There is nothing you
+        can do with a completed or cancelled wave except read its fields.</p>
+        <p>Notice that terminal states carry fewer fields. <code>Completed</code> and <code>Cancelled</code>
+        no longer hold <code>orderIds</code>. The orders were relevant during planning and
+        execution, but once the wave reaches a terminal state, that data has served its
+        purpose.</p>
+        <p>Both <code>Planned</code> and <code>Released</code> define a <code>cancel()</code> method. This is deliberate:
+        a wave can be cancelled from any non-terminal state. Rather than sharing a
+        method through inheritance (which would weaken the typestate guarantees), each
+        state declares its own <code>cancel()</code>. A small amount of duplication buys a large
+        amount of clarity.</p>
+        
+        <h2 id="a-more-complex-aggregate-task" class="section"><a class="anchor-link left" href="#a-more-complex-aggregate-task"><i class="icofont-laika link">&#xef71;</i></a>A More Complex Aggregate: Task</h2>
+        <p>With the Wave pattern established, let&#39;s look at <code>Task</code>, which has a longer
+        lifecycle and richer fields. Here is the state diagram:</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Planned: create()
+    Planned --&gt; Allocated: allocate()
+    Planned --&gt; Cancelled: cancel()
+    Allocated --&gt; Assigned: assign()
+    Allocated --&gt; Cancelled: cancel()
+    Assigned --&gt; Completed: complete()
+    Assigned --&gt; Cancelled: cancel()
+    Completed --&gt; [*]
+    Cancelled --&gt; [*]</pre>
+        
+        <h3 id="the-sealed-trait-and-factory-method" class="section"><a class="anchor-link left" href="#the-sealed-trait-and-factory-method"><i class="icofont-laika link">&#xef71;</i></a>The sealed trait and factory method</h3>
+        <pre><code class="nohighlight"><span class="annotation">@JsonTypeInfo</span><span>(</span><span class="identifier">use</span><span> = </span><span class="type-name">JsonTypeInfo</span><span>.</span><span class="type-name">Id</span><span>.</span><span class="type-name">CLASS</span><span>)
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Task</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">id</span><span>: </span><span class="type-name">TaskId</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">taskType</span><span>: </span><span class="type-name">TaskType</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">skuId</span><span>: </span><span class="type-name">SkuId</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">orderId</span><span>: </span><span class="type-name">OrderId</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">waveId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">WaveId</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">handlingUnitId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">HandlingUnitId</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">stockPositionId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">StockPositionId</span><span>]
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Task</span><span>:
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">create</span><span>(
+      </span><span class="identifier">taskType</span><span>: </span><span class="type-name">TaskType</span><span>,
+      </span><span class="identifier">skuId</span><span>: </span><span class="type-name">SkuId</span><span>,
+      </span><span class="identifier">packagingLevel</span><span>: </span><span class="type-name">PackagingLevel</span><span>,
+      </span><span class="identifier">requestedQuantity</span><span>: </span><span class="type-name">Int</span><span>,
+      </span><span class="identifier">orderId</span><span>: </span><span class="type-name">OrderId</span><span>,
+      </span><span class="identifier">waveId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">WaveId</span><span>],
+      </span><span class="identifier">parentTaskId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">TaskId</span><span>],
+      </span><span class="identifier">handlingUnitId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">HandlingUnitId</span><span>],
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>,
+      </span><span class="identifier">stockPositionId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">StockPositionId</span><span>] = </span><span class="type-name">None</span><span>
+  ): (</span><span class="type-name">Planned</span><span>, </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCreated</span><span>) =
+    </span><span class="identifier">require</span><span>(</span><span class="identifier">requestedQuantity</span><span> &gt; </span><span class="number-literal">0</span><span>,
+      </span><span class="string-literal">s&quot;requestedQuantity must be positive, got </span><span class="substitution">$requestedQuantity</span><span class="string-literal">&quot;</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">id</span><span> = </span><span class="type-name">TaskId</span><span>()
+    </span><span class="keyword">val</span><span> </span><span class="identifier">planned</span><span> = </span><span class="type-name">Planned</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">taskType</span><span>, </span><span class="identifier">skuId</span><span>, </span><span class="identifier">packagingLevel</span><span>,
+      </span><span class="identifier">requestedQuantity</span><span>, </span><span class="identifier">orderId</span><span>, </span><span class="identifier">waveId</span><span>, </span><span class="identifier">parentTaskId</span><span>,
+      </span><span class="identifier">handlingUnitId</span><span>, </span><span class="identifier">stockPositionId</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">event</span><span> = </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCreated</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">taskType</span><span>, </span><span class="identifier">skuId</span><span>, </span><span class="identifier">packagingLevel</span><span>,
+      </span><span class="identifier">orderId</span><span>, </span><span class="identifier">waveId</span><span>, </span><span class="identifier">parentTaskId</span><span>, </span><span class="identifier">handlingUnitId</span><span>,
+      </span><span class="identifier">requestedQuantity</span><span>, </span><span class="identifier">at</span><span>, </span><span class="identifier">stockPositionId</span><span>)
+    (</span><span class="identifier">planned</span><span>, </span><span class="identifier">event</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: task/src/main/scala/neon/task/Task.scala</em>&lt;/small&gt;</p>
+        <p>Unlike <code>Wave</code>, <code>Task</code> has a <code>create()</code> factory method on the companion object.
+        This is where <em>precondition validation</em> lives. The <code>require()</code> call ensures
+        that <code>requestedQuantity</code> is positive. If someone passes zero or a negative
+        number, they get a clear failure immediately, not a corrupted aggregate that
+        silently misbehaves later.</p>
+        <p>The factory method also generates a fresh <code>TaskId()</code> internally, using the
+        UUID v7 generator from Chapter 3. Callers never need to supply an ID.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The <code>require()</code> function throws an <code>IllegalArgumentException</code> if
+          the condition is false. This is one of the few places in Neon WES where an
+          exception is used. It is acceptable here because violating a precondition
+          represents a programming error, not a domain error.</p>
+        </div>
+        
+        <h3 id="fields-accumulate-as-the-state-progresses" class="section"><a class="anchor-link left" href="#fields-accumulate-as-the-state-progresses"><i class="icofont-laika link">&#xef71;</i></a>Fields accumulate as the state progresses</h3>
+        <p>This is one of the most important patterns to notice. Compare the fields across
+        the four non-terminal states:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>State</th>
+              <th>New fields added</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Planned</code></td>
+              <td><code>id</code>, <code>taskType</code>, <code>skuId</code>, <code>packagingLevel</code>, <code>requestedQuantity</code>, <code>orderId</code>, <code>waveId</code>, <code>parentTaskId</code>, <code>handlingUnitId</code>, <code>stockPositionId</code></td>
+            </tr>
+            <tr>
+              <td><code>Allocated</code></td>
+              <td><code>sourceLocationId</code>, <code>destinationLocationId</code></td>
+            </tr>
+            <tr>
+              <td><code>Assigned</code></td>
+              <td><code>assignedTo</code> (a <code>UserId</code>)</td>
+            </tr>
+            <tr>
+              <td><code>Completed</code></td>
+              <td><code>actualQuantity</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Each transition adds the information that becomes available at that stage. A
+        planned task does not know its source location yet, because allocation has not
+        happened. An allocated task does not know who will execute it, because
+        assignment has not happened. The type system reflects this reality: you simply
+        cannot access <code>sourceLocationId</code> on a <code>Planned</code> task because the field does not
+        exist on that type.</p>
+        
+        <h3 id="the-transition-chain" class="section"><a class="anchor-link left" href="#the-transition-chain"><i class="icofont-laika link">&#xef71;</i></a>The transition chain</h3>
+        <p>Each transition method accepts the new information that becomes available at
+        that stage and constructs the next state. <code>allocate()</code> takes source and
+        destination locations. <code>assign()</code> takes a <code>UserId</code>. <code>complete()</code> takes the
+        <code>actualQuantity</code> that was physically picked:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Assigned</span><span>(...) </span><span class="keyword">extends</span><span> </span><span class="type-name">Task</span><span>:
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">complete</span><span>(</span><span class="identifier">actualQuantity</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>)
+      : (</span><span class="type-name">Completed</span><span>, </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCompleted</span><span>) =
+    </span><span class="identifier">require</span><span>(</span><span class="identifier">actualQuantity</span><span> &gt;= </span><span class="number-literal">0</span><span>,
+      </span><span class="string-literal">s&quot;actualQuantity must be non-negative, got </span><span class="substitution">$actualQuantity</span><span class="string-literal">&quot;</span><span>)
+    ...</span></code></pre>
+        <p>Notice the second <code>require()</code>: the actual quantity must be non-negative. A
+        zero is valid (it represents a full shortpick where the worker found nothing
+        at the location), but a negative quantity is a programming error.</p>
+        
+        <h3 id="cancellation-from-any-non-terminal-state-1" class="section"><a class="anchor-link left" href="#cancellation-from-any-non-terminal-state-1"><i class="icofont-laika link">&#xef71;</i></a>Cancellation from any non-terminal state</h3>
+        <p>Like <code>Wave</code>, every non-terminal task state has a <code>cancel()</code> method. But
+        <code>Task.Cancelled</code> is more interesting than <code>Wave.Cancelled</code>:</p>
+        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Cancelled</span><span>(
+    </span><span class="identifier">id</span><span>: </span><span class="type-name">TaskId</span><span>,
+    </span><span class="identifier">taskType</span><span>: </span><span class="type-name">TaskType</span><span>,
+    </span><span class="identifier">skuId</span><span>: </span><span class="type-name">SkuId</span><span>,
+    </span><span class="identifier">packagingLevel</span><span>: </span><span class="type-name">PackagingLevel</span><span>,
+    </span><span class="identifier">orderId</span><span>: </span><span class="type-name">OrderId</span><span>,
+    </span><span class="identifier">waveId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">WaveId</span><span>],
+    </span><span class="identifier">parentTaskId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">TaskId</span><span>],
+    </span><span class="identifier">handlingUnitId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">HandlingUnitId</span><span>],
+    </span><span class="identifier">stockPositionId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">StockPositionId</span><span>],
+    </span><span class="identifier">sourceLocationId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">LocationId</span><span>],
+    </span><span class="identifier">destinationLocationId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">LocationId</span><span>],
+    </span><span class="identifier">assignedTo</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">UserId</span><span>]
+) </span><span class="keyword">extends</span><span> </span><span class="type-name">Task</span></code></pre>
+        <p>The location and user fields are <code>Option</code> types. This is because cancellation
+        can happen from <code>Planned</code> (before locations are known), from <code>Allocated</code>
+        (before a user is assigned), or from <code>Assigned</code> (when both are known). The
+        <code>Cancelled</code> state must accommodate all three entry points. Each <code>cancel()</code>
+        method fills in the optional fields with <code>Some(...)</code> or <code>None</code> depending on
+        what was available at the time.</p>
+        <p>This is a pragmatic choice. An alternative would be to have separate cancelled
+        states (<code>CancelledFromPlanned</code>, <code>CancelledFromAllocated</code>,
+        <code>CancelledFromAssigned</code>), but in practice the downstream code treats all
+        cancelled tasks the same way. A single <code>Cancelled</code> type with optional fields
+        keeps the model simple without losing information.</p>
+        
+        <h2 id="the-full-catalogue-of-state-machines" class="section"><a class="anchor-link left" href="#the-full-catalogue-of-state-machines"><i class="icofont-laika link">&#xef71;</i></a>The Full Catalogue of State Machines</h2>
+        <p>Neon WES has eight event-sourced aggregates. We have already examined Wave and
+        Task in detail. Let&#39;s survey the remaining six.</p>
+        
+        <h3 id="consolidationgroup" class="section"><a class="anchor-link left" href="#consolidationgroup"><i class="icofont-laika link">&#xef71;</i></a>ConsolidationGroup</h3>
+        <p>A consolidation group batches orders from a wave for workstation processing.
+        It has the longest linear chain in the system: five states before the terminals.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Created: create()
+    Created --&gt; Picked: pick()
+    Created --&gt; Cancelled: cancel()
+    Picked --&gt; ReadyForWorkstation: readyForWorkstation()
+    Picked --&gt; Cancelled: cancel()
+    ReadyForWorkstation --&gt; Assigned: assign()
+    ReadyForWorkstation --&gt; Cancelled: cancel()
+    Assigned --&gt; Completed: complete()
+    Assigned --&gt; Cancelled: cancel()
+    Completed --&gt; [*]
+    Cancelled --&gt; [*]</pre>
+        <p>&lt;small&gt;<em>File: consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroup.scala</em>&lt;/small&gt;</p>
+        <p>The states track the physical flow: the group is created when a wave is
+        released, marked as picked when all pick tasks finish, becomes ready for a
+        workstation when all handling units arrive at the consolidation buffer, gets
+        assigned to a specific workstation, and completes after deconsolidation and
+        packing. Each transition method adds context. <code>Assigned</code> acquires a
+        <code>workstationId</code>, and <code>Completed</code> retains it so we know where the work was done.</p>
+        <p>Like <code>Task</code>, the factory method validates preconditions:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">create</span><span>(
+    </span><span class="identifier">waveId</span><span>: </span><span class="type-name">WaveId</span><span>,
+    </span><span class="identifier">orderIds</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">OrderId</span><span>],
+    </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+): (</span><span class="type-name">Created</span><span>, </span><span class="type-name">ConsolidationGroupEvent</span><span>.</span><span class="type-name">ConsolidationGroupCreated</span><span>) =
+  </span><span class="identifier">require</span><span>(</span><span class="identifier">orderIds</span><span>.</span><span class="identifier">nonEmpty</span><span>, </span><span class="string-literal">&quot;orderIds must not be empty&quot;</span><span>)
+  ...</span></code></pre>
+        <p>A consolidation group without orders would be meaningless, so the <code>require()</code>
+        catches it at creation time.</p>
+        
+        <h3 id="handlingunit" class="section"><a class="anchor-link left" href="#handlingunit"><i class="icofont-laika link">&#xef71;</i></a>HandlingUnit</h3>
+        <p>The handling unit is unique among Neon&#39;s aggregates: it has two independent
+        lifecycles under a single sealed trait.</p>
+        <pre class="mermaid">stateDiagram-v2
+    state &quot;Pick Stream&quot; as pick {
+        [*] --&gt; PickCreated
+        PickCreated --&gt; InBuffer: moveToBuffer()
+        InBuffer --&gt; Empty: empty()
+        Empty --&gt; [*]
+    }
+    state &quot;Ship Stream&quot; as ship {
+        [*] --&gt; ShipCreated
+        ShipCreated --&gt; Packed: pack()
+        Packed --&gt; ReadyToShip: readyToShip()
+        ReadyToShip --&gt; Shipped: ship()
+        Shipped --&gt; [*]
+    }</pre>
+        <p>&lt;small&gt;<em>File: handling-unit/src/main/scala/neon/handlingunit/HandlingUnit.scala</em>&lt;/small&gt;</p>
+        <p>The <em>pick stream</em> models a tote that carries picked items from the pick face
+        to a consolidation buffer, where it is eventually emptied during deconsolidation.
+        The <em>ship stream</em> models a shipping container that gets packed at a workstation,
+        marked ready, and eventually shipped.</p>
+        <p>The two streams share the <code>HandlingUnit</code> sealed trait and its common fields
+        (<code>id</code> and <code>packagingLevel</code>), but their state types are entirely separate. A
+        <code>PickCreated</code> handling unit has no <code>pack()</code> method, and a <code>ShipCreated</code>
+        handling unit has no <code>moveToBuffer()</code> method. The type system keeps the two
+        streams from interfering with each other.</p>
+        
+        <h3 id="transportorder" class="section"><a class="anchor-link left" href="#transportorder"><i class="icofont-laika link">&#xef71;</i></a>TransportOrder</h3>
+        <p>The transport order is the simplest aggregate in the system: just two states
+        plus a terminal pair.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Pending: create()
+    Pending --&gt; Confirmed: confirm()
+    Pending --&gt; Cancelled: cancel()
+    Confirmed --&gt; [*]
+    Cancelled --&gt; [*]</pre>
+        <p>&lt;small&gt;<em>File: transport-order/src/main/scala/neon/transportorder/TransportOrder.scala</em>&lt;/small&gt;</p>
+        <p>A transport order represents the instruction to move a handling unit to a
+        destination. It is created by routing policies when a task completes, modeling
+        the temporal gap between &quot;the task is done&quot; and &quot;the operator confirmed arrival
+        at the destination.&quot; Once confirmed or cancelled, the order is finished.</p>
+        <p>Simplicity is a virtue here. Not every aggregate needs a long lifecycle. The
+        transport order captures exactly one decision point (confirm or cancel) and
+        nothing more.</p>
+        
+        <h3 id="workstation" class="section"><a class="anchor-link left" href="#workstation"><i class="icofont-laika link">&#xef71;</i></a>Workstation</h3>
+        <p>The workstation breaks a pattern we have seen in every aggregate so far: its
+        lifecycle is <em>cyclical</em>, not one-directional.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Disabled
+    Disabled --&gt; Idle: enable()
+    Idle --&gt; Active: assign()
+    Idle --&gt; Idle: switchMode()
+    Idle --&gt; Disabled: disable()
+    Active --&gt; Idle: release()
+    Active --&gt; Disabled: disable()</pre>
+        <p>&lt;small&gt;<em>File: workstation/src/main/scala/neon/workstation/Workstation.scala</em>&lt;/small&gt;</p>
+        <p>A workstation can cycle between <code>Idle</code> and <code>Active</code> many times during a shift
+        as consolidation groups are assigned and completed. It can also be disabled
+        (taken offline) from either <code>Idle</code> or <code>Active</code>, and re-enabled later.</p>
+        <p>The <code>switchMode()</code> method on <code>Idle</code> is another novelty: a transition that
+        returns to the same state type but with different data. The workstation&#39;s
+        <code>WorkstationMode</code> changes (for example, from <code>Picking</code> to <code>Packing</code>), but the
+        lifecycle position does not.</p>
+        <p>There is no <code>Completed</code> or <code>Cancelled</code> terminal here. Workstations are
+        long-lived resources. They are enabled, used, disabled, and enabled again.
+        The typestate pattern accommodates cyclical lifecycles just as naturally as
+        linear ones.</p>
+        
+        <h3 id="slot" class="section"><a class="anchor-link left" href="#slot"><i class="icofont-laika link">&#xef71;</i></a>Slot</h3>
+        <p>A slot is a put-wall position within a workstation, and its lifecycle includes
+        a backwards transition.</p>
+        <pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Available
+    Available --&gt; Reserved: reserve()
+    Reserved --&gt; Completed: complete()
+    Reserved --&gt; Available: release()
+    Completed --&gt; [*]</pre>
+        <p>&lt;small&gt;<em>File: slot/src/main/scala/neon/slot/Slot.scala</em>&lt;/small&gt;</p>
+        <p>The interesting feature is <code>release()</code> on <code>Reserved</code>, which transitions back to
+        <code>Available</code>. This supports pre-placement cancellation: if the consolidation
+        group assigned to the workstation is cancelled before items have been placed in
+        the slot, the slot returns to the available pool. Like the workstation&#39;s cyclical
+        lifecycle, this demonstrates that typestate encoding is not limited to strictly
+        forward-moving state machines.</p>
+        
+        <h2 id="patterns-and-principles" class="section"><a class="anchor-link left" href="#patterns-and-principles"><i class="icofont-laika link">&#xef71;</i></a>Patterns and Principles</h2>
+        <p>Having examined six aggregates, we can now identify the recurring patterns that
+        make this approach consistent and maintainable.</p>
+        
+        <h3 id="terminal-states-have-no-methods" class="section"><a class="anchor-link left" href="#terminal-states-have-no-methods"><i class="icofont-laika link">&#xef71;</i></a>Terminal states have no methods</h3>
+        <p><code>Completed</code>, <code>Cancelled</code>, <code>Shipped</code>, <code>Empty</code>, <code>Confirmed</code>: every terminal state
+        is a case class with no body. There are no transition methods to call. This is
+        the strongest possible guarantee. You do not need to check a flag or read
+        documentation to know that a completed task cannot be assigned. The type tells
+        you: there is nothing to call.</p>
+        
+        <h3 id="cancellation-from-any-non-terminal-state-2" class="section"><a class="anchor-link left" href="#cancellation-from-any-non-terminal-state-2"><i class="icofont-laika link">&#xef71;</i></a>Cancellation from any non-terminal state</h3>
+        <p>With the exception of aggregates that do not use a cancellation concept
+        (workstations cycle through modes; slots release back to available), every
+        non-terminal state defines a <code>cancel()</code> method. This reflects a real warehouse
+        constraint: operations can be interrupted at any point, and the system must
+        handle it gracefully.</p>
+        
+        <h3 id="fields-accumulate" class="section"><a class="anchor-link left" href="#fields-accumulate"><i class="icofont-laika link">&#xef71;</i></a>Fields accumulate</h3>
+        <p>Later states carry more information than earlier ones. <code>Task.Planned</code> has no
+        location fields. <code>Task.Allocated</code> adds source and destination. <code>Task.Assigned</code>
+        adds the user. <code>Task.Completed</code> adds the actual quantity. Each transition
+        enriches the aggregate with the data that becomes available at that stage.</p>
+        <p>This is not just a modeling choice; it is a documentation feature. By reading
+        the case class fields, you know exactly what information is available at each
+        point in the lifecycle without consulting any external documentation.</p>
+        
+        <h3 id="require-for-creation-time-invariants" class="section"><a class="anchor-link left" href="#require-for-creation-time-invariants"><i class="icofont-laika link">&#xef71;</i></a><code>require()</code> for creation-time invariants</h3>
+        <p>Factory methods use <code>require()</code> to enforce invariants that must hold when an
+        aggregate is born. A task must have a positive quantity. A consolidation group
+        must have at least one order. These checks fail fast with clear messages,
+        preventing corrupted aggregates from entering the system.</p>
+        
+        <h3 id="the-newstate-event-tuple" class="section"><a class="anchor-link left" href="#the-newstate-event-tuple"><i class="icofont-laika link">&#xef71;</i></a>The <code>(NewState, Event)</code> tuple</h3>
+        <p>Every transition method returns a tuple containing the new state and the event
+        that records the transition. This dual return is a defining feature of the
+        pattern. The state represents what the aggregate <em>is</em> now. The event represents
+        what <em>happened</em>. Both are needed: the state for further transitions, the event
+        for persistence and downstream reactions.</p>
+        <p>We will explore events in depth in the next chapter.</p>
+        
+        <h2 id="architecture-note-the-decider-pattern" class="section"><a class="anchor-link left" href="#architecture-note-the-decider-pattern"><i class="icofont-laika link">&#xef71;</i></a>Architecture Note: The Decider Pattern</h2>
+        <p>Readers familiar with functional event sourcing may recognize a resemblance to
+        Jermaine Chassaing&#39;s <em>Decider pattern</em>. In the Decider, two functions drive the
+        lifecycle:</p>
+        <ul>
+          <li><code>decide(command, state) -&gt; List[Event]</code> produces events from commands</li>
+          <li><code>evolve(state, event) -&gt; State</code> reconstructs state from events</li>
+        </ul>
+        <p>Neon&#39;s typestate methods fuse <code>decide</code> and <code>evolve</code> into a single call. When
+        you call <code>planned.release(at)</code>, you get back both the new state (what <code>evolve</code>
+        would produce) and the event (what <code>decide</code> would produce). The method <em>is</em>
+        both functions at once.</p>
+        <p>This fusion trades the Decider&#39;s compositional algebra for compile-time state
+        enforcement. In the Decider pattern, <code>decide</code> accepts any command on any state
+        and returns events (or an empty list for invalid transitions). In the typestate
+        pattern, invalid transitions do not exist as callable methods. The trade-off
+        is worth it for domain aggregates where the state machine is well-defined and
+        the set of states is known at compile time.</p>
+        <p>That said, the full Decider structure reappears at the infrastructure layer.
+        In Chapter 10, we will see how Pekko&#39;s <code>EventSourcedBehavior</code> separates command
+        handling (the <code>decide</code> role) from event handling (the <code>evolve</code> role), giving us
+        the best of both worlds: compile-time safety in the domain model, and the
+        Decider&#39;s clean separation in the actor layer.</p>
+        
+        <h2 id="what-comes-next" class="section"><a class="anchor-link left" href="#what-comes-next"><i class="icofont-laika link">&#xef71;</i></a>What Comes Next</h2>
+        <p>We have seen that every transition method returns a tuple containing the new
+        state and an event. But what exactly are these events, and why do they matter?
+        In the next chapter, we will open up the event types, understand their
+        structure, and see how they become the source of truth for the entire system.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

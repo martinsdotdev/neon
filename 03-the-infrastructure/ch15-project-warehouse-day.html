@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Project: A Day in the Warehouse</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Project: A Day in the Warehouse</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#the-test-as-living-documentation">The Test as Living Documentation</a></li>
+    <li class="level1 nav-node"><a href="#_06-00-inbound-receiving">06:00 -- Inbound Receiving</a></li>
+    <li class="level2 nav-leaf"><a href="#creating-stock-positions">Creating Stock Positions</a></li>
+    <li class="level2 nav-leaf"><a href="#inbounddelivery-lifecycle">InboundDelivery Lifecycle</a></li>
+    <li class="level2 nav-leaf"><a href="#goodsreceipt-lifecycle">GoodsReceipt Lifecycle</a></li>
+    <li class="level2 nav-leaf"><a href="#inboundreceivingservice-orchestration">InboundReceivingService Orchestration</a></li>
+    <li class="level1 nav-node"><a href="#_08-00-wave-planning-and-release">08:00 -- Wave Planning and Release</a></li>
+    <li class="level2 nav-leaf"><a href="#planning">Planning</a></li>
+    <li class="level2 nav-leaf"><a href="#release-with-fefo-allocation">Release with FEFO Allocation</a></li>
+    <li class="level1 nav-node"><a href="#_10-00-picking-with-shortpick">10:00 -- Picking with Shortpick</a></li>
+    <li class="level2 nav-leaf"><a href="#full-pick-50-of-50">Full Pick: 50 of 50</a></li>
+    <li class="level2 nav-leaf"><a href="#shortpick-25-of-30">Shortpick: 25 of 30</a></li>
+    <li class="level2 nav-leaf"><a href="#final-stock-state-after-picking">Final Stock State After Picking</a></li>
+    <li class="level1 nav-node"><a href="#_14-00-cycle-counting">14:00 -- Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="#creating-the-cycle-count">Creating the Cycle Count</a></li>
+    <li class="level2 nav-leaf"><a href="#creating-count-tasks">Creating Count Tasks</a></li>
+    <li class="level2 nav-leaf"><a href="#counting-and-recording">Counting and Recording</a></li>
+    <li class="level2 nav-leaf"><a href="#completing-the-cycle-count">Completing the Cycle Count</a></li>
+    <li class="level1 nav-node"><a href="#_16-00-sox-compliant-adjustment">16:00 -- SOX-Compliant Adjustment</a></li>
+    <li class="level2 nav-leaf"><a href="#segregation-of-duties-violation">Segregation of Duties Violation</a></li>
+    <li class="level2 nav-leaf"><a href="#supervisor-adjustment">Supervisor Adjustment</a></li>
+    <li class="level2 nav-leaf"><a href="#applying-the-stock-adjustment">Applying the Stock Adjustment</a></li>
+    <li class="level1 nav-node"><a href="#_17-00-workstation-operations">17:00 -- Workstation Operations</a></li>
+    <li class="level2 nav-leaf"><a href="#enabling-a-workstation">Enabling a Workstation</a></li>
+    <li class="level2 nav-leaf"><a href="#mode-switching">Mode Switching</a></li>
+    <li class="level2 nav-leaf"><a href="#compile-time-enforcement-on-active-workstations">Compile-Time Enforcement on Active Workstations</a></li>
+    <li class="level1 nav-node"><a href="#end-of-day-summary">End of Day Summary</a></li>
+    <li class="level2 nav-leaf"><a href="#the-audit-trail">The Audit Trail</a></li>
+    <li class="level1 nav-leaf"><a href="#what-we-learned">What We Learned</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="project-a-day-in-the-warehouse" class="title">Project: A Day in the Warehouse</h1>
+        <p>This is our second project chapter. In Chapter 9 we traced a single flow
+        through six layers. Now we will trace an entire warehouse shift, touching
+        every domain module in the system. The
+        <code>WarehouseDaySimulationSuite</code> is a 619-line integration test that
+        exercises inbound receiving, wave planning with FEFO allocation, picking
+        with shortpick handling, blind cycle counting, SOX-compliant inventory
+        adjustment, and workstation mode switching. All in one file, all sharing
+        the same in-memory repositories, all building on state that earlier steps
+        created.</p>
+        <p>Here is what we are applying:</p>
+        <ol class="arabic">
+          <li><strong>Opaque type IDs</strong> (Chapter 3): <code>SkuId</code>, <code>WaveId</code>, <code>TaskId</code>,
+          <code>CycleCountId</code>, <code>CountTaskId</code>, <code>StockPositionId</code>, <code>WorkstationId</code>,
+          <code>UserId</code>, and more keep every identifier type-safe across module
+          boundaries.</li>
+          <li><strong>Lot tracking</strong> (Chapter 3): <code>LotAttributes</code> with <code>Lot</code>,
+          <code>expirationDate</code>, and <code>productionDate</code> model GS1 AI-10/AI-17 pharma
+          traceability requirements.</li>
+          <li><strong>Typestate transitions</strong> (Chapter 4): <code>InboundDelivery.New</code> to
+          <code>Receiving</code> to <code>Received</code>, <code>GoodsReceipt.Open</code> to <code>Confirmed</code>,
+          <code>CycleCount.New</code> to <code>InProgress</code> to <code>Completed</code>, <code>CountTask.Pending</code>
+          to <code>Assigned</code> to <code>Recorded</code>, <code>Workstation.Disabled</code> to <code>Idle</code> to
+          <code>Active</code> and back.</li>
+          <li><strong>Events</strong> (Chapter 5): <code>Created</code>, <code>QuantityAdded</code>, <code>Allocated</code>,
+          <code>AllocatedConsumed</code>, <code>Deallocated</code>, <code>Adjusted</code> on stock positions.
+          <code>TaskCreated</code>, <code>TaskCompleted</code> on tasks. <code>CycleCountStarted</code>,
+          <code>CycleCountCompleted</code> on counts.</li>
+          <li><strong>Policies</strong> (Chapter 6): <code>PutawayCreationPolicy</code>,
+          <code>TaskCreationPolicy</code>, <code>StockAllocationPolicy</code>, <code>ShortpickPolicy</code>,
+          <code>CountCreationPolicy</code> make pure decisions.</li>
+          <li><strong>Services</strong> (Chapter 7): <code>InboundReceivingService</code>,
+          <code>WaveReleaseService</code>, <code>TaskCompletionService</code>,
+          <code>CountCompletionService</code>, <code>AdjustmentService</code> orchestrate cascades.</li>
+          <li><strong>Repositories</strong> (Chapter 8): Seven in-memory repositories carry
+          shared state across every <code>describe</code> block without any infrastructure.</li>
+          <li><strong>Stock position 4-bucket model</strong> (Chapter 3): <code>onHandQuantity</code>,
+          <code>availableQuantity</code>, <code>allocatedQuantity</code>, and friends track inventory
+          through allocation, consumption, deallocation, and adjustment.</li>
+          <li><strong>Workstation typestate</strong> (Chapter 4): Compile-time enforcement
+          prevents mode switching on an <code>Active</code> workstation.</li>
+        </ol>
+        <p>By the end of this chapter, we will have received goods at the dock,
+        allocated stock for outbound orders, picked with a shortpick, counted
+        inventory, adjusted a variance under SOX rules, and switched workstation
+        modes. Every line of code is real. Every assertion passes. The test is
+        the specification.</p>
+        
+        <h2 id="the-test-as-living-documentation" class="section"><a class="anchor-link left" href="#the-test-as-living-documentation"><i class="icofont-laika link">&#xef71;</i></a>The Test as Living Documentation</h2>
+        <p>The <code>WarehouseDaySimulationSuite</code> lives in the <code>core</code> module because it
+        needs access to all domain modules and all core services. It extends
+        <code>AnyFunSpec</code> with <code>OptionValues</code> and <code>EitherValues</code>, giving us <code>.value</code>
+        accessors that fail with clear messages when an <code>Option</code> is <code>None</code> or
+        an <code>Either</code> is on the wrong side.</p>
+        <p>The key design decision: all seven repositories are instantiated once and
+        shared across every <code>describe</code> block. State carries forward. The stock
+        created at 06:00 is the stock allocated at 08:00, consumed at 10:00,
+        counted at 14:00, and adjusted at 16:00.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;A full day of warehouse operations&quot;</span><span>):
+
+  </span><span class="comment">// Shared state across the day
+</span><span>  </span><span class="keyword">val</span><span> </span><span class="identifier">stockRepo</span><span> = </span><span class="type-name">InMemoryStockPositionRepository</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">taskRepo</span><span> = </span><span class="type-name">InMemoryTaskRepository</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">waveRepo</span><span> = </span><span class="type-name">InMemoryWaveRepository</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">cgRepo</span><span> = </span><span class="type-name">InMemoryConsolidationGroupRepository</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">toRepo</span><span> = </span><span class="type-name">InMemoryTransportOrderRepository</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">ccRepo</span><span> = </span><span class="type-name">InMemoryCycleCountRepository</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">ctRepo</span><span> = </span><span class="type-name">InMemoryCountTaskRepository</span><span>()</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>Seven repositories. Seven mutable maps. Seven event buffers. That is the
+        entire infrastructure for a 12-hour warehouse simulation.</p>
+        <p>Time progression uses a simple helper:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">dayStart</span><span> = </span><span class="type-name">Instant</span><span>.</span><span class="identifier">parse</span><span>(</span><span class="string-literal">&quot;2027-01-15T06:00:00Z&quot;</span><span>)
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">at</span><span>(</span><span class="identifier">hoursAfterStart</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Instant</span><span> =
+  </span><span class="identifier">dayStart</span><span>.</span><span class="identifier">plusSeconds</span><span>(</span><span class="identifier">hoursAfterStart</span><span> * </span><span class="number-literal">3600L</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p><code>at(0)</code> is 06:00. <code>at(2)</code> is 08:00. <code>at(4)</code> is 10:00. This convention
+        lets us reason about warehouse time without cluttering every call site
+        with <code>Instant.parse</code> strings.</p>
+        <p>The test also defines the warehouse topology (locations, containers),
+        three SKUs, four lot attribute sets, and four operators:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">aspirinSkuId</span><span> = </span><span class="type-name">SkuId</span><span>() </span><span class="comment">// pharma: requires FEFO
+</span><span class="keyword">val</span><span> </span><span class="identifier">bandageSkuId</span><span> = </span><span class="type-name">SkuId</span><span>() </span><span class="comment">// medical supply
+</span><span class="keyword">val</span><span> </span><span class="identifier">syringeSkuId</span><span> = </span><span class="type-name">SkuId</span><span>() </span><span class="comment">// medical device
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">receivingOperator</span><span> = </span><span class="type-name">UserId</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">picker</span><span> = </span><span class="type-name">UserId</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">countOperator</span><span> = </span><span class="type-name">UserId</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">supervisor</span><span> = </span><span class="type-name">UserId</span><span>() </span><span class="comment">// different from countOperator for SOX</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>Four distinct <code>UserId</code> values. The separation between <code>countOperator</code>
+        and <code>supervisor</code> is not just documentation; it is a SOX compliance
+        requirement that we will enforce in code at 16:00.</p>
+        <p>Let&#39;s walk through the day.</p>
+        
+        <h2 id="_06-00-inbound-receiving" class="section"><a class="anchor-link left" href="#_06-00-inbound-receiving"><i class="icofont-laika link">&#xef71;</i></a>06:00 -- Inbound Receiving</h2>
+        <p>The first truck arrives at the dock. We are receiving aspirin (two lots
+        with different expiration dates) and bandages.</p>
+        
+        <h3 id="creating-stock-positions" class="section"><a class="anchor-link left" href="#creating-stock-positions"><i class="icofont-laika link">&#xef71;</i></a>Creating Stock Positions</h3>
+        <p>Before the inbound delivery lifecycle begins, we create stock positions
+        for the received goods. Each position is keyed by (SKU, warehouse area,
+        lot attributes):</p>
+        <pre><code class="nohighlight"><span class="keyword">val</span><span> (</span><span class="identifier">aspirinEarly</span><span>, </span><span class="identifier">aspirinEarlyEvent</span><span>) =
+  </span><span class="type-name">StockPosition</span><span>.</span><span class="identifier">create</span><span>(
+    </span><span class="identifier">aspirinSkuId</span><span>, </span><span class="identifier">warehouseAreaId</span><span>, </span><span class="identifier">aspirinLotEarlyExpiry</span><span>, </span><span class="number-literal">200</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">0</span><span>)
+  )
+</span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">aspirinEarly</span><span>, </span><span class="identifier">aspirinEarlyEvent</span><span>)
+
+</span><span class="keyword">val</span><span> (</span><span class="identifier">aspirinLate</span><span>, </span><span class="identifier">aspirinLateEvent</span><span>) =
+  </span><span class="type-name">StockPosition</span><span>.</span><span class="identifier">create</span><span>(
+    </span><span class="identifier">aspirinSkuId</span><span>, </span><span class="identifier">warehouseAreaId</span><span>, </span><span class="identifier">aspirinLotLateExpiry</span><span>, </span><span class="number-literal">150</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">0</span><span>)
+  )
+</span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">aspirinLate</span><span>, </span><span class="identifier">aspirinLateEvent</span><span>)
+
+</span><span class="keyword">val</span><span> (</span><span class="identifier">bandageStock</span><span>, </span><span class="identifier">bandageEvent</span><span>) =
+  </span><span class="type-name">StockPosition</span><span>.</span><span class="identifier">create</span><span>(
+    </span><span class="identifier">bandageSkuId</span><span>, </span><span class="identifier">warehouseAreaId</span><span>, </span><span class="identifier">bandageLot</span><span>, </span><span class="number-literal">500</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">0</span><span>)
+  )
+</span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">bandageStock</span><span>, </span><span class="identifier">bandageEvent</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>Three stock positions. Two for aspirin (same SKU, different lots) and
+        one for bandages. The lot attributes carry GS1 data:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">aspirinLotEarlyExpiry</span><span> = </span><span class="type-name">LotAttributes</span><span>(
+  </span><span class="identifier">lot</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="type-name">Lot</span><span>(</span><span class="string-literal">&quot;ASP-2026-A&quot;</span><span>)),
+  </span><span class="identifier">expirationDate</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="type-name">LocalDate</span><span>.</span><span class="identifier">of</span><span>(</span><span class="number-literal">2027</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">31</span><span>)),
+  </span><span class="identifier">productionDate</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="type-name">LocalDate</span><span>.</span><span class="identifier">of</span><span>(</span><span class="number-literal">2026</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="number-literal">15</span><span>))
+)
+</span><span class="keyword">val</span><span> </span><span class="identifier">aspirinLotLateExpiry</span><span> = </span><span class="type-name">LotAttributes</span><span>(
+  </span><span class="identifier">lot</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="type-name">Lot</span><span>(</span><span class="string-literal">&quot;ASP-2026-B&quot;</span><span>)),
+  </span><span class="identifier">expirationDate</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="type-name">LocalDate</span><span>.</span><span class="identifier">of</span><span>(</span><span class="number-literal">2027</span><span>, </span><span class="number-literal">9</span><span>, </span><span class="number-literal">30</span><span>)),
+  </span><span class="identifier">productionDate</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="type-name">LocalDate</span><span>.</span><span class="identifier">of</span><span>(</span><span class="number-literal">2026</span><span>, </span><span class="number-literal">4</span><span>, </span><span class="number-literal">1</span><span>))
+)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>Lot <code>ASP-2026-A</code> expires in March 2027. Lot <code>ASP-2026-B</code> expires in
+        September 2027. This six-month gap will matter at 08:00 when FEFO
+        allocation decides which lot to draw from first.</p>
+        
+        <h3 id="inbounddelivery-lifecycle" class="section"><a class="anchor-link left" href="#inbounddelivery-lifecycle"><i class="icofont-laika link">&#xef71;</i></a>InboundDelivery Lifecycle</h3>
+        <p>The delivery aggregate walks through its typestate machine:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">delivery</span><span> = </span><span class="type-name">InboundDelivery</span><span>.</span><span class="type-name">New</span><span>(
+  </span><span class="type-name">InboundDeliveryId</span><span>(), </span><span class="identifier">aspirinSkuId</span><span>, </span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Each</span><span>,
+  </span><span class="identifier">aspirinLotEarlyExpiry</span><span>, </span><span class="number-literal">200</span><span>
+)
+</span><span class="keyword">val</span><span> (</span><span class="identifier">receiving</span><span>, </span><span class="identifier">receivingEvent</span><span>) = </span><span class="identifier">delivery</span><span>.</span><span class="identifier">startReceiving</span><span>(</span><span class="identifier">at</span><span>(</span><span class="number-literal">0</span><span>))
+</span><span class="keyword">val</span><span> (</span><span class="identifier">afterReceive</span><span>, </span><span class="identifier">receiveEvent</span><span>) = </span><span class="identifier">receiving</span><span>.</span><span class="identifier">receive</span><span>(</span><span class="number-literal">200</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">0</span><span>))
+</span><span class="keyword">val</span><span> (</span><span class="identifier">received</span><span>, </span><span class="identifier">receivedEvent</span><span>) = </span><span class="identifier">afterReceive</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">at</span><span>(</span><span class="number-literal">0</span><span>))</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>Three transitions: <code>New</code> to <code>Receiving</code> to <code>Receiving</code> (with quantity)
+        to <code>Received</code>. Each call returns a <code>(NewState, Event)</code> tuple. The
+        <code>receive(200, 0, at(0))</code> call records 200 accepted and 0 rejected.
+        After that, <code>isFullyReceived</code> is true (200 received + 0 rejected equals
+        200 expected), so <code>complete</code> succeeds.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>If <code>isFullyReceived</code> were false, <code>complete</code> would throw via
+          its <code>require</code> precondition. The alternative path is <code>close</code>, which
+          forces the remaining quantity as rejected. These are the two exits
+          from the <code>Receiving</code> state.</p>
+        </div>
+        
+        <h3 id="goodsreceipt-lifecycle" class="section"><a class="anchor-link left" href="#goodsreceipt-lifecycle"><i class="icofont-laika link">&#xef71;</i></a>GoodsReceipt Lifecycle</h3>
+        <p>The goods receipt records what physically arrived:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">receipt</span><span> = </span><span class="type-name">GoodsReceipt</span><span>.</span><span class="type-name">Open</span><span>(</span><span class="type-name">GoodsReceiptId</span><span>(), </span><span class="identifier">delivery</span><span>.</span><span class="identifier">id</span><span>, </span><span class="type-name">Nil</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">receivedLine</span><span> = </span><span class="type-name">ReceivedLine</span><span>(
+  </span><span class="identifier">aspirinSkuId</span><span>, </span><span class="number-literal">200</span><span>, </span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Each</span><span>,
+  </span><span class="identifier">aspirinLotEarlyExpiry</span><span>, </span><span class="type-name">Some</span><span>(</span><span class="identifier">inboundPallet</span><span>)
+)
+</span><span class="keyword">val</span><span> (</span><span class="identifier">withLine</span><span>, </span><span class="identifier">lineEvent</span><span>) = </span><span class="identifier">receipt</span><span>.</span><span class="identifier">recordLine</span><span>(</span><span class="identifier">receivedLine</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">0</span><span>))
+</span><span class="keyword">val</span><span> (</span><span class="identifier">confirmed</span><span>, </span><span class="identifier">confirmedEvent</span><span>) = </span><span class="identifier">withLine</span><span>.</span><span class="identifier">confirm</span><span>(</span><span class="identifier">at</span><span>(</span><span class="number-literal">0</span><span>))</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p><code>GoodsReceipt.Open</code> starts with an empty line list. <code>recordLine</code> appends
+        a <code>ReceivedLine</code> (the <code>require(line.quantity &gt; 0)</code> guards positive
+        quantities). <code>confirm</code> requires at least one line. Both transitions
+        return <code>(NewState, Event)</code> tuples following the same typestate pattern.</p>
+        
+        <h3 id="inboundreceivingservice-orchestration" class="section"><a class="anchor-link left" href="#inboundreceivingservice-orchestration"><i class="icofont-laika link">&#xef71;</i></a>InboundReceivingService Orchestration</h3>
+        <p>The service ties everything together:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">inboundService</span><span> = </span><span class="type-name">InboundReceivingService</span><span>(</span><span class="identifier">taskRepo</span><span>, </span><span class="identifier">stockRepo</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">inboundResult</span><span> = </span><span class="identifier">inboundService</span><span>.</span><span class="identifier">processConfirmedReceipt</span><span>(
+  </span><span class="identifier">confirmed</span><span>, </span><span class="type-name">OrderId</span><span>(), </span><span class="identifier">at</span><span>(</span><span class="number-literal">0</span><span>), </span><span class="type-name">Some</span><span>(</span><span class="identifier">aspirinEarly</span><span>.</span><span class="identifier">id</span><span>)
+)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p><code>processConfirmedReceipt</code> does two things. First, it calls
+        <code>PutawayCreationPolicy</code> to create planned putaway tasks from the
+        receipt&#39;s received lines. Second, because we passed a <code>stockPositionId</code>,
+        it calls <code>sp.addQuantity(200, at)</code> to increase the early-expiry
+        position&#39;s on-hand and available quantities by 200.</p>
+        <p>The test verifies both outcomes:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;creates putaway tasks from the receipt&quot;</span><span>):
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">inboundResult</span><span>.</span><span class="identifier">tasks</span><span>.</span><span class="identifier">nonEmpty</span><span>)
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">putawayTask</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="identifier">inboundResult</span><span>.</span><span class="identifier">tasks</span><span>.</span><span class="identifier">head</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">putawayTask</span><span>.</span><span class="identifier">taskType</span><span> == </span><span class="type-name">TaskType</span><span>.</span><span class="type-name">Putaway</span><span>)
+
+</span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;updates stock position with received quantity&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">addedEvents</span><span> = </span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">events</span><span>.</span><span class="identifier">collect</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">StockPositionEvent</span><span>.</span><span class="type-name">QuantityAdded</span><span> =&gt; </span><span class="identifier">e</span><span>
+  }
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">addedEvents</span><span>.</span><span class="identifier">exists</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">quantity</span><span> == </span><span class="number-literal">200</span><span>))</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>After inbound, the aspirin early-expiry position holds 400 on-hand
+        (200 original + 200 from the receipt). This is the starting inventory
+        for outbound allocation.</p>
+        
+        <h2 id="_08-00-wave-planning-and-release" class="section"><a class="anchor-link left" href="#_08-00-wave-planning-and-release"><i class="icofont-laika link">&#xef71;</i></a>08:00 -- Wave Planning and Release</h2>
+        <p>Two customer orders arrive. Order 1 wants 50 units of aspirin. Order 2
+        wants 30 units. Together they need 80 units, and we have 400 available
+        in the early-expiry lot and 150 in the late-expiry lot.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">order1</span><span> = </span><span class="type-name">Order</span><span>(
+  </span><span class="type-name">OrderId</span><span>(), </span><span class="type-name">Priority</span><span>.</span><span class="type-name">High</span><span>,
+  </span><span class="type-name">List</span><span>(</span><span class="type-name">OrderLine</span><span>(</span><span class="identifier">aspirinSkuId</span><span>, </span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Each</span><span>, </span><span class="number-literal">50</span><span>))
+)
+</span><span class="keyword">val</span><span> </span><span class="identifier">order2</span><span> = </span><span class="type-name">Order</span><span>(
+  </span><span class="type-name">OrderId</span><span>(), </span><span class="type-name">Priority</span><span>.</span><span class="type-name">Normal</span><span>,
+  </span><span class="type-name">List</span><span>(</span><span class="type-name">OrderLine</span><span>(</span><span class="identifier">aspirinSkuId</span><span>, </span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Each</span><span>, </span><span class="number-literal">30</span><span>))
+)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        
+        <h3 id="planning" class="section"><a class="anchor-link left" href="#planning"><i class="icofont-laika link">&#xef71;</i></a>Planning</h3>
+        <p><code>WavePlanner.plan</code> groups the orders into a single wave:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">wavePlan</span><span> = </span><span class="type-name">WavePlanner</span><span>.</span><span class="identifier">plan</span><span>(
+  </span><span class="type-name">List</span><span>(</span><span class="identifier">order1</span><span>, </span><span class="identifier">order2</span><span>), </span><span class="type-name">OrderGrouping</span><span>.</span><span class="type-name">Single</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">2</span><span>)
+)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>We covered this step in Chapter 9. The planner creates a <code>Wave.Released</code>
+        and two <code>TaskRequest</code> values, one per order line.</p>
+        
+        <h3 id="release-with-fefo-allocation" class="section"><a class="anchor-link left" href="#release-with-fefo-allocation"><i class="icofont-laika link">&#xef71;</i></a>Release with FEFO Allocation</h3>
+        <p>The key difference from Chapter 9 is that we now provide a stock
+        position repository and specify the FEFO allocation strategy:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">waveReleaseService</span><span> = </span><span class="type-name">WaveReleaseService</span><span>(
+  </span><span class="identifier">waveRepo</span><span>, </span><span class="identifier">taskRepo</span><span>, </span><span class="identifier">cgRepo</span><span>,
+  </span><span class="identifier">stockPositionRepository</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="identifier">stockRepo</span><span>),
+  </span><span class="identifier">allocationStrategy</span><span> = </span><span class="type-name">AllocationStrategy</span><span>.</span><span class="type-name">Fefo</span><span>,
+  </span><span class="identifier">referenceDate</span><span> = </span><span class="type-name">LocalDate</span><span>.</span><span class="identifier">of</span><span>(</span><span class="number-literal">2027</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="number-literal">15</span><span>)
+)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">releaseResult</span><span> = </span><span class="identifier">waveReleaseService</span><span>.</span><span class="identifier">release</span><span>(
+  </span><span class="identifier">wavePlan</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">2</span><span>), </span><span class="type-name">Some</span><span>(</span><span class="identifier">warehouseAreaId</span><span>)
+)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>FEFO stands for First Expiry, First Out. The <code>StockAllocationPolicy</code>
+        sorts available stock positions by <code>expirationDate</code> ascending. The
+        early-expiry lot (March 2027) comes before the late-expiry lot
+        (September 2027). Since the early lot has 400 available and we only need
+        80, all 80 units are allocated from <code>ASP-2026-A</code>.</p>
+        <p>The test verifies this:</p>
+        <pre><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;allocates stock using FEFO (earliest expiry first)&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">allocatedPositionIds</span><span> =
+    </span><span class="identifier">releaseResult</span><span>.</span><span class="identifier">stockAllocations</span><span>
+      .</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">allocations</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">stockPositionId</span><span>)).</span><span class="identifier">distinct</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">earlyExpiryPosition</span><span> = </span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>
+    .</span><span class="identifier">find</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">lotAttributes</span><span>.</span><span class="identifier">expirationDate</span><span>
+      .</span><span class="identifier">contains</span><span>(</span><span class="type-name">LocalDate</span><span>.</span><span class="identifier">of</span><span>(</span><span class="number-literal">2027</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">31</span><span>))).</span><span class="identifier">value</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">allocatedPositionIds</span><span>.</span><span class="identifier">contains</span><span>(</span><span class="identifier">earlyExpiryPosition</span><span>.</span><span class="identifier">id</span><span>))
+
+</span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;locks allocated quantity on the stock position&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">earlyExpiryPosition</span><span> = </span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>
+    .</span><span class="identifier">find</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">lotAttributes</span><span>.</span><span class="identifier">expirationDate</span><span>
+      .</span><span class="identifier">contains</span><span>(</span><span class="type-name">LocalDate</span><span>.</span><span class="identifier">of</span><span>(</span><span class="number-literal">2027</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">31</span><span>))).</span><span class="identifier">value</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">earlyExpiryPosition</span><span>.</span><span class="identifier">allocatedQuantity</span><span> == </span><span class="number-literal">80</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">earlyExpiryPosition</span><span>.</span><span class="identifier">availableQuantity</span><span> == </span><span class="number-literal">400</span><span> - </span><span class="number-literal">80</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>After allocation, the 4-bucket model for the early-expiry position
+        reads: 400 on-hand, 320 available, 80 allocated, 0 reserved, 0 blocked.
+        The <code>onHand == available + allocated + reserved + blocked</code> invariant
+        holds.</p>
+        <p>The late-expiry lot sits untouched at 150 on-hand, 150 available. FEFO
+        skipped it entirely because the earlier lot had sufficient quantity.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Each created task now carries a <code>stockPositionId</code> linking it
+          to the allocated position. The <code>WaveReleaseService.allocateAndEnrich</code>
+          method sets this after allocation, so the <code>TaskCompletionService</code> knows
+          which stock position to consume from later.</p>
+        </div>
+        
+        <h2 id="_10-00-picking-with-shortpick" class="section"><a class="anchor-link left" href="#_10-00-picking-with-shortpick"><i class="icofont-laika link">&#xef71;</i></a>10:00 -- Picking with Shortpick</h2>
+        <p>Two tasks are in the repository: one for 50 units, one for 30 units.
+        A picker needs to allocate, assign, and complete each one.</p>
+        
+        <h3 id="full-pick-50-of-50" class="section"><a class="anchor-link left" href="#full-pick-50-of-50"><i class="icofont-laika link">&#xef71;</i></a>Full Pick: 50 of 50</h3>
+        <pre><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;completes a full pick and consumes stock&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">task1</span><span> = </span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>.</span><span class="identifier">collectFirst</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">t</span><span>: </span><span class="type-name">Task</span><span>.</span><span class="type-name">Planned</span><span> </span><span class="keyword">if</span><span> </span><span class="identifier">t</span><span>.</span><span class="identifier">requestedQuantity</span><span> == </span><span class="number-literal">50</span><span> =&gt; </span><span class="identifier">t</span><span>
+  }.</span><span class="identifier">value</span><span>
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">allocated</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="identifier">task1</span><span>.</span><span class="identifier">allocate</span><span>(</span><span class="identifier">pickLocationA</span><span>, </span><span class="identifier">bufferZone</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">4</span><span>))
+  </span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">store</span><span>(</span><span class="identifier">allocated</span><span>.</span><span class="identifier">id</span><span>) = </span><span class="identifier">allocated</span><span>
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">assigned</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="identifier">allocated</span><span>.</span><span class="identifier">assign</span><span>(</span><span class="identifier">picker</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">4</span><span>))
+  </span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">store</span><span>(</span><span class="identifier">assigned</span><span>.</span><span class="identifier">id</span><span>) = </span><span class="identifier">assigned</span><span>
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> = </span><span class="identifier">taskCompletionService</span><span>.</span><span class="identifier">complete</span><span>(
+    </span><span class="identifier">assigned</span><span>.</span><span class="identifier">id</span><span>, </span><span class="number-literal">50</span><span>, </span><span class="boolean-literal">true</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">4</span><span>)
+  ).</span><span class="identifier">value</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">completed</span><span>.</span><span class="identifier">actualQuantity</span><span> == </span><span class="number-literal">50</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">shortpick</span><span>.</span><span class="identifier">isEmpty</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>The task moves through its full typestate chain: <code>Planned</code> to
+        <code>Allocated</code> to <code>Assigned</code> to <code>Completed</code>. The actual quantity equals
+        the requested quantity, so <code>ShortpickPolicy</code> returns <code>None</code>. The
+        <code>TaskCompletionService</code> calls <code>sp.consumeAllocated(50, at)</code> on the
+        stock position, moving 50 units from the allocated bucket to consumed
+        (reducing both on-hand and allocated).</p>
+        
+        <h3 id="shortpick-25-of-30" class="section"><a class="anchor-link left" href="#shortpick-25-of-30"><i class="icofont-laika link">&#xef71;</i></a>Shortpick: 25 of 30</h3>
+        <p>The second pick does not go as planned:</p>
+        <pre><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;handles a shortpick: picker finds only 25 of 30 requested&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">task2</span><span> = </span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>.</span><span class="identifier">collectFirst</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">t</span><span>: </span><span class="type-name">Task</span><span>.</span><span class="type-name">Planned</span><span> </span><span class="keyword">if</span><span> </span><span class="identifier">t</span><span>.</span><span class="identifier">requestedQuantity</span><span> == </span><span class="number-literal">30</span><span> =&gt; </span><span class="identifier">t</span><span>
+  }.</span><span class="identifier">value</span><span>
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">allocated</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="identifier">task2</span><span>.</span><span class="identifier">allocate</span><span>(</span><span class="identifier">pickLocationA</span><span>, </span><span class="identifier">bufferZone</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">4</span><span>))
+  </span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">store</span><span>(</span><span class="identifier">allocated</span><span>.</span><span class="identifier">id</span><span>) = </span><span class="identifier">allocated</span><span>
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">assigned</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="identifier">allocated</span><span>.</span><span class="identifier">assign</span><span>(</span><span class="identifier">picker</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">4</span><span>))
+  </span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">store</span><span>(</span><span class="identifier">assigned</span><span>.</span><span class="identifier">id</span><span>) = </span><span class="identifier">assigned</span><span>
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> = </span><span class="identifier">taskCompletionService</span><span>.</span><span class="identifier">complete</span><span>(
+    </span><span class="identifier">assigned</span><span>.</span><span class="identifier">id</span><span>, </span><span class="number-literal">25</span><span>, </span><span class="boolean-literal">true</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">4</span><span>)
+  ).</span><span class="identifier">value</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">completed</span><span>.</span><span class="identifier">actualQuantity</span><span> == </span><span class="number-literal">25</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">shortpick</span><span>.</span><span class="identifier">isDefined</span><span>)
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">replacement</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="identifier">result</span><span>.</span><span class="identifier">shortpick</span><span>.</span><span class="identifier">value</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">requestedQuantity</span><span> == </span><span class="number-literal">5</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>The picker scans 25 units but the task requested 30. The
+        <code>TaskCompletionService.consumeOrDeallocateStock</code> method handles this
+        partial pick in two steps:</p>
+        <ol class="arabic">
+          <li><strong>Consume 25</strong>: <code>sp.consumeAllocated(25, at)</code> reduces on-hand by 25
+          and allocated by 25.</li>
+          <li><strong>Deallocate 5</strong>: <code>sp.deallocate(5, at)</code> moves the remaining 5 units
+          from allocated back to available.</li>
+        </ol>
+        <p>Then <code>ShortpickPolicy</code> sees that <code>actualQuantity (25) &lt;
+requestedQuantity (30)</code> and creates a replacement <code>Task.Planned</code> for
+        the remainder of 5 units.</p>
+        
+        <h3 id="final-stock-state-after-picking" class="section"><a class="anchor-link left" href="#final-stock-state-after-picking"><i class="icofont-laika link">&#xef71;</i></a>Final Stock State After Picking</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;consumed allocated stock after picks&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">earlyExpiryPosition</span><span> = </span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>
+    .</span><span class="identifier">find</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">lotAttributes</span><span>.</span><span class="identifier">expirationDate</span><span>
+      .</span><span class="identifier">contains</span><span>(</span><span class="type-name">LocalDate</span><span>.</span><span class="identifier">of</span><span>(</span><span class="number-literal">2027</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">31</span><span>))).</span><span class="identifier">value</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">earlyExpiryPosition</span><span>.</span><span class="identifier">allocatedQuantity</span><span> == </span><span class="number-literal">0</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">earlyExpiryPosition</span><span>.</span><span class="identifier">onHandQuantity</span><span> == </span><span class="number-literal">325</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>Let&#39;s trace the numbers for the early-expiry aspirin:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Step</th>
+              <th>On-hand</th>
+              <th>Available</th>
+              <th>Allocated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>After inbound</td>
+              <td>400</td>
+              <td>400</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>After allocation (80)</td>
+              <td>400</td>
+              <td>320</td>
+              <td>80</td>
+            </tr>
+            <tr>
+              <td>After full pick (50)</td>
+              <td>350</td>
+              <td>320</td>
+              <td>30</td>
+            </tr>
+            <tr>
+              <td>After partial pick (25)</td>
+              <td>325</td>
+              <td>320</td>
+              <td>5</td>
+            </tr>
+            <tr>
+              <td>After deallocation (5)</td>
+              <td>325</td>
+              <td>325</td>
+              <td>0</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>On-hand dropped from 400 to 325 (75 units picked). Allocated returned to
+        0 because the full pick consumed 50, the partial pick consumed 25, and
+        the remaining 5 were deallocated back to available. The invariant holds
+        at every step: <code>325 == 325 + 0 + 0 + 0</code>.</p>
+        
+        <h2 id="_14-00-cycle-counting" class="section"><a class="anchor-link left" href="#_14-00-cycle-counting"><i class="icofont-laika link">&#xef71;</i></a>14:00 -- Cycle Counting</h2>
+        <p>After the morning&#39;s picking activity, the warehouse supervisor orders a
+        cycle count of bandages. The bandage stock position started at 500
+        on-hand, and nobody has touched it yet.</p>
+        
+        <h3 id="creating-the-cycle-count" class="section"><a class="anchor-link left" href="#creating-the-cycle-count"><i class="icofont-laika link">&#xef71;</i></a>Creating the Cycle Count</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">cycleCount</span><span> = </span><span class="type-name">CycleCount</span><span>.</span><span class="type-name">New</span><span>(
+  </span><span class="type-name">CycleCountId</span><span>(), </span><span class="identifier">warehouseAreaId</span><span>,
+  </span><span class="type-name">List</span><span>(</span><span class="identifier">bandageSkuId</span><span>), </span><span class="type-name">CountType</span><span>.</span><span class="type-name">Planned</span><span>, </span><span class="type-name">CountMethod</span><span>.</span><span class="type-name">Blind</span><span>
+)
+</span><span class="keyword">val</span><span> (</span><span class="identifier">inProgress</span><span>, </span><span class="identifier">startedEvent</span><span>) = </span><span class="identifier">cycleCount</span><span>.</span><span class="identifier">start</span><span>(</span><span class="identifier">at</span><span>(</span><span class="number-literal">8</span><span>))
+</span><span class="identifier">ccRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">inProgress</span><span>, </span><span class="identifier">startedEvent</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>The cycle count is created with <code>CountMethod.Blind</code>. In a blind count,
+        the operator does not see the expected quantity. They count what they
+        find and report the number. This prevents confirmation bias: the counter
+        cannot simply agree with the system.</p>
+        <p>The typestate transition moves from <code>New</code> to <code>InProgress</code>. Only the
+        <code>InProgress</code> state exposes the <code>complete</code> method.</p>
+        
+        <h3 id="creating-count-tasks" class="section"><a class="anchor-link left" href="#creating-count-tasks"><i class="icofont-laika link">&#xef71;</i></a>Creating Count Tasks</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">bandagePosition</span><span> = </span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>
+  .</span><span class="identifier">find</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">skuId</span><span> == </span><span class="identifier">bandageSkuId</span><span>).</span><span class="identifier">value</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">stockSnapshots</span><span> =
+  </span><span class="type-name">Map</span><span>((</span><span class="identifier">bandageSkuId</span><span>, </span><span class="identifier">pickLocationB</span><span>) -&gt; </span><span class="identifier">bandagePosition</span><span>.</span><span class="identifier">onHandQuantity</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">countTasks</span><span> = </span><span class="type-name">CountCreationPolicy</span><span>(</span><span class="identifier">inProgress</span><span>, </span><span class="identifier">stockSnapshots</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">8</span><span>))
+</span><span class="identifier">countTasks</span><span>.</span><span class="identifier">foreach</span><span>((</span><span class="identifier">ct</span><span>, </span><span class="identifier">e</span><span>) =&gt; </span><span class="identifier">ctRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">ct</span><span>, </span><span class="identifier">e</span><span>))</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p><code>CountCreationPolicy</code> is a stateless policy object. It takes the
+        in-progress cycle count, a map of (SKU, location) pairs to expected
+        quantities, and produces <code>CountTask.Pending</code> instances. The policy
+        filters the snapshot map to only include SKUs listed in the cycle count.</p>
+        <p>The test verifies that the expected quantity comes from the stock
+        snapshot:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;creates count tasks with expected quantities from stock snapshot&quot;</span><span>):
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">countTasks</span><span>.</span><span class="identifier">size</span><span> == </span><span class="number-literal">1</span><span>)
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">pending</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="identifier">countTasks</span><span>.</span><span class="identifier">head</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">pending</span><span>.</span><span class="identifier">expectedQuantity</span><span> == </span><span class="number-literal">500</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        
+        <h3 id="counting-and-recording" class="section"><a class="anchor-link left" href="#counting-and-recording"><i class="icofont-laika link">&#xef71;</i></a>Counting and Recording</h3>
+        <p>The count task walks through its lifecycle:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> (</span><span class="identifier">pending</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="identifier">countTasks</span><span>.</span><span class="identifier">head</span><span>
+</span><span class="keyword">val</span><span> (</span><span class="identifier">assigned</span><span>, </span><span class="identifier">assignedEvent</span><span>) = </span><span class="identifier">pending</span><span>.</span><span class="identifier">assign</span><span>(</span><span class="identifier">countOperator</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">8</span><span>))
+</span><span class="identifier">ctRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">assigned</span><span>, </span><span class="identifier">assignedEvent</span><span>)
+
+</span><span class="keyword">val</span><span> (</span><span class="identifier">recorded</span><span>, </span><span class="identifier">recordedEvent</span><span>) = </span><span class="identifier">assigned</span><span>.</span><span class="identifier">record</span><span>(</span><span class="number-literal">497</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">8</span><span>))
+</span><span class="identifier">ctRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">recorded</span><span>, </span><span class="identifier">recordedEvent</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p><code>Pending</code> to <code>Assigned</code> to <code>Recorded</code>. The operator counts 497 units.
+        The system expected 500. The <code>record</code> method computes the variance
+        automatically:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;records actual count with variance&quot;</span><span>):
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">recorded</span><span>.</span><span class="identifier">actualQuantity</span><span> == </span><span class="number-literal">497</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">recorded</span><span>.</span><span class="identifier">variance</span><span> == -</span><span class="number-literal">3</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>A variance of -3 means 3 units are missing. This is likely shrinkage
+        (theft, damage, or miscounting during prior operations).</p>
+        
+        <h3 id="completing-the-cycle-count" class="section"><a class="anchor-link left" href="#completing-the-cycle-count"><i class="icofont-laika link">&#xef71;</i></a>Completing the Cycle Count</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">completionService</span><span> = </span><span class="type-name">CountCompletionService</span><span>(</span><span class="identifier">ccRepo</span><span>, </span><span class="identifier">ctRepo</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">completionResult</span><span> =
+  </span><span class="identifier">completionService</span><span>.</span><span class="identifier">tryComplete</span><span>(</span><span class="identifier">inProgress</span><span>.</span><span class="identifier">id</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">8</span><span>)).</span><span class="identifier">value</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p><code>CountCompletionService.tryComplete</code> validates three conditions: (1) the
+        cycle count exists, (2) it is in <code>InProgress</code> state, and (3) all count
+        tasks are terminal (<code>Recorded</code> or <code>Cancelled</code>). If all conditions pass,
+        it transitions the cycle count to <code>Completed</code> and collects all non-zero
+        variances:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;completes the cycle count and reports variances&quot;</span><span>):
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">completionResult</span><span>.</span><span class="identifier">completed</span><span>
+    .</span><span class="identifier">isInstanceOf</span><span>[</span><span class="type-name">CycleCount</span><span>.</span><span class="type-name">Completed</span><span>])
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">completionResult</span><span>.</span><span class="identifier">variances</span><span>.</span><span class="identifier">size</span><span> == </span><span class="number-literal">1</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">completionResult</span><span>.</span><span class="identifier">variances</span><span>.</span><span class="identifier">head</span><span>.</span><span class="identifier">variance</span><span> == -</span><span class="number-literal">3</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">completionResult</span><span>.</span><span class="identifier">variances</span><span>.</span><span class="identifier">head</span><span>.</span><span class="identifier">countedBy</span><span> == </span><span class="identifier">countOperator</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>The <code>CountVariance</code> record carries the <code>countedBy</code> field. This will
+        become critical in the next section.</p>
+        
+        <h2 id="_16-00-sox-compliant-adjustment" class="section"><a class="anchor-link left" href="#_16-00-sox-compliant-adjustment"><i class="icofont-laika link">&#xef71;</i></a>16:00 -- SOX-Compliant Adjustment</h2>
+        <p>The cycle count found a -3 variance. Before we can adjust the stock, we
+        must satisfy SOX Section 404 segregation of duties: the person who
+        adjusts inventory must not be the same person who counted it.</p>
+        
+        <h3 id="segregation-of-duties-violation" class="section"><a class="anchor-link left" href="#segregation-of-duties-violation"><i class="icofont-laika link">&#xef71;</i></a>Segregation of Duties Violation</h3>
+        <pre><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;rejects adjustment when counter is the same as adjuster&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">variance</span><span> = </span><span class="type-name">CountVariance</span><span>(
+    </span><span class="identifier">countTaskId</span><span> = </span><span class="identifier">ctRepo</span><span>.</span><span class="identifier">store</span><span>.</span><span class="identifier">keys</span><span>.</span><span class="identifier">head</span><span>,
+    </span><span class="identifier">skuId</span><span> = </span><span class="identifier">bandageSkuId</span><span>,
+    </span><span class="identifier">locationId</span><span> = </span><span class="identifier">pickLocationB</span><span>,
+    </span><span class="identifier">expectedQuantity</span><span> = </span><span class="number-literal">500</span><span>,
+    </span><span class="identifier">actualQuantity</span><span> = </span><span class="number-literal">497</span><span>,
+    </span><span class="identifier">variance</span><span> = -</span><span class="number-literal">3</span><span>,
+    </span><span class="identifier">countedBy</span><span> = </span><span class="identifier">countOperator</span><span>
+  )
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> = </span><span class="type-name">AdjustmentService</span><span>.</span><span class="identifier">adjust</span><span>(
+    </span><span class="identifier">variance</span><span>,
+    </span><span class="identifier">adjustedBy</span><span> = </span><span class="identifier">countOperator</span><span>, </span><span class="comment">// same person: SOX violation
+</span><span>    </span><span class="type-name">AdjustmentReasonCode</span><span>.</span><span class="type-name">CycleCountAdjustment</span><span>,
+    </span><span class="identifier">at</span><span>(</span><span class="number-literal">10</span><span>)
+  )
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">isLeft</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">left</span><span>.</span><span class="identifier">value</span><span>
+    .</span><span class="identifier">isInstanceOf</span><span>[</span><span class="type-name">AdjustmentError</span><span>.</span><span class="type-name">SegregationOfDutiesViolation</span><span>])</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p><code>AdjustmentService</code> is a stateless object (like a policy). Its single
+        <code>adjust</code> method checks one condition:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">if</span><span> </span><span class="identifier">adjustedBy</span><span> == </span><span class="identifier">variance</span><span>.</span><span class="identifier">countedBy</span><span> </span><span class="identifier">then</span><span>
+  </span><span class="type-name">Left</span><span>(</span><span class="type-name">AdjustmentError</span><span>.</span><span class="type-name">SegregationOfDutiesViolation</span><span>(
+    </span><span class="identifier">variance</span><span>.</span><span class="identifier">countedBy</span><span>, </span><span class="identifier">adjustedBy</span><span>
+  ))
+</span><span class="keyword">else</span><span> </span><span class="type-name">Right</span><span>(</span><span class="type-name">AdjustmentResult</span><span>(</span><span class="identifier">variance</span><span>, </span><span class="identifier">adjustedBy</span><span>, </span><span class="identifier">reasonCode</span><span>))</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/AdjustmentService.scala</em>&lt;/small&gt;</p>
+        <p>The <code>countOperator</code> cannot adjust their own count. The <code>Either</code> return
+        type makes this a data-driven decision, not an exception. The caller can
+        pattern match on the error ADT and present a clear message: &quot;The counter
+        and the adjuster must be different people.&quot;</p>
+        
+        <h3 id="supervisor-adjustment" class="section"><a class="anchor-link left" href="#supervisor-adjustment"><i class="icofont-laika link">&#xef71;</i></a>Supervisor Adjustment</h3>
+        <p>A different user adjusts the variance:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;approves adjustment when supervisor (different user) adjusts&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> = </span><span class="type-name">AdjustmentService</span><span>.</span><span class="identifier">adjust</span><span>(
+    </span><span class="identifier">variance</span><span>,
+    </span><span class="identifier">adjustedBy</span><span> = </span><span class="identifier">supervisor</span><span>,
+    </span><span class="type-name">AdjustmentReasonCode</span><span>.</span><span class="type-name">Shrinkage</span><span>,
+    </span><span class="identifier">at</span><span>(</span><span class="number-literal">10</span><span>)
+  )
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">isRight</span><span>)
+  </span><span class="keyword">val</span><span> </span><span class="identifier">adjustmentResult</span><span> = </span><span class="identifier">result</span><span>.</span><span class="identifier">value</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">adjustmentResult</span><span>.</span><span class="identifier">adjustedBy</span><span> == </span><span class="identifier">supervisor</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">adjustmentResult</span><span>.</span><span class="identifier">reasonCode</span><span> == </span><span class="type-name">AdjustmentReasonCode</span><span>.</span><span class="type-name">Shrinkage</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>The <code>supervisor</code> is a different <code>UserId</code> than <code>countOperator</code>, so the
+        check passes. The reason code <code>Shrinkage</code> will be recorded on the stock
+        event for audit purposes.</p>
+        
+        <h3 id="applying-the-stock-adjustment" class="section"><a class="anchor-link left" href="#applying-the-stock-adjustment"><i class="icofont-laika link">&#xef71;</i></a>Applying the Stock Adjustment</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;applies the stock adjustment&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">bandagePosition</span><span> = </span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>
+    .</span><span class="identifier">find</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">skuId</span><span> == </span><span class="identifier">bandageSkuId</span><span>).</span><span class="identifier">value</span><span>
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">adjusted</span><span>, </span><span class="identifier">adjustEvent</span><span>) =
+    </span><span class="identifier">bandagePosition</span><span>.</span><span class="identifier">adjust</span><span>(-</span><span class="number-literal">3</span><span>, </span><span class="type-name">AdjustmentReasonCode</span><span>.</span><span class="type-name">Shrinkage</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">10</span><span>))
+  </span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">adjusted</span><span>, </span><span class="identifier">adjustEvent</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">adjusted</span><span>.</span><span class="identifier">onHandQuantity</span><span> == </span><span class="number-literal">497</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">adjusted</span><span>.</span><span class="identifier">availableQuantity</span><span> == </span><span class="number-literal">497</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p><code>StockPosition.adjust</code> takes a delta (positive for surplus, negative for
+        shrinkage) and modifies both <code>onHandQuantity</code> and <code>availableQuantity</code>.
+        The invariant still holds: <code>497 == 497 + 0 + 0 + 0</code>. The
+        <code>StockPositionEvent.Adjusted</code> event records the delta, the reason code,
+        and the timestamp for the complete audit trail.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The adjustment flow is deliberately two-step: first
+          <code>AdjustmentService.adjust</code> validates and produces an <code>AdjustmentResult</code>,
+          then the caller applies the result to the stock position. This
+          separation means the validation logic (SOX compliance) lives in the
+          <code>core</code> module while the stock mutation stays on the <code>StockPosition</code>
+          aggregate where it belongs.</p>
+        </div>
+        
+        <h2 id="_17-00-workstation-operations" class="section"><a class="anchor-link left" href="#_17-00-workstation-operations"><i class="icofont-laika link">&#xef71;</i></a>17:00 -- Workstation Operations</h2>
+        <p>The day is winding down. The final section exercises the workstation
+        aggregate&#39;s typestate machine.</p>
+        
+        <h3 id="enabling-a-workstation" class="section"><a class="anchor-link left" href="#enabling-a-workstation"><i class="icofont-laika link">&#xef71;</i></a>Enabling a Workstation</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;starts in Picking mode when enabled&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">disabled</span><span> = </span><span class="type-name">Workstation</span><span>.</span><span class="type-name">Disabled</span><span>(
+    </span><span class="type-name">WorkstationId</span><span>(), </span><span class="type-name">WorkstationType</span><span>.</span><span class="type-name">PutWall</span><span>, </span><span class="number-literal">8</span><span>
+  )
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">idle</span><span>, </span><span class="identifier">enabledEvent</span><span>) = </span><span class="identifier">disabled</span><span>.</span><span class="identifier">enable</span><span>(</span><span class="identifier">at</span><span>(</span><span class="number-literal">11</span><span>))
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">idle</span><span>.</span><span class="identifier">mode</span><span> == </span><span class="type-name">WorkstationMode</span><span>.</span><span class="type-name">Picking</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>A <code>PutWall</code> workstation with 8 slots starts in <code>Disabled</code> state. The
+        <code>enable</code> method transitions it to <code>Idle</code> with a default mode of
+        <code>WorkstationMode.Picking</code>. The mode is set by the <code>enable</code> method, not
+        by the caller. Every workstation starts its day in Picking mode.</p>
+        
+        <h3 id="mode-switching" class="section"><a class="anchor-link left" href="#mode-switching"><i class="icofont-laika link">&#xef71;</i></a>Mode Switching</h3>
+        <p>An <code>Idle</code> workstation can switch between modes:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;switches from Picking to Receiving mode&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">disabled</span><span> = </span><span class="type-name">Workstation</span><span>.</span><span class="type-name">Disabled</span><span>(
+    </span><span class="type-name">WorkstationId</span><span>(), </span><span class="type-name">WorkstationType</span><span>.</span><span class="type-name">PutWall</span><span>, </span><span class="number-literal">8</span><span>
+  )
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">idle</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="identifier">disabled</span><span>.</span><span class="identifier">enable</span><span>(</span><span class="identifier">at</span><span>(</span><span class="number-literal">11</span><span>))
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">receivingMode</span><span>, </span><span class="identifier">switchEvent</span><span>) =
+    </span><span class="identifier">idle</span><span>.</span><span class="identifier">switchMode</span><span>(</span><span class="type-name">WorkstationMode</span><span>.</span><span class="type-name">Receiving</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">11</span><span>))
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">receivingMode</span><span>.</span><span class="identifier">mode</span><span> == </span><span class="type-name">WorkstationMode</span><span>.</span><span class="type-name">Receiving</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">switchEvent</span><span>.</span><span class="identifier">previousMode</span><span> == </span><span class="type-name">WorkstationMode</span><span>.</span><span class="type-name">Picking</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">switchEvent</span><span>.</span><span class="identifier">newMode</span><span> == </span><span class="type-name">WorkstationMode</span><span>.</span><span class="type-name">Receiving</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p><code>switchMode</code> returns the new <code>Idle</code> state and a <code>ModeSwitched</code> event
+        that captures both the previous and new modes. The workstation remains
+        in the <code>Idle</code> typestate; only the <code>mode</code> field changes.</p>
+        <p>The workstation can also switch to <code>Counting</code> mode for cycle count
+        operations:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;switches to Counting mode for cycle count&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">disabled</span><span> = </span><span class="type-name">Workstation</span><span>.</span><span class="type-name">Disabled</span><span>(
+    </span><span class="type-name">WorkstationId</span><span>(), </span><span class="type-name">WorkstationType</span><span>.</span><span class="type-name">PutWall</span><span>, </span><span class="number-literal">8</span><span>
+  )
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">idle</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="identifier">disabled</span><span>.</span><span class="identifier">enable</span><span>(</span><span class="identifier">at</span><span>(</span><span class="number-literal">11</span><span>))
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">countingMode</span><span>, </span><span class="identifier">_</span><span>) =
+    </span><span class="identifier">idle</span><span>.</span><span class="identifier">switchMode</span><span>(</span><span class="type-name">WorkstationMode</span><span>.</span><span class="type-name">Counting</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">11</span><span>))
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">countingMode</span><span>.</span><span class="identifier">mode</span><span> == </span><span class="type-name">WorkstationMode</span><span>.</span><span class="type-name">Counting</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        
+        <h3 id="compile-time-enforcement-on-active-workstations" class="section"><a class="anchor-link left" href="#compile-time-enforcement-on-active-workstations"><i class="icofont-laika link">&#xef71;</i></a>Compile-Time Enforcement on Active Workstations</h3>
+        <p>Here is where the typestate pattern shines:</p>
+        <pre><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;cannot switch mode while Active (processing work)&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">disabled</span><span> = </span><span class="type-name">Workstation</span><span>.</span><span class="type-name">Disabled</span><span>(
+    </span><span class="type-name">WorkstationId</span><span>(), </span><span class="type-name">WorkstationType</span><span>.</span><span class="type-name">PutWall</span><span>, </span><span class="number-literal">8</span><span>
+  )
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">idle</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="identifier">disabled</span><span>.</span><span class="identifier">enable</span><span>(</span><span class="identifier">at</span><span>(</span><span class="number-literal">11</span><span>))
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">active</span><span>, </span><span class="identifier">_</span><span>) =
+    </span><span class="identifier">idle</span><span>.</span><span class="identifier">assign</span><span>(</span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">UUID</span><span>.</span><span class="identifier">randomUUID</span><span>(), </span><span class="identifier">at</span><span>(</span><span class="number-literal">11</span><span>))
+  </span><span class="comment">// Active state does not expose switchMode:
+</span><span>  </span><span class="comment">// compile-time enforcement
+</span><span>  </span><span class="identifier">assert</span><span>(</span><span class="identifier">active</span><span>.</span><span class="identifier">isInstanceOf</span><span>[</span><span class="type-name">Workstation</span><span>.</span><span class="type-name">Active</span><span>])
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">backToIdle</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="identifier">active</span><span>.</span><span class="identifier">release</span><span>(</span><span class="identifier">at</span><span>(</span><span class="number-literal">11</span><span>))
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">relocated</span><span>, </span><span class="identifier">_</span><span>) =
+    </span><span class="identifier">backToIdle</span><span>.</span><span class="identifier">switchMode</span><span>(</span><span class="type-name">WorkstationMode</span><span>.</span><span class="type-name">Relocation</span><span>, </span><span class="identifier">at</span><span>(</span><span class="number-literal">11</span><span>))
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">relocated</span><span>.</span><span class="identifier">mode</span><span> == </span><span class="type-name">WorkstationMode</span><span>.</span><span class="type-name">Relocation</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>The <code>Active</code> case class does not have a <code>switchMode</code> method. It is not a
+        runtime check that throws an exception. It is not an <code>Either</code> that
+        returns an error. The method simply does not exist on <code>Active</code>. If you
+        tried to write <code>active.switchMode(...)</code>, the compiler would reject it.</p>
+        <p>To switch modes, you must first <code>release</code> the active assignment (which
+        returns to <code>Idle</code>), then call <code>switchMode</code>. The type system encodes the
+        business rule directly.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The <code>assign</code> method on <code>Idle</code> takes a <code>UUID</code> assignment
+          identifier and transitions to <code>Active</code>. The <code>release</code> method on
+          <code>Active</code> returns to <code>Idle</code>, preserving the current mode. This
+          <code>Idle</code> to <code>Active</code> to <code>Idle</code> cycle mirrors the physical workflow: a
+          workstation receives a consolidation group, processes it, and then
+          becomes available for the next one.</p>
+        </div>
+        
+        <h2 id="end-of-day-summary" class="section"><a class="anchor-link left" href="#end-of-day-summary"><i class="icofont-laika link">&#xef71;</i></a>End of Day Summary</h2>
+        <p>The final <code>describe</code> block verifies the cumulative state across all
+        operations:</p>
+        <pre><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;all stock positions reflect the day&#39;s operations&quot;</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">positions</span><span> = </span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>.</span><span class="identifier">toList</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">positions</span><span>.</span><span class="identifier">size</span><span> == </span><span class="number-literal">3</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">aspirinEarly</span><span> = </span><span class="identifier">positions</span><span>
+    .</span><span class="identifier">find</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">lotAttributes</span><span>.</span><span class="identifier">expirationDate</span><span>
+      .</span><span class="identifier">contains</span><span>(</span><span class="type-name">LocalDate</span><span>.</span><span class="identifier">of</span><span>(</span><span class="number-literal">2027</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">31</span><span>))).</span><span class="identifier">value</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">aspirinEarly</span><span>.</span><span class="identifier">onHandQuantity</span><span> == </span><span class="number-literal">325</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">aspirinEarly</span><span>.</span><span class="identifier">allocatedQuantity</span><span> == </span><span class="number-literal">0</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">aspirinLate</span><span> = </span><span class="identifier">positions</span><span>
+    .</span><span class="identifier">find</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">lotAttributes</span><span>.</span><span class="identifier">expirationDate</span><span>
+      .</span><span class="identifier">contains</span><span>(</span><span class="type-name">LocalDate</span><span>.</span><span class="identifier">of</span><span>(</span><span class="number-literal">2027</span><span>, </span><span class="number-literal">9</span><span>, </span><span class="number-literal">30</span><span>))).</span><span class="identifier">value</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">aspirinLate</span><span>.</span><span class="identifier">onHandQuantity</span><span> == </span><span class="number-literal">150</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">aspirinLate</span><span>.</span><span class="identifier">allocatedQuantity</span><span> == </span><span class="number-literal">0</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">bandages</span><span> = </span><span class="identifier">positions</span><span>
+    .</span><span class="identifier">find</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">skuId</span><span> == </span><span class="identifier">bandageSkuId</span><span>).</span><span class="identifier">value</span><span>
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">bandages</span><span>.</span><span class="identifier">onHandQuantity</span><span> == </span><span class="number-literal">497</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>Three stock positions, three stories:</p>
+        <ul>
+          <li><strong>Aspirin early-expiry (ASP-2026-A)</strong>: Started at 200, received 200
+          more (total 400), FEFO allocated 80, picked 75 (50 full + 25 partial),
+          deallocated remainder 5. Final: 325 on-hand, 0 allocated.</li>
+          <li><strong>Aspirin late-expiry (ASP-2026-B)</strong>: Started at 150, untouched.
+          FEFO never reached it because the early lot had sufficient stock.
+          Final: 150 on-hand, 0 allocated.</li>
+          <li><strong>Bandages (BND-2026)</strong>: Started at 500, blind cycle count found 497,
+          supervisor approved shrinkage adjustment. Final: 497 on-hand.</li>
+        </ul>
+        
+        <h3 id="the-audit-trail" class="section"><a class="anchor-link left" href="#the-audit-trail"><i class="icofont-laika link">&#xef71;</i></a>The Audit Trail</h3>
+        <pre><code class="nohighlight"><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;events trace the complete audit trail&quot;</span><span>):
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">events</span><span>.</span><span class="identifier">nonEmpty</span><span>)
+  </span><span class="keyword">val</span><span> </span><span class="identifier">createdEvents</span><span> = </span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">events</span><span>.</span><span class="identifier">collect</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">StockPositionEvent</span><span>.</span><span class="type-name">Created</span><span> =&gt; </span><span class="identifier">e</span><span>
+  }
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">createdEvents</span><span>.</span><span class="identifier">size</span><span> == </span><span class="number-literal">3</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">allocatedEvents</span><span> = </span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">events</span><span>.</span><span class="identifier">collect</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">StockPositionEvent</span><span>.</span><span class="type-name">Allocated</span><span> =&gt; </span><span class="identifier">e</span><span>
+  }
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">allocatedEvents</span><span>.</span><span class="identifier">nonEmpty</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">consumedEvents</span><span> = </span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">events</span><span>.</span><span class="identifier">collect</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">StockPositionEvent</span><span>.</span><span class="type-name">AllocatedConsumed</span><span> =&gt; </span><span class="identifier">e</span><span>
+  }
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">consumedEvents</span><span>.</span><span class="identifier">nonEmpty</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">adjustedEvents</span><span> = </span><span class="identifier">stockRepo</span><span>.</span><span class="identifier">events</span><span>.</span><span class="identifier">collect</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">StockPositionEvent</span><span>.</span><span class="type-name">Adjusted</span><span> =&gt; </span><span class="identifier">e</span><span>
+  }
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">adjustedEvents</span><span>.</span><span class="identifier">size</span><span> == </span><span class="number-literal">1</span><span>)
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">adjustedEvents</span><span>.</span><span class="identifier">head</span><span>.</span><span class="identifier">reasonCode</span><span>
+    == </span><span class="type-name">AdjustmentReasonCode</span><span>.</span><span class="type-name">Shrinkage</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala</em>&lt;/small&gt;</p>
+        <p>Every mutation throughout the day produced an immutable event. The
+        <code>stockRepo.events</code> list buffer contains <code>Created</code>, <code>QuantityAdded</code>,
+        <code>Allocated</code>, <code>AllocatedConsumed</code>, <code>Deallocated</code>, and <code>Adjusted</code> events
+        in chronological order. In production, these events feed CQRS
+        projections (Chapter 12), audit logs, and downstream analytics. Here in
+        the test, they let us verify that every transition happened and that
+        nothing was silently lost.</p>
+        
+        <h2 id="what-we-learned" class="section"><a class="anchor-link left" href="#what-we-learned"><i class="icofont-laika link">&#xef71;</i></a>What We Learned</h2>
+        <p>This single test file exercises every domain module in the system:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Module</th>
+              <th>Aggregates</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>06:00</td>
+              <td><code>inbound-delivery</code>, <code>goods-receipt</code>, <code>stock-position</code>, <code>task</code></td>
+              <td>InboundDelivery, GoodsReceipt, StockPosition, Task</td>
+            </tr>
+            <tr>
+              <td>08:00</td>
+              <td><code>wave</code>, <code>task</code>, <code>stock-position</code>, <code>consolidation-group</code></td>
+              <td>Wave, Task, StockPosition, ConsolidationGroup</td>
+            </tr>
+            <tr>
+              <td>10:00</td>
+              <td><code>task</code>, <code>stock-position</code></td>
+              <td>Task, StockPosition</td>
+            </tr>
+            <tr>
+              <td>14:00</td>
+              <td><code>cycle-count</code>, <code>count-task</code>, <code>stock-position</code></td>
+              <td>CycleCount, CountTask, StockPosition</td>
+            </tr>
+            <tr>
+              <td>16:00</td>
+              <td><code>stock-position</code></td>
+              <td>StockPosition</td>
+            </tr>
+            <tr>
+              <td>17:00</td>
+              <td><code>workstation</code></td>
+              <td>Workstation</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Every pattern from Parts I through III contributed:</p>
+        <p><strong>Typestate encoding</strong> prevented invalid transitions at compile time.
+        We could not complete a <code>New</code> delivery, confirm an empty receipt,
+        adjust stock with the same user who counted it (via <code>Either</code>), or
+        switch modes on an <code>Active</code> workstation.</p>
+        <p><strong>The 4-bucket stock model</strong> tracked inventory through five distinct
+        operations: creation, addition, allocation, consumption, deallocation,
+        and adjustment. The <code>onHand == available + allocated + reserved +
+blocked</code> invariant held at every step, enforced by <code>require</code> in the
+        <code>validateInvariant</code> method.</p>
+        <p><strong>Stateless policies</strong> made pure decisions. <code>CountCreationPolicy</code>
+        produced count tasks from stock snapshots. <code>StockAllocationPolicy</code>
+        sorted positions by expiration date. <code>ShortpickPolicy</code> computed a
+        replacement quantity. None of them touched a repository.</p>
+        <p><strong>Services</strong> orchestrated cascades across aggregates.
+        <code>InboundReceivingService</code> created tasks and updated stock.
+        <code>WaveReleaseService</code> allocated stock and enriched tasks.
+        <code>TaskCompletionService</code> consumed stock, checked for shortpicks, and
+        managed wave completion. <code>CountCompletionService</code> collected variances.
+        <code>AdjustmentService</code> enforced SOX rules.</p>
+        <p><strong>In-memory repositories</strong> made the entire simulation possible without
+        any infrastructure. Seven mutable maps and seven event buffers replaced
+        Pekko actors, Cluster Sharding, PostgreSQL, and R2DBC projections. The
+        domain code does not know the difference. This is the hexagonal
+        architecture payoff from Chapter 8: the same domain logic that runs in
+        this 619-line test file runs in the production distributed system.</p>
+        <p>The test is living documentation. If you want to understand the entire
+        system in one sitting, read <code>WarehouseDaySimulationSuite</code> top to bottom. When a domain rule changes, the test
+        breaks in a specific, traceable location. When someone asks &quot;how does
+        FEFO allocation work?&quot; or &quot;what happens on a shortpick?&quot; or &quot;who can
+        approve an inventory adjustment?&quot;, the answer is in the test, verified
+        on every CI run.</p>
+        <p>We have now seen the domain model in action across a complete warehouse
+        day. In the next chapters, we will turn to the cross-cutting concerns
+        that production systems demand: serialization, error handling,
+        configuration, and deployment.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

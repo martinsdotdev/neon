@@ -1,0 +1,4 @@
+[debug] [neon-build-build] Classpath dependencies List()
+[debug] [neon-build-build] Dependencies from configurations List()
+[debug] Bloop wrote the configuration of project 'neon-build-build' to '/home/martins/Projects/neon/project/project/.bloop/neon-build-build.json'
+[success] Generated .bloop/neon-build-build.json

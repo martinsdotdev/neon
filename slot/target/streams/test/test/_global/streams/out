@@ -1,0 +1,50 @@
+[debug] Running TaskDef(neon.slot.PekkoSlotRepositorySuite, org.scalatest.tools.Framework$$anon$1@6bc8c5ca, false, [SuiteSelector])
+[debug] Running TaskDef(neon.slot.SlotActorSuite, org.scalatest.tools.Framework$$anon$1@6bc8c5ca, false, [SuiteSelector])
+[debug] Running TaskDef(neon.slot.SlotSuite, org.scalatest.tools.Framework$$anon$1@6bc8c5ca, false, [SuiteSelector])
+[info] SlotSuite:
+[info] Slot
+[info]   reserving
+[info]   - binds an order and handling unit to the slot
+[info]   - emits an event with the full binding
+[info]   completing
+[info]   - preserves the order and handling unit binding
+[info]   - emits an event for consolidation group completion detection
+[info]   releasing
+[info]   - returns the slot to Available without order or handling unit
+[info]   - carries the released order for downstream coordination
+[info]   cycling
+[info]   - accepts a new reservation after release
+[info]   identity
+[info]   - carries workstation ID through all states
+[info]   - carries workstation ID through release cycle
+[info] SlotActorSuite:
+[info] SlotActor
+[info]   lifecycle Available -> Reserved -> Completed
+[info]   - transitions through all states
+[info]   Release from Reserved
+[info]   - transitions back to Available
+[info]   - allows re-reservation after release
+[info]   idempotent Create
+[info]   - acks on second Create without error
+[info]   invalid transitions
+[info]   - rejects Reserve on Reserved
+[info]   - rejects Complete on Available
+[info]   - rejects Release on Available
+[info]   event replay
+[info]   - recovers Reserved state from journal
+[info] PekkoSlotRepositorySuite:
+[info] PekkoSlotRepository
+[info]   save and findById
+[info]   - persists an Available slot and transitions to Reserved
+[info]   - returns None for a non-existent slot
+[info]   saveAll
+[info]   - persists multiple slots
+[info] Run completed in 9 seconds, 104 milliseconds.
+[info] Total number of tests run: 20
+[info] Suites: completed 3, aborted 0
+[info] Tests: succeeded 20, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.slot.SlotActorSuite
+[debug] 	neon.slot.PekkoSlotRepositorySuite
+[debug] 	neon.slot.SlotSuite

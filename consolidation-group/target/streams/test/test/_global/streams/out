@@ -1,0 +1,60 @@
+[debug] Running TaskDef(neon.consolidationgroup.ConsolidationGroupActorSuite, org.scalatest.tools.Framework$$anon$1@1ab069aa, false, [SuiteSelector])
+[debug] Running TaskDef(neon.consolidationgroup.ConsolidationGroupSuite, org.scalatest.tools.Framework$$anon$1@1ab069aa, false, [SuiteSelector])
+[debug] Running TaskDef(neon.consolidationgroup.PekkoConsolidationGroupRepositorySuite, org.scalatest.tools.Framework$$anon$1@1ab069aa, false, [SuiteSelector])
+[info] ConsolidationGroupSuite:
+[info] ConsolidationGroup
+[info]   creating
+[info]   - produces a Created state and a ConsolidationGroupCreated event
+[info]   - event carries order IDs for downstream slot allocation
+[info]   - rejects empty order list
+[info]   full lifecycle
+[info]   - tracks orders from wave completion through put-wall processing
+[info]   assigning
+[info]   - binds the consolidation group to a put-wall for sorting
+[info]   identity
+[info]   - carries wave ID for completion tracking
+[info]   - carries order IDs for slot allocation
+[info]   events
+[info]   - identify the consolidation group and wave for policy routing
+[info]   - readyForWorkstation event carries consolidation group and wave for assignment policy
+[info]   - assigned event carries workstation ID for workstation coordination
+[info]   - completed event carries workstation ID to trigger release
+[info]   cancelling
+[info]   - cancels from Created before any picking starts
+[info]   - cancels from Picked when wave is aborted mid-flow
+[info]   - cancels from ReadyForWorkstation when no workstation available
+[info]   - cancels from Assigned when workstation must be freed
+[info]   - cancelled event carries consolidation group ID and wave ID for cascade coordination
+[info]   - cancelled state preserves order IDs for audit
+[info] ConsolidationGroupActorSuite:
+[info] ConsolidationGroupActor
+[info]   full lifecycle Created -> Picked -> ReadyForWorkstation -> Assigned -> Completed
+[info]   - transitions through all states
+[info]   Cancel
+[info]   - cancels from Created state
+[info]   - cancels from Picked state
+[info]   - cancels from ReadyForWorkstation state
+[info]   - cancels from Assigned state
+[info]   - rejects Cancel on Completed
+[info]   invalid transitions
+[info]   - rejects Pick on Picked
+[info]   - rejects Complete on Created
+[info]   - rejects Assign on Created
+[info]   event replay
+[info]   - recovers Assigned state from journal
+[info] PekkoConsolidationGroupRepositorySuite:
+[info] PekkoConsolidationGroupRepository
+[info]   save and findById
+[info]   - persists a Created consolidation group and retrieves it
+[info]   - returns None for a non-existent consolidation group
+[info]   saveAll
+[info]   - persists multiple consolidation groups
+[info] Run completed in 10 seconds, 676 milliseconds.
+[info] Total number of tests run: 30
+[info] Suites: completed 3, aborted 0
+[info] Tests: succeeded 30, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.consolidationgroup.ConsolidationGroupActorSuite
+[debug] 	neon.consolidationgroup.ConsolidationGroupSuite
+[debug] 	neon.consolidationgroup.PekkoConsolidationGroupRepositorySuite

@@ -1,0 +1,4 @@
+[debug] [common] Classpath dependencies List()
+[debug] [common] Dependencies from configurations List()
+[debug] Bloop wrote the configuration of project 'common' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/common.json'
+[success] Generated .bloop/common.json

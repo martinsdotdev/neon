@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Appendix C: Event Catalogue</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Appendix C: Event Catalogue</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#wave-events">Wave Events</a></li>
+    <li class="level1 nav-leaf"><a href="#task-events">Task Events</a></li>
+    <li class="level1 nav-leaf"><a href="#consolidationgroup-events">ConsolidationGroup Events</a></li>
+    <li class="level1 nav-leaf"><a href="#handlingunit-events">HandlingUnit Events</a></li>
+    <li class="level1 nav-leaf"><a href="#transportorder-events">TransportOrder Events</a></li>
+    <li class="level1 nav-leaf"><a href="#workstation-events">Workstation Events</a></li>
+    <li class="level1 nav-leaf"><a href="#slot-events">Slot Events</a></li>
+    <li class="level1 nav-leaf"><a href="#inventory-events">Inventory Events</a></li>
+    <li class="level1 nav-leaf"><a href="#stockposition-events">StockPosition Events</a></li>
+    <li class="level1 nav-leaf"><a href="#handlingunitstock-events">HandlingUnitStock Events</a></li>
+    <li class="level1 nav-leaf"><a href="#inbounddelivery-events">InboundDelivery Events</a></li>
+    <li class="level1 nav-leaf"><a href="#goodsreceipt-events">GoodsReceipt Events</a></li>
+    <li class="level1 nav-leaf"><a href="#cyclecount-events">CycleCount Events</a></li>
+    <li class="level1 nav-leaf"><a href="#counttask-events">CountTask Events</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="appendix-c-event-catalogue" class="title">Appendix C: Event Catalogue</h1>
+        <p>Every domain event in Neon WES is listed below, organized by module. All events extend <code>CborSerializable</code> for Jackson CBOR serialization. Each event records an <code>occurredAt: Instant</code> timestamp.</p>
+        <hr>
+        
+        <h2 id="wave-events" class="section"><a class="anchor-link left" href="#wave-events"><i class="icofont-laika link">&#xef71;</i></a>Wave Events</h2>
+        <p>Sealed trait: <code>WaveEvent</code></p>
+        <p>Common fields on all wave events: <code>waveId: WaveId</code>, <code>orderGrouping: OrderGrouping</code>, <code>occurredAt: Instant</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Additional Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>WaveReleased</code></td>
+              <td><code>orderIds: List[OrderId]</code></td>
+              <td><code>Planned.release(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>WaveCompleted</code></td>
+              <td>(none)</td>
+              <td><code>Released.complete(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>WaveCancelled</code></td>
+              <td>(none)</td>
+              <td><code>Planned.cancel(at)</code> or <code>Released.cancel(at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="task-events" class="section"><a class="anchor-link left" href="#task-events"><i class="icofont-laika link">&#xef71;</i></a>Task Events</h2>
+        <p>Sealed trait: <code>TaskEvent</code></p>
+        <p>Common fields on all task events: <code>taskId: TaskId</code>, <code>taskType: TaskType</code>, <code>occurredAt: Instant</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Additional Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>TaskCreated</code></td>
+              <td><code>skuId: SkuId</code>, <code>packagingLevel: PackagingLevel</code>, <code>orderId: OrderId</code>, <code>waveId: Option[WaveId]</code>, <code>parentTaskId: Option[TaskId]</code>, <code>handlingUnitId: Option[HandlingUnitId]</code>, <code>requestedQuantity: Int</code>, <code>stockPositionId: Option[StockPositionId]</code></td>
+              <td><code>Task.create(...)</code></td>
+            </tr>
+            <tr>
+              <td><code>TaskAllocated</code></td>
+              <td><code>sourceLocationId: LocationId</code>, <code>destinationLocationId: LocationId</code></td>
+              <td><code>Planned.allocate(src, dest, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>TaskAssigned</code></td>
+              <td><code>userId: UserId</code></td>
+              <td><code>Allocated.assign(userId, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>TaskCompleted</code></td>
+              <td><code>skuId: SkuId</code>, <code>packagingLevel: PackagingLevel</code>, <code>waveId: Option[WaveId]</code>, <code>parentTaskId: Option[TaskId]</code>, <code>handlingUnitId: Option[HandlingUnitId]</code>, <code>sourceLocationId: LocationId</code>, <code>destinationLocationId: LocationId</code>, <code>requestedQuantity: Int</code>, <code>actualQuantity: Int</code>, <code>assignedTo: UserId</code></td>
+              <td><code>Assigned.complete(actualQty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>TaskCancelled</code></td>
+              <td><code>waveId: Option[WaveId]</code>, <code>parentTaskId: Option[TaskId]</code>, <code>handlingUnitId: Option[HandlingUnitId]</code>, <code>sourceLocationId: Option[LocationId]</code>, <code>destinationLocationId: Option[LocationId]</code>, <code>assignedTo: Option[UserId]</code></td>
+              <td><code>Planned.cancel(at)</code>, <code>Allocated.cancel(at)</code>, or <code>Assigned.cancel(at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="consolidationgroup-events" class="section"><a class="anchor-link left" href="#consolidationgroup-events"><i class="icofont-laika link">&#xef71;</i></a>ConsolidationGroup Events</h2>
+        <p>Sealed trait: <code>ConsolidationGroupEvent</code></p>
+        <p>Common fields: <code>consolidationGroupId: ConsolidationGroupId</code>, <code>waveId: WaveId</code>, <code>occurredAt: Instant</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Additional Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>ConsolidationGroupCreated</code></td>
+              <td><code>orderIds: List[OrderId]</code></td>
+              <td><code>ConsolidationGroup.create(waveId, orderIds, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>ConsolidationGroupPicked</code></td>
+              <td>(none)</td>
+              <td><code>Created.pick(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>ConsolidationGroupReadyForWorkstation</code></td>
+              <td>(none)</td>
+              <td><code>Picked.readyForWorkstation(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>ConsolidationGroupAssigned</code></td>
+              <td><code>workstationId: WorkstationId</code></td>
+              <td><code>ReadyForWorkstation.assign(wsId, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>ConsolidationGroupCompleted</code></td>
+              <td><code>workstationId: WorkstationId</code></td>
+              <td><code>Assigned.complete(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>ConsolidationGroupCancelled</code></td>
+              <td>(none)</td>
+              <td><code>cancel(at)</code> from any non-terminal state</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="handlingunit-events" class="section"><a class="anchor-link left" href="#handlingunit-events"><i class="icofont-laika link">&#xef71;</i></a>HandlingUnit Events</h2>
+        <p>Sealed trait: <code>HandlingUnitEvent</code></p>
+        <p>Common fields: <code>handlingUnitId: HandlingUnitId</code>, <code>occurredAt: Instant</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Additional Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>HandlingUnitMovedToBuffer</code></td>
+              <td><code>locationId: LocationId</code></td>
+              <td><code>PickCreated.moveToBuffer(locationId, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>HandlingUnitEmptied</code></td>
+              <td>(none)</td>
+              <td><code>InBuffer.empty(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>HandlingUnitPacked</code></td>
+              <td><code>orderId: OrderId</code></td>
+              <td><code>ShipCreated.pack(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>HandlingUnitReadyToShip</code></td>
+              <td><code>orderId: OrderId</code></td>
+              <td><code>Packed.readyToShip(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>HandlingUnitShipped</code></td>
+              <td><code>orderId: OrderId</code></td>
+              <td><code>ReadyToShip.ship(at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="transportorder-events" class="section"><a class="anchor-link left" href="#transportorder-events"><i class="icofont-laika link">&#xef71;</i></a>TransportOrder Events</h2>
+        <p>Sealed trait: <code>TransportOrderEvent</code></p>
+        <p>Common fields: <code>transportOrderId: TransportOrderId</code>, <code>occurredAt: Instant</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Additional Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>TransportOrderCreated</code></td>
+              <td><code>handlingUnitId: HandlingUnitId</code>, <code>destination: LocationId</code></td>
+              <td><code>TransportOrder.create(huId, dest, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>TransportOrderConfirmed</code></td>
+              <td><code>handlingUnitId: HandlingUnitId</code>, <code>destination: LocationId</code></td>
+              <td><code>Pending.confirm(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>TransportOrderCancelled</code></td>
+              <td><code>handlingUnitId: HandlingUnitId</code>, <code>destination: LocationId</code></td>
+              <td><code>Pending.cancel(at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="workstation-events" class="section"><a class="anchor-link left" href="#workstation-events"><i class="icofont-laika link">&#xef71;</i></a>Workstation Events</h2>
+        <p>Sealed trait: <code>WorkstationEvent</code></p>
+        <p>Common fields: <code>workstationId: WorkstationId</code>, <code>workstationType: WorkstationType</code>, <code>occurredAt: Instant</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Additional Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>WorkstationEnabled</code></td>
+              <td><code>slotCount: Int</code>, <code>mode: WorkstationMode</code></td>
+              <td><code>Disabled.enable(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>WorkstationAssigned</code></td>
+              <td><code>mode: WorkstationMode</code>, <code>assignmentId: UUID</code></td>
+              <td><code>Idle.assign(assignmentId, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>ModeSwitched</code></td>
+              <td><code>previousMode: WorkstationMode</code>, <code>newMode: WorkstationMode</code></td>
+              <td><code>Idle.switchMode(newMode, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>WorkstationReleased</code></td>
+              <td>(none)</td>
+              <td><code>Active.release(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>WorkstationDisabled</code></td>
+              <td>(none)</td>
+              <td><code>Idle.disable(at)</code> or <code>Active.disable(at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="slot-events" class="section"><a class="anchor-link left" href="#slot-events"><i class="icofont-laika link">&#xef71;</i></a>Slot Events</h2>
+        <p>Sealed trait: <code>SlotEvent</code></p>
+        <p>Common fields: <code>slotId: SlotId</code>, <code>occurredAt: Instant</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Additional Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>SlotReserved</code></td>
+              <td><code>workstationId: WorkstationId</code>, <code>orderId: OrderId</code>, <code>handlingUnitId: HandlingUnitId</code></td>
+              <td><code>Available.reserve(orderId, huId, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>SlotCompleted</code></td>
+              <td><code>workstationId: WorkstationId</code>, <code>orderId: OrderId</code>, <code>handlingUnitId: HandlingUnitId</code></td>
+              <td><code>Reserved.complete(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>SlotReleased</code></td>
+              <td><code>workstationId: WorkstationId</code>, <code>orderId: OrderId</code></td>
+              <td><code>Reserved.release(at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="inventory-events" class="section"><a class="anchor-link left" href="#inventory-events"><i class="icofont-laika link">&#xef71;</i></a>Inventory Events</h2>
+        <p>Sealed trait: <code>InventoryEvent</code></p>
+        <p>Common fields: <code>inventoryId: InventoryId</code>, <code>locationId: LocationId</code>, <code>skuId: SkuId</code>, <code>occurredAt: Instant</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Additional Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>InventoryCreated</code></td>
+              <td><code>packagingLevel: PackagingLevel</code>, <code>lot: Option[Lot]</code>, <code>onHand: Int</code></td>
+              <td><code>Inventory.create(...)</code></td>
+            </tr>
+            <tr>
+              <td><code>InventoryReserved</code></td>
+              <td><code>lot: Option[Lot]</code>, <code>quantityReserved: Int</code></td>
+              <td><code>reserve(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>InventoryReleased</code></td>
+              <td><code>lot: Option[Lot]</code>, <code>quantityReleased: Int</code></td>
+              <td><code>release(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>InventoryConsumed</code></td>
+              <td><code>lot: Option[Lot]</code>, <code>quantityConsumed: Int</code></td>
+              <td><code>consume(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>LotCorrected</code></td>
+              <td><code>previousLot: Option[Lot]</code>, <code>newLot: Option[Lot]</code></td>
+              <td><code>correctLot(newLot, at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="stockposition-events" class="section"><a class="anchor-link left" href="#stockposition-events"><i class="icofont-laika link">&#xef71;</i></a>StockPosition Events</h2>
+        <p>Sealed trait: <code>StockPositionEvent</code></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Created</code></td>
+              <td><code>stockPositionId: StockPositionId</code>, <code>skuId: SkuId</code>, <code>warehouseAreaId: WarehouseAreaId</code>, <code>lotAttributes: LotAttributes</code>, <code>onHandQuantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>StockPosition.create(...)</code></td>
+            </tr>
+            <tr>
+              <td><code>Allocated</code></td>
+              <td><code>stockPositionId: StockPositionId</code>, <code>quantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>allocate(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>Deallocated</code></td>
+              <td><code>stockPositionId: StockPositionId</code>, <code>quantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>deallocate(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>QuantityAdded</code></td>
+              <td><code>stockPositionId: StockPositionId</code>, <code>quantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>addQuantity(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>AllocatedConsumed</code></td>
+              <td><code>stockPositionId: StockPositionId</code>, <code>quantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>consumeAllocated(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>Reserved</code></td>
+              <td><code>stockPositionId: StockPositionId</code>, <code>quantity: Int</code>, <code>lockType: StockLockType</code>, <code>occurredAt: Instant</code></td>
+              <td><code>reserve(qty, lockType, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>ReservationReleased</code></td>
+              <td><code>stockPositionId: StockPositionId</code>, <code>quantity: Int</code>, <code>lockType: StockLockType</code>, <code>occurredAt: Instant</code></td>
+              <td><code>releaseReservation(qty, lockType, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>Blocked</code></td>
+              <td><code>stockPositionId: StockPositionId</code>, <code>quantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>block(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>Unblocked</code></td>
+              <td><code>stockPositionId: StockPositionId</code>, <code>quantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>unblock(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>Adjusted</code></td>
+              <td><code>stockPositionId: StockPositionId</code>, <code>delta: Int</code>, <code>reasonCode: AdjustmentReasonCode</code>, <code>occurredAt: Instant</code></td>
+              <td><code>adjust(delta, reasonCode, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>StatusChanged</code></td>
+              <td><code>stockPositionId: StockPositionId</code>, <code>previousStatus: InventoryStatus</code>, <code>newStatus: InventoryStatus</code>, <code>occurredAt: Instant</code></td>
+              <td><code>changeStatus(newStatus, at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="handlingunitstock-events" class="section"><a class="anchor-link left" href="#handlingunitstock-events"><i class="icofont-laika link">&#xef71;</i></a>HandlingUnitStock Events</h2>
+        <p>Sealed trait: <code>HandlingUnitStockEvent</code></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Created</code></td>
+              <td><code>handlingUnitStockId: HandlingUnitStockId</code>, <code>skuId: SkuId</code>, <code>containerId: ContainerId</code>, <code>slotCode: SlotCode</code>, <code>stockPositionId: StockPositionId</code>, <code>physicalContainer: Boolean</code>, <code>onHandQuantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>HandlingUnitStock.create(...)</code></td>
+            </tr>
+            <tr>
+              <td><code>Allocated</code></td>
+              <td><code>handlingUnitStockId: HandlingUnitStockId</code>, <code>quantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>allocate(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>Deallocated</code></td>
+              <td><code>handlingUnitStockId: HandlingUnitStockId</code>, <code>quantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>deallocate(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>QuantityAdded</code></td>
+              <td><code>handlingUnitStockId: HandlingUnitStockId</code>, <code>quantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>addQuantity(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>AllocatedConsumed</code></td>
+              <td><code>handlingUnitStockId: HandlingUnitStockId</code>, <code>quantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>consumeAllocated(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>Reserved</code></td>
+              <td><code>handlingUnitStockId: HandlingUnitStockId</code>, <code>quantity: Int</code>, <code>lockType: StockLockType</code>, <code>occurredAt: Instant</code></td>
+              <td><code>reserve(qty, lockType, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>ReservationReleased</code></td>
+              <td><code>handlingUnitStockId: HandlingUnitStockId</code>, <code>quantity: Int</code>, <code>lockType: StockLockType</code>, <code>occurredAt: Instant</code></td>
+              <td><code>releaseReservation(qty, lockType, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>Blocked</code></td>
+              <td><code>handlingUnitStockId: HandlingUnitStockId</code>, <code>quantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>block(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>Unblocked</code></td>
+              <td><code>handlingUnitStockId: HandlingUnitStockId</code>, <code>quantity: Int</code>, <code>occurredAt: Instant</code></td>
+              <td><code>unblock(qty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>Adjusted</code></td>
+              <td><code>handlingUnitStockId: HandlingUnitStockId</code>, <code>delta: Int</code>, <code>reasonCode: AdjustmentReasonCode</code>, <code>occurredAt: Instant</code></td>
+              <td><code>adjust(delta, reasonCode, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>StatusChanged</code></td>
+              <td><code>handlingUnitStockId: HandlingUnitStockId</code>, <code>previousStatus: InventoryStatus</code>, <code>newStatus: InventoryStatus</code>, <code>occurredAt: Instant</code></td>
+              <td><code>changeStatus(newStatus, at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="inbounddelivery-events" class="section"><a class="anchor-link left" href="#inbounddelivery-events"><i class="icofont-laika link">&#xef71;</i></a>InboundDelivery Events</h2>
+        <p>Sealed trait: <code>InboundDeliveryEvent</code></p>
+        <p>Common fields: <code>inboundDeliveryId: InboundDeliveryId</code>, <code>occurredAt: Instant</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Additional Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>InboundDeliveryCreated</code></td>
+              <td><code>skuId: SkuId</code>, <code>packagingLevel: PackagingLevel</code>, <code>lotAttributes: LotAttributes</code>, <code>expectedQuantity: Int</code></td>
+              <td>(factory-level creation)</td>
+            </tr>
+            <tr>
+              <td><code>ReceivingStarted</code></td>
+              <td>(none)</td>
+              <td><code>New.startReceiving(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>QuantityReceived</code></td>
+              <td><code>quantity: Int</code>, <code>rejectedQuantity: Int</code></td>
+              <td><code>Receiving.receive(qty, rejected, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>InboundDeliveryReceived</code></td>
+              <td><code>receivedQuantity: Int</code></td>
+              <td><code>Receiving.complete(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>InboundDeliveryClosed</code></td>
+              <td><code>receivedQuantity: Int</code>, <code>rejectedQuantity: Int</code></td>
+              <td><code>Receiving.close(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>InboundDeliveryCancelled</code></td>
+              <td>(none)</td>
+              <td><code>New.cancel(at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="goodsreceipt-events" class="section"><a class="anchor-link left" href="#goodsreceipt-events"><i class="icofont-laika link">&#xef71;</i></a>GoodsReceipt Events</h2>
+        <p>Sealed trait: <code>GoodsReceiptEvent</code></p>
+        <p>Common fields: <code>goodsReceiptId: GoodsReceiptId</code>, <code>occurredAt: Instant</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Additional Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>GoodsReceiptCreated</code></td>
+              <td><code>inboundDeliveryId: InboundDeliveryId</code></td>
+              <td>(factory-level creation)</td>
+            </tr>
+            <tr>
+              <td><code>LineRecorded</code></td>
+              <td><code>line: ReceivedLine</code></td>
+              <td><code>Open.recordLine(line, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>GoodsReceiptConfirmed</code></td>
+              <td><code>inboundDeliveryId: InboundDeliveryId</code>, <code>receivedLines: List[ReceivedLine]</code></td>
+              <td><code>Open.confirm(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>GoodsReceiptCancelled</code></td>
+              <td>(none)</td>
+              <td><code>Open.cancel(at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <p><code>ReceivedLine</code> contains: <code>skuId: SkuId</code>, <code>quantity: Int</code>, <code>packagingLevel: PackagingLevel</code>, <code>lotAttributes: LotAttributes</code>, <code>targetContainerId: Option[ContainerId]</code>.</p>
+        <hr>
+        
+        <h2 id="cyclecount-events" class="section"><a class="anchor-link left" href="#cyclecount-events"><i class="icofont-laika link">&#xef71;</i></a>CycleCount Events</h2>
+        <p>Sealed trait: <code>CycleCountEvent</code></p>
+        <p>Common fields: <code>cycleCountId: CycleCountId</code>, <code>countType: CountType</code>, <code>occurredAt: Instant</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Additional Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>CycleCountCreated</code></td>
+              <td><code>warehouseAreaId: WarehouseAreaId</code>, <code>skuIds: List[SkuId]</code>, <code>countMethod: CountMethod</code></td>
+              <td>(factory-level creation)</td>
+            </tr>
+            <tr>
+              <td><code>CycleCountStarted</code></td>
+              <td><code>countMethod: CountMethod</code></td>
+              <td><code>New.start(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>CycleCountCompleted</code></td>
+              <td>(none)</td>
+              <td><code>InProgress.complete(at)</code></td>
+            </tr>
+            <tr>
+              <td><code>CycleCountCancelled</code></td>
+              <td>(none)</td>
+              <td><code>New.cancel(at)</code> or <code>InProgress.cancel(at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        
+        <h2 id="counttask-events" class="section"><a class="anchor-link left" href="#counttask-events"><i class="icofont-laika link">&#xef71;</i></a>CountTask Events</h2>
+        <p>Sealed trait: <code>CountTaskEvent</code></p>
+        <p>Common fields: <code>countTaskId: CountTaskId</code>, <code>occurredAt: Instant</code>.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Additional Fields</th>
+              <th>Produced By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>CountTaskCreated</code></td>
+              <td><code>cycleCountId: CycleCountId</code>, <code>skuId: SkuId</code>, <code>locationId: LocationId</code>, <code>expectedQuantity: Int</code></td>
+              <td>(factory-level creation)</td>
+            </tr>
+            <tr>
+              <td><code>CountTaskAssigned</code></td>
+              <td><code>userId: UserId</code></td>
+              <td><code>Pending.assign(userId, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>CountTaskRecorded</code></td>
+              <td><code>cycleCountId: CycleCountId</code>, <code>skuId: SkuId</code>, <code>locationId: LocationId</code>, <code>expectedQuantity: Int</code>, <code>actualQuantity: Int</code>, <code>variance: Int</code>, <code>countedBy: UserId</code></td>
+              <td><code>Assigned.record(actualQty, at)</code></td>
+            </tr>
+            <tr>
+              <td><code>CountTaskCancelled</code></td>
+              <td><code>cycleCountId: CycleCountId</code></td>
+              <td><code>Pending.cancel(at)</code> or <code>Assigned.cancel(at)</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

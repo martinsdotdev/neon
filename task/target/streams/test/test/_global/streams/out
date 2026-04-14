@@ -1,0 +1,72 @@
+[debug] Running TaskDef(neon.task.TaskSuite, org.scalatest.tools.Framework$$anon$1@371c7cba, false, [SuiteSelector])
+[debug] Running TaskDef(neon.task.TaskActorSuite, org.scalatest.tools.Framework$$anon$1@371c7cba, false, [SuiteSelector])
+[debug] Running TaskDef(neon.task.PekkoTaskRepositorySuite, org.scalatest.tools.Framework$$anon$1@371c7cba, false, [SuiteSelector])
+[info] TaskSuite:
+[info] Task
+[info]   creating
+[info]   - returns Planned state and emits TaskCreated event
+[info]   - TaskCreated event includes all fields for event sourcing
+[info]   - rejects zero requested quantity
+[info]   - rejects negative requested quantity
+[info]   allocating
+[info]   - stores source and destination locations
+[info]   - TaskAllocated event carries task identity, locations, and timestamp
+[info]   - preserves all Planned fields
+[info]   assigning
+[info]   - binds the operator to the task
+[info]   - propagates locations from Allocated
+[info]   - TaskAssigned event carries operator ID and timestamp
+[info]   completing
+[info]   - records both requested and actual quantities
+[info]   - TaskCompleted event carries all fields for downstream policies
+[info]   - preserves operator, packaging level, and locations
+[info]   - allows zero actual quantity for full shortpick
+[info]   - allows actual quantity greater than requested for over-pick
+[info]   - rejects negative actual quantity
+[info]   cancelling
+[info]     from Planned
+[info]     - omits locations and assignedTo
+[info]     from Allocated
+[info]     - preserves locations but omits assignedTo
+[info]     from Assigned
+[info]     - preserves locations and operator ID
+[info]   - TaskCancelled event carries wave ID
+[info]   - TaskCancelled event carries handling unit ID
+[info]   - preserves packaging level
+[info]   parentTaskId traceability
+[info]   - Completed state preserves parent task reference
+[info]   - TaskCompleted event includes parent task reference
+[info]   - Cancelled state preserves parent task reference
+[info]   - TaskCancelled event includes parent task reference
+[info]   - omits parent task reference for non-replacement tasks
+[info]   full lifecycle
+[info]   - preserves identity across Planned → Allocated → Assigned → Completed
+[info] TaskActorSuite:
+[info] TaskActor
+[info]   full lifecycle Planned -> Allocated -> Assigned -> Completed
+[info]   - transitions through all states
+[info]   Cancel
+[info]   - cancels from Planned state
+[info]   - cancels from Assigned state
+[info]   - rejects Cancel on Completed task
+[info]   invalid transitions
+[info]   - rejects Assign on Planned task
+[info]   - rejects Complete on Allocated task
+[info]   event replay
+[info]   - recovers Assigned state from journal
+[info] PekkoTaskRepositorySuite:
+[info] PekkoTaskRepository
+[info]   save and findById
+[info]   - persists a Planned task and retrieves it
+[info]   - returns None for a non-existent task
+[info]   saveAll
+[info]   - persists multiple tasks
+[info] Run completed in 6 seconds, 753 milliseconds.
+[info] Total number of tests run: 38
+[info] Suites: completed 3, aborted 0
+[info] Tests: succeeded 38, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.task.PekkoTaskRepositorySuite
+[debug] 	neon.task.TaskSuite
+[debug] 	neon.task.TaskActorSuite

@@ -1,0 +1,6 @@
+[debug] [zinc] IncrementalCompile -----------
+[debug] IncrementalCompile.incrementalCompile
+[debug] previous = Stamps for: 9 products, 4 sources, 1 libraries
+[debug] current source = Set(${BASE}/order/src/main/scala/neon/order/Order.scala, ${BASE}/order/src/main/scala/neon/order/AsyncOrderRepository.scala, ${BASE}/order/src/main/scala/neon/order/Priority.scala, ${BASE}/order/src/main/scala/neon/order/OrderRepository.scala)
+[debug] > initialChanges = InitialChanges(Changes(added = Set(), removed = Set(), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())
+[debug] No changes

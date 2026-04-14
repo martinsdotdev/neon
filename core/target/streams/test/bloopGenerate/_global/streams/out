@@ -1,0 +1,4 @@
+[debug] [core-test] Classpath dependencies List(common, wave, task, consolidationGroup, handlingUnit, transportOrder, workstation, slot, inventory, stockPosition, handlingUnitStock, inboundDelivery, goodsReceipt, cycleCount, countTask, location, carrier, user)
+[debug] [core-test] Dependencies from configurations List(core)
+[debug] Bloop wrote the configuration of project 'core-test' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/core-test.json'
+[success] Generated .bloop/core-test.json

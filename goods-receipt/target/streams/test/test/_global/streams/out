@@ -1,0 +1,43 @@
+[debug] Running TaskDef(neon.goodsreceipt.GoodsReceiptActorSuite, org.scalatest.tools.Framework$$anon$1@1f101179, false, [SuiteSelector])
+[debug] Running TaskDef(neon.goodsreceipt.GoodsReceiptSuite, org.scalatest.tools.Framework$$anon$1@1f101179, false, [SuiteSelector])
+[info] GoodsReceiptSuite:
+[info] GoodsReceipt
+[info]   recording a line
+[info]   - adds a received line to the receipt
+[info]   - emits LineRecorded event
+[info]   - accumulates multiple lines
+[info]   - validates quantity is positive
+[info]   - supports optional target container
+[info]   confirming
+[info]   - transitions to Confirmed
+[info]   - emits Confirmed event
+[info]   - rejects confirmation with no lines
+[info]   cancelling
+[info]   - transitions to Cancelled
+[info]   - can cancel after recording lines
+[info] GoodsReceiptActorSuite:
+[info] GoodsReceiptActor
+[info]   Create
+[info]   - persists GoodsReceiptCreated event and sets Open state
+[info]   GetState
+[info]   - returns None when empty
+[info]   - returns Some after creation
+[info]   RecordLine
+[info]   - adds a line to the receipt
+[info]   - rejects RecordLine when not Open
+[info]   Confirm
+[info]   - transitions Open to Confirmed
+[info]   - rejects Confirm when no lines recorded
+[info]   Cancel
+[info]   - cancels an Open receipt
+[info]   - rejects Cancel on Confirmed receipt
+[info]   event replay
+[info]   - recovers Open state from journal
+[info] Run completed in 13 seconds, 338 milliseconds.
+[info] Total number of tests run: 20
+[info] Suites: completed 2, aborted 0
+[info] Tests: succeeded 20, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.goodsreceipt.GoodsReceiptActorSuite
+[debug] 	neon.goodsreceipt.GoodsReceiptSuite

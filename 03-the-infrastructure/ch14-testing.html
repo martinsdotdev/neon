@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Testing at Every Layer</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="../02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Testing at Every Layer</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#the-testing-pyramid-in-neon-wes">The Testing Pyramid in Neon WES</a></li>
+    <li class="level1 nav-node"><a href="#conventions">Conventions</a></li>
+    <li class="level2 nav-leaf"><a href="#scalatest-anyfunspec-with-describe-it">ScalaTest AnyFunSpec with describe/it</a></li>
+    <li class="level2 nav-leaf"><a href="#suite-naming">Suite Naming</a></li>
+    <li class="level2 nav-leaf"><a href="#mix-in-traits">Mix-in Traits</a></li>
+    <li class="level2 nav-leaf"><a href="#factory-methods">Factory Methods</a></li>
+    <li class="level1 nav-node"><a href="#layers-1-and-2-domain-and-policy-tests">Layers 1 and 2: Domain and Policy Tests</a></li>
+    <li class="level2 nav-leaf"><a href="#layer-1-domain-aggregate-tests">Layer 1: Domain Aggregate Tests</a></li>
+    <li class="level2 nav-leaf"><a href="#layer-2-policy-tests">Layer 2: Policy Tests</a></li>
+    <li class="level1 nav-node"><a href="#layer-3-service-tests">Layer 3: Service Tests</a></li>
+    <li class="level2 nav-leaf"><a href="#in-memory-repositories">In-Memory Repositories</a></li>
+    <li class="level2 nav-leaf"><a href="#example-taskcompletionservicesuite">Example: TaskCompletionServiceSuite</a></li>
+    <li class="level1 nav-node"><a href="#layer-4-actor-tests">Layer 4: Actor Tests</a></li>
+    <li class="level2 nav-leaf"><a href="#test-setup">Test Setup</a></li>
+    <li class="level2 nav-leaf"><a href="#testing-commands">Testing Commands</a></li>
+    <li class="level2 nav-leaf"><a href="#testing-rejections-and-event-replay">Testing Rejections and Event Replay</a></li>
+    <li class="level1 nav-node"><a href="#layers-5-through-7-integration-tests">Layers 5 through 7: Integration Tests</a></li>
+    <li class="level2 nav-leaf"><a href="#layer-5-pekko-repository-integration-tests">Layer 5: Pekko Repository Integration Tests</a></li>
+    <li class="level2 nav-leaf"><a href="#layer-6-http-route-tests">Layer 6: HTTP Route Tests</a></li>
+    <li class="level2 nav-leaf"><a href="#layer-7-projection-handler-tests">Layer 7: Projection Handler Tests</a></li>
+    <li class="level1 nav-leaf"><a href="#what-comes-next">What Comes Next</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="testing-at-every-layer" class="title">Testing at Every Layer</h1>
+        <p>A warehouse execution system cannot afford surprises. When a picker scans a
+        tote and the system says &quot;task completed,&quot; that completion must cascade
+        correctly through shortpick detection, transport order creation, wave
+        completion checking, and consolidation group state updates. If any link in
+        that chain breaks silently, physical goods end up in the wrong place.</p>
+        <p>Testing in Neon WES is organized as a pyramid with seven distinct layers.
+        Each layer tests a different concern, uses different tools, and catches
+        different categories of bugs. The lower layers are fast, pure, and
+        numerous. The upper layers are slower, involve real infrastructure, and are
+        fewer in count. Together they provide confidence that every state transition,
+        every policy decision, and every service orchestration works correctly.</p>
+        <p>In this chapter we will walk through each layer, study the conventions that
+        keep tests consistent, and examine real test suites from the codebase.</p>
+        
+        <h2 id="the-testing-pyramid-in-neon-wes" class="section"><a class="anchor-link left" href="#the-testing-pyramid-in-neon-wes"><i class="icofont-laika link">&#xef71;</i></a>The Testing Pyramid in Neon WES</h2>
+        <p>Here is how the seven layers stack up, from the base (fastest, most numerous)
+        to the peak (slowest, fewest):</p>
+        <pre><code>                    +---------------------------+
+                    |  7. Projection handler    |
+                    |     tests (Testcontainers)|
+                  +-------------------------------+
+                  |  6. HTTP route tests          |
+                  |     (ScalatestRouteTest)       |
+                +-----------------------------------+
+                |  5. Pekko repository integration  |
+                |     tests (single-node cluster)   |
+              +---------------------------------------+
+              |  4. Actor tests                       |
+              |     (EventSourcedBehaviorTestKit)      |
+            +-------------------------------------------+
+            |  3. Service tests                         |
+            |     (in-memory repositories)               |
+          +-----------------------------------------------+
+          |  2. Policy tests                              |
+          |     (pure functions, zero dependencies)        |
+        +---------------------------------------------------+
+        |  1. Domain aggregate tests                        |
+        |     (pure Scala, no framework beyond ScalaTest)    |
+        +---------------------------------------------------+</code></pre>
+        <p><strong>Layer 1: Domain aggregate tests</strong> verify that typestate transitions produce
+        the correct new state and event. Pure Scala; no actors, no repositories, no
+        mocking.</p>
+        <p><strong>Layer 2: Policy tests</strong> verify that stateless decision functions return the
+        correct <code>Option[(State, Event)]</code> for every input scenario. Also pure Scala.</p>
+        <p><strong>Layer 3: Service tests</strong> verify orchestration logic using in-memory
+        repository implementations. They assert on both the returned result and the
+        side effects recorded in the repositories.</p>
+        <p><strong>Layer 4: Actor tests</strong> verify command handling, event persistence, state
+        recovery after restart, and serialization correctness using Pekko&#39;s
+        <code>EventSourcedBehaviorTestKit</code>.</p>
+        <p><strong>Layer 5: Pekko repository integration tests</strong> verify that the
+        <code>PekkoXxxRepository</code> implementations correctly send commands to sharded
+        actors and aggregate results from projection queries.</p>
+        <p><strong>Layer 6: HTTP route tests</strong> verify request parsing, response formatting,
+        status code mapping, and authentication using Pekko&#39;s <code>ScalatestRouteTest</code>.</p>
+        <p><strong>Layer 7: Projection handler tests</strong> verify that event handlers correctly
+        insert and update read-side PostgreSQL tables, using Testcontainers to spin
+        up a real database.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Layers 1 through 3 make up the vast majority of tests. They run
+          in milliseconds, require no infrastructure, and cover the core business
+          logic. Layers 4 through 7 are important but intentionally fewer, because
+          the domain logic they exercise has already been validated by the lower layers.</p>
+        </div>
+        
+        <h2 id="conventions" class="section"><a class="anchor-link left" href="#conventions"><i class="icofont-laika link">&#xef71;</i></a>Conventions</h2>
+        <p>Before we look at specific tests, let&#39;s establish the conventions that every
+        test suite in Neon WES follows.</p>
+        
+        <h3 id="scalatest-anyfunspec-with-describe-it" class="section"><a class="anchor-link left" href="#scalatest-anyfunspec-with-describe-it"><i class="icofont-laika link">&#xef71;</i></a>ScalaTest AnyFunSpec with describe/it</h3>
+        <p>All suites use <code>AnyFunSpec</code> with nested <code>describe</code>/<code>it</code> blocks. This gives
+        us a BDD-style structure that reads like a specification:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">ShortpickPolicySuite</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyFunSpec</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">OptionValues</span><span>:
+
+  </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;ShortpickPolicy&quot;</span><span>):
+    </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when actual meets requested&quot;</span><span>):
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;does not create a replacement task&quot;</span><span>):
+        </span><span class="comment">// ...
+</span><span>
+    </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when actual is less than requested&quot;</span><span>):
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;returns replacement task for the unfulfilled quantity&quot;</span><span>):
+        </span><span class="comment">// ...</span></code></pre>
+        <p>The <code>describe</code> blocks group related scenarios. The <code>it</code> blocks are individual
+        test cases. When tests run, ScalaTest prints a tree-structured report:</p>
+        <pre><code>ShortpickPolicySuite:
+  ShortpickPolicy
+    when actual meets requested
+      - does not create a replacement task
+    when actual is less than requested
+      - returns replacement task for the unfulfilled quantity
+      - copies wave, SKU, task type, and order ID from original</code></pre>
+        
+        <h3 id="suite-naming" class="section"><a class="anchor-link left" href="#suite-naming"><i class="icofont-laika link">&#xef71;</i></a>Suite Naming</h3>
+        <p>Test suites are named <code>&lt;ComponentName&gt;Suite</code>. Not <code>Test</code>, not <code>Spec</code>,
+        always <code>Suite</code>:</p>
+        <ul>
+          <li><code>ShortpickPolicySuite</code> (policy)</li>
+          <li><code>TaskCompletionServiceSuite</code> (service)</li>
+          <li><code>WaveActorSuite</code> (actor)</li>
+          <li><code>WaveRoutesSuite</code> (HTTP route)</li>
+          <li><code>TaskProjectionHandlerSuite</code> (projection handler)</li>
+        </ul>
+        
+        <h3 id="mix-in-traits" class="section"><a class="anchor-link left" href="#mix-in-traits"><i class="icofont-laika link">&#xef71;</i></a>Mix-in Traits</h3>
+        <p>Suites mix in <code>OptionValues</code> and <code>EitherValues</code> from ScalaTest as needed.
+        These traits provide <code>.value</code> extractors that produce clear failure messages:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">ShortpickPolicySuite</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyFunSpec</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">OptionValues</span><span>:
+  </span><span class="comment">// policy returns Option[(Task.Planned, TaskEvent.TaskCreated)]
+</span><span>  </span><span class="keyword">val</span><span> (</span><span class="identifier">replacement</span><span>, </span><span class="identifier">event</span><span>) = </span><span class="type-name">ShortpickPolicy</span><span>(</span><span class="identifier">task</span><span>, </span><span class="identifier">at</span><span>).</span><span class="identifier">value</span><span>
+  </span><span class="comment">// .value on None fails with &quot;The Option on which value was invoked was not defined.&quot;</span></code></pre>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">TaskCompletionServiceSuite</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyFunSpec</span><span>
+    </span><span class="keyword">with</span><span> </span><span class="type-name">OptionValues</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">EitherValues</span><span>:
+  </span><span class="comment">// service returns Either[TaskCompletionError, TaskCompletionResult]
+</span><span>  </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> = </span><span class="identifier">service</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">taskId</span><span>, </span><span class="number-literal">5</span><span>, </span><span class="boolean-literal">true</span><span>, </span><span class="identifier">at</span><span>).</span><span class="identifier">left</span><span>.</span><span class="identifier">value</span><span>
+  </span><span class="comment">// .left.value on Right fails with a clear message showing the Right value</span></code></pre>
+        
+        <h3 id="factory-methods" class="section"><a class="anchor-link left" href="#factory-methods"><i class="icofont-laika link">&#xef71;</i></a>Factory Methods</h3>
+        <p>Test suites define factory methods that create domain objects in specific
+        states. These methods have sensible defaults for every parameter, so
+        individual tests only override the values they care about:</p>
+        <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">assignedTask</span><span>(
+    </span><span class="identifier">id</span><span>: </span><span class="type-name">TaskId</span><span> = </span><span class="type-name">TaskId</span><span>(),
+    </span><span class="identifier">requestedQuantity</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">10</span><span>,
+    </span><span class="identifier">orderId</span><span>: </span><span class="type-name">OrderId</span><span> = </span><span class="identifier">orderId</span><span>,
+    </span><span class="identifier">waveId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">WaveId</span><span>] = </span><span class="type-name">Some</span><span>(</span><span class="identifier">waveId</span><span>),
+    </span><span class="identifier">handlingUnitId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">HandlingUnitId</span><span>] = </span><span class="type-name">Some</span><span>(</span><span class="identifier">handlingUnitId</span><span>),
+    </span><span class="identifier">stockPositionId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">StockPositionId</span><span>] = </span><span class="type-name">None</span><span>
+): </span><span class="type-name">Task</span><span>.</span><span class="type-name">Assigned</span><span> =
+  </span><span class="type-name">Task</span><span>.</span><span class="type-name">Assigned</span><span>(
+    </span><span class="identifier">id</span><span>, </span><span class="type-name">TaskType</span><span>.</span><span class="type-name">Pick</span><span>, </span><span class="identifier">skuId</span><span>, </span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Each</span><span>,
+    </span><span class="identifier">requestedQuantity</span><span>, </span><span class="identifier">orderId</span><span>, </span><span class="identifier">waveId</span><span>, </span><span class="type-name">None</span><span>,
+    </span><span class="identifier">handlingUnitId</span><span>, </span><span class="identifier">stockPositionId</span><span>, </span><span class="identifier">sourceLocationId</span><span>,
+    </span><span class="identifier">destinationLocationId</span><span>, </span><span class="identifier">userId</span><span>
+  )
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">releasedWave</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">WaveId</span><span> = </span><span class="identifier">waveId</span><span>): </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Released</span><span> =
+  </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Released</span><span>(</span><span class="identifier">id</span><span>, </span><span class="type-name">OrderGrouping</span><span>.</span><span class="type-name">Single</span><span>, </span><span class="type-name">List</span><span>(</span><span class="identifier">orderId</span><span>))</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala</em>&lt;/small&gt;</p>
+        <p>This pattern keeps tests readable. Instead of constructing a full
+        <code>Task.Assigned</code> with twelve parameters in every test, we write
+        <code>assignedTask(requestedQuantity = 5)</code> and let the defaults handle the rest.</p>
+        
+        <h2 id="layers-1-and-2-domain-and-policy-tests" class="section"><a class="anchor-link left" href="#layers-1-and-2-domain-and-policy-tests"><i class="icofont-laika link">&#xef71;</i></a>Layers 1 and 2: Domain and Policy Tests</h2>
+        <p>These two layers are the foundation. They test pure functions with no
+        external dependencies. Let&#39;s look at each one.</p>
+        
+        <h3 id="layer-1-domain-aggregate-tests" class="section"><a class="anchor-link left" href="#layer-1-domain-aggregate-tests"><i class="icofont-laika link">&#xef71;</i></a>Layer 1: Domain Aggregate Tests</h3>
+        <p>Domain aggregate tests verify that typestate transitions work correctly.
+        They call methods like <code>Task.create</code>, <code>Task.Planned.allocate</code>, and
+        <code>Wave.Released.complete</code>, then assert on the resulting state and event.</p>
+        <p>These tests are found in each domain module&#39;s test directory (for example,
+        <code>wave/src/test/scala/neon/wave/WaveSuite.scala</code> and
+        <code>task/src/test/scala/neon/task/TaskSuite.scala</code>). They use nothing beyond
+        ScalaTest and the domain types themselves.</p>
+        
+        <h3 id="layer-2-policy-tests" class="section"><a class="anchor-link left" href="#layer-2-policy-tests"><i class="icofont-laika link">&#xef71;</i></a>Layer 2: Policy Tests</h3>
+        <p>Policies are pure functions that take a domain state and return
+        <code>Option[(NewState, Event)]</code>. They are the easiest code to test because
+        there is no setup, no teardown, and no side effects.</p>
+        <p>Here is <code>ShortpickPolicySuite</code>, which tests the policy that decides whether
+        a shortpicked task needs a replacement:</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">ShortpickPolicySuite</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyFunSpec</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">OptionValues</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">skuId</span><span> = </span><span class="type-name">SkuId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">userId</span><span> = </span><span class="type-name">UserId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">orderId</span><span> = </span><span class="type-name">OrderId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">waveId</span><span> = </span><span class="type-name">WaveId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">handlingUnitId</span><span> = </span><span class="type-name">HandlingUnitId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">sourceLocationId</span><span> = </span><span class="type-name">LocationId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">destinationLocationId</span><span> = </span><span class="type-name">LocationId</span><span>()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">at</span><span> = </span><span class="type-name">Instant</span><span>.</span><span class="identifier">now</span><span>()
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">completed</span><span>(
+      </span><span class="identifier">requested</span><span>: </span><span class="type-name">Int</span><span>,
+      </span><span class="identifier">actual</span><span>: </span><span class="type-name">Int</span><span>,
+      </span><span class="identifier">waveId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">WaveId</span><span>] = </span><span class="type-name">Some</span><span>(</span><span class="identifier">waveId</span><span>),
+      </span><span class="identifier">handlingUnitId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">HandlingUnitId</span><span>] = </span><span class="type-name">Some</span><span>(</span><span class="identifier">handlingUnitId</span><span>),
+      </span><span class="identifier">packagingLevel</span><span>: </span><span class="type-name">PackagingLevel</span><span> = </span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Each</span><span>
+  ) =
+    </span><span class="type-name">Task</span><span>.</span><span class="type-name">Completed</span><span>(
+      </span><span class="type-name">TaskId</span><span>(), </span><span class="type-name">TaskType</span><span>.</span><span class="type-name">Pick</span><span>, </span><span class="identifier">skuId</span><span>, </span><span class="identifier">packagingLevel</span><span>,
+      </span><span class="identifier">requested</span><span>, </span><span class="identifier">actual</span><span>, </span><span class="identifier">orderId</span><span>, </span><span class="identifier">waveId</span><span>, </span><span class="type-name">None</span><span>,
+      </span><span class="identifier">handlingUnitId</span><span>, </span><span class="type-name">None</span><span>, </span><span class="identifier">sourceLocationId</span><span>,
+      </span><span class="identifier">destinationLocationId</span><span>, </span><span class="identifier">userId</span><span>
+    )</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/ShortpickPolicySuite.scala</em>&lt;/small&gt;</p>
+        <p>The <code>completed</code> factory creates a <code>Task.Completed</code> with configurable
+        requested and actual quantities. Now let&#39;s see the test cases:</p>
+        <pre><code class="nohighlight"><span>  </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;ShortpickPolicy&quot;</span><span>):
+    </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when actual meets requested&quot;</span><span>):
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;does not create a replacement task&quot;</span><span>):
+        </span><span class="identifier">assert</span><span>(</span><span class="type-name">ShortpickPolicy</span><span>(</span><span class="identifier">completed</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">10</span><span>), </span><span class="identifier">at</span><span>).</span><span class="identifier">isEmpty</span><span>)
+
+    </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when actual exceeds requested&quot;</span><span>):
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;does not create a replacement task&quot;</span><span>):
+        </span><span class="identifier">assert</span><span>(</span><span class="type-name">ShortpickPolicy</span><span>(</span><span class="identifier">completed</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">12</span><span>), </span><span class="identifier">at</span><span>).</span><span class="identifier">isEmpty</span><span>)
+
+    </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when actual is zero&quot;</span><span>):
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;returns replacement task with full requested quantity&quot;</span><span>):
+        </span><span class="keyword">val</span><span> (</span><span class="identifier">replacement</span><span>, </span><span class="identifier">_</span><span>) =
+          </span><span class="type-name">ShortpickPolicy</span><span>(</span><span class="identifier">completed</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">0</span><span>), </span><span class="identifier">at</span><span>).</span><span class="identifier">value</span><span>
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">requestedQuantity</span><span> == </span><span class="number-literal">10</span><span>)
+
+    </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when actual is less than requested&quot;</span><span>):
+      </span><span class="keyword">val</span><span> </span><span class="identifier">task</span><span> = </span><span class="identifier">completed</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">7</span><span>)
+      </span><span class="keyword">val</span><span> (</span><span class="identifier">replacement</span><span>, </span><span class="identifier">event</span><span>) =
+        </span><span class="type-name">ShortpickPolicy</span><span>(</span><span class="identifier">task</span><span>, </span><span class="identifier">at</span><span>).</span><span class="identifier">value</span><span>
+
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;returns replacement task for the unfulfilled quantity&quot;</span><span>):
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">requestedQuantity</span><span> == </span><span class="number-literal">3</span><span>)
+
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;copies wave, SKU, task type, and order ID from original&quot;</span><span>):
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">waveId</span><span> == </span><span class="identifier">task</span><span>.</span><span class="identifier">waveId</span><span>)
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">skuId</span><span> == </span><span class="identifier">task</span><span>.</span><span class="identifier">skuId</span><span>)
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">taskType</span><span> == </span><span class="identifier">task</span><span>.</span><span class="identifier">taskType</span><span>)
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">orderId</span><span> == </span><span class="identifier">task</span><span>.</span><span class="identifier">orderId</span><span>)
+
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;sets parentTaskId to the original task&#39;s ID&quot;</span><span>):
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">parentTaskId</span><span>.</span><span class="identifier">value</span><span> == </span><span class="identifier">task</span><span>.</span><span class="identifier">id</span><span>)
+
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;preserves handling unit ID in replacement task&quot;</span><span>):
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">handlingUnitId</span><span> == </span><span class="type-name">Some</span><span>(</span><span class="identifier">handlingUnitId</span><span>))
+
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;TaskCreated event mirrors all replacement task fields&quot;</span><span>):
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">event</span><span>.</span><span class="identifier">taskId</span><span> == </span><span class="identifier">replacement</span><span>.</span><span class="identifier">id</span><span>)
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">event</span><span>.</span><span class="identifier">requestedQuantity</span><span> == </span><span class="number-literal">3</span><span>)
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">event</span><span>.</span><span class="identifier">parentTaskId</span><span>.</span><span class="identifier">value</span><span> == </span><span class="identifier">task</span><span>.</span><span class="identifier">id</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/ShortpickPolicySuite.scala</em>&lt;/small&gt;</p>
+        <p>Notice several things about this test suite:</p>
+        <p><strong>Every scenario is a one-liner.</strong> The policy is pure, so each test is just
+        &quot;call the function, assert on the result.&quot; No setup, no mocking, no async
+        handling.</p>
+        <p><strong>Boundary conditions are explicit.</strong> The suite tests full pick (10/10),
+        overpick (12/10), zero pick (0/10), and partial pick (7/10). Each boundary
+        has its own <code>describe</code> block.</p>
+        <p><strong>Field-level assertions.</strong> The &quot;when actual is less than requested&quot; block
+        checks every field of the replacement task and event, catching subtle bugs
+        where one field is accidentally swapped or omitted.</p>
+        
+        <h2 id="layer-3-service-tests" class="section"><a class="anchor-link left" href="#layer-3-service-tests"><i class="icofont-laika link">&#xef71;</i></a>Layer 3: Service Tests</h2>
+        <p>Service tests are where we verify orchestration: that a service calls the
+        right policies, persists through the right repositories, and returns the
+        correct result or error. The key tool here is the <strong>in-memory repository</strong>.</p>
+        
+        <h3 id="in-memory-repositories" class="section"><a class="anchor-link left" href="#in-memory-repositories"><i class="icofont-laika link">&#xef71;</i></a>In-Memory Repositories</h3>
+        <p>Each service test suite defines its own in-memory repository
+        implementations. These are trivial classes backed by mutable maps, with an
+        event buffer for tracking side effects:</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">InMemoryTaskRepository</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">TaskRepository</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">store</span><span>: </span><span class="identifier">mutable</span><span>.</span><span class="type-name">Map</span><span>[</span><span class="type-name">TaskId</span><span>, </span><span class="type-name">Task</span><span>] = </span><span class="identifier">mutable</span><span>.</span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">events</span><span>: </span><span class="identifier">mutable</span><span>.</span><span class="type-name">ListBuffer</span><span>[</span><span class="type-name">TaskEvent</span><span>] = </span><span class="identifier">mutable</span><span>.</span><span class="type-name">ListBuffer</span><span>.</span><span class="identifier">empty</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">TaskId</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Task</span><span>] = </span><span class="identifier">store</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">id</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findByWaveId</span><span>(</span><span class="identifier">waveId</span><span>: </span><span class="type-name">WaveId</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">Task</span><span>] =
+    </span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>.</span><span class="identifier">filter</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">waveId</span><span>.</span><span class="identifier">contains</span><span>(</span><span class="identifier">waveId</span><span>)).</span><span class="identifier">toList</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findByHandlingUnitId</span><span>(</span><span class="identifier">handlingUnitId</span><span>: </span><span class="type-name">HandlingUnitId</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">Task</span><span>] =
+    </span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>.</span><span class="identifier">filter</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">handlingUnitId</span><span>.</span><span class="identifier">contains</span><span>(</span><span class="identifier">handlingUnitId</span><span>)).</span><span class="identifier">toList</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">task</span><span>: </span><span class="type-name">Task</span><span>, </span><span class="identifier">event</span><span>: </span><span class="type-name">TaskEvent</span><span>): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">store</span><span>(</span><span class="identifier">task</span><span>.</span><span class="identifier">id</span><span>) = </span><span class="identifier">task</span><span>
+    </span><span class="identifier">events</span><span> += </span><span class="identifier">event</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">saveAll</span><span>(</span><span class="identifier">entries</span><span>: </span><span class="type-name">List</span><span>[(</span><span class="type-name">Task</span><span>, </span><span class="type-name">TaskEvent</span><span>)]): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">entries</span><span>.</span><span class="identifier">foreach</span><span> { (</span><span class="identifier">task</span><span>, </span><span class="identifier">event</span><span>) =&gt; </span><span class="identifier">save</span><span>(</span><span class="identifier">task</span><span>, </span><span class="identifier">event</span><span>) }</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala</em>&lt;/small&gt;</p>
+        <p>The <code>store</code> map gives us the current state of every entity. The <code>events</code>
+        buffer lets us assert on what was persisted. This same pattern appears across
+        all in-memory repositories in the codebase.</p>
+        <p>Service test suites also use a <code>buildService</code> factory that accepts optional
+        repository overrides, so each test passes in only the repositories it needs
+        to inspect and lets defaults handle the rest.</p>
+        
+        <h3 id="example-taskcompletionservicesuite" class="section"><a class="anchor-link left" href="#example-taskcompletionservicesuite"><i class="icofont-laika link">&#xef71;</i></a>Example: TaskCompletionServiceSuite</h3>
+        <p>Let&#39;s look at how service tests verify both success and error paths:</p>
+        <pre><code class="nohighlight"><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;TaskCompletionService&quot;</span><span>):
+  </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when task does not exist&quot;</span><span>):
+    </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;returns TaskNotFound&quot;</span><span>):
+      </span><span class="keyword">val</span><span> </span><span class="identifier">missingId</span><span> = </span><span class="type-name">TaskId</span><span>()
+      </span><span class="keyword">val</span><span> </span><span class="identifier">service</span><span> = </span><span class="identifier">buildService</span><span>()
+      </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> = </span><span class="identifier">service</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">missingId</span><span>, </span><span class="number-literal">5</span><span>, </span><span class="boolean-literal">true</span><span>, </span><span class="identifier">at</span><span>)
+      </span><span class="identifier">assert</span><span>(
+        </span><span class="identifier">result</span><span>.</span><span class="identifier">left</span><span>.</span><span class="identifier">value</span><span> ==
+          </span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">TaskNotFound</span><span>(</span><span class="identifier">missingId</span><span>)
+      )
+
+  </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when task is not Assigned&quot;</span><span>):
+    </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;rejects Planned&quot;</span><span>):
+      </span><span class="keyword">val</span><span> </span><span class="identifier">taskRepository</span><span> = </span><span class="type-name">InMemoryTaskRepository</span><span>()
+      </span><span class="keyword">val</span><span> (</span><span class="identifier">planned</span><span>, </span><span class="identifier">_</span><span>) = </span><span class="type-name">Task</span><span>.</span><span class="identifier">create</span><span>(
+        </span><span class="type-name">TaskType</span><span>.</span><span class="type-name">Pick</span><span>, </span><span class="identifier">skuId</span><span>, </span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Each</span><span>,
+        </span><span class="number-literal">10</span><span>, </span><span class="identifier">orderId</span><span>, </span><span class="type-name">Some</span><span>(</span><span class="identifier">waveId</span><span>), </span><span class="type-name">None</span><span>, </span><span class="type-name">None</span><span>, </span><span class="identifier">at</span><span>
+      )
+      </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">store</span><span>(</span><span class="identifier">planned</span><span>.</span><span class="identifier">id</span><span>) = </span><span class="identifier">planned</span><span>
+      </span><span class="keyword">val</span><span> </span><span class="identifier">service</span><span> = </span><span class="identifier">buildService</span><span>(</span><span class="identifier">taskRepository</span><span> = </span><span class="identifier">taskRepository</span><span>)
+      </span><span class="identifier">assert</span><span>(
+        </span><span class="identifier">service</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">planned</span><span>.</span><span class="identifier">id</span><span>, </span><span class="number-literal">5</span><span>, </span><span class="boolean-literal">true</span><span>, </span><span class="identifier">at</span><span>).</span><span class="identifier">left</span><span>.</span><span class="identifier">value</span><span> ==
+          </span><span class="type-name">TaskCompletionError</span><span>.</span><span class="type-name">TaskNotAssigned</span><span>(</span><span class="identifier">planned</span><span>.</span><span class="identifier">id</span><span>)
+      )</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala</em>&lt;/small&gt;</p>
+        <p>The first test verifies that completing a nonexistent task returns the
+        correct error. The second test creates a <code>Task.Planned</code> (not <code>Task.Assigned</code>)
+        in the repository, then verifies that the service rejects the completion.</p>
+        <p>Service tests also assert on repository side effects. In
+        <code>WaveReleaseServiceSuite</code>, after calling <code>service.release(wavePlan, at)</code>, we
+        verify both the return value (<code>result.tasks.size == 1</code>) and the repository
+        state (<code>waveRepository.store(wavePlan.wave.id).isInstanceOf[Wave.Released]</code>,
+        <code>waveRepository.events.size == 1</code>). This double-checking ensures the service
+        actually persisted its work, not just returned the right answer.</p>
+        
+        <h2 id="layer-4-actor-tests" class="section"><a class="anchor-link left" href="#layer-4-actor-tests"><i class="icofont-laika link">&#xef71;</i></a>Layer 4: Actor Tests</h2>
+        <p>Actor tests verify the event-sourced behavior of Pekko actors. They use
+        <code>EventSourcedBehaviorTestKit</code>, which runs the actor in-process (no cluster
+        required) and gives us access to persisted events, state after each command,
+        and reply messages.</p>
+        
+        <h3 id="test-setup" class="section"><a class="anchor-link left" href="#test-setup"><i class="icofont-laika link">&#xef71;</i></a>Test Setup</h3>
+        <p>Here is how <code>WaveActorSuite</code> sets up the test kit:</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">WaveActorSuite</span><span>
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">ScalaTestWithActorTestKit</span><span>(
+      </span><span class="type-name">ConfigFactory</span><span>
+        .</span><span class="identifier">parseString</span><span>(</span><span class="string-literal">&quot;&quot;&quot;
+          pekko.actor {
+            provider = local
+            serialization-bindings {
+              &quot;neon.common.serialization.CborSerializable&quot; = jackson-cbor
+            }
+          }
+        &quot;&quot;&quot;</span><span>)
+        .</span><span class="identifier">withFallback</span><span>(</span><span class="type-name">EventSourcedBehaviorTestKit</span><span>.</span><span class="identifier">config</span><span>)
+        .</span><span class="identifier">resolve</span><span>()
+    )
+    </span><span class="keyword">with</span><span> </span><span class="type-name">AnyFunSpecLike</span><span>
+    </span><span class="keyword">with</span><span> </span><span class="type-name">BeforeAndAfterEach</span><span>:
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">serializationSettings</span><span> =
+    </span><span class="type-name">EventSourcedBehaviorTestKit</span><span>.</span><span class="type-name">SerializationSettings</span><span>.</span><span class="identifier">disabled</span><span>
+      .</span><span class="identifier">withVerifyEvents</span><span>(</span><span class="boolean-literal">true</span><span>)
+      .</span><span class="identifier">withVerifyState</span><span>(</span><span class="boolean-literal">true</span><span>)
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">esTestKit</span><span> = </span><span class="type-name">EventSourcedBehaviorTestKit</span><span>[
+    </span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">Command</span><span>,
+    </span><span class="type-name">WaveEvent</span><span>,
+    </span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">State</span><span>
+  ](
+    </span><span class="identifier">system</span><span>,
+    </span><span class="type-name">WaveActor</span><span>(</span><span class="identifier">waveId</span><span>.</span><span class="identifier">value</span><span>.</span><span class="identifier">toString</span><span>),
+    </span><span class="identifier">serializationSettings</span><span>
+  )
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">beforeEach</span><span>(): </span><span class="type-name">Unit</span><span> =
+    </span><span class="keyword">super</span><span>.</span><span class="identifier">beforeEach</span><span>()
+    </span><span class="identifier">esTestKit</span><span>.</span><span class="identifier">clear</span><span>()</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/test/scala/neon/wave/WaveActorSuite.scala</em>&lt;/small&gt;</p>
+        <p>Key details:</p>
+        <p><strong>Local provider, not cluster.</strong> The test uses <code>provider = local</code>, so no
+        cluster is needed. The <code>EventSourcedBehaviorTestKit.config</code> provides an
+        in-memory journal and snapshot store.</p>
+        <p><strong>Serialization verification.</strong> Even though we run locally,
+        <code>withVerifyEvents(true)</code> and <code>withVerifyState(true)</code> tell the test kit to
+        serialize and deserialize every event and state snapshot. This catches
+        serialization bugs (missing Jackson annotations, unregistered types) without
+        needing a real cluster.</p>
+        <p><strong>Clear before each test.</strong> <code>esTestKit.clear()</code> wipes the in-memory journal
+        between tests, so each test starts with a fresh actor.</p>
+        
+        <h3 id="testing-commands" class="section"><a class="anchor-link left" href="#testing-commands"><i class="icofont-laika link">&#xef71;</i></a>Testing Commands</h3>
+        <p>Each test sends a command and inspects the result:</p>
+        <pre><code class="nohighlight"><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;WaveActor&quot;</span><span>):
+  </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;Create&quot;</span><span>):
+    </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;persists WaveReleased event and sets Released state&quot;</span><span>):
+      </span><span class="keyword">val</span><span> </span><span class="identifier">planned</span><span> =
+        </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Planned</span><span>(</span><span class="identifier">waveId</span><span>, </span><span class="type-name">OrderGrouping</span><span>.</span><span class="type-name">Single</span><span>, </span><span class="identifier">orderIds</span><span>)
+      </span><span class="keyword">val</span><span> </span><span class="identifier">event</span><span> = </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveReleased</span><span>(
+        </span><span class="identifier">waveId</span><span>, </span><span class="type-name">OrderGrouping</span><span>.</span><span class="type-name">Single</span><span>, </span><span class="identifier">orderIds</span><span>, </span><span class="identifier">at</span><span>
+      )
+      </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> =
+        </span><span class="identifier">esTestKit</span><span>.</span><span class="identifier">runCommand</span><span>[</span><span class="type-name">StatusReply</span><span>[</span><span class="type-name">Done</span><span>]](
+          </span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">Create</span><span>(</span><span class="identifier">planned</span><span>, </span><span class="identifier">event</span><span>, </span><span class="identifier">_</span><span>)
+        )
+      </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">event</span><span> == </span><span class="identifier">event</span><span>)
+      </span><span class="identifier">assert</span><span>(
+        </span><span class="identifier">result</span><span>.</span><span class="identifier">stateOfType</span><span>[</span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">ActiveState</span><span>]
+          .</span><span class="identifier">wave</span><span>.</span><span class="identifier">isInstanceOf</span><span>[</span><span class="type-name">Wave</span><span>.</span><span class="type-name">Released</span><span>]
+      )</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/test/scala/neon/wave/WaveActorSuite.scala</em>&lt;/small&gt;</p>
+        <p><code>runCommand</code> sends the command to the actor and returns a
+        <code>CommandResultWithReply</code> that exposes:</p>
+        <ul>
+          <li><code>result.event</code>: the persisted event</li>
+          <li><code>result.stateOfType[S]</code>: the actor state after the event was applied</li>
+          <li><code>result.reply</code>: the reply sent back to the caller</li>
+          <li><code>result.hasNoEvents</code>: asserts that no event was persisted (for rejection
+          cases)</li>
+        </ul>
+        
+        <h3 id="testing-rejections-and-event-replay" class="section"><a class="anchor-link left" href="#testing-rejections-and-event-replay"><i class="icofont-laika link">&#xef71;</i></a>Testing Rejections and Event Replay</h3>
+        <p>Invalid commands should be rejected without persisting events. The
+        <code>hasNoEvents</code> assertion verifies this: <code>result.hasNoEvents</code> fails if the
+        actor accidentally persisted something. A rejected command must never write
+        to the event log.</p>
+        <p>One of the most valuable actor tests verifies recovery after restart:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;event replay&quot;</span><span>):
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;recovers Released state from journal&quot;</span><span>):
+        </span><span class="identifier">createWave</span><span>()
+        </span><span class="identifier">esTestKit</span><span>.</span><span class="identifier">restart</span><span>()
+        </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> =
+          </span><span class="identifier">esTestKit</span><span>.</span><span class="identifier">runCommand</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Wave</span><span>]](</span><span class="type-name">WaveActor</span><span>.</span><span class="type-name">GetState</span><span>(</span><span class="identifier">_</span><span>))
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">reply</span><span>.</span><span class="identifier">isDefined</span><span>)
+        </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">reply</span><span>.</span><span class="identifier">get</span><span>.</span><span class="identifier">isInstanceOf</span><span>[</span><span class="type-name">Wave</span><span>.</span><span class="type-name">Released</span><span>])</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/test/scala/neon/wave/WaveActorSuite.scala</em>&lt;/small&gt;</p>
+        <p><code>esTestKit.restart()</code> stops the actor and starts a fresh instance that
+        replays events from the in-memory journal. After replay, the state should
+        be identical to what it was before the restart. This tests the <code>eventHandler</code>
+        function in isolation and catches bugs where the event handler does not
+        reconstruct state correctly.</p>
+        
+        <h2 id="layers-5-through-7-integration-tests" class="section"><a class="anchor-link left" href="#layers-5-through-7-integration-tests"><i class="icofont-laika link">&#xef71;</i></a>Layers 5 through 7: Integration Tests</h2>
+        <p>The upper layers of the pyramid test infrastructure integration. They are
+        slower but catch problems that unit tests cannot.</p>
+        
+        <h3 id="layer-5-pekko-repository-integration-tests" class="section"><a class="anchor-link left" href="#layer-5-pekko-repository-integration-tests"><i class="icofont-laika link">&#xef71;</i></a>Layer 5: Pekko Repository Integration Tests</h3>
+        <p>These tests verify that <code>PekkoXxxRepository</code> implementations correctly
+        interact with sharded actors. Suites like <code>PekkoWaveRepositorySuite</code> and
+        <code>PekkoTaskRepositorySuite</code> extend <code>ScalaTestWithActorTestKit</code>, configure a
+        single-node cluster, and verify that queries return correct results. They
+        catch serialization issues and sharding configuration errors without needing
+        multiple nodes.</p>
+        
+        <h3 id="layer-6-http-route-tests" class="section"><a class="anchor-link left" href="#layer-6-http-route-tests"><i class="icofont-laika link">&#xef71;</i></a>Layer 6: HTTP Route Tests</h3>
+        <p>Route tests use <code>ScalatestRouteTest</code> from Pekko HTTP&#39;s test kit. They
+        send HTTP requests to the route tree and assert on status codes, headers,
+        and response bodies:</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">WaveRoutesSuite</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyFunSpec</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">ScalatestRouteTest</span><span>:
+
+  </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;WaveRoutes&quot;</span><span>):
+    </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;DELETE /waves/:id&quot;</span><span>):
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;returns 200 with cancellation response on success&quot;</span><span>):
+        </span><span class="keyword">val</span><span> </span><span class="identifier">routes</span><span> = </span><span class="type-name">WaveRoutes</span><span>(
+          </span><span class="identifier">stubCancellationService</span><span>(</span><span class="type-name">Right</span><span>(</span><span class="identifier">result</span><span>)),
+          </span><span class="identifier">stubPlanningService</span><span>(</span><span class="type-name">Right</span><span>(</span><span class="literal-value">null</span><span>)),
+          </span><span class="identifier">stubOrderRepo</span><span>,
+          </span><span class="identifier">authService</span><span>
+        )
+        </span><span class="keyword">val</span><span> </span><span class="identifier">request</span><span> = </span><span class="type-name">Delete</span><span>(</span><span class="string-literal">s&quot;/waves/</span><span class="substitution">${waveId.value}</span><span class="string-literal">&quot;</span><span>)
+          .</span><span class="identifier">addHeader</span><span>(</span><span class="type-name">Cookie</span><span>(</span><span class="string-literal">&quot;session&quot;</span><span>, </span><span class="identifier">sessionToken</span><span>))
+        </span><span class="identifier">request</span><span> ~&gt; </span><span class="identifier">routes</span><span> ~&gt; </span><span class="identifier">check</span><span> {
+          </span><span class="identifier">assert</span><span>(</span><span class="identifier">status</span><span> == </span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">OK</span><span>)
+          </span><span class="keyword">val</span><span> </span><span class="identifier">json</span><span> = </span><span class="identifier">parse</span><span>(</span><span class="identifier">responseAs</span><span>[</span><span class="type-name">String</span><span>])
+            .</span><span class="identifier">getOrElse</span><span>(</span><span class="type-name">Json</span><span>.</span><span class="type-name">Null</span><span>)
+          </span><span class="identifier">assert</span><span>(
+            </span><span class="identifier">json</span><span>.</span><span class="identifier">hcursor</span><span>
+              .</span><span class="identifier">get</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;status&quot;</span><span>)
+              .</span><span class="identifier">contains</span><span>(</span><span class="string-literal">&quot;cancelled&quot;</span><span>)
+          )
+        }
+
+      </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;returns 401 without session cookie&quot;</span><span>):
+        </span><span class="type-name">Delete</span><span>(</span><span class="string-literal">s&quot;/waves/</span><span class="substitution">${waveId.value}</span><span class="string-literal">&quot;</span><span>) ~&gt; </span><span class="identifier">routes</span><span> ~&gt; </span><span class="identifier">check</span><span> {
+          </span><span class="identifier">assert</span><span>(</span><span class="identifier">status</span><span> == </span><span class="type-name">StatusCodes</span><span>.</span><span class="type-name">Unauthorized</span><span>)
+        }</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/test/scala/neon/app/http/WaveRoutesSuite.scala</em>&lt;/small&gt;</p>
+        <p>Route tests use stub services (anonymous subclasses that return canned
+        <code>Either</code> values) so they focus purely on HTTP behavior: request routing,
+        JSON serialization, status codes, and cookie handling. Auth is tested with
+        a real <code>AuthenticationService</code> backed by in-memory repositories. The test
+        obtains a genuine session token through <code>login</code> and sends it as a cookie,
+        verifying the full auth flow without hitting a database.</p>
+        
+        <h3 id="layer-7-projection-handler-tests" class="section"><a class="anchor-link left" href="#layer-7-projection-handler-tests"><i class="icofont-laika link">&#xef71;</i></a>Layer 7: Projection Handler Tests</h3>
+        <p>Projection handler tests verify SQL operations against a real PostgreSQL
+        database. They use <code>PostgresContainerSuite</code>, which starts a Testcontainers
+        PostgreSQL instance and creates the required tables:</p>
+        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">TaskProjectionHandlerSuite</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">PostgresContainerSuite</span><span>:
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">handler</span><span> = </span><span class="type-name">TaskProjectionHandler</span><span>()
+
+  </span><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;TaskProjectionHandler&quot;</span><span>):
+    </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;inserts into task_by_wave on TaskCreated&quot;</span><span>):
+      </span><span class="keyword">val</span><span> </span><span class="identifier">taskId</span><span> = </span><span class="type-name">TaskId</span><span>()
+      </span><span class="keyword">val</span><span> </span><span class="identifier">event</span><span> = </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCreated</span><span>(</span><span class="comment">/* ... */</span><span>)
+
+      </span><span class="identifier">withSession</span><span> { </span><span class="identifier">session</span><span> =&gt;
+        </span><span class="identifier">handler</span><span>
+          .</span><span class="identifier">process</span><span>(</span><span class="identifier">session</span><span>, </span><span class="identifier">envelope</span><span>(</span><span class="identifier">event</span><span>, </span><span class="string-literal">s&quot;Task|</span><span class="substitution">${taskId.value}</span><span class="string-literal">&quot;</span><span>, </span><span class="string-literal">&quot;Task&quot;</span><span>))
+          .</span><span class="identifier">futureValue</span><span>
+      }
+
+      </span><span class="keyword">val</span><span> </span><span class="identifier">count</span><span> = </span><span class="identifier">queryCount</span><span>(
+        </span><span class="string-literal">s&quot;SELECT COUNT(*) FROM task_by_wave WHERE task_id = &#39;</span><span class="substitution">${taskId.value}</span><span class="string-literal">&#39;&quot;</span><span>
+      )
+      </span><span class="identifier">assert</span><span>(</span><span class="identifier">count</span><span> == </span><span class="number-literal">1L</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: app/src/test/scala/neon/app/projection/TaskProjectionHandlerSuite.scala</em>&lt;/small&gt;</p>
+        <p>These tests catch SQL syntax errors, incorrect column bindings, and
+        <code>ON CONFLICT</code> clause issues that cannot be caught without a real database.
+        The <code>PostgresContainerSuite</code> base class manages the container lifecycle and
+        provides <code>withSession</code> and <code>queryCount</code> helpers.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Domain and actor tests live in their respective module&#39;s test
+          directory, while routes, projection handlers, and integration tests live
+          in the <code>app</code> module.</p>
+        </div>
+        
+        <h2 id="what-comes-next" class="section"><a class="anchor-link left" href="#what-comes-next"><i class="icofont-laika link">&#xef71;</i></a>What Comes Next</h2>
+        <p>We have now covered the full Neon WES backend, from domain aggregates through
+        event sourcing, CQRS projections, HTTP API, and testing. In the next chapter,
+        we will put it all together in a project that simulates a complete warehouse
+        day: receiving inbound deliveries, processing waves, handling shortpicks,
+        and closing out the shift.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

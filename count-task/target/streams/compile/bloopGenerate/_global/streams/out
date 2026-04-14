@@ -1,0 +1,4 @@
+[debug] [countTask] Classpath dependencies List(common)
+[debug] [countTask] Dependencies from configurations List()
+[debug] Bloop wrote the configuration of project 'countTask' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/countTask.json'
+[success] Generated .bloop/countTask.json

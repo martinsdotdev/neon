@@ -1,0 +1,41 @@
+[debug] Created transactional ClassFileManager with tempDir = /home/martins/Projects/neon/common/target/scala-3.8.2/classes.bak
+[debug] About to delete class files:
+[debug] 	TransportOrderId$package$.class
+[debug] 	TransportOrderId$package$TransportOrderId$.class
+[debug] 	InventoryId$package.class
+[debug] 	TransportOrderId$package.class
+[debug] 	InventoryId$package$.class
+[debug] 	InventoryId$package$InventoryId$.class
+[debug] 	TransportOrderId$package$.tasty
+[debug] 	TransportOrderId$package$TransportOrderId$.tasty
+[debug] 	InventoryId$package.tasty
+[debug] 	TransportOrderId$package.tasty
+[debug] 	InventoryId$package$.tasty
+[debug] 	InventoryId$package$InventoryId$.tasty
+[debug] We backup class files:
+[debug] 	TransportOrderId$package$.class
+[debug] 	TransportOrderId$package$TransportOrderId$.class
+[debug] 	InventoryId$package.class
+[debug] 	TransportOrderId$package.class
+[debug] 	InventoryId$package$.class
+[debug] 	InventoryId$package$InventoryId$.class
+[debug] 	TransportOrderId$package$.tasty
+[debug] 	TransportOrderId$package$TransportOrderId$.tasty
+[debug] 	InventoryId$package.tasty
+[debug] 	TransportOrderId$package.tasty
+[debug] 	InventoryId$package$.tasty
+[debug] 	InventoryId$package$InventoryId$.tasty
+[debug] Registering generated classes:
+[debug] 	TransportOrderId$package$.class
+[debug] 	TransportOrderId$package$TransportOrderId$.class
+[debug] 	InventoryId$package.class
+[debug] 	TransportOrderId$package.class
+[debug] 	InventoryId$package$.class
+[debug] 	InventoryId$package$InventoryId$.class
+[debug] 	TransportOrderId$package$.tasty
+[debug] 	TransportOrderId$package$TransportOrderId$.tasty
+[debug] 	InventoryId$package.tasty
+[debug] 	TransportOrderId$package.tasty
+[debug] 	InventoryId$package$.tasty
+[debug] 	InventoryId$package$InventoryId$.tasty
+[debug] Removing the temporary directory used for backing up class files: /home/martins/Projects/neon/common/target/scala-3.8.2/classes.bak

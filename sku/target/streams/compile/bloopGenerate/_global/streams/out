@@ -1,0 +1,4 @@
+[debug] [sku] Classpath dependencies List(common)
+[debug] [sku] Dependencies from configurations List()
+[debug] Bloop wrote the configuration of project 'sku' to '/home/martins/Work/Mais/Eva/Neon/eva-wes/.bloop/sku.json'
+[success] Generated .bloop/sku.json

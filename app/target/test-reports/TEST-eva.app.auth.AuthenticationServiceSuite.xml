@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuite hostname="DESKTOP-16FKM8S" name="eva.app.auth.AuthenticationServiceSuite" tests="15" errors="0" failures="0" skipped="0" time="0.535" timestamp="2026-04-09T22:31:37">
+          <properties>
+      <property name="java.specification.version" value="25"/><property name="sun.jnu.encoding" value="UTF-8"/><property name="java.class.path" value="/home/martins/.local/share/mise/installs/sbt/1.12.4/bin/sbt-launch.jar"/><property name="java.vm.vendor" value="Eclipse Adoptium"/><property name="sun.arch.data.model" value="64"/><property name="jline.shutdownhook" value="false"/><property name="java.vendor.url" value="https://adoptium.net/"/><property name="user.timezone" value="America/Sao_Paulo"/><property name="java.vm.specification.version" value="25"/><property name="os.name" value="Linux"/><property name="sun.java.launcher" value="SUN_STANDARD"/><property name="user.country" value="US"/><property name="sun.boot.library.path" value="/home/martins/.local/share/mise/installs/java/temurin-25.0.2+10.0.LTS/lib"/><property name="sun.java.command" value="/home/martins/.local/share/mise/installs/sbt/1.12.4/bin/sbt-launch.jar test"/><property name="jdk.debug" value="release"/><property name="sun.cpu.endian" value="little"/><property name="user.home" value="/home/martins"/><property name="user.language" value="en"/><property name="sbt.script" value="/home/martins/.local/share/mise/installs/sbt/1.12.4/bin/sbt"/><property name="java.specification.vendor" value="Oracle Corporation"/><property name="sbt.ipcsocket.tmpdir" value="/run/user/1000/.sbt6ad38cb8/ipcsocket"/><property name="swoval.tmpdir" value="/run/user/1000/.sbt6ad38cb8/swoval"/><property name="java.version.date" value="2026-01-20"/><property name="java.home" value="/home/martins/.local/share/mise/installs/java/temurin-25.0.2+10.0.LTS"/><property name="file.separator" value="/"/><property name="java.vm.compressedOopsMode" value="32-bit"/><property name="line.separator" value="
+"/><property name="java.vm.specification.vendor" value="Oracle Corporation"/><property name="java.specification.name" value="Java Platform API Specification"/><property name="jline.esc.timeout" value="0"/><property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/><property name="java.runtime.version" value="25.0.2+10-LTS"/><property name="user.name" value="martins"/><property name="stdout.encoding" value="UTF-8"/><property name="path.separator" value=":"/><property name="os.version" value="6.6.87.2-microsoft-standard-WSL2"/><property name="jna.nosys" value="true"/><property name="java.runtime.name" value="OpenJDK Runtime Environment"/><property name="log4j.ignoreTCL" value="true"/><property name="file.encoding" value="UTF-8"/><property name="jnidispatch.path" value="/home/martins/.cache/JNA/temp/jna6228004453280073644.tmp"/><property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/><property name="jna.platform.library.path" value="/usr/lib64:/lib64:/usr/lib:/lib:/usr/lib/libfakeroot:/usr/lib/wsl/lib"/><property name="java.vendor.version" value="Temurin-25.0.2+10"/><property name="jna.loaded" value="true"/><property name="java.vendor.url.bug" value="https://github.com/adoptium/adoptium-support/issues"/><property name="java.io.tmpdir" value="/tmp"/><property name="java.version" value="25.0.2"/><property name="user.dir" value="/home/martins/Work/Mais/Eva/Neon/eva-wes"/><property name="os.arch" value="amd64"/><property name="sun.misc.unsafe.memory.access" value="allow"/><property name="java.vm.specification.name" value="Java Virtual Machine Specification"/><property name="native.encoding" value="UTF-8"/><property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/><property name="java.vm.info" value="mixed mode, sharing"/><property name="stderr.encoding" value="UTF-8"/><property name="java.vendor" value="Eclipse Adoptium"/><property name="java.vm.version" value="25.0.2+10-LTS"/><property name="stdin.encoding" value="UTF-8"/><property name="scala.ext.dirs" value="/home/martins/.sbt/1.0/java9-rt-ext-eclipse_adoptium_25_0_2"/><property name="sun.io.unicode.encoding" value="UnicodeLittle"/><property name="java.class.version" value="69.0"/>
+    </properties>
+          <testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService login succeeds with valid credentials and returns a session token" time="0.067">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService login fails with unknown login" time="0.002">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService login fails with wrong password" time="0.053">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService login fails for inactive user" time="0.002">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService login fails for user without password hash" time="0.001">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService login includes effective permissions in the returned context" time="0.036">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService validateSession validates a token returned from login" time="0.032">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService validateSession rejects an unknown token" time="0.002">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService validateSession rejects an expired session" time="0.041">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService validateSession rejects a session for a deactivated user" time="0.029">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService logout invalidates the session token" time="0.027">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService logoutAll invalidates all sessions for a user" time="0.06">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService effective permissions returns role default permissions" time="0.051">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService effective permissions adds permissions granted by user override" time="0.048">
+                      
+                    </testcase><testcase classname="eva.app.auth.AuthenticationServiceSuite" name="AuthenticationService effective permissions removes permissions denied by user override" time="0.084">
+                      
+                    </testcase>
+          <system-out><![CDATA[]]></system-out>
+          <system-err><![CDATA[]]></system-err>
+        </testsuite>

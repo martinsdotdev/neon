@@ -1,0 +1,27 @@
+[debug] Running TaskDef(eva.app.http.TaskRoutesSuite, org.scalatest.tools.Framework$$anon$1@58b970c6, false, [SuiteSelector])
+[debug] Running TaskDef(eva.app.http.ConsolidationGroupRoutesSuite, org.scalatest.tools.Framework$$anon$1@58b970c6, false, [SuiteSelector])
+[info] TaskRoutesSuite:
+[info] ConsolidationGroupRoutesSuite:
+[info] ConsolidationGroupRoutes
+[info]   POST /consolidation-groups/:id/complete
+[info]   - returns 200 with completion response on success
+[info]   - returns 404 when consolidation group not found
+[info]   - returns 409 when consolidation group is not assigned
+[info]   DELETE /consolidation-groups/:id
+[info]   - returns 200 with cancellation response on success
+[info] TaskRoutes
+[info]   - returns 404 when consolidation group not found
+[info]   - returns 401 without session cookie
+[info]   POST /tasks/:id/complete
+[info]   - returns 200 with completed task on success
+[info]   - returns 404 when task not found
+[info]   - returns 409 when task is not in Assigned state
+[info]   - returns 401 without session cookie
+[info] Run completed in 4 seconds, 523 milliseconds.
+[info] Total number of tests run: 10
+[info] Suites: completed 2, aborted 0
+[info] Tests: succeeded 10, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	eva.app.http.TaskRoutesSuite
+[debug] 	eva.app.http.ConsolidationGroupRoutesSuite

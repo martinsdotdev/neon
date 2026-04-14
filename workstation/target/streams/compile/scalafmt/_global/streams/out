@@ -1,0 +1,11 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/PekkoWorkstationRepository.scala, /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/Workstation.scala, /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/AsyncWorkstationRepository.scala, /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/WorkstationActor.scala, /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/WorkstationEvent.scala, /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/WorkstationRepository.scala, /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/WorkstationType.scala
+[debug] 	Modified: /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/PekkoWorkstationRepository.scala
+[debug] 	Unmodified: /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/Workstation.scala, /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/AsyncWorkstationRepository.scala, /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/WorkstationActor.scala, /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/WorkstationEvent.scala, /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/WorkstationRepository.scala, /home/martins/Projects/neon/workstation/src/main/scala/neon/workstation/WorkstationType.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[info] scalafmt: Formatting 1 Scala sources (/home/martins/Projects/neon/workstation)...
+[debug] scalafmt: Unchanged 1 Scala sources

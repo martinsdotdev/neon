@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Contents</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="helium/site/laika-helium.css" />
+  <script src="helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="index.html"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 active nav-leaf"><a href="#">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+
+      <main class="content">
+
+        
+        <h1 class="title">Contents</h1>
+        <ul class="toc nav-list">
+          <li class="level1 toc nav-header">Part I: The Domain</li>
+          <li class="level2 toc nav-node"><a href="01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch01-what-is-a-wes.html#from-shelf-to-ship-the-life-of-a-warehouse-order">From Shelf to Ship: The Life of a Warehouse Order</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch01-what-is-a-wes.html#wes-wms-and-wcs-the-three-layer-hierarchy">WES, WMS, and WCS: The Three-Layer Hierarchy</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch01-what-is-a-wes.html#core-warehouse-concepts">Core Warehouse Concepts</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch01-what-is-a-wes.html#the-outbound-flow">The Outbound Flow</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch01-what-is-a-wes.html#the-inbound-flow">The Inbound Flow</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch01-what-is-a-wes.html#inventory-the-four-bucket-stock-model">Inventory: The Four-Bucket Stock Model</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch01-what-is-a-wes.html#why-event-sourcing-for-a-warehouse">Why Event Sourcing for a Warehouse?</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch01-what-is-a-wes.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch02-getting-started.html#prerequisites">Prerequisites</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch02-getting-started.html#cloning-and-building">Cloning and Building</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch02-getting-started.html#project-structure-at-a-glance">Project Structure at a Glance</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch02-getting-started.html#the-dependency-graph">The Dependency Graph</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch02-getting-started.html#running-your-first-test">Running Your First Test</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch02-getting-started.html#running-a-module-s-full-test-suite">Running a Module&#39;s Full Test Suite</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch02-getting-started.html#code-formatting-and-linting">Code Formatting and Linting</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch02-getting-started.html#the-vertical-slice-convention">The Vertical Slice Convention</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch02-getting-started.html#a-note-on-directory-and-package-naming">A Note on Directory and Package Naming</a></li>
+          <li class="level3 toc nav-leaf"><a href="01-the-domain/ch02-getting-started.html#what-is-next">What is Next?</a></li>
+          <li class="level1 toc nav-header">Part II: The Domain Model</li>
+          <li class="level2 toc nav-node"><a href="02-the-domain-model/ch03-common-foundation.html">The Common Foundation</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch03-common-foundation.html#the-problem-of-primitive-types">The Problem of Primitive Types</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch03-common-foundation.html#opaque-type-ids">Opaque Type IDs</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch03-common-foundation.html#shared-enums">Shared Enums</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch03-common-foundation.html#utility-types">Utility Types</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch03-common-foundation.html#the-cborserializable-marker-trait">The CborSerializable Marker Trait</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch03-common-foundation.html#r2dbcprojectionqueries">R2dbcProjectionQueries</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch03-common-foundation.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="02-the-domain-model/ch04-typestates.html">Modeling State with Typestates</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch04-typestates.html#the-state-machine-problem">The State Machine Problem</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch04-typestates.html#typestate-encoding-in-scala-3">Typestate Encoding in Scala 3</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch04-typestates.html#your-first-aggregate-wave">Your First Aggregate: Wave</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch04-typestates.html#a-more-complex-aggregate-task">A More Complex Aggregate: Task</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch04-typestates.html#the-full-catalogue-of-state-machines">The Full Catalogue of State Machines</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch04-typestates.html#patterns-and-principles">Patterns and Principles</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch04-typestates.html#architecture-note-the-decider-pattern">Architecture Note: The Decider Pattern</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch04-typestates.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="02-the-domain-model/ch05-events.html">Events: The Source of Truth</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch05-events.html#what-is-a-domain-event">What Is a Domain Event?</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch05-events.html#events-vs-commands">Events vs Commands</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch05-events.html#event-design-in-neon-wes">Event Design in Neon WES</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch05-events.html#the-transition-tuple-revisited">The Transition Tuple, Revisited</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch05-events.html#what-events-carry">What Events Carry</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch05-events.html#events-as-the-contract-between-layers">Events as the Contract Between Layers</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch05-events.html#event-naming-conventions">Event Naming Conventions</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch05-events.html#architecture-note-the-elm-architecture">Architecture Note: The Elm Architecture</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch05-events.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="02-the-domain-model/ch06-policies.html">Policies: Pure Business Logic</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch06-policies.html#what-is-a-policy">What Is a Policy?</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch06-policies.html#anatomy-of-a-policy">Anatomy of a Policy</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch06-policies.html#testing-policies">Testing Policies</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch06-policies.html#the-policy-catalogue">The Policy Catalogue</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch06-policies.html#deep-dive-stockallocationpolicy">Deep Dive: StockAllocationPolicy</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch06-policies.html#architecture-note-functional-core-imperative-shell">Architecture Note: Functional Core, Imperative Shell</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch06-policies.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="02-the-domain-model/ch07-services.html">Services: Orchestrating the Domain</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch07-services.html#the-service-layer-s-role">The Service Layer&#39;s Role</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch07-services.html#error-handling-with-sealed-trait-adts">Error Handling with Sealed Trait ADTs</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch07-services.html#the-result-type">The Result Type</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch07-services.html#walkthrough-taskcompletionservice">Walkthrough: TaskCompletionService</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch07-services.html#walkthrough-wavereleaseservice">Walkthrough: WaveReleaseService</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch07-services.html#walkthrough-wavecancellationservice">Walkthrough: WaveCancellationService</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch07-services.html#architecture-note-railway-oriented-programming">Architecture Note: Railway-Oriented Programming</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch07-services.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="02-the-domain-model/ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch08-repositories.html#the-port-trait-pattern">The Port Trait Pattern</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch08-repositories.html#sync-vs-async-two-traits-for-two-worlds">Sync vs Async: Two Traits for Two Worlds</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch08-repositories.html#a-richer-port-taskrepository">A Richer Port: TaskRepository</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch08-repositories.html#in-memory-implementations-for-testing">In-Memory Implementations for Testing</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch08-repositories.html#how-services-use-repositories">How Services Use Repositories</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch08-repositories.html#the-async-service-pattern">The Async Service Pattern</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch08-repositories.html#architecture-note-hexagonal-architecture">Architecture Note: Hexagonal Architecture</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch08-repositories.html#the-complete-repository-catalogue">The Complete Repository Catalogue</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch08-repositories.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="02-the-domain-model/ch09-project-wave-release.html">Project: Building the Wave Release Flow</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html#the-scenario">The Scenario</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html#setting-the-stage">Setting the Stage</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html#step-1-planning-the-wave">Step 1: Planning the Wave</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html#step-2-releasing-the-wave">Step 2: Releasing the Wave</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html#step-3-task-allocation-and-assignment">Step 3: Task Allocation and Assignment</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html#step-4-task-completion-full-pick">Step 4: Task Completion (Full Pick)</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html#step-5-task-completion-with-shortpick">Step 5: Task Completion with Shortpick</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html#step-6-completing-the-replacement-task">Step 6: Completing the Replacement Task</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html#the-full-picture">The Full Picture</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html#testing-the-flow">Testing the Flow</a></li>
+          <li class="level3 toc nav-leaf"><a href="02-the-domain-model/ch09-project-wave-release.html#what-we-learned">What We Learned</a></li>
+          <li class="level1 toc nav-header">Part III: The Infrastructure</li>
+          <li class="level2 toc nav-node"><a href="03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#why-actors">Why Actors?</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#anatomy-of-an-event-sourced-actor">Anatomy of an Event-Sourced Actor</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#commands">Commands</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#state-emptystate-and-activestate">State: EmptyState and ActiveState</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#the-command-handler">The Command Handler</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#the-event-handler">The Event Handler</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#responses">Responses</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#retention-and-snapshots">Retention and Snapshots</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#structured-logging-with-mdc">Structured Logging with MDC</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#reusing-domain-events-directly">Reusing Domain Events Directly</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#architecture-note-actors-as-deciders">Architecture Note: Actors as Deciders</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#the-pattern-across-all-actors">The Pattern Across All Actors</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#what-we-covered">What We Covered</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch10-actor-model.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch11-cluster-sharding.html#cluster-sharding-in-5-minutes">Cluster Sharding in 5 Minutes</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch11-cluster-sharding.html#the-pekkorepository-pattern">The PekkoRepository Pattern</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch11-cluster-sharding.html#cross-entity-queries">Cross-Entity Queries</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch11-cluster-sharding.html#non-transactional-saveall">Non-Transactional saveAll</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch11-cluster-sharding.html#r2dbc-persistence-configuration">R2DBC Persistence Configuration</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch11-cluster-sharding.html#testing-actors-with-eventsourcedbehaviortestkit">Testing Actors with EventSourcedBehaviorTestKit</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch11-cluster-sharding.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch12-cqrs-projections.html#why-cqrs">Why CQRS?</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch12-cqrs-projections.html#projection-architecture">Projection Architecture</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch12-cqrs-projections.html#walkthrough-taskprojectionhandler">Walkthrough: TaskProjectionHandler</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch12-cqrs-projections.html#the-full-projection-catalogue">The Full Projection Catalogue</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch12-cqrs-projections.html#loggingprojectionhandler-base-class">LoggingProjectionHandler Base Class</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch12-cqrs-projections.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch13-http-api.html#route-architecture">Route Architecture</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch13-http-api.html#circe-json-marshalling">Circe JSON Marshalling</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch13-http-api.html#walkthrough-waveroutes">Walkthrough: WaveRoutes</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch13-http-api.html#error-mapping">Error Mapping</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch13-http-api.html#authentication-and-authorization">Authentication and Authorization</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch13-http-api.html#the-full-route-catalogue">The Full Route Catalogue</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch13-http-api.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch14-testing.html#the-testing-pyramid-in-neon-wes">The Testing Pyramid in Neon WES</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch14-testing.html#conventions">Conventions</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch14-testing.html#layers-1-and-2-domain-and-policy-tests">Layers 1 and 2: Domain and Policy Tests</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch14-testing.html#layer-3-service-tests">Layer 3: Service Tests</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch14-testing.html#layer-4-actor-tests">Layer 4: Actor Tests</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch14-testing.html#layers-5-through-7-integration-tests">Layers 5 through 7: Integration Tests</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch14-testing.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch15-project-warehouse-day.html#the-test-as-living-documentation">The Test as Living Documentation</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch15-project-warehouse-day.html#_06-00-inbound-receiving">06:00 -- Inbound Receiving</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch15-project-warehouse-day.html#_08-00-wave-planning-and-release">08:00 -- Wave Planning and Release</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch15-project-warehouse-day.html#_10-00-picking-with-shortpick">10:00 -- Picking with Shortpick</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch15-project-warehouse-day.html#_14-00-cycle-counting">14:00 -- Cycle Counting</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch15-project-warehouse-day.html#_16-00-sox-compliant-adjustment">16:00 -- SOX-Compliant Adjustment</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch15-project-warehouse-day.html#_17-00-workstation-operations">17:00 -- Workstation Operations</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch15-project-warehouse-day.html#end-of-day-summary">End of Day Summary</a></li>
+          <li class="level3 toc nav-leaf"><a href="03-the-infrastructure/ch15-project-warehouse-day.html#what-we-learned">What We Learned</a></li>
+          <li class="level1 toc nav-header">Part IV: System Concerns</li>
+          <li class="level2 toc nav-node"><a href="04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html#the-startup-sequence">The Startup Sequence</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html#step-1-establish-the-execution-environment">Step 1: Establish the Execution Environment</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html#step-2-run-database-migrations">Step 2: Run Database Migrations</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html#step-3-obtain-the-r2dbc-connection-factory">Step 3: Obtain the R2DBC Connection Factory</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html#step-4-build-the-service-registry">Step 4: Build the Service Registry</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html#the-composition-root">The Composition Root</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html#step-5-start-projections">Step 5: Start Projections</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html#step-6-start-the-http-server">Step 6: Start the HTTP Server</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html#step-7-done">Step 7: Done</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html#why-manual-wiring">Why Manual Wiring?</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html#the-dependency-graph-in-practice">The Dependency Graph in Practice</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch16-bootstrap.html#summary">Summary</a></li>
+          <li class="level2 toc nav-node"><a href="04-system-concerns/ch17-serialization.html">Serialization</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch17-serialization.html#two-boundaries-two-serializers">Two Boundaries, Two Serializers</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch17-serialization.html#jackson-cbor-for-persistence">Jackson CBOR for Persistence</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch17-serialization.html#circe-json-for-the-http-api">Circe JSON for the HTTP API</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch17-serialization.html#schema-evolution">Schema Evolution</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch17-serialization.html#the-two-serializers-compared">The Two Serializers Compared</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch17-serialization.html#summary">Summary</a></li>
+          <li class="level2 toc nav-node"><a href="04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch18-error-handling.html#three-levels-of-error-handling">Three Levels of Error Handling</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch18-error-handling.html#level-1-precondition-guards-with-require">Level 1: Precondition Guards with <code>require()</code></a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch18-error-handling.html#level-2-sealed-trait-adts-for-business-errors">Level 2: Sealed Trait ADTs for Business Errors</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch18-error-handling.html#either-composition-in-services">Either Composition in Services</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch18-error-handling.html#level-3-http-status-code-mapping">Level 3: HTTP Status Code Mapping</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch18-error-handling.html#architecture-note-railway-oriented-programming">Architecture Note: Railway Oriented Programming</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch18-error-handling.html#summary">Summary</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch18-error-handling.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch19-observability.html#the-wide-events-philosophy">The Wide Events Philosophy</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch19-observability.html#mdc-propagation-across-three-layers">MDC Propagation Across Three Layers</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch19-observability.html#structured-json-in-production">Structured JSON in Production</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch19-observability.html#dev-vs-prod-configuration">Dev vs. Prod Configuration</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch19-observability.html#projection-logging">Projection Logging</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch19-observability.html#summary">Summary</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch19-observability.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#the-10-step-checklist">The 10-Step Checklist</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#step-1-the-sbt-subproject">Step 1: The sbt Subproject</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#step-2-the-domain-aggregate">Step 2: The Domain Aggregate</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#step-3-events">Step 3: Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#step-4-repository-traits">Step 4: Repository Traits</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#step-5-the-actor">Step 5: The Actor</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#step-6-the-pekko-repository">Step 6: The Pekko Repository</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#step-7-policies-and-services-in-core">Step 7: Policies and Services (in core)</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#step-8-projection-handler-in-app">Step 8: Projection Handler (in app)</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#step-9-http-routes-in-app">Step 9: HTTP Routes (in app)</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#step-10-wiring">Step 10: Wiring</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#testing-at-every-layer">Testing at Every Layer</a></li>
+          <li class="level3 toc nav-leaf"><a href="04-system-concerns/ch20-project-new-aggregate.html#what-we-learned">What We Learned</a></li>
+          <li class="level1 toc nav-header">Part V: Advanced Topics</li>
+          <li class="level2 toc nav-node"><a href="05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch21-stock-management.html#two-aggregates-two-granularities">Two Aggregates, Two Granularities</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch21-stock-management.html#the-4-bucket-quantity-model">The 4-Bucket Quantity Model</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch21-stock-management.html#operations-on-stockposition">Operations on StockPosition</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch21-stock-management.html#allocation-strategies">Allocation Strategies</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch21-stock-management.html#stock-consumption-patterns">Stock Consumption Patterns</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch21-stock-management.html#sox-compliant-adjustments">SOX-Compliant Adjustments</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch21-stock-management.html#the-full-stock-lifecycle">The Full Stock Lifecycle</a></li>
+          <li class="level2 toc nav-node"><a href="05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch22-inbound-cycle-counting.html#inbound-delivery-lifecycle">Inbound Delivery Lifecycle</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch22-inbound-cycle-counting.html#goods-receipt">Goods Receipt</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch22-inbound-cycle-counting.html#the-inbound-receiving-service">The Inbound Receiving Service</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch22-inbound-cycle-counting.html#cycle-count-lifecycle">Cycle Count Lifecycle</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch22-inbound-cycle-counting.html#count-task-lifecycle">Count Task Lifecycle</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch22-inbound-cycle-counting.html#count-creation-policy">Count Creation Policy</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch22-inbound-cycle-counting.html#count-completion-service">Count Completion Service</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch22-inbound-cycle-counting.html#variance-detection-and-recount-triggering">Variance Detection and Recount Triggering</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch22-inbound-cycle-counting.html#putting-it-all-together">Putting It All Together</a></li>
+          <li class="level2 toc nav-node"><a href="05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch23-handling-units-workstations.html#handling-unit-two-streams-in-one-aggregate">Handling Unit: Two Streams in One Aggregate</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch23-handling-units-workstations.html#transport-orders-bridging-the-gap">Transport Orders: Bridging the Gap</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch23-handling-units-workstations.html#workstation-lifecycle">Workstation Lifecycle</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch23-handling-units-workstations.html#slot-lifecycle">Slot Lifecycle</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch23-handling-units-workstations.html#how-the-pieces-connect">How the Pieces Connect</a></li>
+          <li class="level2 toc nav-node"><a href="05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch24-frontend.html#the-planned-stack">The Planned Stack</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch24-frontend.html#ui-framework">UI Framework</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch24-frontend.html#routing-and-path-aliases">Routing and Path Aliases</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch24-frontend.html#theming">Theming</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch24-frontend.html#formatting-conventions">Formatting Conventions</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch24-frontend.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch25-adrs.html#what-are-adrs">What Are ADRs?</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch25-adrs.html#the-neon-wes-catalogue">The Neon WES Catalogue</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch25-adrs.html#cross-reference-map">Cross-Reference Map</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch25-adrs.html#writing-your-own-adrs">Writing Your Own ADRs</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch25-adrs.html#adrs-and-the-codebase">ADRs and the Codebase</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch25-adrs.html#summary">Summary</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch25-adrs.html#what-comes-next">What Comes Next</a></li>
+          <li class="level2 toc nav-node"><a href="05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch26-where-to-go.html#what-we-built">What We Built</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch26-where-to-go.html#the-five-patterns-revisited">The Five Patterns Revisited</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch26-where-to-go.html#further-reading">Further Reading</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch26-where-to-go.html#what-you-could-build-next">What You Could Build Next</a></li>
+          <li class="level3 toc nav-leaf"><a href="05-advanced-topics/ch26-where-to-go.html#closing">Closing</a></li>
+          <li class="level1 toc nav-header">Appendices</li>
+          <li class="level2 toc nav-node"><a href="06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#wave">Wave</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#task">Task</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#consolidationgroup">ConsolidationGroup</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#handlingunit">HandlingUnit</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#transportorder">TransportOrder</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#workstation">Workstation</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#slot">Slot</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#inbounddelivery">InboundDelivery</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#goodsreceipt">GoodsReceipt</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#cyclecount">CycleCount</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#counttask">CountTask</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#stockposition-4-bucket-model">StockPosition (4-Bucket Model)</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#handlingunitstock-4-bucket-model">HandlingUnitStock (4-Bucket Model)</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-a-state-diagrams.html#inventory-2-bucket-model">Inventory (2-Bucket Model)</a></li>
+          <li class="level2 toc nav-node"><a href="06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-b-dependency-graph.html#dependency-diagram">Dependency Diagram</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-b-dependency-graph.html#module-reference">Module Reference</a></li>
+          <li class="level2 toc nav-node"><a href="06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#wave-events">Wave Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#task-events">Task Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#consolidationgroup-events">ConsolidationGroup Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#handlingunit-events">HandlingUnit Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#transportorder-events">TransportOrder Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#workstation-events">Workstation Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#slot-events">Slot Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#inventory-events">Inventory Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#stockposition-events">StockPosition Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#handlingunitstock-events">HandlingUnitStock Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#inbounddelivery-events">InboundDelivery Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#goodsreceipt-events">GoodsReceipt Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#cyclecount-events">CycleCount Events</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-c-event-catalogue.html#counttask-events">CountTask Events</a></li>
+          <li class="level2 toc nav-node"><a href="06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#authentication">Authentication</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#waves">Waves</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#tasks">Tasks</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#consolidation-groups">Consolidation Groups</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#handling-units">Handling Units</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#transport-orders">Transport Orders</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#workstations">Workstations</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#slots">Slots</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#inventory">Inventory</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#stock-positions">Stock Positions</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#inbound">Inbound</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#cycle-counts">Cycle Counts</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-d-api-reference.html#permission-reference">Permission Reference</a></li>
+          <li class="level2 toc nav-node"><a href="06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-e-configuration.html#pekko-actor-system">Pekko Actor System</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-e-configuration.html#serialization-jackson-cbor">Serialization (Jackson CBOR)</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-e-configuration.html#pekko-remote-artery">Pekko Remote (Artery)</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-e-configuration.html#pekko-cluster">Pekko Cluster</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-e-configuration.html#pekko-persistence-r2dbc">Pekko Persistence (R2DBC)</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-e-configuration.html#pekko-projection-r2dbc">Pekko Projection (R2DBC)</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-e-configuration.html#retention-and-snapshots">Retention and Snapshots</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-e-configuration.html#http-server">HTTP Server</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-e-configuration.html#authentication">Authentication</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-e-configuration.html#flyway-migrations">Flyway Migrations</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-e-configuration.html#environment-variables-summary">Environment Variables Summary</a></li>
+          <li class="level2 toc nav-node"><a href="06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-f-glossary.html#warehouse-terms">Warehouse Terms</a></li>
+          <li class="level3 toc nav-leaf"><a href="06-appendices/appendix-f-glossary.html#technical-terms">Technical Terms</a></li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

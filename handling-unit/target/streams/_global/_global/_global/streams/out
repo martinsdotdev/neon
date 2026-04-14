@@ -1,0 +1,20 @@
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding repositories [https://repo1.maven.org/maven2/]
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: Adding credentials []
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: considering all files (no git)
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/handling-unit/src/main/scala/neon/handlingunit/HandlingUnitActor.scala, /home/martins/Projects/neon/handling-unit/src/main/scala/neon/handlingunit/AsyncHandlingUnitRepository.scala, /home/martins/Projects/neon/handling-unit/src/main/scala/neon/handlingunit/HandlingUnitEvent.scala, /home/martins/Projects/neon/handling-unit/src/main/scala/neon/handlingunit/HandlingUnit.scala, /home/martins/Projects/neon/handling-unit/src/main/scala/neon/handlingunit/PekkoHandlingUnitRepository.scala, /home/martins/Projects/neon/handling-unit/src/main/scala/neon/handlingunit/HandlingUnitRepository.scala
+[debug] 	Modified: 
+[debug] 	Unmodified: /home/martins/Projects/neon/handling-unit/src/main/scala/neon/handlingunit/HandlingUnitActor.scala, /home/martins/Projects/neon/handling-unit/src/main/scala/neon/handlingunit/AsyncHandlingUnitRepository.scala, /home/martins/Projects/neon/handling-unit/src/main/scala/neon/handlingunit/HandlingUnitEvent.scala, /home/martins/Projects/neon/handling-unit/src/main/scala/neon/handlingunit/HandlingUnit.scala, /home/martins/Projects/neon/handling-unit/src/main/scala/neon/handlingunit/PekkoHandlingUnitRepository.scala, /home/martins/Projects/neon/handling-unit/src/main/scala/neon/handlingunit/HandlingUnitRepository.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[debug] scalafmt: Change report:
+[debug] 	Checked: /home/martins/Projects/neon/handling-unit/src/test/scala/neon/handlingunit/PekkoHandlingUnitRepositorySuite.scala, /home/martins/Projects/neon/handling-unit/src/test/scala/neon/handlingunit/HandlingUnitActorSuite.scala, /home/martins/Projects/neon/handling-unit/src/test/scala/neon/handlingunit/HandlingUnitSuite.scala
+[debug] 	Modified: 
+[debug] 	Unmodified: /home/martins/Projects/neon/handling-unit/src/test/scala/neon/handlingunit/PekkoHandlingUnitRepositorySuite.scala, /home/martins/Projects/neon/handling-unit/src/test/scala/neon/handlingunit/HandlingUnitActorSuite.scala, /home/martins/Projects/neon/handling-unit/src/test/scala/neon/handlingunit/HandlingUnitSuite.scala
+[debug] 	Added: 
+[debug] 	Removed: 
+[debug] scalafmt: Unchanged 0 Scala sources
+[debug] scalafmt: Unchanged 0 Scala sources

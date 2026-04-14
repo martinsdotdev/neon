@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Project: Building the Wave Release Flow</title>
+  
+  
+  <meta name="description" content="neon-wes"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../table-of-content.html">Contents</a></li>
+    <li class="level1 nav-header">Part I: The Domain</li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch01-what-is-a-wes.html">What Is a Warehouse Execution System?</a></li>
+    <li class="level2 nav-leaf"><a href="../01-the-domain/ch02-getting-started.html">Getting Started</a></li>
+    <li class="level1 nav-header">Part II: The Domain Model</li>
+    <li class="level2 nav-leaf"><a href="ch03-common-foundation.html">The Common Foundation</a></li>
+    <li class="level2 nav-leaf"><a href="ch04-typestates.html">Modeling State with Typestates</a></li>
+    <li class="level2 nav-leaf"><a href="ch05-events.html">Events: The Source of Truth</a></li>
+    <li class="level2 nav-leaf"><a href="ch06-policies.html">Policies: Pure Business Logic</a></li>
+    <li class="level2 nav-leaf"><a href="ch07-services.html">Services: Orchestrating the Domain</a></li>
+    <li class="level2 nav-leaf"><a href="ch08-repositories.html">Repositories: The Dual Interface Pattern</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Project: Building the Wave Release Flow</a></li>
+    <li class="level1 nav-header">Part III: The Infrastructure</li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch10-actor-model.html">The Actor Model with Pekko</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch11-cluster-sharding.html">Cluster Sharding and Persistence</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch12-cqrs-projections.html">CQRS and Projections</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch13-http-api.html">The HTTP API</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch14-testing.html">Testing at Every Layer</a></li>
+    <li class="level2 nav-leaf"><a href="../03-the-infrastructure/ch15-project-warehouse-day.html">Project: A Day in the Warehouse</a></li>
+    <li class="level1 nav-header">Part IV: System Concerns</li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch16-bootstrap.html">The Bootstrap: Wiring It All Together</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch17-serialization.html">Serialization</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch18-error-handling.html">Error Handling Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch19-observability.html">Observability and Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../04-system-concerns/ch20-project-new-aggregate.html">Project: Adding a New Aggregate Module</a></li>
+    <li class="level1 nav-header">Part V: Advanced Topics</li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch21-stock-management.html">Stock Management</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch22-inbound-cycle-counting.html">Inbound and Cycle Counting</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch23-handling-units-workstations.html">Handling Units and Workstations</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch24-frontend.html">The Frontend</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch25-adrs.html">Architecture Decision Records</a></li>
+    <li class="level2 nav-leaf"><a href="../05-advanced-topics/ch26-where-to-go.html">Where to Go from Here</a></li>
+    <li class="level1 nav-header">Appendices</li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-a-state-diagrams.html">Appendix A: State Machine Diagrams</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-b-dependency-graph.html">Appendix B: Module Dependency Graph</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-c-event-catalogue.html">Appendix C: Event Catalogue</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-d-api-reference.html">Appendix D: API Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-e-configuration.html">Appendix E: Configuration Reference</a></li>
+    <li class="level2 nav-leaf"><a href="../06-appendices/appendix-f-glossary.html">Appendix F: Glossary</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Project: Building the Wave Release Flow</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#the-scenario">The Scenario</a></li>
+    <li class="level1 nav-leaf"><a href="#setting-the-stage">Setting the Stage</a></li>
+    <li class="level1 nav-leaf"><a href="#step-1-planning-the-wave">Step 1: Planning the Wave</a></li>
+    <li class="level1 nav-leaf"><a href="#step-2-releasing-the-wave">Step 2: Releasing the Wave</a></li>
+    <li class="level1 nav-leaf"><a href="#step-3-task-allocation-and-assignment">Step 3: Task Allocation and Assignment</a></li>
+    <li class="level1 nav-leaf"><a href="#step-4-task-completion-full-pick">Step 4: Task Completion (Full Pick)</a></li>
+    <li class="level1 nav-leaf"><a href="#step-5-task-completion-with-shortpick">Step 5: Task Completion with Shortpick</a></li>
+    <li class="level1 nav-leaf"><a href="#step-6-completing-the-replacement-task">Step 6: Completing the Replacement Task</a></li>
+    <li class="level1 nav-leaf"><a href="#the-full-picture">The Full Picture</a></li>
+    <li class="level1 nav-leaf"><a href="#testing-the-flow">Testing the Flow</a></li>
+    <li class="level1 nav-leaf"><a href="#what-we-learned">What We Learned</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="project-building-the-wave-release-flow" class="title">Project: Building the Wave Release Flow</h1>
+        <p>This is our first project chapter. Instead of introducing new concepts, we will
+        bring together everything from Part II to trace a complete warehouse workflow:
+        from customer orders to task completion and wave closure. We will follow the
+        data through six layers of the system.</p>
+        <p>Here is what we are applying:</p>
+        <ol class="arabic">
+          <li><strong>Opaque type IDs</strong> (Chapter 3): <code>WaveId</code>, <code>TaskId</code>, <code>OrderId</code>, <code>SkuId</code>,
+          and friends give us compile-time safety across aggregate boundaries.</li>
+          <li><strong>Enums</strong> (Chapter 3): <code>OrderGrouping</code>, <code>PackagingLevel</code>, and <code>Priority</code>
+          constrain domain values to valid choices.</li>
+          <li><strong>Typestate transitions</strong> (Chapter 4): <code>Wave.Planned.release</code>,
+          <code>Task.Planned.allocate</code>, <code>Task.Allocated.assign</code>, <code>Task.Assigned.complete</code>,
+          and <code>Wave.Released.complete</code> enforce legal lifecycle progressions at compile
+          time.</li>
+          <li><strong>Events</strong> (Chapter 5): <code>WaveReleased</code>, <code>TaskCreated</code>, <code>TaskCompleted</code>, and
+          <code>WaveCompleted</code> record every state change as an immutable fact.</li>
+          <li><strong>Policies</strong> (Chapter 6): <code>TaskCreationPolicy</code>, <code>ShortpickPolicy</code>,
+          <code>RoutingPolicy</code>, <code>WaveCompletionPolicy</code>, and
+          <code>ConsolidationGroupFormationPolicy</code> make pure decisions with no side effects.</li>
+          <li><strong>Services</strong> (Chapter 7): <code>WaveReleaseService</code> and <code>TaskCompletionService</code>
+          orchestrate the cascade, calling policies and persisting results through
+          repositories.</li>
+          <li><strong>Repositories</strong> (Chapter 8): <code>WaveRepository</code>, <code>TaskRepository</code>,
+          <code>ConsolidationGroupRepository</code>, and <code>TransportOrderRepository</code> define
+          abstract persistence ports that we fill with in-memory adapters for testing.</li>
+        </ol>
+        <p>By the end of this chapter, we will have planned a wave, released it, created
+        tasks, completed picks (including a shortpick), and watched the wave close
+        itself. Every line of code is real. Every transition follows the rules we
+        built in the preceding six chapters.</p>
+        
+        <h2 id="the-scenario" class="section"><a class="anchor-link left" href="#the-scenario"><i class="icofont-laika link">&#xef71;</i></a>The Scenario</h2>
+        <p>Let&#39;s set the scene in concrete warehouse terms.</p>
+        <p>Two customer orders arrive. Order 1 requests 10 units of SKU-A, packed as
+        eaches. Order 2 requests 5 units of SKU-B, also eaches. The warehouse
+        manager groups these orders into a single wave with <code>OrderGrouping.Single</code>,
+        meaning each order is fulfilled independently with no consolidation.</p>
+        <p>The goal: release the wave, create one pick task per order line, complete
+        both picks, and watch the wave close itself when all tasks reach a terminal
+        state. Along the way, one picker will shortpick (pick fewer items than
+        requested), triggering a replacement task. We will complete that replacement
+        too, finally closing the wave.</p>
+        <p>Here is the plan, step by step:</p>
+        <ol class="arabic">
+          <li><strong>Plan the wave</strong>: <code>WavePlanner.plan</code> creates a <code>Wave.Released</code> and two
+          <code>TaskRequest</code> values.</li>
+          <li><strong>Release the wave</strong>: <code>WaveReleaseService.release</code> persists the wave,
+          creates <code>Task.Planned</code> instances via <code>TaskCreationPolicy</code>, and checks for
+          consolidation groups.</li>
+          <li><strong>Allocate and assign tasks</strong>: Typestate transitions move each task from
+          <code>Planned</code> to <code>Allocated</code> to <code>Assigned</code>.</li>
+          <li><strong>Complete task 1 (full pick)</strong>: <code>TaskCompletionService.complete</code> fires the
+          cascade. <code>ShortpickPolicy</code> finds no shortage. <code>WaveCompletionPolicy</code> sees
+          open tasks remaining.</li>
+          <li><strong>Complete task 2 (shortpick)</strong>: The picker gets 3 of 5 units.
+          <code>ShortpickPolicy</code> creates a replacement task for the remaining 2.
+          <code>WaveCompletionPolicy</code> still sees an open task.</li>
+          <li><strong>Complete the replacement task</strong>: Now every task is terminal.
+          <code>WaveCompletionPolicy</code> fires and transitions the wave to <code>Completed</code>.</li>
+        </ol>
+        
+        <h2 id="setting-the-stage" class="section"><a class="anchor-link left" href="#setting-the-stage"><i class="icofont-laika link">&#xef71;</i></a>Setting the Stage</h2>
+        <p>Before we can trace the flow, we need test data and repositories. This is the
+        hexagonal architecture from Chapter 8 in action: we swap production
+        persistence adapters for in-memory implementations backed by mutable maps and
+        list buffers.</p>
+        <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">skuA</span><span> = </span><span class="type-name">SkuId</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">skuB</span><span> = </span><span class="type-name">SkuId</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">orderId1</span><span> = </span><span class="type-name">OrderId</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">orderId2</span><span> = </span><span class="type-name">OrderId</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">at</span><span> = </span><span class="type-name">Instant</span><span>.</span><span class="identifier">now</span><span>()
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">order1</span><span> = </span><span class="type-name">Order</span><span>(
+  </span><span class="identifier">orderId1</span><span>, </span><span class="type-name">Priority</span><span>.</span><span class="type-name">Normal</span><span>,
+  </span><span class="type-name">List</span><span>(</span><span class="type-name">OrderLine</span><span>(</span><span class="identifier">skuA</span><span>, </span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Each</span><span>, </span><span class="number-literal">10</span><span>))
+)
+</span><span class="keyword">val</span><span> </span><span class="identifier">order2</span><span> = </span><span class="type-name">Order</span><span>(
+  </span><span class="identifier">orderId2</span><span>, </span><span class="type-name">Priority</span><span>.</span><span class="type-name">Normal</span><span>,
+  </span><span class="type-name">List</span><span>(</span><span class="type-name">OrderLine</span><span>(</span><span class="identifier">skuB</span><span>, </span><span class="type-name">PackagingLevel</span><span>.</span><span class="type-name">Each</span><span>, </span><span class="number-literal">5</span><span>))
+)</span></code></pre>
+        <p>Each <code>SkuId()</code> and <code>OrderId()</code> call generates a fresh UUID v7 (Chapter 3). The
+        <code>Order</code> case class holds an id, a priority, and a list of order lines. Each
+        <code>OrderLine</code> pins down one SKU, a packaging level, and a quantity.</p>
+        <p>Now the repositories:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">waveRepo</span><span> = </span><span class="type-name">InMemoryWaveRepository</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">taskRepo</span><span> = </span><span class="type-name">InMemoryTaskRepository</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">cgRepo</span><span>   = </span><span class="type-name">InMemoryConsolidationGroupRepository</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">toRepo</span><span>   = </span><span class="type-name">InMemoryTransportOrderRepository</span><span>()</span></code></pre>
+        <p>These are the same in-memory implementations from our test suites. Let&#39;s look
+        at one to recall the pattern:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">InMemoryWaveRepository</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">WaveRepository</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">store</span><span>: </span><span class="identifier">mutable</span><span>.</span><span class="type-name">Map</span><span>[</span><span class="type-name">WaveId</span><span>, </span><span class="type-name">Wave</span><span>] = </span><span class="identifier">mutable</span><span>.</span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">events</span><span>: </span><span class="identifier">mutable</span><span>.</span><span class="type-name">ListBuffer</span><span>[</span><span class="type-name">WaveEvent</span><span>] = </span><span class="identifier">mutable</span><span>.</span><span class="type-name">ListBuffer</span><span>.</span><span class="identifier">empty</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">WaveId</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Wave</span><span>] = </span><span class="identifier">store</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">id</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">wave</span><span>: </span><span class="type-name">Wave</span><span>, </span><span class="identifier">event</span><span>: </span><span class="type-name">WaveEvent</span><span>): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">store</span><span>(</span><span class="identifier">wave</span><span>.</span><span class="identifier">id</span><span>) = </span><span class="identifier">wave</span><span>
+    </span><span class="identifier">events</span><span> += </span><span class="identifier">event</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WaveReleaseServiceSuite.scala</em>&lt;/small&gt;</p>
+        <p>A <code>mutable.Map</code> for state, a <code>mutable.ListBuffer</code> for events. The <code>save</code>
+        method updates the map and appends the event. The <code>findById</code> method looks up
+        by id, returning <code>Option[Wave]</code>. No database, no actor, no network. This is
+        the power of the port trait pattern: the domain code calls <code>waveRepo.save()</code>
+        and has no idea whether it is talking to PostgreSQL or a hash map.</p>
+        <p>Finally, we wire up the services:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">releaseService</span><span> = </span><span class="type-name">WaveReleaseService</span><span>(
+  </span><span class="identifier">waveRepo</span><span>, </span><span class="identifier">taskRepo</span><span>, </span><span class="identifier">cgRepo</span><span>
+)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">completionService</span><span> = </span><span class="type-name">TaskCompletionService</span><span>(
+  </span><span class="identifier">taskRepo</span><span>, </span><span class="identifier">waveRepo</span><span>, </span><span class="identifier">cgRepo</span><span>, </span><span class="identifier">toRepo</span><span>,
+  </span><span class="type-name">VerificationProfile</span><span>.</span><span class="identifier">disabled</span><span>
+)</span></code></pre>
+        <p><code>VerificationProfile.disabled</code> tells the completion service not to require
+        barcode verification for any packaging level. In production, you would
+        configure this per warehouse. For our walkthrough, we keep it simple.</p>
+        <p>The stage is set. Two orders, four repositories, two services. Let&#39;s go.</p>
+        
+        <h2 id="step-1-planning-the-wave" class="section"><a class="anchor-link left" href="#step-1-planning-the-wave"><i class="icofont-laika link">&#xef71;</i></a>Step 1: Planning the Wave</h2>
+        <p>Everything begins with <code>WavePlanner.plan</code>:</p>
+        <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">WavePlanner</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">plan</span><span>(
+      </span><span class="identifier">orders</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Order</span><span>],
+      </span><span class="identifier">grouping</span><span>: </span><span class="type-name">OrderGrouping</span><span>,
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>,
+      </span><span class="identifier">lineResolution</span><span>: (</span><span class="type-name">WaveId</span><span>, </span><span class="type-name">OrderId</span><span>, </span><span class="type-name">OrderLine</span><span>) =&gt; </span><span class="type-name">List</span><span>[</span><span class="type-name">TaskRequest</span><span>]
+        = </span><span class="identifier">passThrough</span><span>
+  ): </span><span class="type-name">WavePlan</span><span> =
+    </span><span class="identifier">require</span><span>(</span><span class="identifier">orders</span><span>.</span><span class="identifier">nonEmpty</span><span>, </span><span class="string-literal">&quot;orders must not be empty&quot;</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">id</span><span> = </span><span class="type-name">WaveId</span><span>()
+    </span><span class="keyword">val</span><span> </span><span class="identifier">orderIds</span><span> = </span><span class="identifier">orders</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">id</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">planned</span><span> = </span><span class="type-name">Wave</span><span>.</span><span class="type-name">Planned</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">grouping</span><span>, </span><span class="identifier">orderIds</span><span>)
+    </span><span class="keyword">val</span><span> (</span><span class="identifier">released</span><span>, </span><span class="identifier">event</span><span>) = </span><span class="identifier">planned</span><span>.</span><span class="identifier">release</span><span>(</span><span class="identifier">at</span><span>)
+
+    </span><span class="keyword">val</span><span> </span><span class="identifier">taskRequests</span><span> = </span><span class="keyword">for</span><span>
+      </span><span class="identifier">order</span><span> &lt;- </span><span class="identifier">orders</span><span>
+      </span><span class="identifier">line</span><span> &lt;- </span><span class="identifier">order</span><span>.</span><span class="identifier">lines</span><span>
+      </span><span class="identifier">req</span><span> &lt;- </span><span class="identifier">lineResolution</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">order</span><span>.</span><span class="identifier">id</span><span>, </span><span class="identifier">line</span><span>)
+    </span><span class="keyword">yield</span><span> </span><span class="identifier">req</span><span>
+
+    </span><span class="type-name">WavePlan</span><span>(</span><span class="identifier">released</span><span>, </span><span class="identifier">event</span><span>, </span><span class="identifier">taskRequests</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: wave/src/main/scala/neon/wave/WavePlanner.scala</em>&lt;/small&gt;</p>
+        <p>Let&#39;s trace this line by line with our data.</p>
+        <p><strong>Precondition check.</strong> <code>require(orders.nonEmpty)</code> guards against an empty
+        order list. We have two orders, so we pass. This is the <code>require()</code>
+        convention from Chapter 4: validate preconditions on aggregate creation.</p>
+        <p><strong>Fresh ID.</strong> <code>WaveId()</code> generates a UUID v7. This is the opaque type pattern
+        from Chapter 3. The wave gets a unique identifier that cannot be confused
+        with any other ID type.</p>
+        <p><strong>Build Planned state.</strong> <code>Wave.Planned(id, grouping, orderIds)</code> creates the
+        initial typestate. At this point the wave is <code>Planned</code>, and only the <code>release</code>
+        and <code>cancel</code> methods are available. You cannot call <code>complete</code> on a <code>Planned</code>
+        wave. The compiler will not allow it.</p>
+        <p><strong>Typestate transition.</strong> <code>planned.release(at)</code> returns a tuple:
+        <code>(Wave.Released, WaveEvent.WaveReleased)</code>. The wave jumps from <code>Planned</code> to
+        <code>Released</code> in a single call. After this line, the <code>planned</code> value is
+        discarded. Only <code>released</code> continues forward.</p>
+        <p><strong>Expand order lines.</strong> The <code>for</code> comprehension iterates over each order, then
+        each line within the order, then calls <code>lineResolution</code> to produce task
+        requests. The default <code>passThrough</code> strategy maps each order line to exactly
+        one <code>TaskRequest</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">passThrough</span><span>: (</span><span class="type-name">WaveId</span><span>, </span><span class="type-name">OrderId</span><span>, </span><span class="type-name">OrderLine</span><span>) =&gt; </span><span class="type-name">List</span><span>[</span><span class="type-name">TaskRequest</span><span>] =
+  (</span><span class="identifier">waveId</span><span>, </span><span class="identifier">orderId</span><span>, </span><span class="identifier">line</span><span>) =&gt;
+    </span><span class="type-name">List</span><span>(</span><span class="type-name">TaskRequest</span><span>(</span><span class="identifier">waveId</span><span>, </span><span class="identifier">orderId</span><span>, </span><span class="identifier">line</span><span>.</span><span class="identifier">skuId</span><span>, </span><span class="identifier">line</span><span>.</span><span class="identifier">packagingLevel</span><span>, </span><span class="identifier">line</span><span>.</span><span class="identifier">quantity</span><span>))</span></code></pre>
+        <p>With two orders and one line each, we get two task requests.</p>
+        <p>Let&#39;s call it:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">wavePlan</span><span> = </span><span class="type-name">WavePlanner</span><span>.</span><span class="identifier">plan</span><span>(
+  </span><span class="type-name">List</span><span>(</span><span class="identifier">order1</span><span>, </span><span class="identifier">order2</span><span>), </span><span class="type-name">OrderGrouping</span><span>.</span><span class="type-name">Single</span><span>, </span><span class="identifier">at</span><span>
+)</span></code></pre>
+        <p>After this call, <code>wavePlan</code> contains:</p>
+        <ul>
+          <li><code>wavePlan.wave</code>: a <code>Wave.Released</code> with a fresh <code>WaveId</code>, <code>Single</code> grouping,
+          and both order IDs</li>
+          <li><code>wavePlan.event</code>: a <code>WaveEvent.WaveReleased</code> recording the release instant</li>
+          <li><code>wavePlan.taskRequests</code>: two <code>TaskRequest</code> values, one for 10 units of
+          SKU-A, one for 5 units of SKU-B</li>
+        </ul>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p><code>WavePlanner</code> combines planning and releasing into a single step.
+          The <code>Planned</code> state exists for scenarios where a wave needs approval before
+          release. In the fast path, it is created and released in the same call.</p>
+        </div>
+        
+        <h2 id="step-2-releasing-the-wave" class="section"><a class="anchor-link left" href="#step-2-releasing-the-wave"><i class="icofont-laika link">&#xef71;</i></a>Step 2: Releasing the Wave</h2>
+        <p>The wave plan is a pure data structure. Nothing has been persisted yet. That is
+        the job of <code>WaveReleaseService.release</code>:</p>
+        <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">release</span><span>(
+    </span><span class="identifier">wavePlan</span><span>: </span><span class="type-name">WavePlan</span><span>,
+    </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>,
+    </span><span class="identifier">warehouseAreaId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">WarehouseAreaId</span><span>] = </span><span class="type-name">None</span><span>
+): </span><span class="type-name">WaveReleaseResult</span><span> =
+  </span><span class="identifier">waveRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">wave</span><span>, </span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">event</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">baseTasks</span><span> = </span><span class="type-name">TaskCreationPolicy</span><span>(</span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">taskRequests</span><span>, </span><span class="identifier">at</span><span>)
+
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">tasks</span><span>, </span><span class="identifier">stockAllocations</span><span>) =
+    (</span><span class="identifier">stockPositionRepository</span><span>, </span><span class="identifier">warehouseAreaId</span><span>) </span><span class="keyword">match</span><span>
+      </span><span class="keyword">case</span><span> (</span><span class="type-name">Some</span><span>(</span><span class="identifier">spRepo</span><span>), </span><span class="type-name">Some</span><span>(</span><span class="identifier">areaId</span><span>)) =&gt;
+        </span><span class="identifier">allocateAndEnrich</span><span>(</span><span class="identifier">spRepo</span><span>, </span><span class="identifier">areaId</span><span>, </span><span class="identifier">baseTasks</span><span>, </span><span class="identifier">at</span><span>)
+      </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; (</span><span class="identifier">baseTasks</span><span>, </span><span class="type-name">Nil</span><span>)
+
+  </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">saveAll</span><span>(</span><span class="identifier">tasks</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">consolidationGroups</span><span> =
+    </span><span class="type-name">ConsolidationGroupFormationPolicy</span><span>(</span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">event</span><span>, </span><span class="identifier">at</span><span>)
+  </span><span class="identifier">consolidationGroupRepository</span><span>.</span><span class="identifier">saveAll</span><span>(</span><span class="identifier">consolidationGroups</span><span>)
+
+  </span><span class="type-name">WaveReleaseResult</span><span>(</span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">wave</span><span>, </span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">event</span><span>,
+    </span><span class="identifier">tasks</span><span>, </span><span class="identifier">consolidationGroups</span><span>, </span><span class="identifier">stockAllocations</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/WaveReleaseService.scala</em>&lt;/small&gt;</p>
+        <p>Five things happen in sequence. Let&#39;s trace each one.</p>
+        <p><strong>1. Persist the released wave.</strong> <code>waveRepository.save(wavePlan.wave,
+wavePlan.event)</code> writes the <code>Wave.Released</code> and its <code>WaveReleased</code> event into
+        the repository. In our in-memory setup, this means the wave lands in
+        <code>waveRepo.store</code> and the event appends to <code>waveRepo.events</code>.</p>
+        <p><strong>2. Create tasks via TaskCreationPolicy.</strong> This is the first policy call:</p>
+        <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">TaskCreationPolicy</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(
+      </span><span class="identifier">taskRequests</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">TaskRequest</span><span>],
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+  ): </span><span class="type-name">List</span><span>[(</span><span class="type-name">Task</span><span>.</span><span class="type-name">Planned</span><span>, </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCreated</span><span>)] =
+    </span><span class="identifier">taskRequests</span><span>.</span><span class="identifier">map</span><span>: </span><span class="identifier">req</span><span> =&gt;
+      </span><span class="type-name">Task</span><span>.</span><span class="identifier">create</span><span>(
+        </span><span class="identifier">taskType</span><span> = </span><span class="type-name">TaskType</span><span>.</span><span class="type-name">Pick</span><span>,
+        </span><span class="identifier">skuId</span><span> = </span><span class="identifier">req</span><span>.</span><span class="identifier">skuId</span><span>,
+        </span><span class="identifier">packagingLevel</span><span> = </span><span class="identifier">req</span><span>.</span><span class="identifier">packagingLevel</span><span>,
+        </span><span class="identifier">requestedQuantity</span><span> = </span><span class="identifier">req</span><span>.</span><span class="identifier">quantity</span><span>,
+        </span><span class="identifier">orderId</span><span> = </span><span class="identifier">req</span><span>.</span><span class="identifier">orderId</span><span>,
+        </span><span class="identifier">waveId</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="identifier">req</span><span>.</span><span class="identifier">waveId</span><span>),
+        </span><span class="identifier">parentTaskId</span><span> = </span><span class="type-name">None</span><span>,
+        </span><span class="identifier">handlingUnitId</span><span> = </span><span class="type-name">None</span><span>,
+        </span><span class="identifier">at</span><span> = </span><span class="identifier">at</span><span>
+      )</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskCreationPolicy.scala</em>&lt;/small&gt;</p>
+        <p>Pure function. No repositories, no side effects. Each <code>TaskRequest</code> becomes a
+        <code>Task.Planned</code> paired with a <code>TaskEvent.TaskCreated</code>. The task type is always
+        <code>Pick</code> for wave-originated tasks. <code>parentTaskId</code> is <code>None</code> because these are
+        original tasks, not shortpick replacements. The <code>waveId</code> links each task back
+        to its wave for completion detection later.</p>
+        <p>With our two task requests, this produces two <code>(Task.Planned,
+TaskEvent.TaskCreated)</code> pairs.</p>
+        <p><strong>3. Stock allocation (skipped).</strong> We constructed our service without a
+        <code>StockPositionRepository</code>, so the pattern match falls through to <code>(baseTasks,
+Nil)</code>. In a production scenario with stock tracking enabled, the service would
+        call <code>StockAllocationPolicy</code> to reserve inventory before tasks go to the floor.</p>
+        <p><strong>4. Persist all tasks.</strong> <code>taskRepository.saveAll(tasks)</code> writes both planned
+        tasks and their creation events.</p>
+        <p><strong>5. Form consolidation groups.</strong> The last policy call:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">ConsolidationGroupFormationPolicy</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(
+      </span><span class="identifier">event</span><span>: </span><span class="type-name">WaveEvent</span><span>.</span><span class="type-name">WaveReleased</span><span>,
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+  ): </span><span class="type-name">List</span><span>[(</span><span class="type-name">ConsolidationGroup</span><span>.</span><span class="type-name">Created</span><span>,
+           </span><span class="type-name">ConsolidationGroupEvent</span><span>.</span><span class="type-name">ConsolidationGroupCreated</span><span>)] =
+    </span><span class="identifier">event</span><span>.</span><span class="identifier">orderGrouping</span><span> </span><span class="keyword">match</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="type-name">OrderGrouping</span><span>.</span><span class="type-name">Multi</span><span> =&gt;
+        </span><span class="type-name">List</span><span>(</span><span class="type-name">ConsolidationGroup</span><span>.</span><span class="identifier">create</span><span>(</span><span class="identifier">event</span><span>.</span><span class="identifier">waveId</span><span>, </span><span class="identifier">event</span><span>.</span><span class="identifier">orderIds</span><span>, </span><span class="identifier">at</span><span>))
+      </span><span class="keyword">case</span><span> </span><span class="type-name">OrderGrouping</span><span>.</span><span class="type-name">Single</span><span> =&gt; </span><span class="type-name">Nil</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/ConsolidationGroupFormationPolicy.scala</em>&lt;/small&gt;</p>
+        <p>Our wave uses <code>OrderGrouping.Single</code>, so this returns <code>Nil</code>. No consolidation
+        groups are created. If we had used <code>Multi</code> grouping, the policy would create a
+        consolidation group linking all orders in the wave.</p>
+        <p>Let&#39;s call the service:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">releaseResult</span><span> = </span><span class="identifier">releaseService</span><span>.</span><span class="identifier">release</span><span>(</span><span class="identifier">wavePlan</span><span>, </span><span class="identifier">at</span><span>)</span></code></pre>
+        <p>After this call, the system state is:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Entity</th>
+              <th>Count</th>
+              <th>State</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Wave</td>
+              <td>1</td>
+              <td>Released</td>
+            </tr>
+            <tr>
+              <td>Tasks</td>
+              <td>2</td>
+              <td>Planned</td>
+            </tr>
+            <tr>
+              <td>Consolidation Groups</td>
+              <td>0</td>
+              <td>n/a</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Two planned tasks, one released wave, zero consolidation groups. The wave
+        is in motion.</p>
+        
+        <h2 id="step-3-task-allocation-and-assignment" class="section"><a class="anchor-link left" href="#step-3-task-allocation-and-assignment"><i class="icofont-laika link">&#xef71;</i></a>Step 3: Task Allocation and Assignment</h2>
+        <p>The release service leaves tasks in the <code>Planned</code> state. Before a picker can
+        work a task, it must pass through two more typestate transitions: allocation
+        (assigning source and destination locations) and assignment (assigning a user).</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">sourceLocation</span><span> = </span><span class="type-name">LocationId</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">destinationLocation</span><span> = </span><span class="type-name">LocationId</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">pickerId</span><span> = </span><span class="type-name">UserId</span><span>()</span></code></pre>
+        <p>Let&#39;s take the first task through both transitions:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">task1Planned</span><span> = </span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">store</span><span>.</span><span class="identifier">values</span><span>
+  .</span><span class="identifier">find</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">orderId</span><span> == </span><span class="identifier">orderId1</span><span>)
+  .</span><span class="identifier">get</span><span>.</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">Task</span><span>.</span><span class="type-name">Planned</span><span>]
+
+</span><span class="keyword">val</span><span> (</span><span class="identifier">task1Allocated</span><span>, </span><span class="identifier">allocatedEvent</span><span>) =
+  </span><span class="identifier">task1Planned</span><span>.</span><span class="identifier">allocate</span><span>(</span><span class="identifier">sourceLocation</span><span>, </span><span class="identifier">destinationLocation</span><span>, </span><span class="identifier">at</span><span>)
+</span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">task1Allocated</span><span>, </span><span class="identifier">allocatedEvent</span><span>)
+
+</span><span class="keyword">val</span><span> (</span><span class="identifier">task1Assigned</span><span>, </span><span class="identifier">assignedEvent</span><span>) =
+  </span><span class="identifier">task1Allocated</span><span>.</span><span class="identifier">assign</span><span>(</span><span class="identifier">pickerId</span><span>, </span><span class="identifier">at</span><span>)
+</span><span class="identifier">taskRepo</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">task1Assigned</span><span>, </span><span class="identifier">assignedEvent</span><span>)</span></code></pre>
+        <p>Each line here applies a typestate transition from Chapter 4.</p>
+        <p><code>task1Planned.allocate(...)</code> returns <code>(Task.Allocated, TaskEvent.TaskAllocated)</code>.
+        The method exists only on <code>Task.Planned</code>. If you tried to call <code>allocate</code> on a
+        <code>Task.Assigned</code>, the compiler would reject it. After allocation, the task
+        knows its source and destination locations.</p>
+        <p><code>task1Allocated.assign(pickerId, at)</code> returns <code>(Task.Assigned,
+TaskEvent.TaskAssigned)</code>. Again, <code>assign</code> exists only on <code>Task.Allocated</code>.
+        The task now knows which user is responsible for it.</p>
+        <p>After each transition, we persist the new state and event through the
+        repository. The events accumulate in <code>taskRepo.events</code>, building a complete
+        audit trail. We repeat the same two transitions for task 2.</p>
+        <p>System state after allocation and assignment:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Entity</th>
+              <th>Count</th>
+              <th>State</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Wave</td>
+              <td>1</td>
+              <td>Released</td>
+            </tr>
+            <tr>
+              <td>Task 1</td>
+              <td>1</td>
+              <td>Assigned</td>
+            </tr>
+            <tr>
+              <td>Task 2</td>
+              <td>1</td>
+              <td>Assigned</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Both tasks are ready for the picker.</p>
+        
+        <h2 id="step-4-task-completion-full-pick" class="section"><a class="anchor-link left" href="#step-4-task-completion-full-pick"><i class="icofont-laika link">&#xef71;</i></a>Step 4: Task Completion (Full Pick)</h2>
+        <p>The picker arrives at the source location for task 1 and picks all 10 units of
+        SKU-A. The handheld device calls:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">result1</span><span> = </span><span class="identifier">completionService</span><span>.</span><span class="identifier">complete</span><span>(
+  </span><span class="identifier">task1Assigned</span><span>.</span><span class="identifier">id</span><span>, </span><span class="number-literal">10</span><span>, </span><span class="identifier">verified</span><span> = </span><span class="boolean-literal">true</span><span>, </span><span class="identifier">at</span><span>
+)</span></code></pre>
+        <p>This triggers the <code>TaskCompletionService</code> cascade from Chapter 7. The service
+        first runs three guard checks: the quantity must not be negative, the task
+        must exist and be in the <code>Assigned</code> state, and verification must be satisfied
+        (disabled in our setup). All three pass. Then the cascade begins:</p>
+        <pre><code class="nohighlight"><span class="keyword">val</span><span> (</span><span class="identifier">completed</span><span>, </span><span class="identifier">completedEvent</span><span>) = </span><span class="identifier">assigned</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">actualQuantity</span><span>, </span><span class="identifier">at</span><span>)
+</span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">completed</span><span>, </span><span class="identifier">completedEvent</span><span>)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">shortpick</span><span> = </span><span class="type-name">ShortpickPolicy</span><span>(</span><span class="identifier">completed</span><span>, </span><span class="identifier">at</span><span>)
+</span><span class="identifier">shortpick</span><span>.</span><span class="identifier">foreach</span><span> { (</span><span class="identifier">replacement</span><span>, </span><span class="identifier">event</span><span>) =&gt;
+  </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">replacement</span><span>, </span><span class="identifier">event</span><span>)
+}
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">routing</span><span> = </span><span class="type-name">RoutingPolicy</span><span>(</span><span class="identifier">completedEvent</span><span>, </span><span class="identifier">at</span><span>)
+</span><span class="identifier">routing</span><span>.</span><span class="identifier">foreach</span><span> { (</span><span class="identifier">pending</span><span>, </span><span class="identifier">event</span><span>) =&gt;
+  </span><span class="identifier">transportOrderRepository</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">pending</span><span>, </span><span class="identifier">event</span><span>)
+}
+</span><span class="comment">// ... wave completion follows</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/TaskCompletionService.scala (simplified)</em>&lt;/small&gt;</p>
+        <p><strong>Cascade step 1: Complete the task.</strong> <code>assigned.complete(10, at)</code> returns
+        <code>(Task.Completed, TaskEvent.TaskCompleted)</code>. The typestate transition from
+        Chapter 4. Persisted immediately.</p>
+        <p><strong>Cascade step 2: Stock consumption.</strong> Skipped (no stock position repository).</p>
+        <p><strong>Cascade step 3: ShortpickPolicy.</strong> <code>remainder = 10 - 10 = 0</code>. Zero is not
+        positive, so the policy returns <code>None</code>. Full pick, no shortage.</p>
+        <p><strong>Cascade step 4: RoutingPolicy.</strong> Our task has no handling unit
+        (<code>handlingUnitId = None</code>), so <code>map</code> returns <code>None</code>. No transport order.</p>
+        <p><strong>Cascade step 5: WaveCompletionPolicy.</strong> The service fetches all wave tasks.
+        Task 1 is now <code>Completed</code>, but task 2 is still <code>Assigned</code>.
+        <code>waveTasks.forall(isTerminal)</code> returns <code>false</code>. The wave stays <code>Released</code>.</p>
+        <p><strong>Result of completing task 1:</strong></p>
+        <pre><code>completed:       Task.Completed (10 of 10)
+shortpick:       None
+transportOrder:  None
+waveCompletion:  None</code></pre>
+        <p>One down, one to go.</p>
+        
+        <h2 id="step-5-task-completion-with-shortpick" class="section"><a class="anchor-link left" href="#step-5-task-completion-with-shortpick"><i class="icofont-laika link">&#xef71;</i></a>Step 5: Task Completion with Shortpick</h2>
+        <p>The picker moves to task 2, which requests 5 units of SKU-B. The bin is running
+        low. The picker can only find 3 units. The handheld device sends:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">result2</span><span> = </span><span class="identifier">completionService</span><span>.</span><span class="identifier">complete</span><span>(
+  </span><span class="identifier">task2Assigned</span><span>.</span><span class="identifier">id</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="identifier">verified</span><span> = </span><span class="boolean-literal">true</span><span>, </span><span class="identifier">at</span><span>
+)</span></code></pre>
+        <p>The guards pass as before. The cascade begins, but this time the shortpick
+        policy has work to do.</p>
+        <p><strong>Cascade step 1: Complete the task.</strong> <code>task2Assigned.complete(3, at)</code> returns
+        a <code>Task.Completed</code> with <code>requestedQuantity = 5</code> and <code>actualQuantity = 3</code>.</p>
+        <p><strong>Cascade step 2: Stock consumption.</strong> Skipped.</p>
+        <p><strong>Cascade step 3: ShortpickPolicy.</strong> <code>remainder = 5 - 3 = 2</code>. Two is
+        positive, so the policy fires:</p>
+        <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">ShortpickPolicy</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(
+      </span><span class="identifier">completed</span><span>: </span><span class="type-name">Task</span><span>.</span><span class="type-name">Completed</span><span>,
+      </span><span class="identifier">at</span><span>: </span><span class="type-name">Instant</span><span>
+  ): </span><span class="type-name">Option</span><span>[(</span><span class="type-name">Task</span><span>.</span><span class="type-name">Planned</span><span>, </span><span class="type-name">TaskEvent</span><span>.</span><span class="type-name">TaskCreated</span><span>)] =
+    </span><span class="keyword">val</span><span> </span><span class="identifier">remainder</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">requestedQuantity</span><span> - </span><span class="identifier">completed</span><span>.</span><span class="identifier">actualQuantity</span><span>
+    </span><span class="keyword">if</span><span> </span><span class="identifier">remainder</span><span> &lt;= </span><span class="number-literal">0</span><span> </span><span class="identifier">then</span><span> </span><span class="type-name">None</span><span>
+    </span><span class="keyword">else</span><span>
+      </span><span class="type-name">Some</span><span>(</span><span class="type-name">Task</span><span>.</span><span class="identifier">create</span><span>(
+        </span><span class="identifier">taskType</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">taskType</span><span>,
+        </span><span class="identifier">skuId</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">skuId</span><span>,
+        </span><span class="identifier">packagingLevel</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">packagingLevel</span><span>,
+        </span><span class="identifier">requestedQuantity</span><span> = </span><span class="identifier">remainder</span><span>,
+        </span><span class="identifier">orderId</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">orderId</span><span>,
+        </span><span class="identifier">waveId</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">waveId</span><span>,
+        </span><span class="identifier">parentTaskId</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="identifier">completed</span><span>.</span><span class="identifier">id</span><span>),
+        </span><span class="identifier">handlingUnitId</span><span> = </span><span class="identifier">completed</span><span>.</span><span class="identifier">handlingUnitId</span><span>,
+        </span><span class="identifier">at</span><span> = </span><span class="identifier">at</span><span>
+      ))</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/main/scala/neon/core/ShortpickPolicy.scala</em>&lt;/small&gt;</p>
+        <p>It calls <code>Task.create</code> with <code>requestedQuantity = 2</code>, inheriting the SKU,
+        packaging level, order, and wave from the original task. Critically, it sets
+        <code>parentTaskId = Some(completed.id)</code>, linking the replacement to its parent for
+        traceability. The service persists this new <code>Task.Planned</code> immediately.</p>
+        <p><strong>Cascade step 4: RoutingPolicy.</strong> No handling unit, returns <code>None</code>.</p>
+        <p><strong>Cascade step 5: WaveCompletionPolicy.</strong> The service fetches all wave tasks.
+        There are now three: task 1 (<code>Completed</code>), task 2 (<code>Completed</code>), and the new
+        replacement task (<code>Planned</code>). The replacement is not terminal.
+        <code>waveTasks.forall(isTerminal)</code> returns <code>false</code>. The wave stays <code>Released</code>.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>This is a subtle but important interaction. The shortpick
+          replacement task is persisted <em>before</em> the wave completion check runs. This
+          means the policy sees the replacement in its task list. If the completion
+          check ran first, it would see only two completed tasks and close the wave
+          prematurely, leaving the remaining 2 units unfulfilled.</p>
+        </div>
+        <p><strong>Result of completing task 2:</strong></p>
+        <pre><code>completed:       Task.Completed (3 of 5)
+shortpick:       Some(Task.Planned, requestedQuantity = 2, parentTaskId = task2.id)
+transportOrder:  None
+waveCompletion:  None</code></pre>
+        <p>System state:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Entity</th>
+              <th>State</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Wave</td>
+              <td>Released</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Task 1</td>
+              <td>Completed</td>
+              <td>10 of 10 (full)</td>
+            </tr>
+            <tr>
+              <td>Task 2</td>
+              <td>Completed</td>
+              <td>3 of 5 (shortpick)</td>
+            </tr>
+            <tr>
+              <td>Replacement task</td>
+              <td>Planned</td>
+              <td>2 units, parent = task 2</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h2 id="step-6-completing-the-replacement-task" class="section"><a class="anchor-link left" href="#step-6-completing-the-replacement-task"><i class="icofont-laika link">&#xef71;</i></a>Step 6: Completing the Replacement Task</h2>
+        <p>The replacement task goes through the same lifecycle as any other task:
+        <code>Planned</code> to <code>Allocated</code> to <code>Assigned</code>, following the exact typestate
+        transitions we traced in Step 3. After allocation and assignment, the picker
+        finds the remaining 2 units and completes the task:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">result3</span><span> = </span><span class="identifier">completionService</span><span>.</span><span class="identifier">complete</span><span>(
+  </span><span class="identifier">replacementAssigned</span><span>.</span><span class="identifier">id</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="identifier">verified</span><span> = </span><span class="boolean-literal">true</span><span>, </span><span class="identifier">at</span><span>
+)</span></code></pre>
+        <p>The cascade runs again. Steps 1 through 4 are uneventful: the task completes
+        (2 of 2), shortpick remainder is zero, no routing needed. But step 5 is
+        different this time.</p>
+        <p><strong>WaveCompletionPolicy.</strong> The service fetches all wave tasks. There are now
+        three: task 1 (<code>Completed</code>), task 2 (<code>Completed</code>), and the replacement task
+        (<code>Completed</code>). Every task is terminal. <code>waveTasks.forall(isTerminal)</code> returns
+        <code>true</code>.</p>
+        <p>The policy calls <code>wave.complete(at)</code>, returning
+        <code>(Wave.Completed, WaveEvent.WaveCompleted)</code>. The wave transitions from
+        <code>Released</code> to <code>Completed</code>. The service persists both.</p>
+        <p><strong>Result of completing the replacement task:</strong></p>
+        <pre><code>completed:       Task.Completed (2 of 2)
+shortpick:       None
+transportOrder:  None
+waveCompletion:  Some(Wave.Completed, WaveEvent.WaveCompleted)</code></pre>
+        <p>The wave is closed.</p>
+        
+        <h2 id="the-full-picture" class="section"><a class="anchor-link left" href="#the-full-picture"><i class="icofont-laika link">&#xef71;</i></a>The Full Picture</h2>
+        <p>Let&#39;s visualize the entire flow:</p>
+        <pre><code>Order 1 (10x SKU-A) ──┐
+                       ├── WavePlanner.plan ──► WavePlan
+Order 2 (5x SKU-B)  ──┘                            │
+                                                    ▼
+                                        WaveReleaseService.release
+                                                    │
+                                    ┌───────────────┼───────────────┐
+                                    ▼               ▼               ▼
+                              Wave.Released   Task 1: Planned   Task 2: Planned
+                                    │               │               │
+                                    │          allocate/assign  allocate/assign
+                                    │               │               │
+                                    │          Task 1: Assigned Task 2: Assigned
+                                    │               │               │
+                                    │          complete(10)    complete(3)
+                                    │               │               │
+                                    │          Task 1: Completed    │
+                                    │          (full pick)          │
+                                    │                          Task 2: Completed
+                                    │                          (shortpick)
+                                    │                               │
+                                    │                          ShortpickPolicy
+                                    │                               │
+                                    │                      Replacement: Planned
+                                    │                               │
+                                    │                       allocate/assign
+                                    │                               │
+                                    │                      Replacement: Assigned
+                                    │                               │
+                                    │                         complete(2)
+                                    │                               │
+                                    │                      Replacement: Completed
+                                    │                               │
+                                    │◄──────────────────────────────┘
+                                    │
+                              WaveCompletionPolicy
+                              (all tasks terminal)
+                                    │
+                                    ▼
+                              Wave.Completed</code></pre>
+        <p>Final system state:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Entity</th>
+              <th>State</th>
+              <th>Quantities</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Wave</td>
+              <td>Completed</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Task 1 (SKU-A)</td>
+              <td>Completed</td>
+              <td>10 of 10</td>
+            </tr>
+            <tr>
+              <td>Task 2 (SKU-B)</td>
+              <td>Completed</td>
+              <td>3 of 5</td>
+            </tr>
+            <tr>
+              <td>Replacement (SKU-B)</td>
+              <td>Completed</td>
+              <td>2 of 2</td>
+            </tr>
+            <tr>
+              <td>Consolidation Groups</td>
+              <td>(none)</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Transport Orders</td>
+              <td>(none)</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Three tasks, one wave, zero open work. Every unit accounted for: 10 units of
+        SKU-A picked in full, 5 units of SKU-B picked across two tasks (3 + 2). The
+        event log in each repository records the complete history of every transition.</p>
+        
+        <h2 id="testing-the-flow" class="section"><a class="anchor-link left" href="#testing-the-flow"><i class="icofont-laika link">&#xef71;</i></a>Testing the Flow</h2>
+        <p>The test suites for these services exercise this exact flow. Let&#39;s look at how
+        <code>WaveReleaseServiceSuite</code> sets up a release test:</p>
+        <pre><code class="nohighlight"><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;task creation&quot;</span><span>):
+  </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;creates tasks from task requests via TaskCreationPolicy&quot;</span><span>):
+    </span><span class="keyword">val</span><span> </span><span class="identifier">taskRepository</span><span> = </span><span class="type-name">InMemoryTaskRepository</span><span>()
+    </span><span class="keyword">val</span><span> </span><span class="identifier">wavePlan</span><span> = </span><span class="type-name">WavePlanner</span><span>.</span><span class="identifier">plan</span><span>(
+      </span><span class="type-name">List</span><span>(</span><span class="identifier">singleOrder</span><span>()), </span><span class="type-name">OrderGrouping</span><span>.</span><span class="type-name">Single</span><span>, </span><span class="identifier">at</span><span>
+    )
+    </span><span class="keyword">val</span><span> </span><span class="identifier">service</span><span> = </span><span class="identifier">buildService</span><span>(</span><span class="identifier">taskRepository</span><span> = </span><span class="identifier">taskRepository</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> = </span><span class="identifier">service</span><span>.</span><span class="identifier">release</span><span>(</span><span class="identifier">wavePlan</span><span>, </span><span class="identifier">at</span><span>)
+    </span><span class="identifier">assert</span><span>(</span><span class="identifier">result</span><span>.</span><span class="identifier">tasks</span><span>.</span><span class="identifier">size</span><span> == </span><span class="number-literal">1</span><span>)
+    </span><span class="keyword">val</span><span> (</span><span class="identifier">planned</span><span>, </span><span class="identifier">event</span><span>) = </span><span class="identifier">result</span><span>.</span><span class="identifier">tasks</span><span>.</span><span class="identifier">head</span><span>
+    </span><span class="identifier">assert</span><span>(</span><span class="identifier">planned</span><span>.</span><span class="identifier">skuId</span><span> == </span><span class="identifier">skuId</span><span>)
+    </span><span class="identifier">assert</span><span>(</span><span class="identifier">planned</span><span>.</span><span class="identifier">requestedQuantity</span><span> == </span><span class="number-literal">10</span><span>)
+    </span><span class="identifier">assert</span><span>(</span><span class="identifier">planned</span><span>.</span><span class="identifier">waveId</span><span>.</span><span class="identifier">value</span><span> == </span><span class="identifier">wavePlan</span><span>.</span><span class="identifier">wave</span><span>.</span><span class="identifier">id</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/WaveReleaseServiceSuite.scala</em>&lt;/small&gt;</p>
+        <p>And <code>TaskCompletionServiceSuite</code> tests the shortpick cascade:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">describe</span><span>(</span><span class="string-literal">&quot;when actual is less than requested&quot;</span><span>):
+  </span><span class="identifier">it</span><span>(</span><span class="string-literal">&quot;creates Planned replacement for the unfulfilled remainder&quot;</span><span>):
+    </span><span class="keyword">val</span><span> </span><span class="identifier">taskRepository</span><span> = </span><span class="type-name">InMemoryTaskRepository</span><span>()
+    </span><span class="keyword">val</span><span> </span><span class="identifier">task</span><span> = </span><span class="identifier">assignedTask</span><span>(</span><span class="identifier">requestedQuantity</span><span> = </span><span class="number-literal">10</span><span>)
+    </span><span class="identifier">taskRepository</span><span>.</span><span class="identifier">store</span><span>(</span><span class="identifier">task</span><span>.</span><span class="identifier">id</span><span>) = </span><span class="identifier">task</span><span>
+    </span><span class="keyword">val</span><span> </span><span class="identifier">service</span><span> = </span><span class="identifier">buildService</span><span>(</span><span class="identifier">taskRepository</span><span> = </span><span class="identifier">taskRepository</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> = </span><span class="identifier">service</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">task</span><span>.</span><span class="identifier">id</span><span>, </span><span class="number-literal">7</span><span>, </span><span class="boolean-literal">true</span><span>, </span><span class="identifier">at</span><span>).</span><span class="identifier">value</span><span>
+    </span><span class="keyword">val</span><span> (</span><span class="identifier">replacement</span><span>, </span><span class="identifier">event</span><span>) = </span><span class="identifier">result</span><span>.</span><span class="identifier">shortpick</span><span>.</span><span class="identifier">value</span><span>
+    </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">requestedQuantity</span><span> == </span><span class="number-literal">3</span><span>)
+    </span><span class="identifier">assert</span><span>(</span><span class="identifier">replacement</span><span>.</span><span class="identifier">parentTaskId</span><span>.</span><span class="identifier">value</span><span> == </span><span class="identifier">task</span><span>.</span><span class="identifier">id</span><span>)
+    </span><span class="identifier">assert</span><span>(</span><span class="identifier">event</span><span>.</span><span class="identifier">requestedQuantity</span><span> == </span><span class="number-literal">3</span><span>)</span></code></pre>
+        <p>&lt;small&gt;<em>File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala</em>&lt;/small&gt;</p>
+        <p>Notice the test style: factory methods (<code>singleOrder()</code>, <code>assignedTask()</code>)
+        create test data with sensible defaults. In-memory repositories provide
+        persistence. Assertions check both the return value and the repository state.
+        No mocking frameworks, no test doubles beyond the in-memory adapters.</p>
+        <p>The suite also contains a test titled &quot;when shortpick creates a replacement /
+        prevents wave completion&quot; that captures the ordering guarantee we traced in
+        Step 5: the replacement is persisted before the wave completion check runs, so
+        a partial pick cannot prematurely close the wave.</p>
+        
+        <h2 id="what-we-learned" class="section"><a class="anchor-link left" href="#what-we-learned"><i class="icofont-laika link">&#xef71;</i></a>What We Learned</h2>
+        <p>Every concept from Part II contributed to this flow.</p>
+        <p><strong>Opaque type IDs</strong> (Chapter 3) ensured that a <code>WaveId</code> could never be passed
+        where a <code>TaskId</code> was expected. When the <code>ShortpickPolicy</code> set <code>parentTaskId =
+Some(completed.id)</code>, the type system guaranteed that <code>completed.id</code> was a
+        <code>TaskId</code>, not an <code>OrderId</code> or a <code>SkuId</code>.</p>
+        <p><strong>Typestate encoding</strong> (Chapter 4) prevented invalid transitions. We could not
+        complete a <code>Planned</code> task, release a <code>Completed</code> wave, or assign a <code>Cancelled</code>
+        task. The compiler caught these errors before any test ran.</p>
+        <p><strong>Events</strong> (Chapter 5) recorded every state change as an immutable fact. The
+        in-memory repositories accumulated <code>WaveReleased</code>, <code>TaskCreated</code>,
+        <code>TaskAllocated</code>, <code>TaskAssigned</code>, <code>TaskCompleted</code>, and <code>WaveCompleted</code> events.
+        In production, these events drive projections, audit logs, and downstream
+        integrations.</p>
+        <p><strong>Policies</strong> (Chapter 6) made pure decisions. <code>ShortpickPolicy</code> computed a
+        remainder. <code>WaveCompletionPolicy</code> checked a predicate. Neither touched a
+        repository or a clock. We could test each policy in isolation with a single
+        function call, and we could compose them into a cascade with confidence that
+        their decisions would not have hidden side effects.</p>
+        <p><strong>Services</strong> (Chapter 7) orchestrated the cascade. <code>WaveReleaseService</code>
+        called <code>TaskCreationPolicy</code> and <code>ConsolidationGroupFormationPolicy</code>, then
+        persisted the results. <code>TaskCompletionService</code> ran five cascade steps in
+        sequence, each feeding into the next. The service layer was the only place
+        where repositories were read and written. The <code>Either[Error, Result]</code> return
+        type let callers handle errors without catching exceptions.</p>
+        <p><strong>Repositories</strong> (Chapter 8) abstracted persistence behind port traits. We
+        ran the entire flow with in-memory maps and list buffers. Not a single line
+        of code needs to change when we swap in production implementations backed by
+        Pekko Cluster Sharding and PostgreSQL.</p>
+        <p>The domain model works beautifully in memory. But production systems need
+        actors, cluster sharding, and persistent storage. In Part III, we will build
+        the infrastructure layer that brings this domain model to life in a
+        distributed, event-sourced system.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

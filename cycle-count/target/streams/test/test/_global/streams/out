@@ -1,0 +1,48 @@
+[debug] Running TaskDef(neon.cyclecount.CycleCountSuite, org.scalatest.tools.Framework$$anon$1@7a46c0ed, false, [SuiteSelector])
+[debug] Running TaskDef(neon.cyclecount.CycleCountActorSuite, org.scalatest.tools.Framework$$anon$1@7a46c0ed, false, [SuiteSelector])
+[info] CycleCountSuite:
+[info] CycleCount
+[info]   creating
+[info]   - captures warehouse area and SKUs
+[info]   - captures count type and method
+[info]   starting
+[info]   - transitions from New to InProgress
+[info]   - preserves all fields through the transition
+[info]   - emits CycleCountStarted event with correct fields
+[info]   completing
+[info]   - transitions from InProgress to Completed
+[info]   - preserves all fields through the transition
+[info]   cancelling
+[info]   - can be cancelled from New
+[info]   - can be cancelled from InProgress
+[info]   - cancellation preserves count type and method
+[info]   count type propagation
+[info]   - carries count type through all events
+[info] CycleCountActorSuite:
+[info] CycleCountActor
+[info]   Create
+[info]   - persists CycleCountCreated event and sets New state
+[info]   GetState
+[info]   - returns None when empty
+[info]   - returns Some after creation
+[info]   Start
+[info]   - transitions New to InProgress
+[info]   - rejects Start in EmptyState
+[info]   Complete
+[info]   - transitions InProgress to Completed
+[info]   - rejects Complete on New
+[info]   Cancel
+[info]   - cancels a New cycle count
+[info]   - cancels an InProgress cycle count
+[info]   - rejects Cancel on Completed
+[info]   event replay
+[info]   - recovers New state from journal
+[info]   - recovers InProgress state from journal
+[info] Run completed in 13 seconds, 172 milliseconds.
+[info] Total number of tests run: 23
+[info] Suites: completed 2, aborted 0
+[info] Tests: succeeded 23, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[debug] Passed tests:
+[debug] 	neon.cyclecount.CycleCountActorSuite
+[debug] 	neon.cyclecount.CycleCountSuite
