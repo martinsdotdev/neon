@@ -254,6 +254,7 @@ lazy val app = project
 
 lazy val root = project
   .in(file("."))
+  .enablePlugins(LaikaPlugin)
   .aggregate(
     common,
     order,
@@ -280,5 +281,20 @@ lazy val root = project
   )
   .settings(
     name := "neon-wes",
-    publish / skip := true
+    publish / skip := true,
+    laikaExtensions := Seq(
+      laika.format.Markdown.GitHubFlavor,
+      laika.config.SyntaxHighlighting
+    ),
+    laikaTheme := {
+      import laika.helium.Helium
+      Helium.defaults
+        .all.metadata(
+          title = Some("The Neon WES Book"),
+          language = Some("en")
+        )
+        .site.tableOfContent(title = "Contents", depth = 3)
+        .site.mainNavigation(depth = 3)
+        .build
+    }
   )
