@@ -1,0 +1,8 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "app_title": "Neon WES",
+  "project_ready_heading": "Project ready!",
+  "project_ready_description": "You may now add components and start building.",
+  "project_ready_hint": "We've already added the button component for you.",
+  "button_label": "Button"
+}
