@@ -3,14 +3,11 @@ package neon.core
 import neon.common.{
   AdjustmentReasonCode,
   AllocationStrategy,
-  ConsolidationGroupId,
   ContainerId,
   CountMethod,
-  CountTaskId,
   CountType,
   CycleCountId,
   GoodsReceiptId,
-  HandlingUnitId,
   InboundDeliveryId,
   LocationId,
   Lot,
@@ -19,34 +16,23 @@ import neon.common.{
   PackagingLevel,
   Priority,
   SkuId,
-  StockPositionId,
-  TaskId,
   UserId,
   WarehouseAreaId,
-  WaveId,
   WorkstationId,
   WorkstationMode
 }
-import neon.consolidationgroup.{
-  ConsolidationGroup,
-  ConsolidationGroupEvent,
-  ConsolidationGroupRepository
-}
-import neon.counttask.{CountTask, CountTaskEvent, CountTaskRepository}
-import neon.cyclecount.{CycleCount, CycleCountEvent, CycleCountRepository}
+import neon.cyclecount.CycleCount
 import neon.goodsreceipt.{GoodsReceipt, ReceivedLine}
 import neon.inbounddelivery.InboundDelivery
 import neon.order.{Order, OrderLine}
-import neon.stockposition.{StockPosition, StockPositionEvent, StockPositionRepository}
-import neon.task.{Task, TaskEvent, TaskRepository, TaskType}
-import neon.transportorder.{TransportOrder, TransportOrderEvent, TransportOrderRepository}
-import neon.wave.{OrderGrouping, Wave, WaveEvent, WavePlanner, WaveRepository}
+import neon.stockposition.{StockPosition, StockPositionEvent}
+import neon.task.{Task, TaskType}
+import neon.wave.{OrderGrouping, WavePlanner}
 import neon.workstation.{Workstation, WorkstationType}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.{EitherValues, OptionValues}
 
 import java.time.{Instant, LocalDate}
-import scala.collection.mutable
 
 /** Simulates a full day of warehouse operations exercising all new domain modules end-to-end:
   *
@@ -106,83 +92,6 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
   // --- Time progression ---
   val dayStart = Instant.parse("2027-01-15T06:00:00Z")
   def at(hoursAfterStart: Int): Instant = dayStart.plusSeconds(hoursAfterStart * 3600L)
-
-  // --- In-memory repositories ---
-  class InMemoryStockPositionRepository extends StockPositionRepository:
-    val store: mutable.Map[StockPositionId, StockPosition] = mutable.Map.empty
-    val events: mutable.ListBuffer[StockPositionEvent] = mutable.ListBuffer.empty
-    def findById(id: StockPositionId): Option[StockPosition] = store.get(id)
-    def findBySkuAndArea(skuId: SkuId, warehouseAreaId: WarehouseAreaId): List[StockPosition] =
-      store.values.filter(sp => sp.skuId == skuId && sp.warehouseAreaId == warehouseAreaId).toList
-    def save(stockPosition: StockPosition, event: StockPositionEvent): Unit =
-      store(stockPosition.id) = stockPosition
-      events += event
-
-  class InMemoryTaskRepository extends TaskRepository:
-    val store: mutable.Map[TaskId, Task] = mutable.Map.empty
-    val events: mutable.ListBuffer[TaskEvent] = mutable.ListBuffer.empty
-    def findById(id: TaskId): Option[Task] = store.get(id)
-    def findByWaveId(waveId: WaveId): List[Task] =
-      store.values.filter(_.waveId.contains(waveId)).toList
-    def findByHandlingUnitId(handlingUnitId: HandlingUnitId): List[Task] =
-      store.values.filter(_.handlingUnitId.contains(handlingUnitId)).toList
-    def save(task: Task, event: TaskEvent): Unit =
-      store(task.id) = task
-      events += event
-    def saveAll(entries: List[(Task, TaskEvent)]): Unit =
-      entries.foreach((t, e) => save(t, e))
-
-  class InMemoryWaveRepository extends WaveRepository:
-    val store: mutable.Map[WaveId, Wave] = mutable.Map.empty
-    val events: mutable.ListBuffer[WaveEvent] = mutable.ListBuffer.empty
-    def findById(id: WaveId): Option[Wave] = store.get(id)
-    def save(wave: Wave, event: WaveEvent): Unit =
-      store(wave.id) = wave
-      events += event
-
-  class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
-    val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty
-    val events: mutable.ListBuffer[ConsolidationGroupEvent] = mutable.ListBuffer.empty
-    def findById(id: ConsolidationGroupId): Option[ConsolidationGroup] = store.get(id)
-    def findByWaveId(waveId: WaveId): List[ConsolidationGroup] =
-      store.values.filter(_.waveId == waveId).toList
-    def save(cg: ConsolidationGroup, event: ConsolidationGroupEvent): Unit =
-      store(cg.id) = cg
-      events += event
-    def saveAll(entries: List[(ConsolidationGroup, ConsolidationGroupEvent)]): Unit =
-      entries.foreach((cg, e) => save(cg, e))
-
-  class InMemoryTransportOrderRepository extends TransportOrderRepository:
-    val store: mutable.Map[neon.common.TransportOrderId, TransportOrder] = mutable.Map.empty
-    val events: mutable.ListBuffer[TransportOrderEvent] = mutable.ListBuffer.empty
-    def findById(id: neon.common.TransportOrderId): Option[TransportOrder] = store.get(id)
-    def findByHandlingUnitId(handlingUnitId: HandlingUnitId): List[TransportOrder] =
-      store.values.filter(_.handlingUnitId == handlingUnitId).toList
-    def save(to: TransportOrder, event: TransportOrderEvent): Unit =
-      store(to.id) = to
-      events += event
-    def saveAll(entries: List[(TransportOrder, TransportOrderEvent)]): Unit =
-      entries.foreach((to, e) => save(to, e))
-
-  class InMemoryCycleCountRepository extends CycleCountRepository:
-    val store: mutable.Map[CycleCountId, CycleCount] = mutable.Map.empty
-    val events: mutable.ListBuffer[CycleCountEvent] = mutable.ListBuffer.empty
-    def findById(id: CycleCountId): Option[CycleCount] = store.get(id)
-    def save(cc: CycleCount, event: CycleCountEvent): Unit =
-      store(cc.id) = cc
-      events += event
-
-  class InMemoryCountTaskRepository extends CountTaskRepository:
-    val store: mutable.Map[CountTaskId, CountTask] = mutable.Map.empty
-    val events: mutable.ListBuffer[CountTaskEvent] = mutable.ListBuffer.empty
-    def findById(id: CountTaskId): Option[CountTask] = store.get(id)
-    def findByCycleCountId(cycleCountId: CycleCountId): List[CountTask] =
-      store.values.filter(_.cycleCountId == cycleCountId).toList
-    def save(ct: CountTask, event: CountTaskEvent): Unit =
-      store(ct.id) = ct
-      events += event
-    def saveAll(entries: List[(CountTask, CountTaskEvent)]): Unit =
-      entries.foreach((ct, e) => save(ct, e))
 
   describe("A full day of warehouse operations"):
 
@@ -469,22 +378,17 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
 
     describe("16:00 SOX-compliant adjustment"):
 
-      it("rejects adjustment when counter is the same as adjuster"):
-        val completionService = CountCompletionService(ccRepo, ctRepo)
-        val cycleCountId = ccRepo.store.keys.head
-        val completionResult = completionService.tryComplete(cycleCountId, at(10))
-        // The cycle count is already completed, so tryComplete returns an error.
-        // Instead, use the variance from the earlier step.
-        val variance = CountVariance(
-          countTaskId = ctRepo.store.keys.head,
-          skuId = bandageSkuId,
-          locationId = pickLocationB,
-          expectedQuantity = 500,
-          actualQuantity = 497,
-          variance = -3,
-          countedBy = countOperator
-        )
+      val variance = CountVariance(
+        countTaskId = ctRepo.store.keys.head,
+        skuId = bandageSkuId,
+        locationId = pickLocationB,
+        expectedQuantity = 500,
+        actualQuantity = 497,
+        variance = -3,
+        countedBy = countOperator
+      )
 
+      it("rejects adjustment when counter is the same as adjuster"):
         val result = AdjustmentService.adjust(
           variance,
           adjustedBy = countOperator, // same person: SOX violation
@@ -495,16 +399,6 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
         assert(result.left.value.isInstanceOf[AdjustmentError.SegregationOfDutiesViolation])
 
       it("approves adjustment when supervisor (different user) adjusts"):
-        val variance = CountVariance(
-          countTaskId = ctRepo.store.keys.head,
-          skuId = bandageSkuId,
-          locationId = pickLocationB,
-          expectedQuantity = 500,
-          actualQuantity = 497,
-          variance = -3,
-          countedBy = countOperator
-        )
-
         val result = AdjustmentService.adjust(
           variance,
           adjustedBy = supervisor, // different person: SOX compliant
