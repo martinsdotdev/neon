@@ -282,6 +282,7 @@ lazy val root = project
   .settings(
     name := "neon-wes",
     publish / skip := true,
+    Laika / sourceDirectories := Seq(baseDirectory.value / "docs" / "book"),
     laikaExtensions := Seq(
       laika.format.Markdown.GitHubFlavor,
       laika.config.SyntaxHighlighting
