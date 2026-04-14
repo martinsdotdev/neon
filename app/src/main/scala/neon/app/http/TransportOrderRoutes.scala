@@ -1,5 +1,6 @@
 package neon.app.http
 
+import io.circe.Encoder
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{Permission, TransportOrderId}
 import neon.core.{
@@ -8,7 +9,6 @@ import neon.core.{
   TransportOrderCancellationError,
   TransportOrderConfirmationError
 }
-import io.circe.Encoder
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route

@@ -1,10 +1,10 @@
 package neon.app.auth
 
+import io.circe.Json
+import io.circe.parser.parse
 import neon.app.http.AuthRoutes
 import neon.common.{Permission, Role, UserId}
 import neon.user.User
-import io.circe.Json
-import io.circe.parser.parse
 import org.apache.pekko.http.scaladsl.model.headers.{Cookie, `Set-Cookie`}
 import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import org.apache.pekko.http.scaladsl.testkit.ScalatestRouteTest

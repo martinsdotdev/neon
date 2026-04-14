@@ -1,5 +1,7 @@
 package neon.app.http
 
+import io.circe.Json
+import io.circe.parser.parse
 import neon.app.auth.*
 import neon.common.{InventoryId, LocationId, Lot, PackagingLevel, Permission, Role, SkuId, UserId}
 import neon.core.{
@@ -10,8 +12,6 @@ import neon.core.{
 }
 import neon.inventory.Inventory
 import neon.user.User
-import io.circe.Json
-import io.circe.parser.parse
 import org.apache.pekko.http.scaladsl.model.headers.Cookie
 import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import org.apache.pekko.http.scaladsl.testkit.ScalatestRouteTest

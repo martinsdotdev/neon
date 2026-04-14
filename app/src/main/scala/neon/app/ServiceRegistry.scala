@@ -1,5 +1,6 @@
 package neon.app
 
+import io.r2dbc.spi.ConnectionFactory
 import neon.app.auth.*
 import neon.app.repository.*
 import neon.consolidationgroup.PekkoConsolidationGroupRepository
@@ -17,7 +18,6 @@ import neon.task.PekkoTaskRepository
 import neon.transportorder.PekkoTransportOrderRepository
 import neon.wave.PekkoWaveRepository
 import neon.workstation.PekkoWorkstationRepository
-import io.r2dbc.spi.ConnectionFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.util.Timeout
 

@@ -1,5 +1,6 @@
 package neon.app.repository
 
+import io.r2dbc.spi.{Connection, ConnectionFactory, Row}
 import neon.common.{CarrierId, LocationId, WaveId}
 import neon.core.{
   ActiveDockCarrierAssignment,
@@ -8,7 +9,6 @@ import neon.core.{
   WaveDispatchRules,
   WavePlanningError
 }
-import io.r2dbc.spi.{Connection, ConnectionFactory, Row}
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.stream.scaladsl.{Sink, Source}
 

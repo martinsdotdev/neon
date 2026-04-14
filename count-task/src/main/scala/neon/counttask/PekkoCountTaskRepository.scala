@@ -1,7 +1,7 @@
 package neon.counttask
 
-import neon.common.{CountTaskId, CycleCountId, R2dbcProjectionQueries}
 import io.r2dbc.spi.ConnectionFactory
+import neon.common.{CountTaskId, CycleCountId, R2dbcProjectionQueries}
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout

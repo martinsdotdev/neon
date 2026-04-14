@@ -1,7 +1,7 @@
 package neon.task
 
-import neon.common.{HandlingUnitId, R2dbcProjectionQueries, TaskId, WaveId}
 import io.r2dbc.spi.ConnectionFactory
+import neon.common.{HandlingUnitId, R2dbcProjectionQueries, TaskId, WaveId}
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout

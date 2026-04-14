@@ -1,7 +1,7 @@
 package neon.app.http
 
-import neon.app.auth.{AuthContext, AuthDirectives, AuthError, AuthenticationService}
 import io.circe.{Decoder, Encoder}
+import neon.app.auth.{AuthContext, AuthDirectives, AuthError, AuthenticationService}
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.model.headers.HttpCookie
 import org.apache.pekko.http.scaladsl.server.Directives.*

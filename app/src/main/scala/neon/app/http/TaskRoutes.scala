@@ -1,5 +1,6 @@
 package neon.app.http
 
+import io.circe.{Decoder, Encoder}
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{LocationId, Permission, TaskId, UserId}
 import neon.core.{
@@ -8,7 +9,6 @@ import neon.core.{
   TaskCompletionError,
   TaskLifecycleError
 }
-import io.circe.{Decoder, Encoder}
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route

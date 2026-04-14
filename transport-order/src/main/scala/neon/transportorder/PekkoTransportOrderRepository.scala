@@ -1,7 +1,7 @@
 package neon.transportorder
 
-import neon.common.{HandlingUnitId, R2dbcProjectionQueries, TransportOrderId}
 import io.r2dbc.spi.ConnectionFactory
+import neon.common.{HandlingUnitId, R2dbcProjectionQueries, TransportOrderId}
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout

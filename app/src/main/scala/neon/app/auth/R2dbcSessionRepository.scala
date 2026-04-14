@@ -1,8 +1,8 @@
 package neon.app.auth
 
+import io.r2dbc.spi.{ConnectionFactory, Row}
 import neon.app.repository.R2dbcHelper
 import neon.common.UserId
-import io.r2dbc.spi.{ConnectionFactory, Row}
 import org.apache.pekko.actor.typed.ActorSystem
 
 import java.time.{Instant, OffsetDateTime, ZoneOffset}

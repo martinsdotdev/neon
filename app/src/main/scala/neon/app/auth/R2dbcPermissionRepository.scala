@@ -1,8 +1,8 @@
 package neon.app.auth
 
+import io.r2dbc.spi.ConnectionFactory
 import neon.app.repository.R2dbcHelper
 import neon.common.{Permission, Role, UserId}
-import io.r2dbc.spi.ConnectionFactory
 import org.apache.pekko.actor.typed.ActorSystem
 
 import scala.concurrent.{ExecutionContext, Future}

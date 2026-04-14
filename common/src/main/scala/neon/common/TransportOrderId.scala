@@ -4,7 +4,8 @@ import com.github.f4b6a3.uuid.UuidCreator
 
 import java.util.UUID
 
-/** Unique identifier for a [[neon.transportorder.TransportOrder]]. Backed by a time-ordered UUID v7.
+/** Unique identifier for a [[neon.transportorder.TransportOrder]]. Backed by a time-ordered UUID
+  * v7.
   */
 opaque type TransportOrderId = UUID
 

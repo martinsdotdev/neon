@@ -1,9 +1,9 @@
 package neon.app.http
 
+import io.circe.Encoder
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{HandlingUnitId, Permission}
 import neon.core.{AsyncHandlingUnitLifecycleService, HandlingUnitLifecycleError}
-import io.circe.Encoder
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route

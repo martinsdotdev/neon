@@ -3,17 +3,15 @@ package neon.core
 import neon.common.{
   AdjustmentReasonCode,
   AllocationStrategy,
-  ContainerId,
   ConsolidationGroupId,
+  ContainerId,
   CountMethod,
   CountTaskId,
   CountType,
   CycleCountId,
   GoodsReceiptId,
   HandlingUnitId,
-  HandlingUnitStockId,
   InboundDeliveryId,
-  InventoryStatus,
   LocationId,
   Lot,
   LotAttributes,
@@ -21,8 +19,6 @@ import neon.common.{
   PackagingLevel,
   Priority,
   SkuId,
-  SlotCode,
-  StockLockType,
   StockPositionId,
   TaskId,
   UserId,
@@ -38,8 +34,7 @@ import neon.consolidationgroup.{
 }
 import neon.counttask.{CountTask, CountTaskEvent, CountTaskRepository}
 import neon.cyclecount.{CycleCount, CycleCountEvent, CycleCountRepository}
-import neon.goodsreceipt.{GoodsReceipt, GoodsReceiptEvent, ReceivedLine}
-import neon.handlingunitstock.HandlingUnitStock
+import neon.goodsreceipt.{GoodsReceipt, ReceivedLine}
 import neon.inbounddelivery.InboundDelivery
 import neon.order.{Order, OrderLine}
 import neon.stockposition.{StockPosition, StockPositionEvent, StockPositionRepository}
@@ -47,9 +42,8 @@ import neon.task.{Task, TaskEvent, TaskRepository, TaskType}
 import neon.transportorder.{TransportOrder, TransportOrderEvent, TransportOrderRepository}
 import neon.wave.{OrderGrouping, Wave, WaveEvent, WavePlanner, WaveRepository}
 import neon.workstation.{Workstation, WorkstationType}
-import org.scalatest.EitherValues
-import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.{EitherValues, OptionValues}
 
 import java.time.{Instant, LocalDate}
 import scala.collection.mutable

@@ -1,10 +1,10 @@
 package neon.app.repository
 
-import neon.common.{CarrierId, OrderId, PackagingLevel, Priority, SkuId}
-import neon.order.{AsyncOrderRepository, Order, OrderLine}
 import io.circe.parser.decode as jsonDecode
 import io.circe.{Decoder, HCursor}
 import io.r2dbc.spi.{ConnectionFactory, Row}
+import neon.common.{CarrierId, OrderId, PackagingLevel, Priority, SkuId}
+import neon.order.{AsyncOrderRepository, Order, OrderLine}
 
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}

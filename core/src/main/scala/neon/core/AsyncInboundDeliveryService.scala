@@ -2,7 +2,12 @@ package neon.core
 
 import com.typesafe.scalalogging.LazyLogging
 import neon.common.{GoodsReceiptId, InboundDeliveryId, LotAttributes, PackagingLevel, SkuId}
-import neon.goodsreceipt.{AsyncGoodsReceiptRepository, GoodsReceipt, GoodsReceiptEvent, ReceivedLine}
+import neon.goodsreceipt.{
+  AsyncGoodsReceiptRepository,
+  GoodsReceipt,
+  GoodsReceiptEvent,
+  ReceivedLine
+}
 import neon.inbounddelivery.{AsyncInboundDeliveryRepository, InboundDelivery, InboundDeliveryEvent}
 
 import java.time.Instant

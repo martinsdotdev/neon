@@ -1,5 +1,6 @@
 package neon.app.http
 
+import io.circe.{Decoder, Encoder}
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{
   ContainerId,
@@ -13,7 +14,6 @@ import neon.common.{
 }
 import neon.core.{AsyncInboundDeliveryService, InboundDeliveryError}
 import neon.goodsreceipt.ReceivedLine
-import io.circe.{Decoder, Encoder}
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route

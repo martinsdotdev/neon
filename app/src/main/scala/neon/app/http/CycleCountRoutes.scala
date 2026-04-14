@@ -1,5 +1,6 @@
 package neon.app.http
 
+import io.circe.{Decoder, Encoder}
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{
   CountMethod,
@@ -12,7 +13,6 @@ import neon.common.{
   WarehouseAreaId
 }
 import neon.core.{AsyncCycleCountService, CycleCountError}
-import io.circe.{Decoder, Encoder}
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route

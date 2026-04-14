@@ -1,5 +1,7 @@
 package neon.app.http
 
+import io.circe.parser.parse
+import io.circe.{Decoder, Json}
 import neon.app.auth.*
 import neon.common.{
   HandlingUnitId,
@@ -22,8 +24,6 @@ import neon.core.{
 }
 import neon.task.{AsyncTaskRepository, Task, TaskEvent, TaskType}
 import neon.user.{AsyncUserRepository, User}
-import io.circe.parser.parse
-import io.circe.{Decoder, Json}
 import org.apache.pekko.http.scaladsl.model.headers.Cookie
 import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import org.apache.pekko.http.scaladsl.testkit.ScalatestRouteTest

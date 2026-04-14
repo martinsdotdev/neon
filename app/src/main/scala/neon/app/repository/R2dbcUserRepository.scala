@@ -1,8 +1,8 @@
 package neon.app.repository
 
+import io.r2dbc.spi.{ConnectionFactory, Row}
 import neon.common.{Role, UserId}
 import neon.user.{AsyncUserRepository, User}
-import io.r2dbc.spi.{ConnectionFactory, Row}
 
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}

@@ -1,8 +1,8 @@
 package neon.app.repository
 
+import io.r2dbc.spi.{ConnectionFactory, Row}
 import neon.carrier.{AsyncCarrierRepository, Carrier}
 import neon.common.CarrierId
-import io.r2dbc.spi.{ConnectionFactory, Row}
 
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
