@@ -1,12 +1,7 @@
 "use client";
 
 import type { Table } from "@tanstack/react-table";
-import {
-  AlignVerticalSpaceAroundIcon,
-  ChevronsDownUpIcon,
-  EqualIcon,
-  MinusIcon,
-} from "lucide-react";
+import { RectangleHorizontalIcon, SquareIcon } from "lucide-react";
 import * as React from "react";
 import {
   Select,
@@ -18,24 +13,14 @@ import {
 
 const rowHeights = [
   {
-    label: "Short",
+    icon: RectangleHorizontalIcon,
+    label: "Compact",
     value: "short" as const,
-    icon: MinusIcon,
   },
   {
-    label: "Medium",
+    icon: SquareIcon,
+    label: "Comfortable",
     value: "medium" as const,
-    icon: EqualIcon,
-  },
-  {
-    label: "Tall",
-    value: "tall" as const,
-    icon: AlignVerticalSpaceAroundIcon,
-  },
-  {
-    label: "Extra Tall",
-    value: "extra-tall" as const,
-    icon: ChevronsDownUpIcon,
   },
 ] as const;
 
@@ -55,11 +40,7 @@ export function DataGridRowHeightMenu<TData>({
 
   const selectedRowHeight = React.useMemo(() => {
     return (
-      rowHeights.find((opt) => opt.value === rowHeight) ?? {
-        label: "Short",
-        value: "short" as const,
-        icon: MinusIcon,
-      }
+      rowHeights.find((opt) => opt.value === rowHeight) ?? rowHeights[0]
     );
   }, [rowHeight]);
 

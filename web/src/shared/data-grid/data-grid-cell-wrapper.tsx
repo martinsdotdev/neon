@@ -11,6 +11,7 @@ interface DataGridCellWrapperProps<TData>
     React.ComponentProps<"div"> {}
 
 export function DataGridCellWrapper<TData>({
+  cell,
   tableMeta,
   rowIndex,
   columnId,
@@ -28,6 +29,15 @@ export function DataGridCellWrapper<TData>({
   ...props
 }: DataGridCellWrapperProps<TData>) {
   const cellMapRef = tableMeta?.cellMapRef;
+
+  // Justify content based on cell variant: numbers right-aligned, booleans centered, others left-aligned
+  const variant = cell.column.columnDef.meta?.cell?.variant;
+  const justifyClass =
+    variant === "number"
+      ? "justify-end text-end"
+      : variant === "checkbox"
+        ? "justify-center text-center"
+        : "justify-start text-start";
 
   const onCellChange = React.useCallback(
     (node: HTMLDivElement | null) => {
@@ -173,7 +183,8 @@ export function DataGridCellWrapper<TData>({
       {...props}
       ref={composedRef}
       className={cn(
-        "size-full px-2 py-1.5 text-start text-sm outline-none has-data-[slot=checkbox]:pt-2.5",
+        "flex size-full items-center px-2 py-1.5 text-sm outline-none has-data-[slot=checkbox]:pt-2.5",
+        justifyClass,
         {
           "ring-1 ring-ring ring-inset": isFocused,
           "bg-yellow-100 dark:bg-yellow-900/30":

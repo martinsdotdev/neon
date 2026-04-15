@@ -129,7 +129,13 @@ export function DataGridColumnHeader<TData, TValue>({
           onPointerDown={onTriggerPointerDown}
           {...props}
         >
-          <div className="flex min-w-0 flex-1 items-center gap-1.5">
+          <div
+            className={cn(
+              "flex min-w-0 flex-1 items-center gap-1.5",
+              cellVariant?.variant === "number" && "justify-end",
+              cellVariant?.variant === "checkbox" && "justify-center",
+            )}
+          >
             {columnVariant && (
               <Tooltip delayDuration={100}>
                 <TooltipTrigger render={<span />}>
