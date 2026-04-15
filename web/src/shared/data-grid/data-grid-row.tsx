@@ -267,7 +267,7 @@ function DataGridRowImpl<TData>({
           >
             {typeof cell.column.columnDef.header === "function" ? (
               <div
-                className={cn("size-full px-3 py-1.5 group-hover/row:bg-muted/50", {
+                className={cn("size-full px-3 py-1.5 group-hover/row:bg-accent/50", {
                   "bg-primary/10": isRowSelected,
                 })}
               >
@@ -282,7 +282,7 @@ function DataGridRowImpl<TData>({
                 rowHeight={rowHeight}
                 isFocused={isCellFocused}
                 isEditing={isCellEditing}
-                isSelected={isCellSelected}
+                isSelected={isCellSelected || isRowSelected}
                 isSearchMatch={isSearchMatch}
                 isActiveSearchMatch={isActiveSearchMatch}
                 readOnly={readOnly}
