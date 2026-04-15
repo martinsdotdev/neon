@@ -9,38 +9,500 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedWorkstationsIndexRouteImport } from './routes/_authenticated/workstations/index'
+import { Route as AuthenticatedWavesIndexRouteImport } from './routes/_authenticated/waves/index'
+import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
+import { Route as AuthenticatedTransportOrdersIndexRouteImport } from './routes/_authenticated/transport-orders/index'
+import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
+import { Route as AuthenticatedStockPositionsIndexRouteImport } from './routes/_authenticated/stock-positions/index'
+import { Route as AuthenticatedSkusIndexRouteImport } from './routes/_authenticated/skus/index'
+import { Route as AuthenticatedReceiptsIndexRouteImport } from './routes/_authenticated/receipts/index'
+import { Route as AuthenticatedOrdersIndexRouteImport } from './routes/_authenticated/orders/index'
+import { Route as AuthenticatedLocationsIndexRouteImport } from './routes/_authenticated/locations/index'
+import { Route as AuthenticatedInventoryIndexRouteImport } from './routes/_authenticated/inventory/index'
+import { Route as AuthenticatedHandlingUnitsIndexRouteImport } from './routes/_authenticated/handling-units/index'
+import { Route as AuthenticatedDeliveriesIndexRouteImport } from './routes/_authenticated/deliveries/index'
+import { Route as AuthenticatedCycleCountsIndexRouteImport } from './routes/_authenticated/cycle-counts/index'
+import { Route as AuthenticatedConsolidationGroupsIndexRouteImport } from './routes/_authenticated/consolidation-groups/index'
+import { Route as AuthenticatedCarriersIndexRouteImport } from './routes/_authenticated/carriers/index'
+import { Route as AuthenticatedWorkstationsWorkstationIdRouteImport } from './routes/_authenticated/workstations/$workstationId'
+import { Route as AuthenticatedWavesWaveIdRouteImport } from './routes/_authenticated/waves/$waveId'
+import { Route as AuthenticatedUsersUserIdRouteImport } from './routes/_authenticated/users/$userId'
+import { Route as AuthenticatedTransportOrdersOrderIdRouteImport } from './routes/_authenticated/transport-orders/$orderId'
+import { Route as AuthenticatedTasksTaskIdRouteImport } from './routes/_authenticated/tasks/$taskId'
+import { Route as AuthenticatedStockPositionsPositionIdRouteImport } from './routes/_authenticated/stock-positions/$positionId'
+import { Route as AuthenticatedSkusSkuIdRouteImport } from './routes/_authenticated/skus/$skuId'
+import { Route as AuthenticatedReceiptsReceiptIdRouteImport } from './routes/_authenticated/receipts/$receiptId'
+import { Route as AuthenticatedOrdersOrderIdRouteImport } from './routes/_authenticated/orders/$orderId'
+import { Route as AuthenticatedLocationsLocationIdRouteImport } from './routes/_authenticated/locations/$locationId'
+import { Route as AuthenticatedInventoryInventoryIdRouteImport } from './routes/_authenticated/inventory/$inventoryId'
+import { Route as AuthenticatedHandlingUnitsUnitIdRouteImport } from './routes/_authenticated/handling-units/$unitId'
+import { Route as AuthenticatedDeliveriesDeliveryIdRouteImport } from './routes/_authenticated/deliveries/$deliveryId'
+import { Route as AuthenticatedCycleCountsCountIdRouteImport } from './routes/_authenticated/cycle-counts/$countId'
+import { Route as AuthenticatedConsolidationGroupsGroupIdRouteImport } from './routes/_authenticated/consolidation-groups/$groupId'
+import { Route as AuthenticatedCarriersCarrierIdRouteImport } from './routes/_authenticated/carriers/$carrierId'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedWorkstationsIndexRoute =
+  AuthenticatedWorkstationsIndexRouteImport.update({
+    id: '/workstations/',
+    path: '/workstations/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedWavesIndexRoute = AuthenticatedWavesIndexRouteImport.update({
+  id: '/waves/',
+  path: '/waves/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedTransportOrdersIndexRoute =
+  AuthenticatedTransportOrdersIndexRouteImport.update({
+    id: '/transport-orders/',
+    path: '/transport-orders/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
+  id: '/tasks/',
+  path: '/tasks/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedStockPositionsIndexRoute =
+  AuthenticatedStockPositionsIndexRouteImport.update({
+    id: '/stock-positions/',
+    path: '/stock-positions/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSkusIndexRoute = AuthenticatedSkusIndexRouteImport.update({
+  id: '/skus/',
+  path: '/skus/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedReceiptsIndexRoute =
+  AuthenticatedReceiptsIndexRouteImport.update({
+    id: '/receipts/',
+    path: '/receipts/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedOrdersIndexRoute =
+  AuthenticatedOrdersIndexRouteImport.update({
+    id: '/orders/',
+    path: '/orders/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedLocationsIndexRoute =
+  AuthenticatedLocationsIndexRouteImport.update({
+    id: '/locations/',
+    path: '/locations/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedInventoryIndexRoute =
+  AuthenticatedInventoryIndexRouteImport.update({
+    id: '/inventory/',
+    path: '/inventory/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedHandlingUnitsIndexRoute =
+  AuthenticatedHandlingUnitsIndexRouteImport.update({
+    id: '/handling-units/',
+    path: '/handling-units/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDeliveriesIndexRoute =
+  AuthenticatedDeliveriesIndexRouteImport.update({
+    id: '/deliveries/',
+    path: '/deliveries/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedCycleCountsIndexRoute =
+  AuthenticatedCycleCountsIndexRouteImport.update({
+    id: '/cycle-counts/',
+    path: '/cycle-counts/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedConsolidationGroupsIndexRoute =
+  AuthenticatedConsolidationGroupsIndexRouteImport.update({
+    id: '/consolidation-groups/',
+    path: '/consolidation-groups/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedCarriersIndexRoute =
+  AuthenticatedCarriersIndexRouteImport.update({
+    id: '/carriers/',
+    path: '/carriers/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedWorkstationsWorkstationIdRoute =
+  AuthenticatedWorkstationsWorkstationIdRouteImport.update({
+    id: '/workstations/$workstationId',
+    path: '/workstations/$workstationId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedWavesWaveIdRoute =
+  AuthenticatedWavesWaveIdRouteImport.update({
+    id: '/waves/$waveId',
+    path: '/waves/$waveId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedUsersUserIdRoute =
+  AuthenticatedUsersUserIdRouteImport.update({
+    id: '/users/$userId',
+    path: '/users/$userId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedTransportOrdersOrderIdRoute =
+  AuthenticatedTransportOrdersOrderIdRouteImport.update({
+    id: '/transport-orders/$orderId',
+    path: '/transport-orders/$orderId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedTasksTaskIdRoute =
+  AuthenticatedTasksTaskIdRouteImport.update({
+    id: '/tasks/$taskId',
+    path: '/tasks/$taskId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedStockPositionsPositionIdRoute =
+  AuthenticatedStockPositionsPositionIdRouteImport.update({
+    id: '/stock-positions/$positionId',
+    path: '/stock-positions/$positionId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSkusSkuIdRoute = AuthenticatedSkusSkuIdRouteImport.update({
+  id: '/skus/$skuId',
+  path: '/skus/$skuId',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedReceiptsReceiptIdRoute =
+  AuthenticatedReceiptsReceiptIdRouteImport.update({
+    id: '/receipts/$receiptId',
+    path: '/receipts/$receiptId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedOrdersOrderIdRoute =
+  AuthenticatedOrdersOrderIdRouteImport.update({
+    id: '/orders/$orderId',
+    path: '/orders/$orderId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedLocationsLocationIdRoute =
+  AuthenticatedLocationsLocationIdRouteImport.update({
+    id: '/locations/$locationId',
+    path: '/locations/$locationId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedInventoryInventoryIdRoute =
+  AuthenticatedInventoryInventoryIdRouteImport.update({
+    id: '/inventory/$inventoryId',
+    path: '/inventory/$inventoryId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedHandlingUnitsUnitIdRoute =
+  AuthenticatedHandlingUnitsUnitIdRouteImport.update({
+    id: '/handling-units/$unitId',
+    path: '/handling-units/$unitId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDeliveriesDeliveryIdRoute =
+  AuthenticatedDeliveriesDeliveryIdRouteImport.update({
+    id: '/deliveries/$deliveryId',
+    path: '/deliveries/$deliveryId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedCycleCountsCountIdRoute =
+  AuthenticatedCycleCountsCountIdRouteImport.update({
+    id: '/cycle-counts/$countId',
+    path: '/cycle-counts/$countId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedConsolidationGroupsGroupIdRoute =
+  AuthenticatedConsolidationGroupsGroupIdRouteImport.update({
+    id: '/consolidation-groups/$groupId',
+    path: '/consolidation-groups/$groupId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedCarriersCarrierIdRoute =
+  AuthenticatedCarriersCarrierIdRouteImport.update({
+    id: '/carriers/$carrierId',
+    path: '/carriers/$carrierId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/carriers/$carrierId': typeof AuthenticatedCarriersCarrierIdRoute
+  '/consolidation-groups/$groupId': typeof AuthenticatedConsolidationGroupsGroupIdRoute
+  '/cycle-counts/$countId': typeof AuthenticatedCycleCountsCountIdRoute
+  '/deliveries/$deliveryId': typeof AuthenticatedDeliveriesDeliveryIdRoute
+  '/handling-units/$unitId': typeof AuthenticatedHandlingUnitsUnitIdRoute
+  '/inventory/$inventoryId': typeof AuthenticatedInventoryInventoryIdRoute
+  '/locations/$locationId': typeof AuthenticatedLocationsLocationIdRoute
+  '/orders/$orderId': typeof AuthenticatedOrdersOrderIdRoute
+  '/receipts/$receiptId': typeof AuthenticatedReceiptsReceiptIdRoute
+  '/skus/$skuId': typeof AuthenticatedSkusSkuIdRoute
+  '/stock-positions/$positionId': typeof AuthenticatedStockPositionsPositionIdRoute
+  '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
+  '/transport-orders/$orderId': typeof AuthenticatedTransportOrdersOrderIdRoute
+  '/users/$userId': typeof AuthenticatedUsersUserIdRoute
+  '/waves/$waveId': typeof AuthenticatedWavesWaveIdRoute
+  '/workstations/$workstationId': typeof AuthenticatedWorkstationsWorkstationIdRoute
+  '/carriers/': typeof AuthenticatedCarriersIndexRoute
+  '/consolidation-groups/': typeof AuthenticatedConsolidationGroupsIndexRoute
+  '/cycle-counts/': typeof AuthenticatedCycleCountsIndexRoute
+  '/deliveries/': typeof AuthenticatedDeliveriesIndexRoute
+  '/handling-units/': typeof AuthenticatedHandlingUnitsIndexRoute
+  '/inventory/': typeof AuthenticatedInventoryIndexRoute
+  '/locations/': typeof AuthenticatedLocationsIndexRoute
+  '/orders/': typeof AuthenticatedOrdersIndexRoute
+  '/receipts/': typeof AuthenticatedReceiptsIndexRoute
+  '/skus/': typeof AuthenticatedSkusIndexRoute
+  '/stock-positions/': typeof AuthenticatedStockPositionsIndexRoute
+  '/tasks/': typeof AuthenticatedTasksIndexRoute
+  '/transport-orders/': typeof AuthenticatedTransportOrdersIndexRoute
+  '/users/': typeof AuthenticatedUsersIndexRoute
+  '/waves/': typeof AuthenticatedWavesIndexRoute
+  '/workstations/': typeof AuthenticatedWorkstationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/carriers/$carrierId': typeof AuthenticatedCarriersCarrierIdRoute
+  '/consolidation-groups/$groupId': typeof AuthenticatedConsolidationGroupsGroupIdRoute
+  '/cycle-counts/$countId': typeof AuthenticatedCycleCountsCountIdRoute
+  '/deliveries/$deliveryId': typeof AuthenticatedDeliveriesDeliveryIdRoute
+  '/handling-units/$unitId': typeof AuthenticatedHandlingUnitsUnitIdRoute
+  '/inventory/$inventoryId': typeof AuthenticatedInventoryInventoryIdRoute
+  '/locations/$locationId': typeof AuthenticatedLocationsLocationIdRoute
+  '/orders/$orderId': typeof AuthenticatedOrdersOrderIdRoute
+  '/receipts/$receiptId': typeof AuthenticatedReceiptsReceiptIdRoute
+  '/skus/$skuId': typeof AuthenticatedSkusSkuIdRoute
+  '/stock-positions/$positionId': typeof AuthenticatedStockPositionsPositionIdRoute
+  '/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
+  '/transport-orders/$orderId': typeof AuthenticatedTransportOrdersOrderIdRoute
+  '/users/$userId': typeof AuthenticatedUsersUserIdRoute
+  '/waves/$waveId': typeof AuthenticatedWavesWaveIdRoute
+  '/workstations/$workstationId': typeof AuthenticatedWorkstationsWorkstationIdRoute
+  '/carriers': typeof AuthenticatedCarriersIndexRoute
+  '/consolidation-groups': typeof AuthenticatedConsolidationGroupsIndexRoute
+  '/cycle-counts': typeof AuthenticatedCycleCountsIndexRoute
+  '/deliveries': typeof AuthenticatedDeliveriesIndexRoute
+  '/handling-units': typeof AuthenticatedHandlingUnitsIndexRoute
+  '/inventory': typeof AuthenticatedInventoryIndexRoute
+  '/locations': typeof AuthenticatedLocationsIndexRoute
+  '/orders': typeof AuthenticatedOrdersIndexRoute
+  '/receipts': typeof AuthenticatedReceiptsIndexRoute
+  '/skus': typeof AuthenticatedSkusIndexRoute
+  '/stock-positions': typeof AuthenticatedStockPositionsIndexRoute
+  '/tasks': typeof AuthenticatedTasksIndexRoute
+  '/transport-orders': typeof AuthenticatedTransportOrdersIndexRoute
+  '/users': typeof AuthenticatedUsersIndexRoute
+  '/waves': typeof AuthenticatedWavesIndexRoute
+  '/workstations': typeof AuthenticatedWorkstationsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/carriers/$carrierId': typeof AuthenticatedCarriersCarrierIdRoute
+  '/_authenticated/consolidation-groups/$groupId': typeof AuthenticatedConsolidationGroupsGroupIdRoute
+  '/_authenticated/cycle-counts/$countId': typeof AuthenticatedCycleCountsCountIdRoute
+  '/_authenticated/deliveries/$deliveryId': typeof AuthenticatedDeliveriesDeliveryIdRoute
+  '/_authenticated/handling-units/$unitId': typeof AuthenticatedHandlingUnitsUnitIdRoute
+  '/_authenticated/inventory/$inventoryId': typeof AuthenticatedInventoryInventoryIdRoute
+  '/_authenticated/locations/$locationId': typeof AuthenticatedLocationsLocationIdRoute
+  '/_authenticated/orders/$orderId': typeof AuthenticatedOrdersOrderIdRoute
+  '/_authenticated/receipts/$receiptId': typeof AuthenticatedReceiptsReceiptIdRoute
+  '/_authenticated/skus/$skuId': typeof AuthenticatedSkusSkuIdRoute
+  '/_authenticated/stock-positions/$positionId': typeof AuthenticatedStockPositionsPositionIdRoute
+  '/_authenticated/tasks/$taskId': typeof AuthenticatedTasksTaskIdRoute
+  '/_authenticated/transport-orders/$orderId': typeof AuthenticatedTransportOrdersOrderIdRoute
+  '/_authenticated/users/$userId': typeof AuthenticatedUsersUserIdRoute
+  '/_authenticated/waves/$waveId': typeof AuthenticatedWavesWaveIdRoute
+  '/_authenticated/workstations/$workstationId': typeof AuthenticatedWorkstationsWorkstationIdRoute
+  '/_authenticated/carriers/': typeof AuthenticatedCarriersIndexRoute
+  '/_authenticated/consolidation-groups/': typeof AuthenticatedConsolidationGroupsIndexRoute
+  '/_authenticated/cycle-counts/': typeof AuthenticatedCycleCountsIndexRoute
+  '/_authenticated/deliveries/': typeof AuthenticatedDeliveriesIndexRoute
+  '/_authenticated/handling-units/': typeof AuthenticatedHandlingUnitsIndexRoute
+  '/_authenticated/inventory/': typeof AuthenticatedInventoryIndexRoute
+  '/_authenticated/locations/': typeof AuthenticatedLocationsIndexRoute
+  '/_authenticated/orders/': typeof AuthenticatedOrdersIndexRoute
+  '/_authenticated/receipts/': typeof AuthenticatedReceiptsIndexRoute
+  '/_authenticated/skus/': typeof AuthenticatedSkusIndexRoute
+  '/_authenticated/stock-positions/': typeof AuthenticatedStockPositionsIndexRoute
+  '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
+  '/_authenticated/transport-orders/': typeof AuthenticatedTransportOrdersIndexRoute
+  '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/waves/': typeof AuthenticatedWavesIndexRoute
+  '/_authenticated/workstations/': typeof AuthenticatedWorkstationsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/carriers/$carrierId'
+    | '/consolidation-groups/$groupId'
+    | '/cycle-counts/$countId'
+    | '/deliveries/$deliveryId'
+    | '/handling-units/$unitId'
+    | '/inventory/$inventoryId'
+    | '/locations/$locationId'
+    | '/orders/$orderId'
+    | '/receipts/$receiptId'
+    | '/skus/$skuId'
+    | '/stock-positions/$positionId'
+    | '/tasks/$taskId'
+    | '/transport-orders/$orderId'
+    | '/users/$userId'
+    | '/waves/$waveId'
+    | '/workstations/$workstationId'
+    | '/carriers/'
+    | '/consolidation-groups/'
+    | '/cycle-counts/'
+    | '/deliveries/'
+    | '/handling-units/'
+    | '/inventory/'
+    | '/locations/'
+    | '/orders/'
+    | '/receipts/'
+    | '/skus/'
+    | '/stock-positions/'
+    | '/tasks/'
+    | '/transport-orders/'
+    | '/users/'
+    | '/waves/'
+    | '/workstations/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/carriers/$carrierId'
+    | '/consolidation-groups/$groupId'
+    | '/cycle-counts/$countId'
+    | '/deliveries/$deliveryId'
+    | '/handling-units/$unitId'
+    | '/inventory/$inventoryId'
+    | '/locations/$locationId'
+    | '/orders/$orderId'
+    | '/receipts/$receiptId'
+    | '/skus/$skuId'
+    | '/stock-positions/$positionId'
+    | '/tasks/$taskId'
+    | '/transport-orders/$orderId'
+    | '/users/$userId'
+    | '/waves/$waveId'
+    | '/workstations/$workstationId'
+    | '/carriers'
+    | '/consolidation-groups'
+    | '/cycle-counts'
+    | '/deliveries'
+    | '/handling-units'
+    | '/inventory'
+    | '/locations'
+    | '/orders'
+    | '/receipts'
+    | '/skus'
+    | '/stock-positions'
+    | '/tasks'
+    | '/transport-orders'
+    | '/users'
+    | '/waves'
+    | '/workstations'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/carriers/$carrierId'
+    | '/_authenticated/consolidation-groups/$groupId'
+    | '/_authenticated/cycle-counts/$countId'
+    | '/_authenticated/deliveries/$deliveryId'
+    | '/_authenticated/handling-units/$unitId'
+    | '/_authenticated/inventory/$inventoryId'
+    | '/_authenticated/locations/$locationId'
+    | '/_authenticated/orders/$orderId'
+    | '/_authenticated/receipts/$receiptId'
+    | '/_authenticated/skus/$skuId'
+    | '/_authenticated/stock-positions/$positionId'
+    | '/_authenticated/tasks/$taskId'
+    | '/_authenticated/transport-orders/$orderId'
+    | '/_authenticated/users/$userId'
+    | '/_authenticated/waves/$waveId'
+    | '/_authenticated/workstations/$workstationId'
+    | '/_authenticated/carriers/'
+    | '/_authenticated/consolidation-groups/'
+    | '/_authenticated/cycle-counts/'
+    | '/_authenticated/deliveries/'
+    | '/_authenticated/handling-units/'
+    | '/_authenticated/inventory/'
+    | '/_authenticated/locations/'
+    | '/_authenticated/orders/'
+    | '/_authenticated/receipts/'
+    | '/_authenticated/skus/'
+    | '/_authenticated/stock-positions/'
+    | '/_authenticated/tasks/'
+    | '/_authenticated/transport-orders/'
+    | '/_authenticated/users/'
+    | '/_authenticated/waves/'
+    | '/_authenticated/workstations/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +510,328 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/workstations/': {
+      id: '/_authenticated/workstations/'
+      path: '/workstations'
+      fullPath: '/workstations/'
+      preLoaderRoute: typeof AuthenticatedWorkstationsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/waves/': {
+      id: '/_authenticated/waves/'
+      path: '/waves'
+      fullPath: '/waves/'
+      preLoaderRoute: typeof AuthenticatedWavesIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/users/': {
+      id: '/_authenticated/users/'
+      path: '/users'
+      fullPath: '/users/'
+      preLoaderRoute: typeof AuthenticatedUsersIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/transport-orders/': {
+      id: '/_authenticated/transport-orders/'
+      path: '/transport-orders'
+      fullPath: '/transport-orders/'
+      preLoaderRoute: typeof AuthenticatedTransportOrdersIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/tasks/': {
+      id: '/_authenticated/tasks/'
+      path: '/tasks'
+      fullPath: '/tasks/'
+      preLoaderRoute: typeof AuthenticatedTasksIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/stock-positions/': {
+      id: '/_authenticated/stock-positions/'
+      path: '/stock-positions'
+      fullPath: '/stock-positions/'
+      preLoaderRoute: typeof AuthenticatedStockPositionsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/skus/': {
+      id: '/_authenticated/skus/'
+      path: '/skus'
+      fullPath: '/skus/'
+      preLoaderRoute: typeof AuthenticatedSkusIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/receipts/': {
+      id: '/_authenticated/receipts/'
+      path: '/receipts'
+      fullPath: '/receipts/'
+      preLoaderRoute: typeof AuthenticatedReceiptsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/orders/': {
+      id: '/_authenticated/orders/'
+      path: '/orders'
+      fullPath: '/orders/'
+      preLoaderRoute: typeof AuthenticatedOrdersIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/locations/': {
+      id: '/_authenticated/locations/'
+      path: '/locations'
+      fullPath: '/locations/'
+      preLoaderRoute: typeof AuthenticatedLocationsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/inventory/': {
+      id: '/_authenticated/inventory/'
+      path: '/inventory'
+      fullPath: '/inventory/'
+      preLoaderRoute: typeof AuthenticatedInventoryIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/handling-units/': {
+      id: '/_authenticated/handling-units/'
+      path: '/handling-units'
+      fullPath: '/handling-units/'
+      preLoaderRoute: typeof AuthenticatedHandlingUnitsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/deliveries/': {
+      id: '/_authenticated/deliveries/'
+      path: '/deliveries'
+      fullPath: '/deliveries/'
+      preLoaderRoute: typeof AuthenticatedDeliveriesIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/cycle-counts/': {
+      id: '/_authenticated/cycle-counts/'
+      path: '/cycle-counts'
+      fullPath: '/cycle-counts/'
+      preLoaderRoute: typeof AuthenticatedCycleCountsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/consolidation-groups/': {
+      id: '/_authenticated/consolidation-groups/'
+      path: '/consolidation-groups'
+      fullPath: '/consolidation-groups/'
+      preLoaderRoute: typeof AuthenticatedConsolidationGroupsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/carriers/': {
+      id: '/_authenticated/carriers/'
+      path: '/carriers'
+      fullPath: '/carriers/'
+      preLoaderRoute: typeof AuthenticatedCarriersIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/workstations/$workstationId': {
+      id: '/_authenticated/workstations/$workstationId'
+      path: '/workstations/$workstationId'
+      fullPath: '/workstations/$workstationId'
+      preLoaderRoute: typeof AuthenticatedWorkstationsWorkstationIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/waves/$waveId': {
+      id: '/_authenticated/waves/$waveId'
+      path: '/waves/$waveId'
+      fullPath: '/waves/$waveId'
+      preLoaderRoute: typeof AuthenticatedWavesWaveIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/users/$userId': {
+      id: '/_authenticated/users/$userId'
+      path: '/users/$userId'
+      fullPath: '/users/$userId'
+      preLoaderRoute: typeof AuthenticatedUsersUserIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/transport-orders/$orderId': {
+      id: '/_authenticated/transport-orders/$orderId'
+      path: '/transport-orders/$orderId'
+      fullPath: '/transport-orders/$orderId'
+      preLoaderRoute: typeof AuthenticatedTransportOrdersOrderIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/tasks/$taskId': {
+      id: '/_authenticated/tasks/$taskId'
+      path: '/tasks/$taskId'
+      fullPath: '/tasks/$taskId'
+      preLoaderRoute: typeof AuthenticatedTasksTaskIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/stock-positions/$positionId': {
+      id: '/_authenticated/stock-positions/$positionId'
+      path: '/stock-positions/$positionId'
+      fullPath: '/stock-positions/$positionId'
+      preLoaderRoute: typeof AuthenticatedStockPositionsPositionIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/skus/$skuId': {
+      id: '/_authenticated/skus/$skuId'
+      path: '/skus/$skuId'
+      fullPath: '/skus/$skuId'
+      preLoaderRoute: typeof AuthenticatedSkusSkuIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/receipts/$receiptId': {
+      id: '/_authenticated/receipts/$receiptId'
+      path: '/receipts/$receiptId'
+      fullPath: '/receipts/$receiptId'
+      preLoaderRoute: typeof AuthenticatedReceiptsReceiptIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/orders/$orderId': {
+      id: '/_authenticated/orders/$orderId'
+      path: '/orders/$orderId'
+      fullPath: '/orders/$orderId'
+      preLoaderRoute: typeof AuthenticatedOrdersOrderIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/locations/$locationId': {
+      id: '/_authenticated/locations/$locationId'
+      path: '/locations/$locationId'
+      fullPath: '/locations/$locationId'
+      preLoaderRoute: typeof AuthenticatedLocationsLocationIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/inventory/$inventoryId': {
+      id: '/_authenticated/inventory/$inventoryId'
+      path: '/inventory/$inventoryId'
+      fullPath: '/inventory/$inventoryId'
+      preLoaderRoute: typeof AuthenticatedInventoryInventoryIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/handling-units/$unitId': {
+      id: '/_authenticated/handling-units/$unitId'
+      path: '/handling-units/$unitId'
+      fullPath: '/handling-units/$unitId'
+      preLoaderRoute: typeof AuthenticatedHandlingUnitsUnitIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/deliveries/$deliveryId': {
+      id: '/_authenticated/deliveries/$deliveryId'
+      path: '/deliveries/$deliveryId'
+      fullPath: '/deliveries/$deliveryId'
+      preLoaderRoute: typeof AuthenticatedDeliveriesDeliveryIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/cycle-counts/$countId': {
+      id: '/_authenticated/cycle-counts/$countId'
+      path: '/cycle-counts/$countId'
+      fullPath: '/cycle-counts/$countId'
+      preLoaderRoute: typeof AuthenticatedCycleCountsCountIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/consolidation-groups/$groupId': {
+      id: '/_authenticated/consolidation-groups/$groupId'
+      path: '/consolidation-groups/$groupId'
+      fullPath: '/consolidation-groups/$groupId'
+      preLoaderRoute: typeof AuthenticatedConsolidationGroupsGroupIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/carriers/$carrierId': {
+      id: '/_authenticated/carriers/$carrierId'
+      path: '/carriers/$carrierId'
+      fullPath: '/carriers/$carrierId'
+      preLoaderRoute: typeof AuthenticatedCarriersCarrierIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedCarriersCarrierIdRoute: typeof AuthenticatedCarriersCarrierIdRoute
+  AuthenticatedConsolidationGroupsGroupIdRoute: typeof AuthenticatedConsolidationGroupsGroupIdRoute
+  AuthenticatedCycleCountsCountIdRoute: typeof AuthenticatedCycleCountsCountIdRoute
+  AuthenticatedDeliveriesDeliveryIdRoute: typeof AuthenticatedDeliveriesDeliveryIdRoute
+  AuthenticatedHandlingUnitsUnitIdRoute: typeof AuthenticatedHandlingUnitsUnitIdRoute
+  AuthenticatedInventoryInventoryIdRoute: typeof AuthenticatedInventoryInventoryIdRoute
+  AuthenticatedLocationsLocationIdRoute: typeof AuthenticatedLocationsLocationIdRoute
+  AuthenticatedOrdersOrderIdRoute: typeof AuthenticatedOrdersOrderIdRoute
+  AuthenticatedReceiptsReceiptIdRoute: typeof AuthenticatedReceiptsReceiptIdRoute
+  AuthenticatedSkusSkuIdRoute: typeof AuthenticatedSkusSkuIdRoute
+  AuthenticatedStockPositionsPositionIdRoute: typeof AuthenticatedStockPositionsPositionIdRoute
+  AuthenticatedTasksTaskIdRoute: typeof AuthenticatedTasksTaskIdRoute
+  AuthenticatedTransportOrdersOrderIdRoute: typeof AuthenticatedTransportOrdersOrderIdRoute
+  AuthenticatedUsersUserIdRoute: typeof AuthenticatedUsersUserIdRoute
+  AuthenticatedWavesWaveIdRoute: typeof AuthenticatedWavesWaveIdRoute
+  AuthenticatedWorkstationsWorkstationIdRoute: typeof AuthenticatedWorkstationsWorkstationIdRoute
+  AuthenticatedCarriersIndexRoute: typeof AuthenticatedCarriersIndexRoute
+  AuthenticatedConsolidationGroupsIndexRoute: typeof AuthenticatedConsolidationGroupsIndexRoute
+  AuthenticatedCycleCountsIndexRoute: typeof AuthenticatedCycleCountsIndexRoute
+  AuthenticatedDeliveriesIndexRoute: typeof AuthenticatedDeliveriesIndexRoute
+  AuthenticatedHandlingUnitsIndexRoute: typeof AuthenticatedHandlingUnitsIndexRoute
+  AuthenticatedInventoryIndexRoute: typeof AuthenticatedInventoryIndexRoute
+  AuthenticatedLocationsIndexRoute: typeof AuthenticatedLocationsIndexRoute
+  AuthenticatedOrdersIndexRoute: typeof AuthenticatedOrdersIndexRoute
+  AuthenticatedReceiptsIndexRoute: typeof AuthenticatedReceiptsIndexRoute
+  AuthenticatedSkusIndexRoute: typeof AuthenticatedSkusIndexRoute
+  AuthenticatedStockPositionsIndexRoute: typeof AuthenticatedStockPositionsIndexRoute
+  AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
+  AuthenticatedTransportOrdersIndexRoute: typeof AuthenticatedTransportOrdersIndexRoute
+  AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
+  AuthenticatedWavesIndexRoute: typeof AuthenticatedWavesIndexRoute
+  AuthenticatedWorkstationsIndexRoute: typeof AuthenticatedWorkstationsIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedCarriersCarrierIdRoute: AuthenticatedCarriersCarrierIdRoute,
+  AuthenticatedConsolidationGroupsGroupIdRoute:
+    AuthenticatedConsolidationGroupsGroupIdRoute,
+  AuthenticatedCycleCountsCountIdRoute: AuthenticatedCycleCountsCountIdRoute,
+  AuthenticatedDeliveriesDeliveryIdRoute:
+    AuthenticatedDeliveriesDeliveryIdRoute,
+  AuthenticatedHandlingUnitsUnitIdRoute: AuthenticatedHandlingUnitsUnitIdRoute,
+  AuthenticatedInventoryInventoryIdRoute:
+    AuthenticatedInventoryInventoryIdRoute,
+  AuthenticatedLocationsLocationIdRoute: AuthenticatedLocationsLocationIdRoute,
+  AuthenticatedOrdersOrderIdRoute: AuthenticatedOrdersOrderIdRoute,
+  AuthenticatedReceiptsReceiptIdRoute: AuthenticatedReceiptsReceiptIdRoute,
+  AuthenticatedSkusSkuIdRoute: AuthenticatedSkusSkuIdRoute,
+  AuthenticatedStockPositionsPositionIdRoute:
+    AuthenticatedStockPositionsPositionIdRoute,
+  AuthenticatedTasksTaskIdRoute: AuthenticatedTasksTaskIdRoute,
+  AuthenticatedTransportOrdersOrderIdRoute:
+    AuthenticatedTransportOrdersOrderIdRoute,
+  AuthenticatedUsersUserIdRoute: AuthenticatedUsersUserIdRoute,
+  AuthenticatedWavesWaveIdRoute: AuthenticatedWavesWaveIdRoute,
+  AuthenticatedWorkstationsWorkstationIdRoute:
+    AuthenticatedWorkstationsWorkstationIdRoute,
+  AuthenticatedCarriersIndexRoute: AuthenticatedCarriersIndexRoute,
+  AuthenticatedConsolidationGroupsIndexRoute:
+    AuthenticatedConsolidationGroupsIndexRoute,
+  AuthenticatedCycleCountsIndexRoute: AuthenticatedCycleCountsIndexRoute,
+  AuthenticatedDeliveriesIndexRoute: AuthenticatedDeliveriesIndexRoute,
+  AuthenticatedHandlingUnitsIndexRoute: AuthenticatedHandlingUnitsIndexRoute,
+  AuthenticatedInventoryIndexRoute: AuthenticatedInventoryIndexRoute,
+  AuthenticatedLocationsIndexRoute: AuthenticatedLocationsIndexRoute,
+  AuthenticatedOrdersIndexRoute: AuthenticatedOrdersIndexRoute,
+  AuthenticatedReceiptsIndexRoute: AuthenticatedReceiptsIndexRoute,
+  AuthenticatedSkusIndexRoute: AuthenticatedSkusIndexRoute,
+  AuthenticatedStockPositionsIndexRoute: AuthenticatedStockPositionsIndexRoute,
+  AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
+  AuthenticatedTransportOrdersIndexRoute:
+    AuthenticatedTransportOrdersIndexRoute,
+  AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
+  AuthenticatedWavesIndexRoute: AuthenticatedWavesIndexRoute,
+  AuthenticatedWorkstationsIndexRoute: AuthenticatedWorkstationsIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

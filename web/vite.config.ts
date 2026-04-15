@@ -8,6 +8,14 @@ import { defineConfig } from "vite"
 import viteTsConfigPaths from "vite-tsconfig-paths"
 
 const config = defineConfig({
+  nitro: {
+    devProxy: {
+      "/api": {
+        changeOrigin: true,
+        target: "http://localhost:8080",
+      },
+    },
+  },
   plugins: [
     devtools(),
     nitro(),
