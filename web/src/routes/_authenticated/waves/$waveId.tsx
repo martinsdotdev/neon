@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react"
 import { waveQueries } from "@/shared/api/waves"
 import { Button } from "@/shared/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card"
+import { DateCell } from "@/shared/ui/date-cell"
 import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
@@ -76,8 +77,10 @@ function WaveDetailPage() {
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Created At</dt>
-              <dd className="font-medium">{wave.createdAt}</dd>
+              <dt className="text-muted-foreground mb-1">Created</dt>
+              <dd>
+                <DateCell value={wave.createdAt} />
+              </dd>
             </div>
             <div className="col-span-2">
               <dt className="text-muted-foreground mb-1">Order IDs</dt>

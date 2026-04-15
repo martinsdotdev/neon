@@ -15,6 +15,7 @@ import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { Filters } from "@/shared/reui/filters"
 import { Badge } from "@/shared/ui/badge"
+import { DateCell } from "@/shared/ui/date-cell"
 import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
@@ -149,6 +150,7 @@ function WavesPage() {
       },
       {
         accessorKey: "createdAt",
+        cell: ({ row }) => <DateCell value={row.original.createdAt} />,
         filterFn: (row, id, filterValue) => {
           if (!filterValue?.from) return true
           const cellValue = new Date(row.getValue<string>(id))
@@ -158,12 +160,12 @@ function WavesPage() {
           to.setHours(23, 59, 59, 999)
           return cellValue >= from && cellValue <= to
         },
-        header: "Created At",
+        header: "Created",
         meta: {
-          cell: { variant: "short-text" as const },
-          label: "Created At",
+          cell: { variant: "date" as const },
+          label: "Created",
         },
-        size: 180,
+        size: 160,
       },
     ],
     [],
