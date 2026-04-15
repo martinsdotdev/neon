@@ -55,12 +55,18 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
   - Include keyboard event handlers alongside mouse events
   - Use semantic elements (`<button>`, `<nav>`, etc.) instead of divs with roles
 
-### Error Handling & Debugging
+### Error Handling (neverthrow + RFC 9457)
 
+Services return `Result<T, E>` or `ResultAsync<T, E>` from neverthrow. Errors are values, not exceptions. See `docs/decisions/0008-use-neverthrow-for-service-errors.md`.
+
+- Use `ok()` / `err()` for expected business errors (validation, not found, conflict)
+- Use `ResultAsync.fromPromise()` to wrap external library calls
+- Only throw exceptions for unexpected system errors (DB down, OOM)
+- Chain operations with `.andThen()` instead of nested try-catch
+- Use `.match()` in route handlers to convert Results to HTTP responses
+- Define error types as discriminated unions: `{ type: "not_found"; id: string }`
+- Map error types to RFC 9457 Problem Details for API responses (see `docs/decisions/0011-use-rfc9457-problem-details-for-errors.md`)
 - Remove `console.log`, `debugger`, and `alert` statements from production code
-- Throw `Error` objects with descriptive messages, not strings or other values
-- Use `try-catch` blocks meaningfully - don't catch errors just to rethrow them
-- Prefer early returns over nested conditionals for error cases
 
 ### Code Organization
 
@@ -121,3 +127,12 @@ Oxlint + Oxfmt's linter will catch most issues automatically. Focus your attenti
 ---
 
 Most formatting and common issues are automatically fixed by Oxlint + Oxfmt. Run `bun x ultracite fix` before committing to ensure compliance.
+
+## Architecture Decision Records
+
+ADRs are in the repo root at `docs/decisions/`. Key decisions:
+
+- **ADR 0011**: RFC 9457 Problem Details for all API error responses
+- **ADR 0012**: Conventional Commits (`type(scope): description`) and branch naming (`type/description`)
+- **ADR 0013**: GitHub Flow (master + short-lived feature branches, PRs required, linear history)
+- **ADR 0014**: neverthrow `Result<T, E>` for service-layer error handling
