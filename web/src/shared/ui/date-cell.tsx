@@ -1,8 +1,6 @@
 "use client"
 
 import {
-  differenceInDays,
-  differenceInHours,
   differenceInMinutes,
   differenceInSeconds,
   format,
@@ -20,35 +18,44 @@ import { cn } from "@/shared/lib/utils"
 interface DateCellProps {
   className?: string
   value: string | Date | null | undefined
+  /**
+   * "compact" (default): single line + hover tooltip with full timestamp.
+   *   Best for grid cells where vertical space is constrained.
+   * "detail": stacked human-readable + precise timestamp.
+   *   Best for detail pages where audit precision is always visible.
+   */
+  variant?: "compact" | "detail"
 }
 
-const formatRelative = (date: Date, now: Date): string => {
+// Warehouse shift-work-friendly format:
+// - Within the hour: relative ("5m ago") -- recency drives urgency
+// - Earlier today: time-of-day ("08:00") -- anchors to shift schedule
+// - Yesterday: "Yesterday, HH:mm" -- shift boundary
+// - This year: "MMM d" -- absolute, scannable
+// - Older: "MMM d, yyyy" -- year matters for archival
+const formatDate = (date: Date, now: Date): string => {
   const seconds = differenceInSeconds(now, date)
   if (seconds < 60) return "just now"
   const minutes = differenceInMinutes(now, date)
   if (minutes < 60) return `${minutes}m ago`
-  const hours = differenceInHours(now, date)
-  if (hours < 24) return `${hours}h ago`
-  const days = differenceInDays(now, date)
-  if (days < 7) return `${days}d ago`
-  return ""
-}
-
-const formatAbsolute = (date: Date): string => {
-  if (isToday(date)) return `Today, ${format(date, "HH:mm")}`
+  if (isToday(date)) return format(date, "HH:mm")
   if (isYesterday(date)) return `Yesterday, ${format(date, "HH:mm")}`
-  if (isThisYear(date)) return format(date, "MMM d, HH:mm")
+  if (isThisYear(date)) return format(date, "MMM d")
   return format(date, "MMM d, yyyy")
 }
 
-const DateCell = ({ className, value }: DateCellProps) => {
-  if (!value) {
-    return (
-      <span className="text-muted-foreground/40 font-mono text-xs">
-        {"\u2014"}
-      </span>
-    )
-  }
+const Empty = () => (
+  <span className="text-muted-foreground/40 font-mono text-xs">
+    {"\u2014"}
+  </span>
+)
+
+const DateCell = ({
+  className,
+  value,
+  variant = "compact",
+}: DateCellProps) => {
+  if (!value) return <Empty />
 
   const date = typeof value === "string" ? new Date(value) : value
   if (Number.isNaN(date.getTime())) {
@@ -60,10 +67,22 @@ const DateCell = ({ className, value }: DateCellProps) => {
   }
 
   const now = new Date()
-  const relative = formatRelative(date, now)
-  const display = relative || formatAbsolute(date)
-  const tooltip = format(date, "EEE, MMM d yyyy 'at' HH:mm:ss")
+  const display = formatDate(date, now)
+  const precise = format(date, "yyyy-MM-dd HH:mm:ss 'UTC'")
 
+  if (variant === "detail") {
+    return (
+      <div className={cn("flex flex-col gap-0.5", className)}>
+        <span className="text-foreground text-sm font-medium">{display}</span>
+        <span className="text-muted-foreground font-mono text-xs">
+          {precise}
+        </span>
+      </div>
+    )
+  }
+
+  // Compact: single line + tooltip
+  const tooltip = format(date, "EEE, MMM d yyyy 'at' HH:mm:ss")
   return (
     <Tooltip delayDuration={300}>
       <TooltipTrigger

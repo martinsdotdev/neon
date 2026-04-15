@@ -79,7 +79,7 @@ function WaveDetailPage() {
             <div>
               <dt className="text-muted-foreground mb-1">Created</dt>
               <dd>
-                <DateCell value={wave.createdAt} />
+                <DateCell value={wave.createdAt} variant="detail" />
               </dd>
             </div>
             <div className="col-span-2">
