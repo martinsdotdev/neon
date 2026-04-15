@@ -27,7 +27,7 @@ function DataGridSelectHitbox({
   return (
     <div
       className={cn(
-        "group relative -my-1.5 h-[calc(100%+0.75rem)] py-1.5",
+        "group relative flex h-full items-center",
         size === "default" && "-ms-3 -me-2 ps-3 pe-2",
         size === "sm" && "-ms-3 -me-1.5 ps-3 pe-1.5",
         size === "lg" && "-mx-3 px-3",
