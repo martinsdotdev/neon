@@ -211,7 +211,7 @@ function DataGridRowImpl<TData>({
       {...props}
       ref={rowRef}
       className={cn(
-        "absolute flex w-full border-b hover:bg-muted/50 [content-visibility:auto]",
+        "group/row absolute flex w-full border-b [content-visibility:auto]",
         !adjustLayout && "will-change-transform",
         className,
       )}
@@ -267,7 +267,7 @@ function DataGridRowImpl<TData>({
           >
             {typeof cell.column.columnDef.header === "function" ? (
               <div
-                className={cn("size-full px-3 py-1.5", {
+                className={cn("size-full px-3 py-1.5 group-hover/row:bg-muted/50", {
                   "bg-primary/10": isRowSelected,
                 })}
               >
