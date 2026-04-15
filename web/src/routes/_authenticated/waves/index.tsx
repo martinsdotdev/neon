@@ -5,6 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import type { Wave } from "@/shared/api/waves"
 import { waveQueries } from "@/shared/api/waves"
 import { DataGrid } from "@/shared/data-grid/data-grid"
+import { DataGridDateFilter } from "@/shared/data-grid/data-grid-date-filter"
 import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
 import { DataGridSelectionBar } from "@/shared/data-grid/data-grid-selection-bar"
 import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-column"
@@ -148,6 +149,15 @@ function WavesPage() {
       },
       {
         accessorKey: "createdAt",
+        filterFn: (row, id, filterValue) => {
+          if (!filterValue?.from) return true
+          const cellValue = new Date(row.getValue<string>(id))
+          const from = new Date(filterValue.from)
+          const to = filterValue.to ? new Date(filterValue.to) : from
+          // Set 'to' to end of day for inclusive range
+          to.setHours(23, 59, 59, 999)
+          return cellValue >= from && cellValue <= to
+        },
         header: "Created At",
         meta: {
           cell: { variant: "short-text" as const },
@@ -180,6 +190,10 @@ function WavesPage() {
           filters={filters}
           onChange={onFiltersChange}
           size="sm"
+        />
+        <DataGridDateFilter
+          column={gridProps.table.getColumn("createdAt")}
+          title="Created"
         />
         <div className="ml-auto flex items-center gap-2">
           <DataGridSortMenu table={gridProps.table} />
