@@ -17,7 +17,7 @@ const PageHeader = ({
         {title}
       </h1>
       {description && (
-        <p className="text-muted-foreground text-sm">{description}</p>
+        <p className="text-muted-foreground">{description}</p>
       )}
     </div>
     {actions && <div className="flex items-center gap-2">{actions}</div>}

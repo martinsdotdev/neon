@@ -142,7 +142,7 @@ function LoginPage() {
         </form>
 
         {/* Version */}
-        <p className="text-muted-foreground/40 mt-12 text-center font-mono text-[0.625rem] tracking-wider">
+        <p className="text-muted-foreground/40 mt-12 text-center font-mono text-2xs tracking-wider">
           v0.1.0
         </p>
       </div>

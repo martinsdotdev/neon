@@ -309,7 +309,7 @@ function AppSidebar() {
         {navigation.map((group) => (
           <SidebarGroup key={group.label || "top"}>
             {group.label && (
-              <SidebarGroupLabel className="font-heading text-[0.625rem] tracking-[0.2em] uppercase">
+              <SidebarGroupLabel className="font-heading text-xs">
                 {group.label}
               </SidebarGroupLabel>
             )}
@@ -377,7 +377,7 @@ function CommandPalette({
       onOpenChange={onOpenChange}
       className="bg-popover/70 backdrop-blur-2xl backdrop-saturate-150"
     >
-      <Command className="bg-transparent **:[[cmdk-group-heading]]:font-heading **:[[cmdk-group-heading]]:text-[0.625rem]! **:[[cmdk-group-heading]]:tracking-[0.2em] **:[[cmdk-group-heading]]:uppercase">
+      <Command className="bg-transparent **:[[cmdk-group-heading]]:font-heading **:[[cmdk-group-heading]]:text-2xs! **:[[cmdk-group-heading]]:tracking-[0.1em] **:[[cmdk-group-heading]]:uppercase">
         <CommandInput placeholder="Search pages and actions..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
