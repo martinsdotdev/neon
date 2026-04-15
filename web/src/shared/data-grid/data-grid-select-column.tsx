@@ -65,25 +65,23 @@ function DataGridSelectCheckbox({
   if (rowNumber !== undefined) {
     return (
       <DataGridSelectHitbox htmlFor={id} size={hitboxSize} debug={debug}>
-        <div
-          aria-hidden="true"
-          className={cn(
-            "pointer-events-none absolute start-3 top-1.5 flex size-4 items-center justify-center text-muted-foreground text-xs tabular-nums transition-opacity group-hover:opacity-0",
-            checked && "opacity-0",
-          )}
-        >
-          {rowNumber}
+        <div className="flex items-center gap-1.5">
+          <Checkbox
+            id={id}
+            className={cn(
+              "relative transition-[shadow,border] hover:border-primary/40",
+              className,
+            )}
+            checked={checked}
+            {...props}
+          />
+          <span
+            aria-hidden="true"
+            className="text-muted-foreground text-xs tabular-nums"
+          >
+            {rowNumber}
+          </span>
         </div>
-        <Checkbox
-          id={id}
-          className={cn(
-            "relative transition-[shadow,border,opacity] hover:border-primary/40",
-            "opacity-0 group-hover:opacity-100 data-[state=checked]:opacity-100",
-            className,
-          )}
-          checked={checked}
-          {...props}
-        />
       </DataGridSelectHitbox>
     );
   }
