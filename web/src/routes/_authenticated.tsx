@@ -193,7 +193,7 @@ function AuthenticatedLayout() {
     <SidebarProvider>
       <AppSidebar />
       <header className="fixed top-0 left-0 right-0 z-50 flex w-full items-center border-b border-sidebar-border bg-sidebar/95 backdrop-blur-xl backdrop-saturate-150">
-        <div className="flex h-(--header-height) w-full items-center gap-2 px-4">
+        <div className="flex h-(--header-height) w-full items-center gap-2 px-3 md:px-4">
           <SidebarMenuTrigger />
           <Breadcrumb className="hidden sm:block">
             <BreadcrumbList>
@@ -226,9 +226,9 @@ function AuthenticatedLayout() {
               })}
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-48">
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-14 sm:px-20 md:px-32 lg:px-48">
             <InputGroup
-              className="pointer-events-auto w-full max-w-md cursor-pointer rounded-full transition-colors duration-[180ms] ease-out hover:bg-input/70"
+              className="pointer-events-auto w-full max-w-[calc(100%-1rem)] cursor-pointer rounded-full transition-colors duration-[180ms] ease-out hover:bg-input/70 sm:max-w-sm md:max-w-md"
               onClick={() => setCommandOpen(true)}
             >
               <InputGroupAddon>
@@ -237,7 +237,10 @@ function AuthenticatedLayout() {
               <span className="hidden flex-1 text-sm text-muted-foreground lg:inline">
                 Search...
               </span>
-              <InputGroupAddon align="inline-end">
+              <InputGroupAddon
+                align="inline-end"
+                className="hidden md:flex"
+              >
                 <Kbd>Ctrl</Kbd>
                 <Kbd>K</Kbd>
               </InputGroupAddon>
@@ -248,7 +251,7 @@ function AuthenticatedLayout() {
         </div>
       </header>
       <SidebarInset>
-        <div className="mt-(--header-height) flex-1 p-6">
+        <div className="mt-(--header-height) flex-1 p-4 md:p-6">
           <Outlet />
         </div>
       </SidebarInset>
