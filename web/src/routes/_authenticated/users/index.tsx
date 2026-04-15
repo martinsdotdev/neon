@@ -26,7 +26,7 @@ function UsersPage() {
 
   const columns = useMemo<ColumnDef<User>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "name",
         header: "Name",

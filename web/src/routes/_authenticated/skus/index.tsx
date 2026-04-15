@@ -26,7 +26,7 @@ function SkusPage() {
 
   const columns = useMemo<ColumnDef<Sku>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "code",
         cell: ({ row }) => (

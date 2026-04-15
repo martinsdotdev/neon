@@ -29,7 +29,7 @@ function CycleCountsPage() {
 
   const columns = useMemo<ColumnDef<CycleCount>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

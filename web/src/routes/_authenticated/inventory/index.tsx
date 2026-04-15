@@ -26,7 +26,7 @@ function InventoryPage() {
 
   const columns = useMemo<ColumnDef<InventoryRecord>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "skuId",
         cell: ({ row }) => (

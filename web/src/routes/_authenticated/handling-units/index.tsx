@@ -29,7 +29,7 @@ function HandlingUnitsPage() {
 
   const columns = useMemo<ColumnDef<HandlingUnit>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

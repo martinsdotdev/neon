@@ -32,7 +32,7 @@ function TransportOrdersPage() {
 
   const columns = useMemo<ColumnDef<TransportOrder>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

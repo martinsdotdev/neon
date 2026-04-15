@@ -31,7 +31,7 @@ function WorkstationsPage() {
 
   const columns = useMemo<ColumnDef<Workstation>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

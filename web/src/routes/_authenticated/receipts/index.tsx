@@ -26,7 +26,7 @@ function ReceiptsPage() {
 
   const columns = useMemo<ColumnDef<Receipt>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

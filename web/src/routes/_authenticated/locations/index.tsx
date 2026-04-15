@@ -26,7 +26,7 @@ function LocationsPage() {
 
   const columns = useMemo<ColumnDef<Location>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "code",
         cell: ({ row }) => (

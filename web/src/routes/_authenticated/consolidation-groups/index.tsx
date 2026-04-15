@@ -32,7 +32,7 @@ function ConsolidationGroupsPage() {
 
   const columns = useMemo<ColumnDef<ConsolidationGroup>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

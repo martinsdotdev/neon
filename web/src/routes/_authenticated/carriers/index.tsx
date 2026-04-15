@@ -26,7 +26,7 @@ function CarriersPage() {
 
   const columns = useMemo<ColumnDef<Carrier>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "code",
         cell: ({ row }) => (

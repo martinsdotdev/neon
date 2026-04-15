@@ -29,7 +29,7 @@ function StockPositionsPage() {
 
   const columns = useMemo<ColumnDef<StockPosition>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "skuId",
         cell: ({ row }) => (

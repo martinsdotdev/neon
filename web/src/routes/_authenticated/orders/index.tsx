@@ -26,7 +26,7 @@ function OrdersPage() {
 
   const columns = useMemo<ColumnDef<Order>[]>(
     () => [
-      getDataGridSelectColumn({ readOnly: true }),
+      getDataGridSelectColumn({ enableRowMarkers: true }),
       {
         accessorKey: "id",
         cell: ({ row }) => (
