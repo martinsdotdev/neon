@@ -340,13 +340,13 @@ function FilterInput<T = unknown>({
   return (
     <InputGroup
       className={cn(
-        "w-36",
+        "w-36 bg-transparent border-s-0 rounded-none has-[[data-slot=input-group-control]:focus-visible]:ring-0",
         context.size == "sm" &&
-          "h-7!",
-        context.size == "default" &&
           "h-8!",
-        context.size == "lg" &&
+        context.size == "default" &&
           "h-9!",
+        context.size == "lg" &&
+          "h-10!",
         className
       )}
     >
@@ -367,11 +367,11 @@ function FilterInput<T = unknown>({
         onKeyDown={handleKeyDown}
         className={cn(
           context.size == "sm" &&
-            "h-7! text-xs",
+            "h-8! text-xs",
           context.size == "default" &&
-            "h-8!",
+            "h-9!",
           context.size == "lg" &&
-            "h-9!"
+            "h-10!"
         )}
         {...props}
       />
