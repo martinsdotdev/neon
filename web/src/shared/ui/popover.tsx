@@ -78,8 +78,27 @@ function PopoverDescription({
   )
 }
 
+/**
+ * PopoverAnchor -- positions the popover relative to this element instead of the trigger.
+ * Base UI doesn't have a direct Anchor primitive, so this is a passthrough div
+ * that serves as a positioning reference.
+ */
+function PopoverAnchor({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="popover-anchor"
+      className={className}
+      {...props}
+    />
+  )
+}
+
 export {
   Popover,
+  PopoverAnchor,
   PopoverContent,
   PopoverDescription,
   PopoverHeader,

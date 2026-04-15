@@ -1,22 +1,17 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import type { ColumnDef } from "@tanstack/react-table"
-import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import type { PaginationState, SortingState } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
-import { taskQueries, type Task } from "@/shared/api/tasks"
-import { Badge } from "@/shared/ui/badge"
+import type { ColumnDef } from "@tanstack/react-table"
+import type { Task } from "@/shared/api/tasks"
+import { taskQueries } from "@/shared/api/tasks"
+import { DataGrid } from "@/shared/data-grid/data-grid"
+import { DataGridFilterMenu } from "@/shared/data-grid/data-grid-filter-menu"
+import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
+import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-column"
+import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
+import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
+import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { PageHeader } from "@/shared/ui/page-header"
-import { DataGrid } from "@/shared/reui/data-grid/data-grid"
-import { DataGridTable } from "@/shared/reui/data-grid/data-grid-table"
-import { DataGridColumnHeader } from "@/shared/reui/data-grid/data-grid-column-header"
-import { DataGridPagination } from "@/shared/reui/data-grid/data-grid-pagination"
-import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute("/_authenticated/tasks/")({
   component: TasksPage,
@@ -26,98 +21,90 @@ export const Route = createFileRoute("/_authenticated/tasks/")({
 
 function TasksPage() {
   const { data: tasks } = useSuspenseQuery(taskQueries.all())
-  const navigate = useNavigate()
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 20,
-  })
+  const [data, setData] = useState(tasks)
 
   const columns = useMemo<ColumnDef<Task>[]>(
     () => [
+      getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "id",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.id}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="ID" />
-        ),
+        header: "ID",
+        meta: { cell: { variant: "short-text" as const }, label: "ID" },
         size: 120,
       },
       {
         accessorKey: "taskType",
-        cell: ({ row }) => <Badge>{row.original.taskType}</Badge>,
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Type" />
-        ),
+        header: "Type",
+        meta: {
+          cell: {
+            options: [
+              { label: "Pick", value: "Pick" },
+              { label: "Putaway", value: "Putaway" },
+              { label: "Replenish", value: "Replenish" },
+              { label: "Transfer", value: "Transfer" },
+            ],
+            variant: "select" as const,
+          },
+          label: "Type",
+        },
         size: 120,
       },
       {
         accessorKey: "skuId",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.skuId}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="SKU" />
-        ),
+        header: "SKU",
+        meta: {
+          cell: { variant: "short-text" as const },
+          label: "SKU",
+        },
+        size: 150,
       },
       {
         accessorKey: "state",
-        cell: ({ row }) => <StateBadge state={row.original.state} />,
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="State" />
-        ),
-        size: 120,
+        header: "State",
+        meta: {
+          cell: {
+            options: [
+              { label: "Planned", value: "Planned" },
+              { label: "Allocated", value: "Allocated" },
+              { label: "Assigned", value: "Assigned" },
+              { label: "Completed", value: "Completed" },
+              { label: "Cancelled", value: "Cancelled" },
+            ],
+            variant: "select" as const,
+          },
+          label: "State",
+        },
+        size: 130,
       },
       {
         accessorKey: "requestedQuantity",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.requestedQuantity}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Requested Qty" />
-        ),
-        meta: { align: "right" },
+        header: "Requested Qty",
+        meta: {
+          cell: { variant: "number" as const },
+          label: "Requested Qty",
+        },
         size: 140,
       },
       {
         accessorKey: "assignedTo",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.assignedTo ?? "-"}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Assigned To" />
-        ),
+        header: "Assigned To",
+        meta: {
+          cell: { variant: "short-text" as const },
+          label: "Assigned To",
+        },
+        size: 150,
       },
     ],
     [],
   )
 
-  const table = useReactTable({
+  const gridProps = useDataGrid({
     columns,
-    data: tasks,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getRowId: (row) => row.id,
-    getSortedRowModel: getSortedRowModel(),
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
-    state: { pagination, sorting },
+    data,
+    enableSearch: true,
+    onDataChange: setData,
+    readOnly: true,
+    rowHeight: "short",
   })
 
   return (
@@ -126,26 +113,13 @@ function TasksPage() {
         description="Pick, putaway, replenish, and transfer tasks"
         title="Tasks"
       />
-      <DataGrid
-        onRowClick={(task) =>
-          navigate({
-            params: { taskId: task.id },
-            to: "/tasks/$taskId",
-          })
-        }
-        recordCount={tasks.length}
-        table={table}
-        tableLayout={{
-          headerSticky: true,
-        }}
-      >
-        <div className="w-full space-y-2.5">
-          <div className="rounded-lg border">
-            <DataGridTable />
-          </div>
-          <DataGridPagination sizes={[10, 20, 50]} />
-        </div>
-      </DataGrid>
+      <div className="flex items-center gap-2 pb-2">
+        <DataGridFilterMenu table={gridProps.table} />
+        <DataGridSortMenu table={gridProps.table} />
+        <DataGridRowHeightMenu table={gridProps.table} />
+        <DataGridViewMenu table={gridProps.table} />
+      </div>
+      <DataGrid {...gridProps} height={500} />
     </div>
   )
 }

@@ -1,21 +1,17 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import type { ColumnDef } from "@tanstack/react-table"
-import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import type { PaginationState, SortingState } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
-import { receiptQueries, type Receipt } from "@/shared/api/receipts"
+import type { ColumnDef } from "@tanstack/react-table"
+import type { Receipt } from "@/shared/api/receipts"
+import { receiptQueries } from "@/shared/api/receipts"
+import { DataGrid } from "@/shared/data-grid/data-grid"
+import { DataGridFilterMenu } from "@/shared/data-grid/data-grid-filter-menu"
+import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
+import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-column"
+import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
+import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
+import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { PageHeader } from "@/shared/ui/page-header"
-import { DataGrid } from "@/shared/reui/data-grid/data-grid"
-import { DataGridTable } from "@/shared/reui/data-grid/data-grid-table"
-import { DataGridColumnHeader } from "@/shared/reui/data-grid/data-grid-column-header"
-import { DataGridPagination } from "@/shared/reui/data-grid/data-grid-pagination"
-import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute("/_authenticated/receipts/")({
   component: ReceiptsPage,
@@ -25,76 +21,62 @@ export const Route = createFileRoute("/_authenticated/receipts/")({
 
 function ReceiptsPage() {
   const { data: receipts } = useSuspenseQuery(receiptQueries.all())
-  const navigate = useNavigate()
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 20,
-  })
+  const [data, setData] = useState(receipts)
 
   const columns = useMemo<ColumnDef<Receipt>[]>(
     () => [
+      getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "id",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.id}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="ID" />
-        ),
+        header: "ID",
+        meta: { cell: { variant: "short-text" as const }, label: "ID" },
         size: 120,
       },
       {
         accessorKey: "deliveryId",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.deliveryId}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Delivery" />
-        ),
+        header: "Delivery",
+        meta: {
+          cell: { variant: "short-text" as const },
+          label: "Delivery",
+        },
+        size: 150,
       },
       {
-        accessorKey: "lines",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.lines?.length ?? 0}
-          </span>
-        ),
-        enableSorting: false,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Lines" />
-        ),
-        size: 100,
+        accessorFn: (row) => row.lines.length,
+        header: "Lines",
+        id: "lineCount",
+        meta: {
+          cell: { variant: "number" as const },
+          label: "Lines",
+        },
+        size: 80,
       },
       {
         accessorKey: "state",
-        cell: ({ row }) => <StateBadge state={row.original.state} />,
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="State" />
-        ),
+        header: "State",
+        meta: {
+          cell: {
+            options: [
+              { label: "Open", value: "Open" },
+              { label: "Confirmed", value: "Confirmed" },
+            ],
+            variant: "select" as const,
+          },
+          label: "State",
+        },
         size: 120,
       },
     ],
     [],
   )
 
-  const table = useReactTable({
+  const gridProps = useDataGrid({
     columns,
-    data: receipts,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getRowId: (row) => row.id,
-    getSortedRowModel: getSortedRowModel(),
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
-    state: { pagination, sorting },
+    data,
+    enableSearch: true,
+    onDataChange: setData,
+    readOnly: true,
+    rowHeight: "short",
   })
 
   return (
@@ -103,26 +85,13 @@ function ReceiptsPage() {
         description="Goods receipt recording and confirmation"
         title="Receipts"
       />
-      <DataGrid
-        onRowClick={(receipt) =>
-          navigate({
-            params: { receiptId: receipt.id },
-            to: "/receipts/$receiptId",
-          })
-        }
-        recordCount={receipts.length}
-        table={table}
-        tableLayout={{
-          headerSticky: true,
-        }}
-      >
-        <div className="w-full space-y-2.5">
-          <div className="rounded-lg border">
-            <DataGridTable />
-          </div>
-          <DataGridPagination sizes={[10, 20, 50]} />
-        </div>
-      </DataGrid>
+      <div className="flex items-center gap-2 pb-2">
+        <DataGridFilterMenu table={gridProps.table} />
+        <DataGridSortMenu table={gridProps.table} />
+        <DataGridRowHeightMenu table={gridProps.table} />
+        <DataGridViewMenu table={gridProps.table} />
+      </div>
+      <DataGrid {...gridProps} height={500} />
     </div>
   )
 }

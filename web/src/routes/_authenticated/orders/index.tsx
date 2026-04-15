@@ -1,28 +1,17 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import type { ColumnDef } from "@tanstack/react-table"
-import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import type { PaginationState, SortingState } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
-import { orderQueries, type Order } from "@/shared/api/orders"
-import { Badge } from "@/shared/ui/badge"
+import type { ColumnDef } from "@tanstack/react-table"
+import type { Order } from "@/shared/api/orders"
+import { orderQueries } from "@/shared/api/orders"
+import { DataGrid } from "@/shared/data-grid/data-grid"
+import { DataGridFilterMenu } from "@/shared/data-grid/data-grid-filter-menu"
+import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
+import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-column"
+import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
+import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
+import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { PageHeader } from "@/shared/ui/page-header"
-import { DataGrid } from "@/shared/reui/data-grid/data-grid"
-import { DataGridTable } from "@/shared/reui/data-grid/data-grid-table"
-import { DataGridColumnHeader } from "@/shared/reui/data-grid/data-grid-column-header"
-import { DataGridPagination } from "@/shared/reui/data-grid/data-grid-pagination"
-
-const PRIORITY_VARIANT: Record<string, "default" | "secondary" | "destructive"> = {
-  Critical: "destructive",
-  High: "default",
-  Low: "secondary",
-  Normal: "secondary",
-}
 
 export const Route = createFileRoute("/_authenticated/orders/")({
   component: OrdersPage,
@@ -32,82 +21,67 @@ export const Route = createFileRoute("/_authenticated/orders/")({
 
 function OrdersPage() {
   const { data: orders } = useSuspenseQuery(orderQueries.all())
-  const navigate = useNavigate()
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 20,
-  })
+  const [data, setData] = useState(orders)
 
   const columns = useMemo<ColumnDef<Order>[]>(
     () => [
+      getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "id",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.id}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Order ID" />
-        ),
+        header: "Order ID",
+        meta: {
+          cell: { variant: "short-text" as const },
+          label: "Order ID",
+        },
         size: 140,
       },
       {
         accessorKey: "priority",
-        cell: ({ row }) => (
-          <Badge variant={PRIORITY_VARIANT[row.original.priority] ?? "secondary"}>
-            {row.original.priority}
-          </Badge>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Priority" />
-        ),
-        size: 110,
+        header: "Priority",
+        meta: {
+          cell: {
+            options: [
+              { label: "Low", value: "Low" },
+              { label: "Normal", value: "Normal" },
+              { label: "High", value: "High" },
+              { label: "Critical", value: "Critical" },
+            ],
+            variant: "select" as const,
+          },
+          label: "Priority",
+        },
+        size: 120,
       },
       {
         accessorFn: (row) => row.lines.length,
-        cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.lines.length}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Lines" />
-        ),
+        header: "Lines",
         id: "lineCount",
+        meta: {
+          cell: { variant: "number" as const },
+          label: "Lines",
+        },
         size: 80,
       },
       {
         accessorKey: "carrierId",
-        cell: ({ row }) => (
-          <span className="text-muted-foreground font-mono text-xs">
-            {row.original.carrierId ?? "\u2014"}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Carrier" />
-        ),
+        header: "Carrier",
+        meta: {
+          cell: { variant: "short-text" as const },
+          label: "Carrier",
+        },
         size: 120,
       },
     ],
     [],
   )
 
-  const table = useReactTable({
+  const gridProps = useDataGrid({
     columns,
-    data: orders,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getRowId: (row) => row.id,
-    getSortedRowModel: getSortedRowModel(),
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
-    state: { pagination, sorting },
+    data,
+    enableSearch: true,
+    onDataChange: setData,
+    readOnly: true,
+    rowHeight: "short",
   })
 
   return (
@@ -116,21 +90,13 @@ function OrdersPage() {
         description="Customer orders for fulfillment"
         title="Orders"
       />
-      <DataGrid
-        onRowClick={(order) =>
-          navigate({ params: { orderId: order.id }, to: "/orders/$orderId" })
-        }
-        recordCount={orders.length}
-        table={table}
-        tableLayout={{ headerSticky: true }}
-      >
-        <div className="w-full space-y-2.5">
-          <div className="rounded-lg border">
-            <DataGridTable />
-          </div>
-          <DataGridPagination sizes={[10, 20, 50]} />
-        </div>
-      </DataGrid>
+      <div className="flex items-center gap-2 pb-2">
+        <DataGridFilterMenu table={gridProps.table} />
+        <DataGridSortMenu table={gridProps.table} />
+        <DataGridRowHeightMenu table={gridProps.table} />
+        <DataGridViewMenu table={gridProps.table} />
+      </div>
+      <DataGrid {...gridProps} height={500} />
     </div>
   )
 }

@@ -1,21 +1,17 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import type { ColumnDef } from "@tanstack/react-table"
-import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import type { PaginationState, SortingState } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
-import { skuQueries, type Sku } from "@/shared/api/skus"
-import { Badge } from "@/shared/ui/badge"
+import type { ColumnDef } from "@tanstack/react-table"
+import type { Sku } from "@/shared/api/skus"
+import { skuQueries } from "@/shared/api/skus"
+import { DataGrid } from "@/shared/data-grid/data-grid"
+import { DataGridFilterMenu } from "@/shared/data-grid/data-grid-filter-menu"
+import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
+import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-column"
+import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
+import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
+import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { PageHeader } from "@/shared/ui/page-header"
-import { DataGrid } from "@/shared/reui/data-grid/data-grid"
-import { DataGridTable } from "@/shared/reui/data-grid/data-grid-table"
-import { DataGridColumnHeader } from "@/shared/reui/data-grid/data-grid-column-header"
-import { DataGridPagination } from "@/shared/reui/data-grid/data-grid-pagination"
 
 export const Route = createFileRoute("/_authenticated/skus/")({
   component: SkusPage,
@@ -25,63 +21,49 @@ export const Route = createFileRoute("/_authenticated/skus/")({
 
 function SkusPage() {
   const { data: skus } = useSuspenseQuery(skuQueries.all())
-  const navigate = useNavigate()
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 20,
-  })
+  const [data, setData] = useState(skus)
 
   const columns = useMemo<ColumnDef<Sku>[]>(
     () => [
+      getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "code",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.code}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Code" />
-        ),
+        header: "Code",
+        meta: {
+          cell: { variant: "short-text" as const },
+          label: "Code",
+        },
         size: 160,
       },
       {
         accessorKey: "description",
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Description" />
-        ),
+        header: "Description",
+        meta: {
+          cell: { variant: "short-text" as const },
+          label: "Description",
+        },
+        size: 300,
       },
       {
         accessorKey: "lotManaged",
-        cell: ({ row }) =>
-          row.original.lotManaged ? (
-            <Badge variant="default">Lot-managed</Badge>
-          ) : (
-            <span className="text-muted-foreground text-xs">No</span>
-          ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Lot" />
-        ),
+        header: "Lot Managed",
+        meta: {
+          cell: { variant: "checkbox" as const },
+          label: "Lot Managed",
+        },
         size: 120,
       },
     ],
     [],
   )
 
-  const table = useReactTable({
+  const gridProps = useDataGrid({
     columns,
-    data: skus,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getRowId: (row) => row.id,
-    getSortedRowModel: getSortedRowModel(),
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
-    state: { pagination, sorting },
+    data,
+    enableSearch: true,
+    onDataChange: setData,
+    readOnly: true,
+    rowHeight: "short",
   })
 
   return (
@@ -90,21 +72,13 @@ function SkusPage() {
         description="Stock keeping units in the warehouse"
         title="SKUs"
       />
-      <DataGrid
-        onRowClick={(sku) =>
-          navigate({ params: { skuId: sku.id }, to: "/skus/$skuId" })
-        }
-        recordCount={skus.length}
-        table={table}
-        tableLayout={{ headerSticky: true }}
-      >
-        <div className="w-full space-y-2.5">
-          <div className="rounded-lg border">
-            <DataGridTable />
-          </div>
-          <DataGridPagination sizes={[10, 20, 50]} />
-        </div>
-      </DataGrid>
+      <div className="flex items-center gap-2 pb-2">
+        <DataGridFilterMenu table={gridProps.table} />
+        <DataGridSortMenu table={gridProps.table} />
+        <DataGridRowHeightMenu table={gridProps.table} />
+        <DataGridViewMenu table={gridProps.table} />
+      </div>
+      <DataGrid {...gridProps} height={500} />
     </div>
   )
 }

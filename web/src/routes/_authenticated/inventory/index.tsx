@@ -1,24 +1,17 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import type { ColumnDef } from "@tanstack/react-table"
-import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import type { PaginationState, SortingState } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
-import {
-  inventoryQueries,
-  type InventoryRecord,
-} from "@/shared/api/inventory"
+import type { ColumnDef } from "@tanstack/react-table"
+import type { InventoryRecord } from "@/shared/api/inventory"
+import { inventoryQueries } from "@/shared/api/inventory"
+import { DataGrid } from "@/shared/data-grid/data-grid"
+import { DataGridFilterMenu } from "@/shared/data-grid/data-grid-filter-menu"
+import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
+import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-column"
+import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
+import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
+import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { PageHeader } from "@/shared/ui/page-header"
-import { DataGrid } from "@/shared/reui/data-grid/data-grid"
-import { DataGridTable } from "@/shared/reui/data-grid/data-grid-table"
-import { DataGridColumnHeader } from "@/shared/reui/data-grid/data-grid-column-header"
-import { DataGridPagination } from "@/shared/reui/data-grid/data-grid-pagination"
-import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute("/_authenticated/inventory/")({
   component: InventoryPage,
@@ -28,106 +21,85 @@ export const Route = createFileRoute("/_authenticated/inventory/")({
 
 function InventoryPage() {
   const { data: records } = useSuspenseQuery(inventoryQueries.all())
-  const navigate = useNavigate()
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 20,
-  })
+  const [data, setData] = useState(records)
 
   const columns = useMemo<ColumnDef<InventoryRecord>[]>(
     () => [
+      getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "skuId",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.skuId}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="SKU" />
-        ),
+        header: "SKU",
+        meta: {
+          cell: { variant: "short-text" as const },
+          label: "SKU",
+        },
+        size: 150,
       },
       {
         accessorKey: "locationId",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.locationId}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Location" />
-        ),
+        header: "Location",
+        meta: {
+          cell: { variant: "short-text" as const },
+          label: "Location",
+        },
+        size: 150,
       },
       {
         accessorKey: "status",
-        cell: ({ row }) => (
-          <StateBadge state={row.original.status} />
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Status" />
-        ),
-        size: 120,
+        header: "Status",
+        meta: {
+          cell: {
+            options: [
+              { label: "Available", value: "Available" },
+              { label: "QualityHold", value: "QualityHold" },
+              { label: "Damaged", value: "Damaged" },
+              { label: "Blocked", value: "Blocked" },
+              { label: "Expired", value: "Expired" },
+            ],
+            variant: "select" as const,
+          },
+          label: "Status",
+        },
+        size: 130,
       },
       {
         accessorKey: "onHand",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.onHand}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="On Hand" />
-        ),
-        meta: { align: "right" },
+        header: "On Hand",
+        meta: {
+          cell: { variant: "number" as const },
+          label: "On Hand",
+        },
         size: 120,
       },
       {
         accessorKey: "available",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.available}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Available" />
-        ),
-        meta: { align: "right" },
+        header: "Available",
+        meta: {
+          cell: { variant: "number" as const },
+          label: "Available",
+        },
         size: 120,
       },
       {
         accessorKey: "reserved",
-        cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.reserved}
-          </span>
-        ),
-        enableSorting: true,
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Reserved" />
-        ),
-        meta: { align: "right" },
+        header: "Reserved",
+        meta: {
+          cell: { variant: "number" as const },
+          label: "Reserved",
+        },
         size: 120,
       },
     ],
     [],
   )
 
-  const table = useReactTable({
+  const gridProps = useDataGrid({
     columns,
-    data: records,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getRowId: (row) => row.id,
-    getSortedRowModel: getSortedRowModel(),
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
-    state: { pagination, sorting },
+    data,
+    enableSearch: true,
+    onDataChange: setData,
+    readOnly: true,
+    rowHeight: "short",
   })
 
   return (
@@ -136,26 +108,13 @@ function InventoryPage() {
         description="Location-level inventory records"
         title="Inventory"
       />
-      <DataGrid
-        onRowClick={(record) =>
-          navigate({
-            params: { inventoryId: record.id },
-            to: "/inventory/$inventoryId",
-          })
-        }
-        recordCount={records.length}
-        table={table}
-        tableLayout={{
-          headerSticky: true,
-        }}
-      >
-        <div className="w-full space-y-2.5">
-          <div className="rounded-lg border">
-            <DataGridTable />
-          </div>
-          <DataGridPagination sizes={[10, 20, 50]} />
-        </div>
-      </DataGrid>
+      <div className="flex items-center gap-2 pb-2">
+        <DataGridFilterMenu table={gridProps.table} />
+        <DataGridSortMenu table={gridProps.table} />
+        <DataGridRowHeightMenu table={gridProps.table} />
+        <DataGridViewMenu table={gridProps.table} />
+      </div>
+      <DataGrid {...gridProps} height={500} />
     </div>
   )
 }
