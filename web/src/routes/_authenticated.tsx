@@ -26,6 +26,7 @@ import {
   Waves,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
+import { motion } from "motion/react"
 import { authQueries, useLogout } from '@/shared/api/auth';
 import type { AuthUser } from '@/shared/api/auth';
 import { Badge } from "@/shared/ui/badge"
@@ -184,11 +185,19 @@ function AppSidebar({ user }: { user: AuthUser }) {
 
                 return (
                   <SidebarMenuItem key={item.to}>
+                    {isActive && (
+                      <motion.div
+                        layoutId="sidebar-indicator"
+                        className="absolute inset-0 rounded-xl bg-sidebar-primary/12"
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      />
+                    )}
                     <SidebarMenuButton
                       isActive={isActive}
                       render={<Link to={item.to} />}
+                      className="relative z-10"
                     >
-                      <item.icon />
+                      <item.icon strokeWidth={isActive ? 2.4 : 1.75} />
                       <span>{item.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
