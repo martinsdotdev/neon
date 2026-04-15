@@ -267,8 +267,9 @@ function DataGridRowImpl<TData>({
           >
             {typeof cell.column.columnDef.header === "function" ? (
               <div
-                className={cn("size-full px-3 py-1.5 group-hover/row:bg-accent/50", {
-                  "bg-primary/10": isRowSelected,
+                className={cn("size-full px-3 py-1.5", {
+                  "bg-primary/10 group-hover/row:bg-primary/15": isRowSelected,
+                  "group-hover/row:bg-accent/50": !isRowSelected,
                 })}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
