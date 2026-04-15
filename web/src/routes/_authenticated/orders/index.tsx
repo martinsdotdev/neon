@@ -66,7 +66,10 @@ function OrdersPage() {
 
   const columns = useMemo<ColumnDef<Order>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<Order>({
+        detailHref: (row) => `/orders/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

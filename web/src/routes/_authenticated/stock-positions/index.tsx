@@ -63,7 +63,10 @@ function StockPositionsPage() {
 
   const columns = useMemo<ColumnDef<StockPosition>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<StockPosition>({
+        detailHref: (row) => `/stock-positions/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "skuId",
         cell: ({ row }) => (

@@ -68,7 +68,10 @@ function LocationsPage() {
 
   const columns = useMemo<ColumnDef<Location>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<Location>({
+        detailHref: (row) => `/locations/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "code",
         cell: ({ row }) => (

@@ -84,7 +84,10 @@ function TasksPage() {
 
   const columns = useMemo<ColumnDef<Task>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<Task>({
+        detailHref: (row) => `/tasks/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

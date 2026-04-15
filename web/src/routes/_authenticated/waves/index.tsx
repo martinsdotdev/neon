@@ -76,7 +76,10 @@ function WavesPage() {
 
   const columns = useMemo<ColumnDef<Wave>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<Wave>({
+        detailHref: (row) => `/waves/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

@@ -79,7 +79,10 @@ function ConsolidationGroupsPage() {
 
   const columns = useMemo<ColumnDef<ConsolidationGroup>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<ConsolidationGroup>({
+        detailHref: (row) => `/consolidation-groups/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

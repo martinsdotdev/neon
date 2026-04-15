@@ -71,7 +71,10 @@ function UsersPage() {
 
   const columns = useMemo<ColumnDef<User>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<User>({
+        detailHref: (row) => `/users/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "name",
         header: "Name",

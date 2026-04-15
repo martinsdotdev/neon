@@ -1,10 +1,13 @@
 "use client";
 
+import { Link } from "@tanstack/react-router";
 import type {
   CellContext,
   ColumnDef,
   HeaderContext,
+  Row,
 } from "@tanstack/react-table";
+import { ArrowUpRight } from "lucide-react";
 import * as React from "react";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { cn } from "@/shared/lib/utils";
@@ -50,6 +53,7 @@ interface DataGridSelectCheckboxProps
   rowNumber?: number;
   hitboxSize?: HitboxSize;
   debug?: boolean;
+  detailHref?: string;
 }
 
 function DataGridSelectCheckbox({
@@ -58,6 +62,7 @@ function DataGridSelectCheckbox({
   debug,
   checked,
   className,
+  detailHref,
   ...props
 }: DataGridSelectCheckboxProps) {
   const id = React.useId();
@@ -75,12 +80,31 @@ function DataGridSelectCheckbox({
             checked={checked}
             {...props}
           />
-          <span
-            aria-hidden="true"
-            className="text-muted-foreground text-xs tabular-nums"
-          >
-            {rowNumber}
-          </span>
+          {detailHref ? (
+            <>
+              <span
+                aria-hidden="true"
+                className="text-muted-foreground text-xs tabular-nums group-hover/row:hidden"
+              >
+                {rowNumber}
+              </span>
+              <Link
+                to={detailHref}
+                aria-label="Open details"
+                className="relative z-20 hidden size-4 items-center justify-center text-muted-foreground hover:text-foreground group-hover/row:inline-flex"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <ArrowUpRight className="size-3.5" />
+              </Link>
+            </>
+          ) : (
+            <span
+              aria-hidden="true"
+              className="text-muted-foreground text-xs tabular-nums"
+            >
+              {rowNumber}
+            </span>
+          )}
         </div>
       </DataGridSelectHitbox>
     );
@@ -147,6 +171,7 @@ interface DataGridSelectCellProps<TData>
   enableRowMarkers?: boolean;
   readOnly?: boolean;
   debug?: boolean;
+  detailHref?: (row: Row<TData>) => string | undefined;
 }
 
 function DataGridSelectCell<TData>({
@@ -156,11 +181,13 @@ function DataGridSelectCell<TData>({
   enableRowMarkers,
   readOnly,
   debug,
+  detailHref,
 }: DataGridSelectCellProps<TData>) {
   const meta = table.options.meta;
   const rowNumber = enableRowMarkers
     ? (meta?.getVisualRowIndex?.(row.id) ?? row.index + 1)
     : undefined;
+  const href = detailHref?.(row);
 
   const onCheckedChange = React.useCallback(
     (value: boolean) => {
@@ -200,6 +227,7 @@ function DataGridSelectCell<TData>({
       rowNumber={rowNumber}
       hitboxSize={hitboxSize}
       debug={debug}
+      detailHref={href}
     />
   );
 }
@@ -210,6 +238,7 @@ interface GetDataGridSelectColumnOptions<TData>
   readOnly?: boolean;
   hitboxSize?: HitboxSize;
   debug?: boolean;
+  detailHref?: (row: Row<TData>) => string | undefined;
 }
 
 export function getDataGridSelectColumn<TData>({
@@ -221,6 +250,7 @@ export function getDataGridSelectColumn<TData>({
   enableRowMarkers = false,
   readOnly = false,
   debug = false,
+  detailHref,
   ...props
 }: GetDataGridSelectColumnOptions<TData> = {}): ColumnDef<TData> {
   return {
@@ -239,6 +269,7 @@ export function getDataGridSelectColumn<TData>({
         table={table}
         enableRowMarkers={enableRowMarkers}
         readOnly={readOnly}
+        detailHref={detailHref}
         hitboxSize={hitboxSize}
         debug={debug}
       />

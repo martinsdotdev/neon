@@ -60,7 +60,10 @@ function SkusPage() {
 
   const columns = useMemo<ColumnDef<Sku>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<Sku>({
+        detailHref: (row) => `/skus/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "code",
         cell: ({ row }) => (

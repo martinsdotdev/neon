@@ -71,7 +71,10 @@ function DeliveriesPage() {
 
   const columns = useMemo<ColumnDef<Delivery>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<Delivery>({
+        detailHref: (row) => `/deliveries/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

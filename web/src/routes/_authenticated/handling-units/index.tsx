@@ -83,7 +83,10 @@ function HandlingUnitsPage() {
 
   const columns = useMemo<ColumnDef<HandlingUnit>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<HandlingUnit>({
+        detailHref: (row) => `/handling-units/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

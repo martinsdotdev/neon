@@ -71,7 +71,10 @@ function TransportOrdersPage() {
 
   const columns = useMemo<ColumnDef<TransportOrder>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<TransportOrder>({
+        detailHref: (row) => `/transport-orders/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

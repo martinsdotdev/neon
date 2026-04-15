@@ -90,7 +90,10 @@ function WorkstationsPage() {
 
   const columns = useMemo<ColumnDef<Workstation>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<Workstation>({
+        detailHref: (row) => `/workstations/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "id",
         cell: ({ row }) => (

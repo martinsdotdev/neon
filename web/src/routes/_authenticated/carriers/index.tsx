@@ -69,7 +69,10 @@ function CarriersPage() {
 
   const columns = useMemo<ColumnDef<Carrier>[]>(
     () => [
-      getDataGridSelectColumn({ enableRowMarkers: true }),
+      getDataGridSelectColumn<Carrier>({
+        detailHref: (row) => `/carriers/${row.original.id}`,
+        enableRowMarkers: true,
+      }),
       {
         accessorKey: "code",
         cell: ({ row }) => (
