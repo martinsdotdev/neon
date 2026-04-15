@@ -12,7 +12,6 @@ processing stations, and `Slot` for put-wall positions. Together, these four
 aggregates form the execution layer that turns planned work into physical
 fulfillment.
 
-
 ## Handling Unit: Two Streams in One Aggregate
 
 A handling unit is a physical container that moves through the warehouse. It
@@ -27,9 +26,9 @@ sealed trait HandlingUnit:
   def packagingLevel: PackagingLevel
 ```
 
-<small>*File: handling-unit/src/main/scala/neon/handlingunit/HandlingUnit.scala*</small>
+<small>_File: handling-unit/src/main/scala/neon/handlingunit/HandlingUnit.scala_</small>
 
-The role is encoded in the *type*, not in a runtime field. There is no `role`
+The role is encoded in the _type_, not in a runtime field. There is no `role`
 enum or `isPick` boolean. A `PickCreated` is a pick tote by virtue of being a
 `PickCreated`. A `ShipCreated` is a ship container by virtue of being a
 `ShipCreated`. The compiler enforces this distinction at every step.
@@ -64,7 +63,7 @@ case class PickCreated(
     (inBuffer, event)
 ```
 
-<small>*File: handling-unit/src/main/scala/neon/handlingunit/HandlingUnit.scala*</small>
+<small>_File: handling-unit/src/main/scala/neon/handlingunit/HandlingUnit.scala_</small>
 
 When the tote arrives at the consolidation area, `moveToBuffer` transitions it
 to `InBuffer` with the buffer location. After a workstation operator empties the
@@ -100,7 +99,7 @@ case class ShipCreated(
     (packed, event)
 ```
 
-<small>*File: handling-unit/src/main/scala/neon/handlingunit/HandlingUnit.scala*</small>
+<small>_File: handling-unit/src/main/scala/neon/handlingunit/HandlingUnit.scala_</small>
 
 Notice the `orderId` field. Ship containers are bound to a specific order from
 creation. Pick totes are not; they collect items for potentially many orders
@@ -122,12 +121,12 @@ One might ask: why not a single linear state machine with a `role` field? The
 answer is that the two streams have different shapes, different data, and
 different lifetimes.
 
-| Aspect            | Pick Stream                    | Ship Stream                       |
-| ----------------- | ------------------------------ | --------------------------------- |
-| **Lifecycle**     | Created, InBuffer, Empty       | Created, Packed, ReadyToShip, Shipped |
-| **Order binding** | None (multi-order collection)  | Bound to one order from creation  |
-| **Terminal state** | Empty (tote returns to pool)  | Shipped (container leaves forever) |
-| **Reusability**   | Tote is reused after emptying  | Container is a one-way trip       |
+| Aspect             | Pick Stream                   | Ship Stream                           |
+| ------------------ | ----------------------------- | ------------------------------------- |
+| **Lifecycle**      | Created, InBuffer, Empty      | Created, Packed, ReadyToShip, Shipped |
+| **Order binding**  | None (multi-order collection) | Bound to one order from creation      |
+| **Terminal state** | Empty (tote returns to pool)  | Shipped (container leaves forever)    |
+| **Reusability**    | Tote is reused after emptying | Container is a one-way trip           |
 
 A unified state machine would need conditional transitions ("if pick, then
 moveToBuffer; if ship, then pack"), runtime type checks, and a nullable orderId
@@ -143,7 +142,6 @@ the case classes add stream-specific data like `orderId` for ship containers
 and `currentLocation` for pick totes.
 
 @:@
-
 
 ## Transport Orders: Bridging the Gap
 
@@ -183,7 +181,7 @@ object TransportOrder:
     (pending, event)
 ```
 
-<small>*File: transport-order/src/main/scala/neon/transportorder/TransportOrder.scala*</small>
+<small>_File: transport-order/src/main/scala/neon/transportorder/TransportOrder.scala_</small>
 
 A transport order is `Pending` until an operator confirms delivery at the
 destination. It can also be `Cancelled` if the movement is no longer needed
@@ -206,7 +204,7 @@ object RoutingPolicy:
     }
 ```
 
-<small>*File: core/src/main/scala/neon/core/RoutingPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/RoutingPolicy.scala_</small>
 
 The policy returns `None` when the completed task has no handling unit
 (some task types, like replenishment or transfer, may operate without one).
@@ -228,7 +226,6 @@ affect the task.
 
 @:@
 
-
 ## Workstation Lifecycle
 
 A workstation is a physical station where consolidation and packing operations
@@ -240,7 +237,7 @@ enum WorkstationType:
   case PackStation
 ```
 
-<small>*File: workstation/src/main/scala/neon/workstation/WorkstationType.scala*</small>
+<small>_File: workstation/src/main/scala/neon/workstation/WorkstationType.scala_</small>
 
 - **PutWall**: a wall of slots (cubbies) where pick totes are deconsolidated
   into order-specific containers. Items from a multi-order tote get sorted into
@@ -281,7 +278,7 @@ case class Disabled(
     ...
 ```
 
-<small>*File: workstation/src/main/scala/neon/workstation/Workstation.scala*</small>
+<small>_File: workstation/src/main/scala/neon/workstation/Workstation.scala_</small>
 
 When enabled, the workstation transitions to `Idle` with a default mode of
 `Picking`. The `slotCount` field records how many physical slots (cubbies, bin
@@ -312,7 +309,7 @@ case class Idle(
     (switched, event)
 ```
 
-<small>*File: workstation/src/main/scala/neon/workstation/Workstation.scala*</small>
+<small>_File: workstation/src/main/scala/neon/workstation/Workstation.scala_</small>
 
 The `WorkstationMode` enum defines three operational modes:
 
@@ -323,7 +320,7 @@ enum WorkstationMode:
   case Counting    // Cycle count and physical inventory operations
 ```
 
-<small>*File: common/src/main/scala/neon/common/WorkstationMode.scala*</small>
+<small>_File: common/src/main/scala/neon/common/WorkstationMode.scala_</small>
 
 Mode switching is only allowed in the `Idle` state. You cannot change a
 workstation's mode while it is actively processing a consolidation group. This
@@ -349,7 +346,7 @@ case class Active(
     ...
 ```
 
-<small>*File: workstation/src/main/scala/neon/workstation/Workstation.scala*</small>
+<small>_File: workstation/src/main/scala/neon/workstation/Workstation.scala_</small>
 
 One consolidation group at a time. When the work is finished, `release`
 transitions back to `Idle`, and the workstation is ready for the next
@@ -372,7 +369,6 @@ not cascade into work assignment logic.
 
 @:@
 
-
 ## Slot Lifecycle
 
 A slot is a physical position within a put-wall workstation. Each slot holds one
@@ -393,7 +389,7 @@ sealed trait Slot:
   def workstationId: WorkstationId
 ```
 
-<small>*File: slot/src/main/scala/neon/slot/Slot.scala*</small>
+<small>_File: slot/src/main/scala/neon/slot/Slot.scala_</small>
 
 ### Available
 
@@ -418,7 +414,7 @@ case class Available(
     (reserved, event)
 ```
 
-<small>*File: slot/src/main/scala/neon/slot/Slot.scala*</small>
+<small>_File: slot/src/main/scala/neon/slot/Slot.scala_</small>
 
 The reservation binds three things together: the physical slot, the customer
 order, and the ship handling unit. This triad is what enables the put-wall
@@ -446,7 +442,7 @@ case class Reserved(
     (available, event)
 ```
 
-<small>*File: slot/src/main/scala/neon/slot/Slot.scala*</small>
+<small>_File: slot/src/main/scala/neon/slot/Slot.scala_</small>
 
 - **`complete`** moves the slot to the terminal `Completed` state. All items
   for the order have been placed in the ship container.
@@ -469,7 +465,6 @@ lifecycle. The slot simply records that its order has been fully processed
 at this workstation position.
 
 @:@
-
 
 ## How the Pieces Connect
 

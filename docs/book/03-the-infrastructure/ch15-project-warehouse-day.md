@@ -48,7 +48,6 @@ inventory, adjusted a variance under SOX rules, and switched workstation
 modes. Every line of code is real. Every assertion passes. The test is
 the specification.
 
-
 ## The Test as Living Documentation
 
 The `WarehouseDaySimulationSuite` lives in the `core` module because it
@@ -75,7 +74,7 @@ describe("A full day of warehouse operations"):
   val ctRepo = InMemoryCountTaskRepository()
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 Seven repositories. Seven mutable maps. Seven event buffers. That is the
 entire infrastructure for a 12-hour warehouse simulation.
@@ -88,7 +87,7 @@ def at(hoursAfterStart: Int): Instant =
   dayStart.plusSeconds(hoursAfterStart * 3600L)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 `at(0)` is 06:00. `at(2)` is 08:00. `at(4)` is 10:00. This convention
 lets us reason about warehouse time without cluttering every call site
@@ -108,14 +107,13 @@ val countOperator = UserId()
 val supervisor = UserId() // different from countOperator for SOX
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 Four distinct `UserId` values. The separation between `countOperator`
 and `supervisor` is not just documentation; it is a SOX compliance
 requirement that we will enforce in code at 16:00.
 
 Let's walk through the day.
-
 
 ## 06:00 -- Inbound Receiving
 
@@ -148,7 +146,7 @@ val (bandageStock, bandageEvent) =
 stockRepo.save(bandageStock, bandageEvent)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 Three stock positions. Two for aspirin (same SKU, different lots) and
 one for bandages. The lot attributes carry GS1 data:
@@ -166,7 +164,7 @@ val aspirinLotLateExpiry = LotAttributes(
 )
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 Lot `ASP-2026-A` expires in March 2027. Lot `ASP-2026-B` expires in
 September 2027. This six-month gap will matter at 08:00 when FEFO
@@ -186,7 +184,7 @@ val (afterReceive, receiveEvent) = receiving.receive(200, 0, at(0))
 val (received, receivedEvent) = afterReceive.complete(at(0))
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 Three transitions: `New` to `Receiving` to `Receiving` (with quantity)
 to `Received`. Each call returns a `(NewState, Event)` tuple. The
@@ -217,7 +215,7 @@ val (withLine, lineEvent) = receipt.recordLine(receivedLine, at(0))
 val (confirmed, confirmedEvent) = withLine.confirm(at(0))
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 `GoodsReceipt.Open` starts with an empty line list. `recordLine` appends
 a `ReceivedLine` (the `require(line.quantity > 0)` guards positive
@@ -235,7 +233,7 @@ val inboundResult = inboundService.processConfirmedReceipt(
 )
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 `processConfirmedReceipt` does two things. First, it calls
 `PutawayCreationPolicy` to create planned putaway tasks from the
@@ -258,12 +256,11 @@ it("updates stock position with received quantity"):
   assert(addedEvents.exists(_.quantity == 200))
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 After inbound, the aspirin early-expiry position holds 400 on-hand
 (200 original + 200 from the receipt). This is the starting inventory
 for outbound allocation.
-
 
 ## 08:00 -- Wave Planning and Release
 
@@ -282,7 +279,7 @@ val order2 = Order(
 )
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 ### Planning
 
@@ -294,7 +291,7 @@ val wavePlan = WavePlanner.plan(
 )
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 We covered this step in Chapter 9. The planner creates a `Wave.Released`
 and two `TaskRequest` values, one per order line.
@@ -317,7 +314,7 @@ val releaseResult = waveReleaseService.release(
 )
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 FEFO stands for First Expiry, First Out. The `StockAllocationPolicy`
 sorts available stock positions by `expirationDate` ascending. The
@@ -345,7 +342,7 @@ it("locks allocated quantity on the stock position"):
   assert(earlyExpiryPosition.availableQuantity == 400 - 80)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 After allocation, the 4-bucket model for the early-expiry position
 reads: 400 on-hand, 320 available, 80 allocated, 0 reserved, 0 blocked.
@@ -363,7 +360,6 @@ method sets this after allocation, so the `TaskCompletionService` knows
 which stock position to consume from later.
 
 @:@
-
 
 ## 10:00 -- Picking with Shortpick
 
@@ -389,7 +385,7 @@ it("completes a full pick and consumes stock"):
   assert(result.shortpick.isEmpty)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 The task moves through its full typestate chain: `Planned` to
 `Allocated` to `Assigned` to `Completed`. The actual quantity equals
@@ -421,7 +417,7 @@ it("handles a shortpick: picker finds only 25 of 30 requested"):
   assert(replacement.requestedQuantity == 5)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 The picker scans 25 units but the task requested 30. The
 `TaskCompletionService.consumeOrDeallocateStock` method handles this
@@ -447,23 +443,22 @@ it("consumed allocated stock after picks"):
   assert(earlyExpiryPosition.onHandQuantity == 325)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 Let's trace the numbers for the early-expiry aspirin:
 
-| Step | On-hand | Available | Allocated |
-|------|---------|-----------|-----------|
-| After inbound | 400 | 400 | 0 |
-| After allocation (80) | 400 | 320 | 80 |
-| After full pick (50) | 350 | 320 | 30 |
-| After partial pick (25) | 325 | 320 | 5 |
-| After deallocation (5) | 325 | 325 | 0 |
+| Step                    | On-hand | Available | Allocated |
+| ----------------------- | ------- | --------- | --------- |
+| After inbound           | 400     | 400       | 0         |
+| After allocation (80)   | 400     | 320       | 80        |
+| After full pick (50)    | 350     | 320       | 30        |
+| After partial pick (25) | 325     | 320       | 5         |
+| After deallocation (5)  | 325     | 325       | 0         |
 
 On-hand dropped from 400 to 325 (75 units picked). Allocated returned to
 0 because the full pick consumed 50, the partial pick consumed 25, and
 the remaining 5 were deallocated back to available. The invariant holds
 at every step: `325 == 325 + 0 + 0 + 0`.
-
 
 ## 14:00 -- Cycle Counting
 
@@ -482,7 +477,7 @@ val (inProgress, startedEvent) = cycleCount.start(at(8))
 ccRepo.save(inProgress, startedEvent)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 The cycle count is created with `CountMethod.Blind`. In a blind count,
 the operator does not see the expected quantity. They count what they
@@ -503,7 +498,7 @@ val countTasks = CountCreationPolicy(inProgress, stockSnapshots, at(8))
 countTasks.foreach((ct, e) => ctRepo.save(ct, e))
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 `CountCreationPolicy` is a stateless policy object. It takes the
 in-progress cycle count, a map of (SKU, location) pairs to expected
@@ -520,7 +515,7 @@ it("creates count tasks with expected quantities from stock snapshot"):
   assert(pending.expectedQuantity == 500)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 ### Counting and Recording
 
@@ -535,7 +530,7 @@ val (recorded, recordedEvent) = assigned.record(497, at(8))
 ctRepo.save(recorded, recordedEvent)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 `Pending` to `Assigned` to `Recorded`. The operator counts 497 units.
 The system expected 500. The `record` method computes the variance
@@ -547,7 +542,7 @@ it("records actual count with variance"):
   assert(recorded.variance == -3)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 A variance of -3 means 3 units are missing. This is likely shrinkage
 (theft, damage, or miscounting during prior operations).
@@ -560,7 +555,7 @@ val completionResult =
   completionService.tryComplete(inProgress.id, at(8)).value
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 `CountCompletionService.tryComplete` validates three conditions: (1) the
 cycle count exists, (2) it is in `InProgress` state, and (3) all count
@@ -577,11 +572,10 @@ it("completes the cycle count and reports variances"):
   assert(completionResult.variances.head.countedBy == countOperator)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 The `CountVariance` record carries the `countedBy` field. This will
 become critical in the next section.
-
 
 ## 16:00 -- SOX-Compliant Adjustment
 
@@ -614,7 +608,7 @@ it("rejects adjustment when counter is the same as adjuster"):
     .isInstanceOf[AdjustmentError.SegregationOfDutiesViolation])
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 `AdjustmentService` is a stateless object (like a policy). Its single
 `adjust` method checks one condition:
@@ -627,7 +621,7 @@ if adjustedBy == variance.countedBy then
 else Right(AdjustmentResult(variance, adjustedBy, reasonCode))
 ```
 
-<small>*File: core/src/main/scala/neon/core/AdjustmentService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/AdjustmentService.scala_</small>
 
 The `countOperator` cannot adjust their own count. The `Either` return
 type makes this a data-driven decision, not an exception. The caller can
@@ -652,7 +646,7 @@ it("approves adjustment when supervisor (different user) adjusts"):
   assert(adjustmentResult.reasonCode == AdjustmentReasonCode.Shrinkage)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 The `supervisor` is a different `UserId` than `countOperator`, so the
 check passes. The reason code `Shrinkage` will be recorded on the stock
@@ -671,7 +665,7 @@ it("applies the stock adjustment"):
   assert(adjusted.availableQuantity == 497)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 `StockPosition.adjust` takes a delta (positive for surplus, negative for
 shrinkage) and modifies both `onHandQuantity` and `availableQuantity`.
@@ -690,7 +684,6 @@ aggregate where it belongs.
 
 @:@
 
-
 ## 17:00 -- Workstation Operations
 
 The day is winding down. The final section exercises the workstation
@@ -707,7 +700,7 @@ it("starts in Picking mode when enabled"):
   assert(idle.mode == WorkstationMode.Picking)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 A `PutWall` workstation with 8 slots starts in `Disabled` state. The
 `enable` method transitions it to `Idle` with a default mode of
@@ -731,7 +724,7 @@ it("switches from Picking to Receiving mode"):
   assert(switchEvent.newMode == WorkstationMode.Receiving)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 `switchMode` returns the new `Idle` state and a `ModeSwitched` event
 that captures both the previous and new modes. The workstation remains
@@ -751,7 +744,7 @@ it("switches to Counting mode for cycle count"):
   assert(countingMode.mode == WorkstationMode.Counting)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 ### Compile-Time Enforcement on Active Workstations
 
@@ -774,7 +767,7 @@ it("cannot switch mode while Active (processing work)"):
   assert(relocated.mode == WorkstationMode.Relocation)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 The `Active` case class does not have a `switchMode` method. It is not a
 runtime check that throws an exception. It is not an `Either` that
@@ -795,7 +788,6 @@ workstation receives a consolidation group, processes it, and then
 becomes available for the next one.
 
 @:@
-
 
 ## End of Day Summary
 
@@ -824,7 +816,7 @@ it("all stock positions reflect the day's operations"):
   assert(bandages.onHandQuantity == 497)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 Three stock positions, three stories:
 
@@ -865,7 +857,7 @@ it("events trace the complete audit trail"):
     == AdjustmentReasonCode.Shrinkage)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
 Every mutation throughout the day produced an immutable event. The
 `stockRepo.events` list buffer contains `Created`, `QuantityAdded`,
@@ -875,19 +867,18 @@ projections (Chapter 12), audit logs, and downstream analytics. Here in
 the test, they let us verify that every transition happened and that
 nothing was silently lost.
 
-
 ## What We Learned
 
 This single test file exercises every domain module in the system:
 
-| Time | Module | Aggregates |
-|------|--------|------------|
+| Time  | Module                                                        | Aggregates                                         |
+| ----- | ------------------------------------------------------------- | -------------------------------------------------- |
 | 06:00 | `inbound-delivery`, `goods-receipt`, `stock-position`, `task` | InboundDelivery, GoodsReceipt, StockPosition, Task |
-| 08:00 | `wave`, `task`, `stock-position`, `consolidation-group` | Wave, Task, StockPosition, ConsolidationGroup |
-| 10:00 | `task`, `stock-position` | Task, StockPosition |
-| 14:00 | `cycle-count`, `count-task`, `stock-position` | CycleCount, CountTask, StockPosition |
-| 16:00 | `stock-position` | StockPosition |
-| 17:00 | `workstation` | Workstation |
+| 08:00 | `wave`, `task`, `stock-position`, `consolidation-group`       | Wave, Task, StockPosition, ConsolidationGroup      |
+| 10:00 | `task`, `stock-position`                                      | Task, StockPosition                                |
+| 14:00 | `cycle-count`, `count-task`, `stock-position`                 | CycleCount, CountTask, StockPosition               |
+| 16:00 | `stock-position`                                              | StockPosition                                      |
+| 17:00 | `workstation`                                                 | Workstation                                        |
 
 Every pattern from Parts I through III contributed:
 

@@ -7,7 +7,6 @@ the design is clean. But production systems need persistence, concurrency
 control, and distributed execution. In this chapter, we will see how Pekko's
 actor model brings all three.
 
-
 ## Why Actors?
 
 Before we look at code, let's understand why Neon WES uses the actor model in
@@ -48,7 +47,6 @@ license. The API is nearly identical; the package names changed from
 
 @:@
 
-
 ## Anatomy of an Event-Sourced Actor
 
 Let's open `WaveActor.scala` and walk through its structure. This is the
@@ -61,7 +59,7 @@ object WaveActor:
     EntityTypeKey[Command]("Wave")
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 The `EntityKey` is a cluster sharding identifier. It tells Pekko that actors
 of this type are known as `"Wave"` entities. When we send a command to wave
@@ -88,7 +86,7 @@ def apply(entityId: String): Behavior[Command] =
         )
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 There is a lot happening in these few lines. Let's unpack it piece by piece.
 
@@ -116,7 +114,6 @@ The method also takes four value parameters:
 
 These two functions are the heart of the actor. Everything else is
 configuration.
-
 
 ## Commands
 
@@ -150,7 +147,7 @@ case class Cancel(
 case class GetState(replyTo: ActorRef[Option[Wave]]) extends Command
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 Each command extends `CborSerializable`, the marker trait from `common` that
 tells Pekko to serialize these messages with Jackson CBOR. In a cluster, commands
@@ -177,7 +174,6 @@ caller sends a command and waits forever for a response that never comes.
 
 @:@
 
-
 ## State: EmptyState and ActiveState
 
 The actor's internal state is a simple two-case sealed trait:
@@ -188,7 +184,7 @@ case object EmptyState extends State
 case class ActiveState(wave: Wave) extends State
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 **`EmptyState`** represents an actor that has not yet received its first event.
 When Pekko creates a new actor for an entity ID that has no journal history,
@@ -202,7 +198,6 @@ hierarchy inside `Wave` already encodes that information.
 
 Both cases extend `CborSerializable` because Pekko may serialize the state
 when taking snapshots. We will discuss snapshots later in this chapter.
-
 
 ## The Command Handler
 
@@ -234,7 +229,7 @@ private def commandHandler(
             StatusReply.success(ReleaseResponse(released, event)))
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 **The `Create` case.** When the actor is in `EmptyState` and receives a
 `Create` command, it persists the provided `WaveReleased` event and replies
@@ -248,7 +243,7 @@ method `planned.release(at)`, which returns a `(Wave.Released,
 WaveEvent.WaveReleased)` tuple. The actor persists the event and replies with
 both the new state and the event.
 
-The key insight here is what the command handler does *not* do. It does not
+The key insight here is what the command handler does _not_ do. It does not
 validate whether a release is allowed. It does not check preconditions. It does
 not contain business logic. All of that lives in the domain model's typestate
 transition methods. The pattern match on `Wave.Planned` ensures that release is
@@ -280,7 +275,7 @@ The `Complete` and `Cancel` cases follow the same pattern:
             StatusReply.success(CancelResponse(cancelled, event)))
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 Notice that `Cancel` has two cases: one for `Wave.Planned` and one for
 `Wave.Released`. This mirrors the domain model, where both states offer a
@@ -309,7 +304,7 @@ The `GetState` query and the catch-all error case complete the handler:
           case c: GetState => Effect.reply(c.replyTo)(None)
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 `GetState` is a pure read. It does not persist any event; it simply replies
 with the current aggregate wrapped in an `Option`. This is useful for the
@@ -320,7 +315,6 @@ for the current state. It logs a warning and replies with an error. Because we
 used `withEnforcedReplies`, the compiler requires that every branch produces a
 reply. The catch-all must extract `replyTo` from each possible command type to
 satisfy this requirement.
-
 
 ## The Event Handler
 
@@ -346,7 +340,7 @@ private val eventHandler: (State, WaveEvent) => State =
           case _ => state
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 Three rules govern event handlers:
 
@@ -374,7 +368,6 @@ stored in every event. They pattern-match on `ActiveState` to extract the
 current wave, then construct the new typestate. The fallback `case _ => state`
 is a safety net that should never be reached in practice.
 
-
 ## Responses
 
 Each command type has a corresponding response that bundles the new state with
@@ -397,7 +390,7 @@ case class CancelResponse(
 ) extends CborSerializable
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 Why does the response include both the state and the event? The caller (the
 `PekkoWaveRepository`, which we will build in Chapter 11) often needs both
@@ -409,7 +402,6 @@ processes like projections or service cascades.
 an `Error`. The `Create` command uses `StatusReply.ack()`, a convenience for
 commands that do not need to return data beyond "it worked." The other commands
 use `StatusReply.success(response)` to deliver the full response object.
-
 
 ## Retention and Snapshots
 
@@ -423,7 +415,7 @@ solves this with snapshots.
 )
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 This configuration tells Pekko to save a snapshot of the actor's state every
 100 events and to keep the 2 most recent snapshots. On recovery, Pekko loads
@@ -442,7 +434,7 @@ sealed trait Wave:
   def orderGrouping: OrderGrouping
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/Wave.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/Wave.scala_</small>
 
 Without this annotation, Jackson would not know how to deserialize a snapshot
 containing a `Wave.Released` versus a `Wave.Planned`. The `ActiveState` wrapper
@@ -462,7 +454,6 @@ in actor state.
 
 @:@
 
-
 ## Structured Logging with MDC
 
 The outermost wrapper in the `apply` method sets up MDC (Mapped Diagnostic
@@ -476,7 +467,7 @@ Behaviors.withMdc[Command](
     // ...
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 MDC is a logging concept where key-value pairs are attached to every log
 statement within a scope. By wrapping the entire behavior in `withMdc`, every
@@ -494,7 +485,6 @@ You immediately know which entity had the problem, without parsing the message
 text. Structured logging fields can be indexed and searched in tools like
 Elasticsearch or Grafana Loki, making it easy to filter logs for a specific
 entity or entity type.
-
 
 ## Reusing Domain Events Directly
 
@@ -527,13 +517,12 @@ sealed trait WaveEvent extends CborSerializable:
   def occurredAt: Instant
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveEvent.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveEvent.scala_</small>
 
 Since we need events to be serializable for the journal anyway, requiring
 `CborSerializable` on domain events is not an additional cost. The marker
 trait carries no methods or fields; it simply tells Pekko's serialization
 configuration to use Jackson CBOR for these types.
-
 
 ## Architecture Note: Actors as Deciders
 
@@ -547,11 +536,11 @@ pattern describes event-sourced systems in terms of three components:
 
 Our `WaveActor` implements exactly this interface:
 
-| Decider concept | WaveActor implementation                        |
-|-----------------|--------------------------------------------------|
+| Decider concept | WaveActor implementation                          |
+| --------------- | ------------------------------------------------- |
 | `decide`        | `commandHandler: (State, Command) => ReplyEffect` |
-| `evolve`        | `eventHandler: (State, WaveEvent) => State`        |
-| `initialState`  | `EmptyState`                                       |
+| `evolve`        | `eventHandler: (State, WaveEvent) => State`       |
+| `initialState`  | `EmptyState`                                      |
 
 The command handler is `decide`. It examines the current state and the incoming
 command, then either persists events (accepting the command) or replies with an
@@ -578,7 +567,6 @@ This layering means:
 - **Changes to business rules do not require actor changes.** If the `release`
   method gains a new precondition, we update the domain model and its unit
   tests. The actor code remains unchanged.
-
 
 ## The Pattern Across All Actors
 
@@ -617,7 +605,6 @@ handler. The creative work happens in the domain model.
 
 @:@
 
-
 ## What We Covered
 
 In this chapter, we bridged the gap between pure domain logic and persistent
@@ -640,7 +627,6 @@ infrastructure. We learned that:
   message.
 - The actor implements the Decider pattern: `decide` (command handler),
   `evolve` (event handler), `initialState` (EmptyState).
-
 
 ## What Comes Next
 

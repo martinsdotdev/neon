@@ -103,6 +103,7 @@ Follow conventional commits with granular, atomic commits:
 **Scopes**: module names (`core`, `wave`, `task`, `web`, etc.)
 
 Examples:
+
 ```
 feat(core): add TaskCompletionService with 5-step completion cascade
 refactor(wave): rename status field to state

@@ -12,7 +12,6 @@ types. Those are the nouns of our domain. Now it is time to give them behavior,
 to model how entities change over time and to make illegal transitions
 unrepresentable in code.
 
-
 ## The State Machine Problem
 
 Every domain aggregate in a warehouse system has a lifecycle. A wave is planned,
@@ -49,10 +48,9 @@ problems:
 
 We can do better.
 
-
 ## Typestate Encoding in Scala 3
 
-The idea behind *typestate encoding* is simple: instead of representing the
+The idea behind _typestate encoding_ is simple: instead of representing the
 lifecycle as a single type with a status field, we represent each state as its
 own type. Transition methods exist only on the types where they are valid. If
 you try to call a method that does not belong to the current state, the code
@@ -71,7 +69,6 @@ Neon WES uses three building blocks for every typestate-encoded aggregate:
    what happened.
 
 Let's see how this works in practice.
-
 
 ## Your First Aggregate: Wave
 
@@ -137,13 +134,13 @@ object Wave:
   case class Cancelled(id: WaveId, orderGrouping: OrderGrouping) extends Wave
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/Wave.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/Wave.scala_</small>
 
 Let's break this down piece by piece.
 
 ### The sealed trait
 
-The `sealed trait Wave` defines the *universe* of all wave states. Any code
+The `sealed trait Wave` defines the _universe_ of all wave states. Any code
 that accepts a `Wave` can receive a wave in any state. The trait declares the
 fields common to every state: `id` and `orderGrouping`.
 
@@ -175,12 +172,12 @@ Not `(Wave, WaveEvent)`. The return type is as specific as possible. The caller
 knows, at the type level, that the result is a `Released` wave.
 
 `Released` has its own transition methods: `complete()` and `cancel()`. Notice
-what it does *not* have: a `release()` method. You cannot release a wave that
+what it does _not_ have: a `release()` method. You cannot release a wave that
 is already released. The compiler enforces this.
 
 ### Terminal states and cancellation
 
-`Completed` and `Cancelled` are *terminal states*. They have no transition
+`Completed` and `Cancelled` are _terminal states_. They have no transition
 methods at all. The case class declarations have no body. There is nothing you
 can do with a completed or cancelled wave except read its fields.
 
@@ -194,7 +191,6 @@ a wave can be cancelled from any non-terminal state. Rather than sharing a
 method through inheritance (which would weaken the typestate guarantees), each
 state declares its own `cancel()`. A small amount of duplication buys a large
 amount of clarity.
-
 
 ## A More Complex Aggregate: Task
 
@@ -253,10 +249,10 @@ object Task:
     (planned, event)
 ```
 
-<small>*File: task/src/main/scala/neon/task/Task.scala*</small>
+<small>_File: task/src/main/scala/neon/task/Task.scala_</small>
 
 Unlike `Wave`, `Task` has a `create()` factory method on the companion object.
-This is where *precondition validation* lives. The `require()` call ensures
+This is where _precondition validation_ lives. The `require()` call ensures
 that `requestedQuantity` is positive. If someone passes zero or a negative
 number, they get a clear failure immediately, not a corrupted aggregate that
 silently misbehaves later.
@@ -278,12 +274,12 @@ represents a programming error, not a domain error.
 This is one of the most important patterns to notice. Compare the fields across
 the four non-terminal states:
 
-| State | New fields added |
-|---|---|
-| `Planned` | `id`, `taskType`, `skuId`, `packagingLevel`, `requestedQuantity`, `orderId`, `waveId`, `parentTaskId`, `handlingUnitId`, `stockPositionId` |
-| `Allocated` | `sourceLocationId`, `destinationLocationId` |
-| `Assigned` | `assignedTo` (a `UserId`) |
-| `Completed` | `actualQuantity` |
+| State       | New fields added                                                                                                                           |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Planned`   | `id`, `taskType`, `skuId`, `packagingLevel`, `requestedQuantity`, `orderId`, `waveId`, `parentTaskId`, `handlingUnitId`, `stockPositionId` |
+| `Allocated` | `sourceLocationId`, `destinationLocationId`                                                                                                |
+| `Assigned`  | `assignedTo` (a `UserId`)                                                                                                                  |
+| `Completed` | `actualQuantity`                                                                                                                           |
 
 Each transition adds the information that becomes available at that stage. A
 planned task does not know its source location yet, because allocation has not
@@ -348,7 +344,6 @@ states (`CancelledFromPlanned`, `CancelledFromAllocated`,
 cancelled tasks the same way. A single `Cancelled` type with optional fields
 keeps the model simple without losing information.
 
-
 ## The Full Catalogue of State Machines
 
 Neon WES has eight event-sourced aggregates. We have already examined Wave and
@@ -374,7 +369,7 @@ stateDiagram-v2
     Cancelled --> [*]
 ```
 
-<small>*File: consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroup.scala*</small>
+<small>_File: consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroup.scala_</small>
 
 The states track the physical flow: the group is created when a wave is
 released, marked as picked when all pick tasks finish, becomes ready for a
@@ -420,11 +415,11 @@ stateDiagram-v2
     }
 ```
 
-<small>*File: handling-unit/src/main/scala/neon/handlingunit/HandlingUnit.scala*</small>
+<small>_File: handling-unit/src/main/scala/neon/handlingunit/HandlingUnit.scala_</small>
 
-The *pick stream* models a tote that carries picked items from the pick face
+The _pick stream_ models a tote that carries picked items from the pick face
 to a consolidation buffer, where it is eventually emptied during deconsolidation.
-The *ship stream* models a shipping container that gets packed at a workstation,
+The _ship stream_ models a shipping container that gets packed at a workstation,
 marked ready, and eventually shipped.
 
 The two streams share the `HandlingUnit` sealed trait and its common fields
@@ -447,7 +442,7 @@ stateDiagram-v2
     Cancelled --> [*]
 ```
 
-<small>*File: transport-order/src/main/scala/neon/transportorder/TransportOrder.scala*</small>
+<small>_File: transport-order/src/main/scala/neon/transportorder/TransportOrder.scala_</small>
 
 A transport order represents the instruction to move a handling unit to a
 destination. It is created by routing policies when a task completes, modeling
@@ -461,7 +456,7 @@ nothing more.
 ### Workstation
 
 The workstation breaks a pattern we have seen in every aggregate so far: its
-lifecycle is *cyclical*, not one-directional.
+lifecycle is _cyclical_, not one-directional.
 
 ```mermaid
 stateDiagram-v2
@@ -474,7 +469,7 @@ stateDiagram-v2
     Active --> Disabled: disable()
 ```
 
-<small>*File: workstation/src/main/scala/neon/workstation/Workstation.scala*</small>
+<small>_File: workstation/src/main/scala/neon/workstation/Workstation.scala_</small>
 
 A workstation can cycle between `Idle` and `Active` many times during a shift
 as consolidation groups are assigned and completed. It can also be disabled
@@ -504,7 +499,7 @@ stateDiagram-v2
     Completed --> [*]
 ```
 
-<small>*File: slot/src/main/scala/neon/slot/Slot.scala*</small>
+<small>_File: slot/src/main/scala/neon/slot/Slot.scala_</small>
 
 The interesting feature is `release()` on `Reserved`, which transitions back to
 `Available`. This supports pre-placement cancellation: if the consolidation
@@ -512,7 +507,6 @@ group assigned to the workstation is cancelled before items have been placed in
 the slot, the slot returns to the available pool. Like the workstation's cyclical
 lifecycle, this demonstrates that typestate encoding is not limited to strictly
 forward-moving state machines.
-
 
 ## Patterns and Principles
 
@@ -557,17 +551,16 @@ preventing corrupted aggregates from entering the system.
 
 Every transition method returns a tuple containing the new state and the event
 that records the transition. This dual return is a defining feature of the
-pattern. The state represents what the aggregate *is* now. The event represents
-what *happened*. Both are needed: the state for further transitions, the event
+pattern. The state represents what the aggregate _is_ now. The event represents
+what _happened_. Both are needed: the state for further transitions, the event
 for persistence and downstream reactions.
 
 We will explore events in depth in the next chapter.
 
-
 ## Architecture Note: The Decider Pattern
 
 Readers familiar with functional event sourcing may recognize a resemblance to
-Jermaine Chassaing's *Decider pattern*. In the Decider, two functions drive the
+Jermaine Chassaing's _Decider pattern_. In the Decider, two functions drive the
 lifecycle:
 
 - `decide(command, state) -> List[Event]` produces events from commands
@@ -575,7 +568,7 @@ lifecycle:
 
 Neon's typestate methods fuse `decide` and `evolve` into a single call. When
 you call `planned.release(at)`, you get back both the new state (what `evolve`
-would produce) and the event (what `decide` would produce). The method *is*
+would produce) and the event (what `decide` would produce). The method _is_
 both functions at once.
 
 This fusion trades the Decider's compositional algebra for compile-time state
@@ -590,7 +583,6 @@ In Chapter 10, we will see how Pekko's `EventSourcedBehavior` separates command
 handling (the `decide` role) from event handling (the `evolve` role), giving us
 the best of both worlds: compile-time safety in the domain model, and the
 Decider's clean separation in the actor layer.
-
 
 ## What Comes Next
 

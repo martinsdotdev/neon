@@ -3,8 +3,8 @@
 Warehouses are fascinating places. Every day, thousands of orders flow in, each
 one triggering a cascade of decisions: which items to pick, from which locations,
 in what sequence, and how to group them for efficient movement through the
-building. The software that orchestrates all of this is called a *Warehouse
-Execution System*, or WES for short.
+building. The software that orchestrates all of this is called a _Warehouse
+Execution System_, or WES for short.
 
 Neon WES is one such system. It is built in Scala 3, powered by event sourcing
 and the actor model, and structured around the principles of domain-driven
@@ -90,8 +90,8 @@ draws on five foundational patterns, each of which has shaped a different aspect
 of the system. We mention them briefly here so you know what to look for as you
 read. Each one will be explored in depth in the relevant chapters.
 
-**The Decider pattern** (Jrme Chassaing). This pattern separates *deciding*
-what should happen from *executing* the decision. In Neon WES, our policies are
+**The Decider pattern** (Jrme Chassaing). This pattern separates _deciding_
+what should happen from _executing_ the decision. In Neon WES, our policies are
 pure functions that examine current state and return an optional state
 transition paired with an event. No side effects, no I/O, just decisions. This
 is the beating heart of our domain logic.
@@ -152,7 +152,7 @@ pitfalls, or connections to other chapters.
 
 @:@
 
-*Italics* mark the first use of a domain term or technical concept. These terms
+_Italics_ mark the first use of a domain term or technical concept. These terms
 are also collected in the Glossary (Appendix F) for quick reference.
 
 **State machine diagrams** use Mermaid syntax and are rendered inline:

@@ -80,40 +80,40 @@ graph TD
 
 ### Reference Data Modules (no Pekko actors)
 
-| Module | sbt Name | Package | Direct Dependencies |
-|---|---|---|---|
-| `common` | `neon-common` | `neon.common` | (none) |
-| `order` | `neon-order` | `neon.order` | common |
-| `location` | `neon-location` | `neon.location` | common |
-| `sku` | `neon-sku` | `neon.sku` | common |
-| `user` | `neon-user` | `neon.user` | common |
-| `carrier` | `neon-carrier` | `neon.carrier` | common |
+| Module     | sbt Name        | Package         | Direct Dependencies |
+| ---------- | --------------- | --------------- | ------------------- |
+| `common`   | `neon-common`   | `neon.common`   | (none)              |
+| `order`    | `neon-order`    | `neon.order`    | common              |
+| `location` | `neon-location` | `neon.location` | common              |
+| `sku`      | `neon-sku`      | `neon.sku`      | common              |
+| `user`     | `neon-user`     | `neon.user`     | common              |
+| `carrier`  | `neon-carrier`  | `neon.carrier`  | common              |
 
 ### Event-Sourced Aggregate Modules (with Pekko actors)
 
-| Module | sbt Name | Package | Direct Dependencies |
-|---|---|---|---|
-| `wave` | `neon-wave` | `neon.wave` | common, order, sku |
-| `task` | `neon-task` | `neon.task` | common |
-| `consolidation-group` | `neon-consolidation-group` | `neon.consolidationgroup` | common |
-| `handling-unit` | `neon-handling-unit` | `neon.handlingunit` | common |
-| `transport-order` | `neon-transport-order` | `neon.transportorder` | common |
-| `workstation` | `neon-workstation` | `neon.workstation` | common |
-| `slot` | `neon-slot` | `neon.slot` | common |
-| `inventory` | `neon-inventory` | `neon.inventory` | common |
-| `stock-position` | `neon-stock-position` | `neon.stockposition` | common |
-| `handling-unit-stock` | `neon-handling-unit-stock` | `neon.handlingunitstock` | common |
-| `inbound-delivery` | `neon-inbound-delivery` | `neon.inbounddelivery` | common |
-| `goods-receipt` | `neon-goods-receipt` | `neon.goodsreceipt` | common |
-| `cycle-count` | `neon-cycle-count` | `neon.cyclecount` | common |
-| `count-task` | `neon-count-task` | `neon.counttask` | common |
+| Module                | sbt Name                   | Package                   | Direct Dependencies |
+| --------------------- | -------------------------- | ------------------------- | ------------------- |
+| `wave`                | `neon-wave`                | `neon.wave`               | common, order, sku  |
+| `task`                | `neon-task`                | `neon.task`               | common              |
+| `consolidation-group` | `neon-consolidation-group` | `neon.consolidationgroup` | common              |
+| `handling-unit`       | `neon-handling-unit`       | `neon.handlingunit`       | common              |
+| `transport-order`     | `neon-transport-order`     | `neon.transportorder`     | common              |
+| `workstation`         | `neon-workstation`         | `neon.workstation`        | common              |
+| `slot`                | `neon-slot`                | `neon.slot`               | common              |
+| `inventory`           | `neon-inventory`           | `neon.inventory`          | common              |
+| `stock-position`      | `neon-stock-position`      | `neon.stockposition`      | common              |
+| `handling-unit-stock` | `neon-handling-unit-stock` | `neon.handlingunitstock`  | common              |
+| `inbound-delivery`    | `neon-inbound-delivery`    | `neon.inbounddelivery`    | common              |
+| `goods-receipt`       | `neon-goods-receipt`       | `neon.goodsreceipt`       | common              |
+| `cycle-count`         | `neon-cycle-count`         | `neon.cyclecount`         | common              |
+| `count-task`          | `neon-count-task`          | `neon.counttask`          | common              |
 
 ### Orchestration and Application Modules
 
-| Module | sbt Name | Package | Direct Dependencies |
-|---|---|---|---|
+| Module | sbt Name    | Package     | Direct Dependencies                                           |
+| ------ | ----------- | ----------- | ------------------------------------------------------------- |
 | `core` | `neon-core` | `neon.core` | common, all 14 event-sourced modules, location, carrier, user |
-| `app` | `neon-app` | `neon.app` | core, inventory, order, sku, user |
+| `app`  | `neon-app`  | `neon.app`  | core, inventory, order, sku, user                             |
 
 ### Naming Convention
 

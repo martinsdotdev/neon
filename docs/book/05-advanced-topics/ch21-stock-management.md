@@ -1,7 +1,7 @@
 # Stock Management
 
-Every warehouse system must answer a deceptively simple question: *how much
-of each product do we have?* The deceptive part is that "have" means different
+Every warehouse system must answer a deceptively simple question: _how much
+of each product do we have?_ The deceptive part is that "have" means different
 things in different contexts. The picker needs to know what is physically on a
 shelf. The wave planner needs to know what is available for new orders. The
 auditor needs to know what has been committed, reserved, or placed on hold.
@@ -12,7 +12,6 @@ supporting concurrent operations, and how stock flows through the system from
 allocation to consumption. We will also look at allocation strategies for
 selecting which stock to pick first and the SOX-compliant adjustment process
 that closes the loop after cycle counts.
-
 
 ## Two Aggregates, Two Granularities
 
@@ -38,7 +37,7 @@ case class Inventory private[inventory] (
   def available: Int = onHand - reserved
 ```
 
-<small>*File: inventory/src/main/scala/neon/inventory/Inventory.scala*</small>
+<small>_File: inventory/src/main/scala/neon/inventory/Inventory.scala_</small>
 
 **StockPosition** is the area-level view. It tracks on-hand stock decomposed
 into four buckets for a (SKU, warehouse area, lot attributes) combination.
@@ -61,21 +60,20 @@ case class StockPosition private[stockposition] (
 )
 ```
 
-<small>*File: stock-position/src/main/scala/neon/stockposition/StockPosition.scala*</small>
+<small>_File: stock-position/src/main/scala/neon/stockposition/StockPosition.scala_</small>
 
 Why two aggregates instead of one? Because they serve fundamentally different
 query patterns:
 
-| Concern              | Inventory (location-level)  | StockPosition (area-level)     |
-| -------------------- | --------------------------- | ------------------------------ |
-| Key                  | (location, SKU, lot)        | (SKU, warehouse area, lot)     |
-| Primary consumer     | Task execution              | Wave planning, allocation      |
-| Reservation model    | Simple (on-hand vs reserved)| 4-bucket decomposition         |
-| Lot tracking         | Optional `Lot` value        | Full `LotAttributes` with FEFO |
+| Concern           | Inventory (location-level)   | StockPosition (area-level)     |
+| ----------------- | ---------------------------- | ------------------------------ |
+| Key               | (location, SKU, lot)         | (SKU, warehouse area, lot)     |
+| Primary consumer  | Task execution               | Wave planning, allocation      |
+| Reservation model | Simple (on-hand vs reserved) | 4-bucket decomposition         |
+| Lot tracking      | Optional `Lot` value         | Full `LotAttributes` with FEFO |
 
-Inventory tells a picker *where* to go. StockPosition tells the planner *how
-much* is available across an entire zone.
-
+Inventory tells a picker _where_ to go. StockPosition tells the planner _how
+much_ is available across an entire zone.
 
 ## The 4-Bucket Quantity Model
 
@@ -102,7 +100,7 @@ private def validateInvariant(): Unit =
   )
 ```
 
-<small>*File: stock-position/src/main/scala/neon/stockposition/StockPosition.scala*</small>
+<small>_File: stock-position/src/main/scala/neon/stockposition/StockPosition.scala_</small>
 
 Every mutation method calls `validateInvariant()` after computing the new
 state. If any bucket goes negative or the sum diverges from on-hand, the
@@ -126,7 +124,6 @@ and cannot block what has already been promised elsewhere. The invariant check
 enforces these constraints after every operation.
 
 @:@
-
 
 ## Operations on StockPosition
 
@@ -153,7 +150,7 @@ def allocate(quantity: Int, at: Instant): (StockPosition, StockPositionEvent.All
   (updated, event)
 ```
 
-<small>*File: stock-position/src/main/scala/neon/stockposition/StockPosition.scala*</small>
+<small>_File: stock-position/src/main/scala/neon/stockposition/StockPosition.scala_</small>
 
 Deallocation is the reverse: when a task is cancelled, `deallocate` moves
 quantity from allocated back to available.
@@ -204,7 +201,7 @@ def reserve(
   (updated, StockPositionEvent.Reserved(id, quantity, lockType, at))
 ```
 
-<small>*File: stock-position/src/main/scala/neon/stockposition/StockPosition.scala*</small>
+<small>_File: stock-position/src/main/scala/neon/stockposition/StockPosition.scala_</small>
 
 `StockLockType` captures why the reservation exists: `Inbound` for receiving
 holds, `InternalMove` for relocations, `Count` for cycle counting, or
@@ -255,15 +252,14 @@ def adjust(
   (updated, StockPositionEvent.Adjusted(id, delta, reasonCode, at))
 ```
 
-<small>*File: stock-position/src/main/scala/neon/stockposition/StockPosition.scala*</small>
+<small>_File: stock-position/src/main/scala/neon/stockposition/StockPosition.scala_</small>
 
-The `reasonCode` is mandatory. Every adjustment must declare *why* it happened.
+The `reasonCode` is mandatory. Every adjustment must declare _why_ it happened.
 We will return to this requirement in the SOX compliance section below.
-
 
 ## Allocation Strategies
 
-When a wave is released, the system needs to decide *which* stock positions to
+When a wave is released, the system needs to decide _which_ stock positions to
 draw from for each SKU. This is the job of `StockAllocationPolicy`, a stateless
 policy that implements three strategies:
 
@@ -279,7 +275,7 @@ object StockAllocationPolicy:
   ): Either[StockAllocationError, List[AllocationResult]]
 ```
 
-<small>*File: core/src/main/scala/neon/core/StockAllocationPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/StockAllocationPolicy.scala_</small>
 
 ### FEFO (First Expired, First Out)
 
@@ -341,7 +337,7 @@ private def greedyAllocate(
   (allocations.toList, remaining)
 ```
 
-<small>*File: core/src/main/scala/neon/core/StockAllocationPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/StockAllocationPolicy.scala_</small>
 
 Before sorting, the policy filters out positions with insufficient shelf life.
 If `minimumShelfLifeDays` is set and no positions meet the threshold, the policy
@@ -356,7 +352,6 @@ contain a `shortQuantity` of 15. The caller decides whether to proceed with
 the partial allocation or reject it entirely.
 
 @:@
-
 
 ## Stock Consumption Patterns
 
@@ -411,7 +406,7 @@ else if completed.requestedQuantity > 0 then
   Some((updated, event))
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
 
 @:callout(info)
 
@@ -420,7 +415,6 @@ determine whether a replacement task should be created for the unfulfilled
 quantity. Stock consumption and shortpick creation are independent concerns.
 
 @:@
-
 
 ## SOX-Compliant Adjustments
 
@@ -438,12 +432,12 @@ Neon WES enforces two controls:
 Every adjustment requires an `AdjustmentReasonCode`. The enum provides 13
 values organized into four categories:
 
-| Category     | Reason Codes                                       |
-| ------------ | -------------------------------------------------- |
-| Shrinkage    | Damaged, Expired, Shrinkage                        |
-| Operational  | CycleCountAdjustment, ReceivingDiscrepancy, Misplaced, Found |
-| Quality      | QualityHold, QualityRelease, Defective             |
-| Business     | InternalUse, Disposal, DataCorrection              |
+| Category    | Reason Codes                                                 |
+| ----------- | ------------------------------------------------------------ |
+| Shrinkage   | Damaged, Expired, Shrinkage                                  |
+| Operational | CycleCountAdjustment, ReceivingDiscrepancy, Misplaced, Found |
+| Quality     | QualityHold, QualityRelease, Defective                       |
+| Business    | InternalUse, Disposal, DataCorrection                        |
 
 The reason code travels with the `Adjusted` event into the event store,
 creating an immutable audit trail that links every quantity change to a
@@ -470,7 +464,7 @@ object AdjustmentService:
     else Right(AdjustmentResult(variance, adjustedBy, reasonCode))
 ```
 
-<small>*File: core/src/main/scala/neon/core/AdjustmentService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/AdjustmentService.scala_</small>
 
 If User A counted 47 units where the system expected 50, User A cannot also
 approve the adjustment of -3. A different user (User B) must review the
@@ -484,7 +478,6 @@ class, not an exception. The caller can handle it precisely, perhaps by
 prompting for a different approver rather than failing the entire workflow.
 
 @:@
-
 
 ## The Full Stock Lifecycle
 

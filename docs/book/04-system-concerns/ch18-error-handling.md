@@ -12,22 +12,20 @@ code mapping for external callers. Along the way, we will see how these
 levels compose into a coherent strategy that spans the entire system, from
 aggregate creation to the JSON response body.
 
-
 ## Three Levels of Error Handling
 
 Before diving into the details, let's get the big picture. Neon WES has
 three distinct categories of errors, and each one is handled by a different
 mechanism:
 
-| Level | What Goes Wrong | Mechanism | Example |
-|-------|----------------|-----------|---------|
-| 1 | Programming error: a precondition was violated | `require()` throws | Negative quantity, empty order list |
-| 2 | Business error: a valid request hits an invalid state | Sealed trait ADT + `Either` | Task not found, wave already cancelled |
-| 3 | External presentation: mapping business errors to HTTP | Status code selection | NotFound to 404, AlreadyTerminal to 409 |
+| Level | What Goes Wrong                                        | Mechanism                   | Example                                 |
+| ----- | ------------------------------------------------------ | --------------------------- | --------------------------------------- |
+| 1     | Programming error: a precondition was violated         | `require()` throws          | Negative quantity, empty order list     |
+| 2     | Business error: a valid request hits an invalid state  | Sealed trait ADT + `Either` | Task not found, wave already cancelled  |
+| 3     | External presentation: mapping business errors to HTTP | Status code selection       | NotFound to 404, AlreadyTerminal to 409 |
 
 Level 1 catches bugs. Level 2 models expected failure modes. Level 3
 translates those failure modes for HTTP clients. Let's examine each one.
-
 
 ## Level 1: Precondition Guards with `require()`
 
@@ -44,7 +42,7 @@ require(requestedQuantity > 0,
   s"requestedQuantity must be positive, got $requestedQuantity")
 ```
 
-<small>*File: task/src/main/scala/neon/task/Task.scala*</small>
+<small>_File: task/src/main/scala/neon/task/Task.scala_</small>
 
 And `WavePlanner.plan` guards its own precondition:
 
@@ -52,7 +50,7 @@ And `WavePlanner.plan` guards its own precondition:
 require(orders.nonEmpty, "orders must not be empty")
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WavePlanner.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WavePlanner.scala_</small>
 
 The `Inventory` aggregate is particularly thorough about its preconditions:
 
@@ -62,7 +60,7 @@ require(quantity <= available,
   s"quantity $quantity exceeds available $available")
 ```
 
-<small>*File: inventory/src/main/scala/neon/inventory/Inventory.scala*</small>
+<small>_File: inventory/src/main/scala/neon/inventory/Inventory.scala_</small>
 
 Several patterns emerge across these examples:
 
@@ -92,7 +90,6 @@ a lightweight assertion that stays active in production.
 
 @:@
 
-
 ### When to Use `require()` vs. `Either`
 
 The boundary between Level 1 and Level 2 is the boundary between programming
@@ -111,7 +108,6 @@ errors and business errors. Here is a simple rule of thumb:
 The Neon WES codebase follows this rule consistently. Preconditions that
 protect aggregate invariants use `require()`. Business-level failures that
 depend on runtime state use sealed trait ADTs and `Either`.
-
 
 ## Level 2: Sealed Trait ADTs for Business Errors
 
@@ -136,7 +132,7 @@ object TaskCompletionError:
   case class VerificationRequired(taskId: TaskId) extends TaskCompletionError
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
 
 Four things to notice:
 
@@ -168,7 +164,7 @@ object WaveCancellationError:
       extends WaveCancellationError
 ```
 
-<small>*File: core/src/main/scala/neon/core/WaveCancellationService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/WaveCancellationService.scala_</small>
 
 Simpler. Only two things can go wrong when cancelling a wave: it does not
 exist, or it is already in a terminal state (completed or cancelled). The
@@ -179,19 +175,18 @@ error type has exactly two cases.
 Neon WES has over a dozen error ADTs, one per service operation. Here is a
 representative sample:
 
-| Error ADT | Service | Cases |
-|-----------|---------|-------|
-| `TaskCompletionError` | `TaskCompletionService` | NotFound, NotAssigned, InvalidQuantity, VerificationRequired |
-| `TaskLifecycleError` | `AsyncTaskLifecycleService` | NotFound, InWrongState, AlreadyTerminal, UserNotFound, UserNotActive |
-| `WaveCancellationError` | `WaveCancellationService` | NotFound, AlreadyTerminal |
-| `WorkstationAssignmentError` | `WorkstationAssignmentService` | NotFound, InWrongState |
-| `AuthError` | `AuthenticationService` | InvalidCredentials, AccountInactive |
+| Error ADT                    | Service                        | Cases                                                                |
+| ---------------------------- | ------------------------------ | -------------------------------------------------------------------- |
+| `TaskCompletionError`        | `TaskCompletionService`        | NotFound, NotAssigned, InvalidQuantity, VerificationRequired         |
+| `TaskLifecycleError`         | `AsyncTaskLifecycleService`    | NotFound, InWrongState, AlreadyTerminal, UserNotFound, UserNotActive |
+| `WaveCancellationError`      | `WaveCancellationService`      | NotFound, AlreadyTerminal                                            |
+| `WorkstationAssignmentError` | `WorkstationAssignmentService` | NotFound, InWrongState                                               |
+| `AuthError`                  | `AuthenticationService`        | InvalidCredentials, AccountInactive                                  |
 
 The pattern repeats across transport orders, consolidation groups, slots,
 inventory, stock positions, inbound deliveries, and cycle counts. Each ADT
 has exactly the cases that its specific service can produce, no more, no
 less.
-
 
 ## Either Composition in Services
 
@@ -221,7 +216,7 @@ def complete(
       Left(TaskCompletionError.TaskNotAssigned(taskId))
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
 
 Let's trace the logic step by step:
 
@@ -265,7 +260,7 @@ def cancel(
       Left(WaveCancellationError.WaveAlreadyTerminal(waveId))
 ```
 
-<small>*File: core/src/main/scala/neon/core/WaveCancellationService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/WaveCancellationService.scala_</small>
 
 The structure is identical. Look up the entity, match on its state, return
 `Left` for invalid states, proceed for valid ones. Both terminal states
@@ -274,9 +269,8 @@ The structure is identical. Look up the entity, match on its state, return
 Notice how the typestate pattern from Chapter 4 and the error ADT pattern
 reinforce each other. The `match` on `Some(planned: Wave.Planned)` is a
 typestate check. The `Left(WaveAlreadyTerminal)` is an error ADT case. The
-two mechanisms work together: typestates tell us *which* state the entity is
-in, and the error ADT tells the *caller* why the operation was rejected.
-
+two mechanisms work together: typestates tell us _which_ state the entity is
+in, and the error ADT tells the _caller_ why the operation was rejected.
 
 ## Level 3: HTTP Status Code Mapping
 
@@ -298,7 +292,7 @@ case Left(error) =>
       complete(StatusCodes.PreconditionRequired)
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/TaskRoutes.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/TaskRoutes.scala_</small>
 
 And `WaveRoutes` maps `WaveCancellationError`:
 
@@ -309,16 +303,16 @@ case Left(_: WaveCancellationError.WaveAlreadyTerminal) =>
   complete(StatusCodes.Conflict)
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/WaveRoutes.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/WaveRoutes.scala_</small>
 
 The mapping convention is consistent across every route in the system:
 
-| Domain Error Pattern | HTTP Status | Semantics |
-|---------------------|-------------|-----------|
-| `XxxNotFound` | 404 Not Found | The entity does not exist |
-| `XxxAlreadyTerminal`, `XxxInWrongState` | 409 Conflict | State machine violation |
-| `InvalidXxx`, validation errors | 422 Unprocessable Entity | Structurally valid request, semantically invalid data |
-| `VerificationRequired` | 428 Precondition Required | A business precondition was not met |
+| Domain Error Pattern                    | HTTP Status               | Semantics                                             |
+| --------------------------------------- | ------------------------- | ----------------------------------------------------- |
+| `XxxNotFound`                           | 404 Not Found             | The entity does not exist                             |
+| `XxxAlreadyTerminal`, `XxxInWrongState` | 409 Conflict              | State machine violation                               |
+| `InvalidXxx`, validation errors         | 422 Unprocessable Entity  | Structurally valid request, semantically invalid data |
+| `VerificationRequired`                  | 428 Precondition Required | A business precondition was not met                   |
 
 The route layer also factors out reusable error mappers for services that
 have many error cases. Here is `TaskRoutes`' lifecycle error mapper:
@@ -338,14 +332,13 @@ private def mapLifecycleError(error: TaskLifecycleError): Route =
       complete(StatusCodes.UnprocessableEntity)
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/TaskRoutes.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/TaskRoutes.scala_</small>
 
 Because the error traits are sealed, the compiler verifies exhaustive
 matching. If someone adds a new error case to `TaskLifecycleError`, every
 route that matches on it will produce a warning until the new case is
 handled. This is the sealed trait's killer feature: no error can silently
 slip through.
-
 
 ### Why No Error Bodies?
 
@@ -366,11 +359,10 @@ error case class fields (`taskId`, `actualQuantity`). Adding JSON error
 responses is a presentation concern that does not require changing the
 domain or service layers.
 
-
 ## Architecture Note: Railway Oriented Programming
 
 The error handling strategy in Neon WES follows a pattern that Scott Wlaschin
-calls *Railway Oriented Programming* (ROP). The metaphor is a two-track
+calls _Railway Oriented Programming_ (ROP). The metaphor is a two-track
 railway:
 
 ```
@@ -427,7 +419,6 @@ examples use F#, but the concepts map directly to Scala's `Either` and
 
 @:@
 
-
 ## Summary
 
 - **`require()`** guards domain invariants that should never be violated.
@@ -445,7 +436,6 @@ examples use F#, but the concepts map directly to Scala's `Either` and
   aggregate boundary. `Either` propagates business errors through the
   service layer. HTTP mapping presents those errors to external callers.
   Each level handles its own concern without leaking into the others.
-
 
 ## What Comes Next
 

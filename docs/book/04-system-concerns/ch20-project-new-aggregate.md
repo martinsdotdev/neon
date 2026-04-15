@@ -41,27 +41,25 @@ If you follow these steps in order, the compiler will guide you to a working
 implementation. Every step produces something testable before you move to the
 next.
 
-
 ## The 10-Step Checklist
 
 Before diving into details, here is the full procedure at a glance. Each step
 builds on the previous one.
 
-| Step | What                      | Where                          | Produces                          |
-|------|---------------------------|--------------------------------|-----------------------------------|
-| 1    | sbt subproject            | `build.sbt`                    | Compilable module directory       |
-| 2    | Domain aggregate          | `xxx/src/main/scala/`          | Typestate sealed trait            |
-| 3    | Events                    | `xxx/src/main/scala/`          | Event sealed trait                |
-| 4    | Repository traits         | `xxx/src/main/scala/`          | Sync and async port interfaces    |
-| 5    | Actor                     | `xxx/src/main/scala/`          | `EventSourcedBehavior`            |
-| 6    | Pekko repository          | `xxx/src/main/scala/`          | Cluster sharding adapter          |
-| 7    | Policies and services     | `core/src/main/scala/`         | Business rules, orchestration     |
-| 8    | Projection handler        | `app/src/main/scala/projection` | Read-side table population       |
-| 9    | HTTP routes               | `app/src/main/scala/http`      | REST endpoints                    |
-| 10   | Wiring                    | `app/src/main/scala/`          | Everything connected at startup   |
+| Step | What                  | Where                           | Produces                        |
+| ---- | --------------------- | ------------------------------- | ------------------------------- |
+| 1    | sbt subproject        | `build.sbt`                     | Compilable module directory     |
+| 2    | Domain aggregate      | `xxx/src/main/scala/`           | Typestate sealed trait          |
+| 3    | Events                | `xxx/src/main/scala/`           | Event sealed trait              |
+| 4    | Repository traits     | `xxx/src/main/scala/`           | Sync and async port interfaces  |
+| 5    | Actor                 | `xxx/src/main/scala/`           | `EventSourcedBehavior`          |
+| 6    | Pekko repository      | `xxx/src/main/scala/`           | Cluster sharding adapter        |
+| 7    | Policies and services | `core/src/main/scala/`          | Business rules, orchestration   |
+| 8    | Projection handler    | `app/src/main/scala/projection` | Read-side table population      |
+| 9    | HTTP routes           | `app/src/main/scala/http`       | REST endpoints                  |
+| 10   | Wiring                | `app/src/main/scala/`           | Everything connected at startup |
 
 Let's walk through each step in detail.
-
 
 ## Step 1: The sbt Subproject
 
@@ -148,7 +146,6 @@ Run `sbt compile` after this step. The project should compile with
 an empty source directory. If it does, the sbt wiring is correct.
 
 @:@
-
 
 ## Step 2: The Domain Aggregate
 
@@ -243,7 +240,6 @@ types in that directory.
 
 @:@
 
-
 ## Step 3: Events
 
 Events are the source of truth in an event-sourced system. They are stored in
@@ -297,7 +293,6 @@ The conventions from Chapter 5:
   timestamp. These are declared on the sealed trait so projections can access
   them generically.
 
-
 ## Step 4: Repository Traits
 
 Repository traits define the ports through which services interact with
@@ -341,7 +336,6 @@ Add query methods as the domain requires them. If a service needs to find all
 active pick stations, add `def findAllActive: Future[List[PickStation]]` to
 the async trait. If that query spans multiple entities, it will use projection
 tables rather than individual actor asks.
-
 
 ## Step 5: The Actor
 
@@ -512,7 +506,6 @@ This is the "event must contain enough data" rule from Chapter 5.
 
 @:@
 
-
 ## Step 6: The Pekko Repository
 
 The Pekko repository implements the async port trait using cluster sharding.
@@ -574,7 +567,6 @@ For single-entity operations, we use `entityRefFor(...).ask(...)`. For
 cross-entity queries (like "find all active pick stations"), we query the
 CQRS projection table and then fan out to individual actors if needed. The
 `R2dbcProjectionQueries` trait from `common` provides this capability.
-
 
 ## Step 7: Policies and Services (in core)
 
@@ -669,7 +661,6 @@ class AsyncPickStationService(
 The sync service is for testing with in-memory repositories. The async service
 is what the HTTP routes call in production.
 
-
 ## Step 8: Projection Handler (in app)
 
 The projection handler consumes events from the journal and populates a
@@ -750,7 +741,6 @@ The handler extends `LoggingProjectionHandler`, which adds structured DEBUG
 logging on event entry and ERROR logging with stack traces on failure.
 Subclasses only need to implement `processEvent`.
 
-
 ## Step 9: HTTP Routes (in app)
 
 The routes expose the aggregate to the frontend. They handle JSON
@@ -824,7 +814,6 @@ marshalling infrastructure.
 
 @:@
 
-
 ## Step 10: Wiring
 
 The final step connects everything at application startup. Three files need
@@ -882,7 +871,6 @@ After all three wiring edits, run `sbt compile` to verify
 everything resolves. Then run `sbt test` to ensure nothing is broken.
 
 @:@
-
 
 ## Testing at Every Layer
 
@@ -1022,7 +1010,6 @@ and persistence issues. Route tests catch HTTP contract violations. Skipping
 any layer leaves a gap.
 
 @:@
-
 
 ## What We Learned
 

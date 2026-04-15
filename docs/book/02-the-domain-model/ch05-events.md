@@ -6,12 +6,11 @@ illegal transitions impossible at compile time. Now let's turn our attention to
 the other half of that tuple. The event is an immutable record of what happened,
 and in an event-sourced system, it is the single source of truth.
 
-
 ## What Is a Domain Event?
 
-A *domain event* is an immutable record of something that happened in the
-domain. Not something that *should* happen, not something that *might* happen,
-but something that *already did*. When we say `WaveReleased`, we mean the wave
+A _domain event_ is an immutable record of something that happened in the
+domain. Not something that _should_ happen, not something that _might_ happen,
+but something that _already did_. When we say `WaveReleased`, we mean the wave
 has been released. It is a fact, written in past tense, permanently recorded.
 
 This is a deliberate naming convention. Every event type in Neon WES uses past
@@ -33,7 +32,6 @@ and 11. For now, we are focusing on the events themselves: how they are
 structured, what they carry, and why they are designed the way they are.
 
 @:@
-
 
 ## Events vs Commands
 
@@ -60,7 +58,6 @@ In Neon WES, commands will appear formally in Chapter 10 when we introduce
 Pekko actors. For now, the relevant point is that events are produced by
 aggregate transition methods. When you call `planned.release(at)`, it returns a
 `WaveReleased` event. That event is the proof that the transition happened.
-
 
 ## Event Design in Neon WES
 
@@ -97,7 +94,7 @@ object WaveEvent:
   ) extends WaveEvent
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveEvent.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveEvent.scala_</small>
 
 Three things to notice here.
 
@@ -189,16 +186,16 @@ object TaskEvent:
   ) extends TaskEvent
 ```
 
-<small>*File: task/src/main/scala/neon/task/TaskEvent.scala*</small>
+<small>_File: task/src/main/scala/neon/task/TaskEvent.scala_</small>
 
 Compare `TaskCompleted` with `WaveCompleted`. The wave completion event carries
 three fields. The task completion event carries thirteen. This difference is not
 accidental; it reflects the different needs of downstream consumers.
 
-Look at `TaskCompleted` closely. It carries `requestedQuantity` *and*
+Look at `TaskCompleted` closely. It carries `requestedQuantity` _and_
 `actualQuantity`. When a picker is sent to pick 10 units of a SKU but finds
 only 7 on the shelf, the task completes with `requestedQuantity = 10` and
-`actualQuantity = 7`. This is a *shortpick*, and the downstream shortpick
+`actualQuantity = 7`. This is a _shortpick_, and the downstream shortpick
 policy needs both numbers to decide whether to create a replacement task for
 the remaining 3. Without both quantities in the event, the policy would need to
 look up the original task state, adding coupling and complexity.
@@ -229,7 +226,6 @@ TaskEvent.TaskCancelled(id, taskType, waveId, parentTaskId,
   Some(destinationLocationId), Some(assignedTo), at)
 ```
 
-
 ## The Transition Tuple, Revisited
 
 In Chapter 4, we introduced the `(NewState, Event)` return type as a
@@ -243,7 +239,7 @@ def release(at: Instant): (Released, WaveEvent.WaveReleased) =
   (released, event)
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/Wave.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/Wave.scala_</small>
 
 The method constructs both the new state and the event from the same inputs,
 in the same method call. There is no way to produce the state without the
@@ -264,7 +260,6 @@ The caller then has two things to do with the tuple:
 Neither piece can be forgotten because both are in the return value. The
 compiler will warn you about unused values if you destructure the tuple and
 ignore one half.
-
 
 ## What Events Carry
 
@@ -330,7 +325,6 @@ overall architecture.
 
 @:@
 
-
 ## Events as the Contract Between Layers
 
 Events do more than record history. They serve as the contract between three
@@ -371,7 +365,6 @@ Aggregate         Actor            Journal          Projection
 We will build each of these layers in later chapters. The point for now is that
 events are the bridge. They are the only artifact that crosses all three
 boundaries.
-
 
 ## Event Naming Conventions
 
@@ -415,12 +408,11 @@ object ConsolidationGroupEvent:
   case class ConsolidationGroupCancelled(...)  extends ConsolidationGroupEvent
 ```
 
-<small>*File: consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroupEvent.scala*</small>
+<small>_File: consolidation-group/src/main/scala/neon/consolidationgroup/ConsolidationGroupEvent.scala_</small>
 
 Six events, six transitions: create, pick, readyForWorkstation, assign,
 complete, cancel. The pattern holds. Reading the event companion object is
 like reading the state diagram in code.
-
 
 ## Architecture Note: The Elm Architecture
 
@@ -455,16 +447,15 @@ transition method always produces the same outputs, with no hidden state or
 network calls. Composability: the runtime can batch events, reorder them, or
 replay them for recovery, all without the aggregate knowing or caring.
 
-The parallel is not exact. Elm's `Cmd` describes effects that *should* happen
+The parallel is not exact. Elm's `Cmd` describes effects that _should_ happen
 in the future (HTTP requests, random number generation). Neon's events describe
-things that *already* happened. But the architectural insight is the same:
+things that _already_ happened. But the architectural insight is the same:
 separate the computation of new state from the execution of side effects, and
 let the runtime handle the messy parts.
 
-
 ## What Comes Next
 
-Events record what happened. But who decides what *should* happen? When a task
+Events record what happened. But who decides what _should_ happen? When a task
 is completed with fewer items than requested, who creates the replacement task?
 When a handling unit arrives at a consolidation buffer, who updates the
 consolidation group? In the next chapter, we will meet policies: pure,

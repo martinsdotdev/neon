@@ -229,17 +229,17 @@ stateDiagram-v2
 
 **Bucket transitions:**
 
-| Operation | From | To | Trigger |
-|---|---|---|---|
-| `allocate` | available | allocated | Outbound order allocation |
-| `deallocate` | allocated | available | Task cancellation |
-| `consumeAllocated` | allocated (and onHand) | removed | Task completion |
-| `addQuantity` | (external) | onHand + available | Inbound receiving |
-| `reserve` | available | reserved | Internal ops (counting, relocation) |
-| `releaseReservation` | reserved | available | Internal ops complete |
-| `block` | available | blocked | Administrative hold |
-| `unblock` | blocked | available | Hold released |
-| `adjust` | onHand + available | adjusted | SOX-compliant correction |
+| Operation            | From                   | To                 | Trigger                             |
+| -------------------- | ---------------------- | ------------------ | ----------------------------------- |
+| `allocate`           | available              | allocated          | Outbound order allocation           |
+| `deallocate`         | allocated              | available          | Task cancellation                   |
+| `consumeAllocated`   | allocated (and onHand) | removed            | Task completion                     |
+| `addQuantity`        | (external)             | onHand + available | Inbound receiving                   |
+| `reserve`            | available              | reserved           | Internal ops (counting, relocation) |
+| `releaseReservation` | reserved               | available          | Internal ops complete               |
+| `block`              | available              | blocked            | Administrative hold                 |
+| `unblock`            | blocked                | available          | Hold released                       |
+| `adjust`             | onHand + available     | adjusted           | SOX-compliant correction            |
 
 ---
 
@@ -279,9 +279,9 @@ stateDiagram-v2
     }
 ```
 
-| Operation | Effect | Trigger |
-|---|---|---|
-| `reserve` | reserved += qty | Outbound allocation |
-| `release` | reserved -= qty | Task cancellation |
-| `consume` | onHand -= qty, reserved -= qty | Task completion |
-| `correctLot` | lot updated | Lot correction (requires reserved == 0) |
+| Operation    | Effect                         | Trigger                                 |
+| ------------ | ------------------------------ | --------------------------------------- |
+| `reserve`    | reserved += qty                | Outbound allocation                     |
+| `release`    | reserved -= qty                | Task cancellation                       |
+| `consume`    | onHand -= qty, reserved -= qty | Task completion                         |
+| `correctLot` | lot updated                    | Lot correction (requires reserved == 0) |

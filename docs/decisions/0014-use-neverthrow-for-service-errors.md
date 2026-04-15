@@ -27,21 +27,21 @@ explicit while keeping code readable.
 ## Core Types
 
 ```typescript
-import { ok, err, Result, ResultAsync } from "neverthrow"
+import { ok, err, Result, ResultAsync } from "neverthrow";
 
-const success = ok(42)           // Result<number, never>
-const failure = err("not found") // Result<never, string>
+const success = ok(42); // Result<number, never>
+const failure = err("not found"); // Result<never, string>
 ```
 
 ## Key Combinators
 
-| Method       | Purpose                          | Signature                            |
-| ------------ | -------------------------------- | ------------------------------------ |
-| `.map()`     | Transform success value          | `(T -> U) -> Result<U, E>`          |
-| `.mapErr()`  | Transform error value            | `(E -> F) -> Result<T, F>`          |
+| Method       | Purpose                          | Signature                             |
+| ------------ | -------------------------------- | ------------------------------------- |
+| `.map()`     | Transform success value          | `(T -> U) -> Result<U, E>`            |
+| `.mapErr()`  | Transform error value            | `(E -> F) -> Result<T, F>`            |
 | `.andThen()` | Chain Result-returning functions | `(T -> Result<U, E>) -> Result<U, E>` |
-| `.match()`   | Handle both tracks               | `(onOk, onErr) -> U`                |
-| `combine()`  | Merge multiple Results           | `Result<T, E>[] -> Result<T[], E>`  |
+| `.match()`   | Handle both tracks               | `(onOk, onErr) -> U`                  |
+| `combine()`  | Merge multiple Results           | `Result<T, E>[] -> Result<T[], E>`    |
 
 ## Error Type Pattern
 
@@ -51,15 +51,13 @@ Define discriminated unions for domain errors:
 type WaveError =
   | { type: "not_found"; waveId: string }
   | { type: "already_released" }
-  | { type: "insufficient_stock"; skuId: string; available: number }
+  | { type: "insufficient_stock"; skuId: string; available: number };
 
 type TaskError =
   | { type: "not_found"; taskId: string }
-  | { type: "invalid_state"; current: string; expected: string }
+  | { type: "invalid_state"; current: string; expected: string };
 
-function releaseWave(
-  waveId: string,
-): ResultAsync<WaveRelease, WaveError>
+function releaseWave(waveId: string): ResultAsync<WaveRelease, WaveError>;
 ```
 
 ## Integration with RFC 9457
@@ -67,21 +65,21 @@ function releaseWave(
 Route handlers map Result errors to Problem Details:
 
 ```typescript
-const result = await waveService.release(waveId)
+const result = await waveService.release(waveId);
 
 return result.match(
   (release) => ({ wave: release }),
   (error) => {
     switch (error.type) {
       case "not_found":
-        return problemDetails(404, "not-found", `Wave ${error.waveId} not found`)
+        return problemDetails(404, "not-found", `Wave ${error.waveId} not found`);
       case "already_released":
-        return problemDetails(409, "conflict", "Wave already released")
+        return problemDetails(409, "conflict", "Wave already released");
       case "insufficient_stock":
-        return problemDetails(422, "validation", `Insufficient stock for ${error.skuId}`)
+        return problemDetails(422, "validation", `Insufficient stock for ${error.skuId}`);
     }
   },
-)
+);
 ```
 
 ## When to Use Exceptions vs Results

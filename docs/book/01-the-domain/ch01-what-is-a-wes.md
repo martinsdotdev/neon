@@ -16,7 +16,6 @@ Whether you have spent years in logistics or have never set foot in a
 warehouse, this chapter will give you the mental model you need to understand
 what Neon WES does, and why it exists.
 
-
 ## From Shelf to Ship: The Life of a Warehouse Order
 
 Let's follow a single customer order through a warehouse, from the moment the
@@ -44,7 +43,6 @@ for carrier pickup.
 That is the entire lifecycle at a high level. The rest of this chapter digs
 into each piece.
 
-
 ## WES, WMS, and WCS: The Three-Layer Hierarchy
 
 Warehouse technology is often described as a three-layer stack. Each layer has a
@@ -65,17 +63,17 @@ graph TD
 
 ### WMS: The Strategic Layer
 
-A *Warehouse Management System* is the planning brain. It manages inventory
+A _Warehouse Management System_ is the planning brain. It manages inventory
 records, processes inbound and outbound orders, defines storage strategies, and
 tracks everything at a high level. If you ask "What inventory do we have, and
 what is our plan?", the WMS answers.
 
-A WMS decides *what* needs to happen. It does not concern itself with *how* or
-*when* at a granular, real-time level.
+A WMS decides _what_ needs to happen. It does not concern itself with _how_ or
+_when_ at a granular, real-time level.
 
 ### WES: The Tactical Layer
 
-A *Warehouse Execution System* sits between planning and equipment. It takes
+A _Warehouse Execution System_ sits between planning and equipment. It takes
 the WMS's plan and turns it into real-time action: batching orders into waves,
 prioritizing tasks, directing workers and material flow, and reacting to
 exceptions as they happen. If you ask "In what sequence and with what resources
@@ -85,7 +83,7 @@ This is the layer Neon WES occupies.
 
 ### WCS: The Equipment Layer
 
-A *Warehouse Control System* talks directly to physical equipment: conveyors,
+A _Warehouse Control System_ talks directly to physical equipment: conveyors,
 sorters, robotic arms, automated storage and retrieval systems. If you ask "How
 should this specific piece of equipment behave right now?", the WCS answers.
 
@@ -103,11 +101,10 @@ well-defined interfaces.
 
 @:callout(info)
 
-You may also encounter the term *MFC (Material Flow Controller)*,
+You may also encounter the term _MFC (Material Flow Controller)_,
 which is essentially a synonym for WCS in some vendor ecosystems.
 
 @:@
-
 
 ## Core Warehouse Concepts
 
@@ -117,8 +114,8 @@ the book and directly map to types and modules in the Neon codebase.
 
 ### Orders and Order Lines
 
-An *order* represents a customer's request to receive goods. Each order
-contains one or more *order lines*, where each line specifies a product and a
+An _order_ represents a customer's request to receive goods. Each order
+contains one or more _order lines_, where each line specifies a product and a
 quantity. For example, an order might have three lines: 2 units of product A, 1
 unit of product B, and 5 units of product C.
 
@@ -127,16 +124,16 @@ grouping that the system must decompose into concrete work.
 
 ### SKUs
 
-A *SKU* (Stock Keeping Unit) is a unique identifier for a product in the
+A _SKU_ (Stock Keeping Unit) is a unique identifier for a product in the
 warehouse. The same physical product might have different SKUs if it comes in
 different packaging sizes or configurations. The SKU record carries information
 the warehouse needs: dimensions, weight, whether the item is fragile or
-hazardous, and the *unit of measure hierarchy* (each = inner pack = case =
+hazardous, and the _unit of measure hierarchy_ (each = inner pack = case =
 pallet).
 
 ### Locations
 
-A *location* is any named position in the warehouse where inventory can reside.
+A _location_ is any named position in the warehouse where inventory can reside.
 Locations form a hierarchy:
 
 - **Zone**: a logical area (e.g., "ambient storage," "cold room," "mezzanine")
@@ -151,7 +148,7 @@ together; tasks that span zones require a consolidation step.
 
 ### Handling Units
 
-A *handling unit* is a physical container that holds inventory. Common handling
+A _handling unit_ is a physical container that holds inventory. Common handling
 units include:
 
 - **Totes**: small bins that travel on conveyors or carts
@@ -164,7 +161,7 @@ the tote is, and where it is going.
 
 ### Waves
 
-A *wave* is a batch of orders that the warehouse processes together. Instead of
+A _wave_ is a batch of orders that the warehouse processes together. Instead of
 handling each order one at a time, the system groups orders by criteria like
 carrier cutoff time, shipping priority, or destination zone. This grouping
 enables more efficient picking because workers can collect items for many orders
@@ -175,7 +172,7 @@ allocation and task generation), and eventually completed or cancelled.
 
 ### Tasks
 
-A *task* is the atomic unit of warehouse work. At its simplest, a task says:
+A _task_ is the atomic unit of warehouse work. At its simplest, a task says:
 "Pick 3 units of SKU X from location A and place them in handling unit Y." The
 system generates tasks, allocates inventory against them, assigns them to
 workers, and tracks their completion.
@@ -187,12 +184,11 @@ are the most common type.
 
 ### Carriers
 
-A *carrier* is a shipping company responsible for transporting orders from the
+A _carrier_ is a shipping company responsible for transporting orders from the
 warehouse to the end customer. Carriers have service levels, cutoff times, and
 pickup schedules that influence wave planning. If a carrier's truck departs at
 3 PM, all orders destined for that carrier must be picked, packed, and staged
 before then.
-
 
 ## The Outbound Flow
 
@@ -218,7 +214,7 @@ planner (a human or an algorithm) groups orders by criteria such as:
 - **Zone affinity**: orders that draw from the same warehouse zone
 - **Cutoff time**: orders that must ship by a specific deadline
 
-The result is a wave: a named batch of orders, still in a *planned* state,
+The result is a wave: a named batch of orders, still in a _planned_ state,
 waiting to be released.
 
 ### Wave Release
@@ -260,9 +256,9 @@ optimal sequence.
 
 When orders span multiple warehouse zones (and they often do), the items
 picked from each zone must be brought together before packing. This step is
-called *consolidation*.
+called _consolidation_.
 
-A common approach uses a *put wall*: a rack of cubbies where each cubby
+A common approach uses a _put wall_: a rack of cubbies where each cubby
 represents one order. Workers arriving from different zones scan their totes and
 place items into the correct cubbies. When all items for an order have arrived,
 the order is ready for packing.
@@ -305,7 +301,6 @@ flowchart TD
     P4 --> S1
 ```
 
-
 ## The Inbound Flow
 
 While the outbound flow gets most of the attention, the inbound flow is what
@@ -316,7 +311,7 @@ flow grinds to a halt.
 
 Goods arrive at the warehouse on supplier trucks. The truck is directed to a
 receiving dock, workers unload pallets and cases to a staging area, and each
-item is scanned and checked against the *purchase order* (PO). Quantities,
+item is scanned and checked against the _purchase order_ (PO). Quantities,
 SKUs, and lot numbers are compared. Discrepancies are flagged.
 
 ### Inspection
@@ -329,7 +324,7 @@ state until disposition is determined.
 ### Putaway
 
 Once goods pass receiving (and optional inspection), the system assigns them a
-storage location. This decision is not random. *Putaway* rules consider product
+storage location. This decision is not random. _Putaway_ rules consider product
 type (hazardous materials go to approved zones), velocity (fast-moving SKUs
 near pick faces), rotation (older stock positioned for earlier picking), and
 space utilization.
@@ -337,7 +332,6 @@ space utilization.
 A putaway task directs a worker to move goods from receiving to the assigned
 location. Once confirmed, the inventory is recorded and becomes available for
 future orders.
-
 
 ## Inventory: The Four-Bucket Stock Model
 
@@ -347,15 +341,15 @@ already promised to an order that has not been picked yet? What if 5 are
 quarantined due to damage? A naive count of 50 would overstate what is actually
 available.
 
-This is why warehouse systems track inventory in multiple *buckets* at each
+This is why warehouse systems track inventory in multiple _buckets_ at each
 location. Neon WES uses a four-bucket model:
 
-| Bucket | Meaning |
-|---|---|
-| *Available* | Free to be allocated to new orders |
-| *Allocated* | Committed to a specific order or task, but not yet physically picked |
-| *Reserved* | Held for a specific purpose, such as replenishment or a VIP order |
-| *Blocked* | Quarantined, damaged, expired, or otherwise on hold |
+| Bucket      | Meaning                                                              |
+| ----------- | -------------------------------------------------------------------- |
+| _Available_ | Free to be allocated to new orders                                   |
+| _Allocated_ | Committed to a specific order or task, but not yet physically picked |
+| _Reserved_  | Held for a specific purpose, such as replenishment or a VIP order    |
+| _Blocked_   | Quarantined, damaged, expired, or otherwise on hold                  |
 
 The fundamental invariant is:
 
@@ -384,11 +378,11 @@ stateDiagram-v2
 ### Lot Tracking
 
 Many industries require tracking goods at a granularity finer than the SKU
-level. A *lot* (sometimes called a batch) identifies a specific production run
+level. A _lot_ (sometimes called a batch) identifies a specific production run
 of a product. Lot tracking enables recalls, quality investigations, and
 rotation-based picking.
 
-The GS1 standard defines *Application Identifiers* (AIs) for encoding lot
+The GS1 standard defines _Application Identifiers_ (AIs) for encoding lot
 information in barcodes:
 
 - **AI 10**: Batch or lot number
@@ -399,14 +393,14 @@ the inventory throughout its lifecycle in the warehouse.
 
 ### Allocation Strategies: FEFO and FIFO
 
-When the system allocates inventory to an order, it must decide *which* stock
+When the system allocates inventory to an order, it must decide _which_ stock
 to use when multiple lots of the same SKU are available. Two common strategies
 are:
 
-- *FEFO* (First Expired, First Out): allocate the lot with the earliest
+- _FEFO_ (First Expired, First Out): allocate the lot with the earliest
   expiration date first. This is mandatory in food and pharmaceutical
   warehouses to prevent products from expiring on the shelf.
-- *FIFO* (First In, First Out): allocate the lot that was received earliest.
+- _FIFO_ (First In, First Out): allocate the lot that was received earliest.
   This is appropriate for products without expiration dates but where age-based
   rotation is still desired.
 
@@ -415,19 +409,19 @@ category.
 
 ### Shortpicks
 
-A *shortpick* occurs when a worker arrives at a location to pick a certain
+A _shortpick_ occurs when a worker arrives at a location to pick a certain
 quantity but finds fewer units than the system expected. This is one of the most
 disruptive events in a warehouse because it breaks the plan.
 
 When a shortpick happens, the WES must decide: should it reallocate from
 another location, short-ship the order, reassign the task, or correct the
-inventory count? These decisions are governed by *shortpick policies*, and
+inventory count? These decisions are governed by _shortpick policies_, and
 different warehouses handle them differently.
 
 ### Cycle Counting
 
 Warehouses cannot shut down for a full physical inventory count. Instead, they
-use *cycle counting*: continuously auditing small subsets of inventory on a
+use _cycle counting_: continuously auditing small subsets of inventory on a
 rotating basis. A cycle count task directs a worker to a location, asks them to
 count what they find, and compares the result to the system record.
 
@@ -435,16 +429,15 @@ Common triggers include scheduled rotation (every location counted on a
 calendar), shortpick follow-ups (an immediate count at the affected location),
 and velocity-based counting (high-activity locations counted more frequently).
 
-
 ## Why Event Sourcing for a Warehouse?
 
 We have spent this chapter describing warehouse operations in terms of things
-that happen: goods *received*, inventory *allocated*, items *picked*, orders
-*shipped*. This is not a coincidence. Warehouse operations are inherently
+that happen: goods _received_, inventory _allocated_, items _picked_, orders
+_shipped_. This is not a coincidence. Warehouse operations are inherently
 event-driven. Every meaningful change in the warehouse is a discrete,
 observable event.
 
-This is why Neon WES uses *event sourcing* as its persistence model. Let's
+This is why Neon WES uses _event sourcing_ as its persistence model. Let's
 look at why this is a natural fit rather than a forced technical choice.
 
 ### Operations Are Already Events
@@ -492,7 +485,7 @@ append-only. There are no row-level locks to contend over.
 ### The Natural Model
 
 Event sourcing is sometimes criticized as adding unnecessary complexity. In the
-warehouse domain, the opposite is true. The domain *already thinks in events*.
+warehouse domain, the opposite is true. The domain _already thinks in events_.
 Warehouse workers speak in events: "I picked it," "I received it," "I put it
 away." The event log is not an engineering abstraction imposed on the domain;
 it is a direct representation of how the warehouse actually operates.
@@ -506,7 +499,6 @@ takeaway is that the technical architecture grows directly out of the domain's
 natural structure.
 
 @:@
-
 
 ## What Comes Next
 

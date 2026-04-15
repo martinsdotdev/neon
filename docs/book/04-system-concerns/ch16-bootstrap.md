@@ -9,7 +9,6 @@ start? How do all these pieces come together into a running system?
 In this chapter, we will walk through the bootstrap sequence: the two files
 that wire Neon WES from a collection of modules into a live application.
 
-
 ## The Startup Sequence
 
 When the JVM starts, Pekko creates the actor system and instantiates the
@@ -46,11 +45,10 @@ object Guardian:
     }
 ```
 
-<small>*File: app/src/main/scala/neon/app/Guardian.scala*</small>
+<small>_File: app/src/main/scala/neon/app/Guardian.scala_</small>
 
 That is the entire file. Forty-three lines including package declaration and
 imports. Let's break down what happens in order.
-
 
 ## Step 1: Establish the Execution Environment
 
@@ -82,7 +80,6 @@ first command.
 
 @:@
 
-
 ## Step 2: Run Database Migrations
 
 ```scala
@@ -113,7 +110,7 @@ object FlywayMigration:
       .migrate()
 ```
 
-<small>*File: app/src/main/scala/neon/app/FlywayMigration.scala*</small>
+<small>_File: app/src/main/scala/neon/app/FlywayMigration.scala_</small>
 
 @:callout(info)
 
@@ -123,7 +120,6 @@ run once at startup before any async work begins. There is no reason to
 introduce async complexity for a synchronous, sequential operation.
 
 @:@
-
 
 ## Step 3: Obtain the R2DBC Connection Factory
 
@@ -141,7 +137,6 @@ manages this pool based on the configuration we saw in `application.conf`.
 This single connection factory instance gets shared across all repositories
 and serves as the foundation for every database interaction in the system.
 
-
 ## Step 4: Build the Service Registry
 
 ```scala
@@ -151,7 +146,6 @@ val registry =
 
 This single line triggers the construction of every repository and service
 in the application. Let's look at what `ServiceRegistry` actually does.
-
 
 ## The Composition Root
 
@@ -176,7 +170,7 @@ class ServiceRegistry(
   // ... 11 more actor-backed repositories
 ```
 
-<small>*File: app/src/main/scala/neon/app/ServiceRegistry.scala*</small>
+<small>_File: app/src/main/scala/neon/app/ServiceRegistry.scala_</small>
 
 Let's examine the three layers it constructs.
 
@@ -312,7 +306,6 @@ The authentication layer is constructed last because it depends on
 permission checks, and is passed to every route constructor so routes
 can enforce authorization.
 
-
 ## Step 5: Start Projections
 
 ```scala
@@ -344,13 +337,12 @@ object ProjectionBootstrap:
     // ... 11 more projections
 ```
 
-<small>*File: app/src/main/scala/neon/app/projection/ProjectionBootstrap.scala*</small>
+<small>_File: app/src/main/scala/neon/app/projection/ProjectionBootstrap.scala_</small>
 
 Each projection is initialized through `ShardedDaemonProcess`, which
 creates a projection actor managed by the cluster. The `initProjection`
 helper wires the event source provider (reading from the R2DBC journal)
 to the projection handler (writing to read-side tables).
-
 
 ## Step 6: Start the HTTP Server
 
@@ -386,11 +378,10 @@ object HttpServer:
       )
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/HttpServer.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/HttpServer.scala_</small>
 
 Every route is wrapped in `RequestLoggingDirective.withRequestLogging`, which
 emits the canonical log line we will discuss in Chapter 19.
-
 
 ## Step 7: Done
 
@@ -405,7 +396,6 @@ messages. Its entire purpose was the side effects in `Behaviors.setup`:
 running migrations, constructing the dependency graph, and starting
 subsystems. Once that work is done, the Guardian simply exists as the root of
 the actor hierarchy.
-
 
 ## Why Manual Wiring?
 
@@ -443,7 +433,6 @@ implementations, or HTTP routes.
 
 @:@
 
-
 ## The Dependency Graph in Practice
 
 Let's trace the full dependency chain for a single operation: completing a
@@ -470,7 +459,6 @@ Every link in this chain was established by `ServiceRegistry`. The route
 knows its services. The services know their repositories. The repositories
 know the actor system. And the actor system knows the database connection.
 No magic, no reflection, no runtime surprises.
-
 
 ## Summary
 

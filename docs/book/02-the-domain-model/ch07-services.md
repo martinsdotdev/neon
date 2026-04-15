@@ -2,13 +2,12 @@
 
 Policies decide what should happen. Aggregates enforce valid transitions. But
 neither can read from a database, save a result, or coordinate work across
-multiple entities. For that, we need *services*.
+multiple entities. For that, we need _services_.
 
 A service is an orchestrator: it loads data from repositories, calls policies,
 and persists the results. We have spent four chapters building the pieces
 (types, typestates, events, policies). In this chapter, we will see how those
 pieces compose into real business operations.
-
 
 ## The Service Layer's Role
 
@@ -47,7 +46,6 @@ business rules themselves.
 
 @:@
 
-
 ## Error Handling with Sealed Trait ADTs
 
 Before we look at a full service, let's examine how services communicate
@@ -66,7 +64,7 @@ object TaskCompletionError:
   case class VerificationRequired(taskId: TaskId) extends TaskCompletionError
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
 
 Four things to notice here.
 
@@ -97,7 +95,6 @@ ADR-0004.
 
 @:@
 
-
 ## The Result Type
 
 When a service succeeds, it returns a result that bundles every state transition
@@ -121,15 +118,14 @@ case class TaskCompletionResult(
 )
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
 
-This result captures *everything* that happened. The primary action (task
+This result captures _everything_ that happened. The primary action (task
 completed) is always present. The cascade effects are each `Option` because
 they do not always fire: no shortpick means `shortpick = None`, no handling
 unit means `transportOrder = None`, and so on. This gives callers full
 visibility. The HTTP layer can choose which fields to include in a response.
 The test layer can assert on exactly which cascades fired. Nothing is hidden.
-
 
 ## Walkthrough: TaskCompletionService
 
@@ -149,7 +145,7 @@ class TaskCompletionService(
 ):
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
 
 The constructor takes five repository traits and one configuration object.
 Notice that `stockPositionRepository` is `Option`: stock management is not
@@ -168,7 +164,7 @@ object VerificationProfile:
   val disabled: VerificationProfile = VerificationProfile(Set.empty)
 ```
 
-<small>*File: core/src/main/scala/neon/core/VerificationProfile.scala*</small>
+<small>_File: core/src/main/scala/neon/core/VerificationProfile.scala_</small>
 
 A warehouse that requires verification for each-level picks passes
 `VerificationProfile(Set(PackagingLevel.Each))`. A warehouse with no
@@ -195,7 +191,7 @@ def complete(
     case Some(_) => Left(TaskCompletionError.TaskNotAssigned(taskId))
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
 
 Before any business logic runs, the service validates inputs and loads the
 aggregate. There are four ways to reach the failure track:
@@ -274,7 +270,7 @@ private def consumeOrDeallocateStock(
     case _ => None
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
 
 The three branches cover every outcome. **Partial pick** (requested 10,
 picked 7): consume 7 from allocated stock, deallocate 3 back to available.
@@ -307,8 +303,8 @@ routing.foreach { (pending, event) => transportOrderRepository.save(pending, eve
 
 Same pattern, different policy. `RoutingPolicy` checks whether the completed
 task had a handling unit and, if so, creates a transport order to move it to
-the destination. As we discussed in Chapter 6, the policy takes the *event*
-rather than the *state* because routing is a reaction to something that just
+the destination. As we discussed in Chapter 6, the policy takes the _event_
+rather than the _state_ because routing is a reaction to something that just
 happened.
 
 ### Step 5: Wave and picking completion detection
@@ -347,7 +343,7 @@ val (waveCompletion, pickingCompletion) = completed.waveId match
     (completedWave, pickedConsolidationGroup)
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
 
 This is the most complex part of the cascade, and it deserves a careful reading.
 
@@ -393,11 +389,10 @@ task completion can produce up to five downstream effects: stock adjustment,
 shortpick replacement, transport order, wave completion, and consolidation
 group transition. All of them are visible in a single return value.
 
-
 ## Walkthrough: WaveReleaseService
 
-`TaskCompletionService` orchestrates the *end* of a task's lifecycle.
-`WaveReleaseService` orchestrates the *beginning*. When a wave plan is
+`TaskCompletionService` orchestrates the _end_ of a task's lifecycle.
+`WaveReleaseService` orchestrates the _beginning_. When a wave plan is
 released, the service creates tasks, optionally allocates stock, and forms
 consolidation groups.
 
@@ -440,7 +435,7 @@ class WaveReleaseService(
     )
 ```
 
-<small>*File: core/src/main/scala/neon/core/WaveReleaseService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/WaveReleaseService.scala_</small>
 
 The five steps mirror the impure/pure/impure sandwich. (1) Persist the
 released wave. (2) Create tasks via `TaskCreationPolicy` (Chapter 6). (3) If
@@ -453,7 +448,6 @@ Notice the difference from `TaskCompletionService`. The release service does
 not return `Either` because it has no validation to fail. The `WavePlan` is
 already validated by the time it reaches the service, so the return type is a
 plain `WaveReleaseResult` containing every entity that was created.
-
 
 ## Walkthrough: WaveCancellationService
 
@@ -470,7 +464,7 @@ object WaveCancellationError:
   case class WaveAlreadyTerminal(waveId: WaveId) extends WaveCancellationError
 ```
 
-<small>*File: core/src/main/scala/neon/core/WaveCancellationService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/WaveCancellationService.scala_</small>
 
 The error ADT is compact: the wave does not exist, or it is already terminal.
 
@@ -496,7 +490,7 @@ class WaveCancellationService(
         Left(WaveCancellationError.WaveAlreadyTerminal(waveId))
 ```
 
-<small>*File: core/src/main/scala/neon/core/WaveCancellationService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/WaveCancellationService.scala_</small>
 
 The `cancel` method pattern matches on the wave's current state. A planned wave
 has no downstream entities, so cancellation is a single state transition:
@@ -553,7 +547,7 @@ private def cancelReleased(
   )
 ```
 
-<small>*File: core/src/main/scala/neon/core/WaveCancellationService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/WaveCancellationService.scala_</small>
 
 The cascade follows the dependency graph downward: cancel the wave, then
 cancel all non-terminal tasks via `TaskCancellationPolicy`, then find and
@@ -562,12 +556,11 @@ then cancel consolidation groups via `ConsolidationGroupCancellationPolicy`.
 Each step follows the same load/decide/save pattern. The policies handle the
 filtering (skipping already-terminal entities) so the service does not need to.
 
-
 ## Architecture Note: Railway-Oriented Programming
 
 If you have read Scott Wlaschin's writing on functional error handling, the
-service pattern here will look familiar. Wlaschin describes *Railway-Oriented
-Programming* (ROP): treating a computation as a two-track railway where each
+service pattern here will look familiar. Wlaschin describes _Railway-Oriented
+Programming_ (ROP): treating a computation as a two-track railway where each
 step can continue on the success track or divert to the failure track.
 
 In Neon WES, the two tracks are the two sides of `Either`:
@@ -597,7 +590,6 @@ yield result
 The shape is the same whether the operations are synchronous or asynchronous.
 `Either` provides the railway. Pattern matching and `for`-comprehensions provide
 the track switching. No exceptions, no try-catch, no hidden control flow.
-
 
 ## What Comes Next
 

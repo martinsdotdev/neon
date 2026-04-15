@@ -136,15 +136,15 @@ CREATE TABLE user_permission_overrides (
 
 ### Permission Matrix
 
-| Permission                      | Admin | Supervisor | Operator | Viewer |
-| ------------------------------- | ----- | ---------- | -------- | ------ |
-| `wave:plan`                     | x     | x          |          |        |
-| `wave:cancel`                   | x     | x          |          |        |
-| `task:complete`                 | x     | x          | x        |        |
-| `transport-order:confirm`       | x     | x          | x        |        |
-| `consolidation-group:complete`  | x     | x          | x        |        |
-| `workstation:assign`            | x     | x          |          |        |
-| `user:manage`                   | x     |            |          |        |
+| Permission                     | Admin | Supervisor | Operator | Viewer |
+| ------------------------------ | ----- | ---------- | -------- | ------ |
+| `wave:plan`                    | x     | x          |          |        |
+| `wave:cancel`                  | x     | x          |          |        |
+| `task:complete`                | x     | x          | x        |        |
+| `transport-order:confirm`      | x     | x          | x        |        |
+| `consolidation-group:complete` | x     | x          | x        |        |
+| `workstation:assign`           | x     | x          |          |        |
+| `user:manage`                  | x     |            |          |        |
 
 ### References
 

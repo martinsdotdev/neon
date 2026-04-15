@@ -12,7 +12,6 @@ processes: `InboundDelivery` and `GoodsReceipt` on the inbound side,
 core module's services and policies orchestrate the cross-aggregate workflows
 that connect receiving to stock and counting to adjustments.
 
-
 ## Inbound Delivery Lifecycle
 
 An `InboundDelivery` represents an expected receipt of goods. It might come from
@@ -56,7 +55,7 @@ case class New(
   def cancel(at: Instant): (Cancelled, InboundDeliveryEvent.InboundDeliveryCancelled) = ...
 ```
 
-<small>*File: inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDelivery.scala*</small>
+<small>_File: inbound-delivery/src/main/scala/neon/inbounddelivery/InboundDelivery.scala_</small>
 
 Two transitions are available. If the truck arrives, we call `startReceiving`.
 If the delivery is cancelled before any goods arrive (the supplier notifies us,
@@ -101,11 +100,10 @@ the remaining balance into the rejected column.
 
 @:@
 
-
 ## Goods Receipt
 
-While `InboundDelivery` tracks the *expected* side of receiving, `GoodsReceipt`
-tracks the *physical* side. A goods receipt represents a receiving session:
+While `InboundDelivery` tracks the _expected_ side of receiving, `GoodsReceipt`
+tracks the _physical_ side. A goods receipt represents a receiving session:
 an operator at a dock door scanning and inspecting items as they come off the
 truck.
 
@@ -136,13 +134,12 @@ case class ReceivedLine(
 )
 ```
 
-<small>*File: goods-receipt/src/main/scala/neon/goodsreceipt/ReceivedLine.scala*</small>
+<small>_File: goods-receipt/src/main/scala/neon/goodsreceipt/ReceivedLine.scala_</small>
 
 The operator records lines one at a time via `recordLine`, then calls `confirm`
 when finished. Confirmation requires at least one line. The
 `GoodsReceiptConfirmed` event carries the full list of received lines, making
 it a self-contained record of everything received in this session.
-
 
 ## The Inbound Receiving Service
 
@@ -178,7 +175,7 @@ object PutawayCreationPolicy:
       )
 ```
 
-<small>*File: core/src/main/scala/neon/core/PutawayCreationPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/PutawayCreationPolicy.scala_</small>
 
 **Step 2: Optionally update stock.** If a `stockPositionId` is provided, the
 service calls `addQuantity` on the corresponding stock position, increasing
@@ -192,7 +189,6 @@ location), while others update at receipt time. The optional parameter lets
 the caller choose the appropriate strategy.
 
 @:@
-
 
 ## Cycle Count Lifecycle
 
@@ -219,12 +215,12 @@ it was triggered and how the counting is performed.
 
 The `CountType` enum captures four triggering patterns:
 
-| Type        | Description                                   | SAP Equivalent   |
-| ----------- | --------------------------------------------- | ---------------- |
-| `Planned`   | Standard scheduled count (monthly, quarterly) | Periodic         |
-| `Random`    | Random sample for statistical accuracy        | Ad Hoc           |
-| `Triggered` | Movement-triggered opportunistic count        | Continuous       |
-| `Recount`   | Recount of a prior variance                   | EWM standard     |
+| Type        | Description                                   | SAP Equivalent |
+| ----------- | --------------------------------------------- | -------------- |
+| `Planned`   | Standard scheduled count (monthly, quarterly) | Periodic       |
+| `Random`    | Random sample for statistical accuracy        | Ad Hoc         |
+| `Triggered` | Movement-triggered opportunistic count        | Continuous     |
+| `Recount`   | Recount of a prior variance                   | EWM standard   |
 
 ### Count Methods
 
@@ -242,7 +238,6 @@ count triggered by a prior variance. Informed counting is acceptable for
 routine verification of stable, high-volume locations.
 
 @:@
-
 
 ## Count Task Lifecycle
 
@@ -280,7 +275,7 @@ case class Pending(
     ...
 ```
 
-<small>*File: count-task/src/main/scala/neon/counttask/CountTask.scala*</small>
+<small>_File: count-task/src/main/scala/neon/counttask/CountTask.scala_</small>
 
 The `expectedQuantity` comes from a stock position snapshot taken when the count
 was created. We will see how in the next section.
@@ -305,12 +300,11 @@ case class Assigned(...) extends CountTask:
     ...
 ```
 
-<small>*File: count-task/src/main/scala/neon/counttask/CountTask.scala*</small>
+<small>_File: count-task/src/main/scala/neon/counttask/CountTask.scala_</small>
 
 The variance is a simple integer: positive means surplus (we found more than
 expected), negative means shortage (we found less). A variance of zero means
 the count matches the system record.
-
 
 ## Count Creation Policy
 
@@ -340,7 +334,7 @@ object CountCreationPolicy:
       }
 ```
 
-<small>*File: core/src/main/scala/neon/core/CountCreationPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/CountCreationPolicy.scala_</small>
 
 The `stockSnapshots` parameter is a map from `(SkuId, LocationId)` to
 on-hand quantity. The policy filters this map to include only SKUs listed in
@@ -356,7 +350,6 @@ the difference. This is expected behavior, and the recount mechanism handles
 it when the variance exceeds tolerance.
 
 @:@
-
 
 ## Count Completion Service
 
@@ -382,7 +375,7 @@ class CountCompletionService(
         Left(CountCompletionError.CycleCountNotInProgress(cycleCountId))
 ```
 
-<small>*File: core/src/main/scala/neon/core/CountCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/CountCompletionService.scala_</small>
 
 The private `completeInProgress` method performs three steps:
 
@@ -416,7 +409,6 @@ val variances = countTasks
 
 The `CountVariance` value object captures everything needed for downstream
 processing: what was expected, what was found, and who counted it.
-
 
 ## Variance Detection and Recount Triggering
 
@@ -458,7 +450,6 @@ fast-moving consumer goods warehouse might accept variances under 2% without
 recount. These thresholds live outside the aggregate model.
 
 @:@
-
 
 ## Putting It All Together
 

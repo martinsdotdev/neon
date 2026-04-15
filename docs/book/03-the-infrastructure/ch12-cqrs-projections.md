@@ -8,8 +8,8 @@ fan out `GetState` commands to every task entity in the cluster and filter
 the results. That is slow, wasteful, and does not scale.
 
 CQRS (Command Query Responsibility Segregation) solves this by splitting our
-system into two sides. The *write side* is the event-sourced actors we built
-in Chapters 10 and 11. The *read side* is a set of projections that consume
+system into two sides. The _write side_ is the event-sourced actors we built
+in Chapters 10 and 11. The _read side_ is a set of projections that consume
 those same events and populate query-optimized PostgreSQL tables. Each side
 can evolve independently: the write model is optimized for consistency and
 state machine correctness, while the read model is optimized for fast queries
@@ -19,7 +19,6 @@ In this chapter we will explore how Neon WES wires up projections with
 `ShardedDaemonProcess`, how individual projection handlers consume events and
 upsert into read-side tables, and how the `LoggingProjectionHandler` base
 class provides structured observability for every projection in the system.
-
 
 ## Why CQRS?
 
@@ -53,7 +52,7 @@ everything we need in one query.
 
 @:callout(info)
 
-The read side is *eventually consistent* with the write side.
+The read side is _eventually consistent_ with the write side.
 After a command succeeds and an event is persisted, there is a small delay
 (typically milliseconds) before the projection handler processes that event
 and updates the read-side table. For warehouse operations, this latency is
@@ -67,7 +66,6 @@ The write side is the authoritative event log; the read side is a derived
 view. If a read-side table ever becomes corrupted or needs a schema change,
 we can rebuild it by replaying events from the journal. Nothing is lost.
 
-
 ## Projection Architecture
 
 Neon WES initializes all its projections in a single bootstrap object. Let's
@@ -78,7 +76,7 @@ look at how the pieces fit together.
 Three Pekko components collaborate to make projections work:
 
 1. **EventSourcedProvider**: reads events from the R2DBC journal, partitioned
-   by *slice ranges*. Slices are a sharding concept that divides entity IDs
+   by _slice ranges_. Slices are a sharding concept that divides entity IDs
    into numbered buckets (0 to 1023). Each projection instance is responsible
    for a contiguous range of slices.
 
@@ -125,7 +123,7 @@ object ProjectionBootstrap:
     // ... one initProjection call per event-sourced aggregate
 ```
 
-<small>*File: app/src/main/scala/neon/app/projection/ProjectionBootstrap.scala*</small>
+<small>_File: app/src/main/scala/neon/app/projection/ProjectionBootstrap.scala_</small>
 
 The pattern is consistent: every event-sourced aggregate gets its own
 projection, identified by a name string and the entity type tag that matches
@@ -173,7 +171,7 @@ private def initProjection[E](
   )
 ```
 
-<small>*File: app/src/main/scala/neon/app/projection/ProjectionBootstrap.scala*</small>
+<small>_File: app/src/main/scala/neon/app/projection/ProjectionBootstrap.scala_</small>
 
 Let's walk through this step by step:
 
@@ -203,7 +201,6 @@ projection settings. In production you might tune `saveOffsetAfterEnvelopes`
 or `saveOffsetAfterDuration` to control how frequently offsets are committed.
 
 @:@
-
 
 ## Walkthrough: TaskProjectionHandler
 
@@ -265,7 +262,7 @@ class TaskProjectionHandler(using ExecutionContext)
         updateState(session, e.taskId.value, "Cancelled")
 ```
 
-<small>*File: app/src/main/scala/neon/app/projection/TaskProjectionHandler.scala*</small>
+<small>_File: app/src/main/scala/neon/app/projection/TaskProjectionHandler.scala_</small>
 
 Several patterns stand out:
 
@@ -297,7 +294,7 @@ private def bindOptionalUuid(
     case None    => stmt.bindNull(index, classOf[UUID])
 ```
 
-<small>*File: app/src/main/scala/neon/app/projection/TaskProjectionHandler.scala*</small>
+<small>_File: app/src/main/scala/neon/app/projection/TaskProjectionHandler.scala_</small>
 
 **Shared updateState helper.** Four of the five event types need the same
 operation (update two tables), so we factor that into a private method:
@@ -326,29 +323,28 @@ private def updateState(
     .map(_ => Done)
 ```
 
-<small>*File: app/src/main/scala/neon/app/projection/TaskProjectionHandler.scala*</small>
-
+<small>_File: app/src/main/scala/neon/app/projection/TaskProjectionHandler.scala_</small>
 
 ## The Full Projection Catalogue
 
 Neon WES ships with thirteen projections. Each one follows the same pattern
 we just studied. Here is the complete catalogue:
 
-| Projection | Handler Class | Read-Side Table | Key Columns |
-|---|---|---|---|
-| `task-projection` | `TaskProjectionHandler` | `task_by_wave`, `task_by_handling_unit` | `task_id`, `wave_id`, `state` |
-| `consolidation-group-projection` | `ConsolidationGroupProjectionHandler` | `consolidation_group_by_wave` | `consolidation_group_id`, `wave_id`, `state` |
-| `transport-order-projection` | `TransportOrderProjectionHandler` | `transport_order_by_handling_unit` | `transport_order_id`, `handling_unit_id`, `state` |
-| `workstation-projection` | `WorkstationProjectionHandler` | `workstation_by_type_and_state` | `workstation_id`, `workstation_type`, `state` |
-| `handling-unit-projection` | `HandlingUnitProjectionHandler` | `handling_unit_lookup` | `handling_unit_id`, `packaging_level`, `state` |
-| `slot-projection` | `SlotProjectionHandler` | `slot_by_workstation` | `slot_id`, `workstation_id`, `order_id`, `state` |
-| `inventory-projection` | `InventoryProjectionHandler` | `inventory_by_location_sku_lot` | `inventory_id`, `location_id`, `sku_id`, `on_hand`, `reserved` |
-| `stock-position-projection` | `StockPositionProjectionHandler` | `stock_position_by_sku_area` | `stock_position_id`, `sku_id`, `warehouse_area_id` |
-| `handling-unit-stock-projection` | `HandlingUnitStockProjectionHandler` | `handling_unit_stock_by_container` | `handling_unit_stock_id`, `sku_id`, `container_id` |
-| `inbound-delivery-projection` | `InboundDeliveryProjectionHandler` | `inbound_delivery_by_state` | `inbound_delivery_id`, `sku_id`, `state` |
-| `goods-receipt-projection` | `GoodsReceiptProjectionHandler` | `goods_receipt_by_delivery` | `goods_receipt_id`, `inbound_delivery_id`, `state` |
-| `cycle-count-projection` | `CycleCountProjectionHandler` | `cycle_count_by_state` | `cycle_count_id`, `warehouse_area_id`, `state` |
-| `count-task-projection` | `CountTaskProjectionHandler` | `count_task_by_cycle_count` | `count_task_id`, `cycle_count_id`, `state` |
+| Projection                       | Handler Class                         | Read-Side Table                         | Key Columns                                                    |
+| -------------------------------- | ------------------------------------- | --------------------------------------- | -------------------------------------------------------------- |
+| `task-projection`                | `TaskProjectionHandler`               | `task_by_wave`, `task_by_handling_unit` | `task_id`, `wave_id`, `state`                                  |
+| `consolidation-group-projection` | `ConsolidationGroupProjectionHandler` | `consolidation_group_by_wave`           | `consolidation_group_id`, `wave_id`, `state`                   |
+| `transport-order-projection`     | `TransportOrderProjectionHandler`     | `transport_order_by_handling_unit`      | `transport_order_id`, `handling_unit_id`, `state`              |
+| `workstation-projection`         | `WorkstationProjectionHandler`        | `workstation_by_type_and_state`         | `workstation_id`, `workstation_type`, `state`                  |
+| `handling-unit-projection`       | `HandlingUnitProjectionHandler`       | `handling_unit_lookup`                  | `handling_unit_id`, `packaging_level`, `state`                 |
+| `slot-projection`                | `SlotProjectionHandler`               | `slot_by_workstation`                   | `slot_id`, `workstation_id`, `order_id`, `state`               |
+| `inventory-projection`           | `InventoryProjectionHandler`          | `inventory_by_location_sku_lot`         | `inventory_id`, `location_id`, `sku_id`, `on_hand`, `reserved` |
+| `stock-position-projection`      | `StockPositionProjectionHandler`      | `stock_position_by_sku_area`            | `stock_position_id`, `sku_id`, `warehouse_area_id`             |
+| `handling-unit-stock-projection` | `HandlingUnitStockProjectionHandler`  | `handling_unit_stock_by_container`      | `handling_unit_stock_id`, `sku_id`, `container_id`             |
+| `inbound-delivery-projection`    | `InboundDeliveryProjectionHandler`    | `inbound_delivery_by_state`             | `inbound_delivery_id`, `sku_id`, `state`                       |
+| `goods-receipt-projection`       | `GoodsReceiptProjectionHandler`       | `goods_receipt_by_delivery`             | `goods_receipt_id`, `inbound_delivery_id`, `state`             |
+| `cycle-count-projection`         | `CycleCountProjectionHandler`         | `cycle_count_by_state`                  | `cycle_count_id`, `warehouse_area_id`, `state`                 |
+| `count-task-projection`          | `CountTaskProjectionHandler`          | `count_task_by_cycle_count`             | `count_task_id`, `cycle_count_id`, `state`                     |
 
 Notice the naming convention in the read-side tables. Each table name
 describes the primary query dimension: `task_by_wave` is optimized for
@@ -371,7 +367,6 @@ domain modules, so it has visibility into every event type. Domain modules
 themselves know nothing about projections.
 
 @:@
-
 
 ## LoggingProjectionHandler Base Class
 
@@ -409,7 +404,7 @@ abstract class LoggingProjectionHandler[E](using
   ): Future[Done]
 ```
 
-<small>*File: app/src/main/scala/neon/app/projection/LoggingProjectionHandler.scala*</small>
+<small>_File: app/src/main/scala/neon/app/projection/LoggingProjectionHandler.scala_</small>
 
 The design is a straightforward application of the Template Method pattern:
 
@@ -435,7 +430,6 @@ name in the logger context. You can set per-handler log levels in your
 Logback configuration if needed.
 
 @:@
-
 
 ## What Comes Next
 

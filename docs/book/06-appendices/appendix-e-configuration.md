@@ -13,10 +13,10 @@ pekko.actor {
 }
 ```
 
-| Key | Value | Notes |
-|---|---|---|
-| `provider` | `cluster` | Enables Pekko Cluster for distributed sharding |
-| `allow-java-serialization` | `off` | Java serialization is explicitly disabled for security and performance |
+| Key                        | Value     | Notes                                                                  |
+| -------------------------- | --------- | ---------------------------------------------------------------------- |
+| `provider`                 | `cluster` | Enables Pekko Cluster for distributed sharding                         |
+| `allow-java-serialization` | `off`     | Java serialization is explicitly disabled for security and performance |
 
 ---
 
@@ -37,11 +37,11 @@ pekko.serialization.jackson {
 }
 ```
 
-| Key | Value | Notes |
-|---|---|---|
-| `serializers.jackson-cbor` | `JacksonCborSerializer` | Binary CBOR format for compact, fast serialization |
-| `serialization-bindings` | `CborSerializable` marker trait | All commands, responses, events, and state wrappers implement this trait |
-| `jackson-modules` | `DefaultScalaModule` | Required for Scala case class serialization |
+| Key                        | Value                           | Notes                                                                    |
+| -------------------------- | ------------------------------- | ------------------------------------------------------------------------ |
+| `serializers.jackson-cbor` | `JacksonCborSerializer`         | Binary CBOR format for compact, fast serialization                       |
+| `serialization-bindings`   | `CborSerializable` marker trait | All commands, responses, events, and state wrappers implement this trait |
+| `jackson-modules`          | `DefaultScalaModule`            | Required for Scala case class serialization                              |
 
 Aggregate sealed traits (e.g., `Wave`, `Task`) require `@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)` for polymorphic snapshot deserialization.
 
@@ -56,10 +56,10 @@ pekko.remote.artery {
 }
 ```
 
-| Key | Default | Notes |
-|---|---|---|
+| Key                  | Default     | Notes                                  |
+| -------------------- | ----------- | -------------------------------------- |
 | `canonical.hostname` | `127.0.0.1` | Bind address for cluster communication |
-| `canonical.port` | `25520` | TCP port for Artery remoting |
+| `canonical.port`     | `25520`     | TCP port for Artery remoting           |
 
 ---
 
@@ -73,11 +73,11 @@ pekko.cluster {
 }
 ```
 
-| Key | Value | Notes |
-|---|---|---|
-| `seed-nodes` | Single-node seed | List of initial contact points for cluster formation |
-| `downing-provider-class` | `SplitBrainResolverProvider` | Automatic split-brain resolution for production safety |
-| `sharding.number-of-shards` | `100` | Total number of shards across the cluster; fixed after deployment |
+| Key                         | Value                        | Notes                                                             |
+| --------------------------- | ---------------------------- | ----------------------------------------------------------------- |
+| `seed-nodes`                | Single-node seed             | List of initial contact points for cluster formation              |
+| `downing-provider-class`    | `SplitBrainResolverProvider` | Automatic split-brain resolution for production safety            |
+| `sharding.number-of-shards` | `100`                        | Total number of shards across the cluster; fixed after deployment |
 
 ---
 
@@ -91,11 +91,11 @@ pekko.persistence {
 }
 ```
 
-| Key | Value | Notes |
-|---|---|---|
-| `journal.plugin` | `pekko.persistence.r2dbc.journal` | Event journal stored in PostgreSQL via R2DBC |
-| `snapshot-store.plugin` | `pekko.persistence.r2dbc.snapshot` | Snapshot store for faster recovery |
-| `state.plugin` | `pekko.persistence.r2dbc.state` | Durable state store |
+| Key                     | Value                              | Notes                                        |
+| ----------------------- | ---------------------------------- | -------------------------------------------- |
+| `journal.plugin`        | `pekko.persistence.r2dbc.journal`  | Event journal stored in PostgreSQL via R2DBC |
+| `snapshot-store.plugin` | `pekko.persistence.r2dbc.snapshot` | Snapshot store for faster recovery           |
+| `state.plugin`          | `pekko.persistence.r2dbc.state`    | Durable state store                          |
 
 ### R2DBC Connection Pool
 
@@ -114,18 +114,18 @@ pekko.persistence.r2dbc.connection-factory {
 }
 ```
 
-| Key | Default | Env Override | Notes |
-|---|---|---|---|
-| `host` | `localhost` | `NEON_DB_HOST` | PostgreSQL host |
-| `port` | `5432` | `NEON_DB_PORT` | PostgreSQL port |
-| `database` | `neon_wes` | `NEON_DB_NAME` | Database name |
-| `user` | `neon` | `NEON_DB_USER` | Database user |
-| `password` | `neon` | `NEON_DB_PASSWORD` | Database password |
-| `max-size` | `200` | | Maximum connections in the pool |
-| `acquire-timeout` | `15 seconds` | | How long to wait for a connection |
-| `acquire-retry` | `5` | | Number of acquire retries |
-| `max-idle-time` | `30 seconds` | | Idle connection timeout |
-| `max-life-time` | `5 minutes` | | Maximum connection lifetime |
+| Key               | Default      | Env Override       | Notes                             |
+| ----------------- | ------------ | ------------------ | --------------------------------- |
+| `host`            | `localhost`  | `NEON_DB_HOST`     | PostgreSQL host                   |
+| `port`            | `5432`       | `NEON_DB_PORT`     | PostgreSQL port                   |
+| `database`        | `neon_wes`   | `NEON_DB_NAME`     | Database name                     |
+| `user`            | `neon`       | `NEON_DB_USER`     | Database user                     |
+| `password`        | `neon`       | `NEON_DB_PASSWORD` | Database password                 |
+| `max-size`        | `200`        |                    | Maximum connections in the pool   |
+| `acquire-timeout` | `15 seconds` |                    | How long to wait for a connection |
+| `acquire-retry`   | `5`          |                    | Number of acquire retries         |
+| `max-idle-time`   | `30 seconds` |                    | Idle connection timeout           |
+| `max-life-time`   | `5 minutes`  |                    | Maximum connection lifetime       |
 
 ### Projection Connection Pool
 
@@ -164,10 +164,10 @@ EventSourcedBehavior
   )
 ```
 
-| Parameter | Value | Notes |
-|---|---|---|
-| Snapshot interval | every 100 events | A snapshot is taken after every 100 persisted events |
-| Snapshots to keep | 2 | Only the 2 most recent snapshots are retained; older ones are deleted |
+| Parameter         | Value            | Notes                                                                 |
+| ----------------- | ---------------- | --------------------------------------------------------------------- |
+| Snapshot interval | every 100 events | A snapshot is taken after every 100 persisted events                  |
+| Snapshots to keep | 2                | Only the 2 most recent snapshots are retained; older ones are deleted |
 
 On recovery, the actor loads the latest snapshot and replays only events after that sequence number.
 
@@ -182,10 +182,10 @@ neon.http {
 }
 ```
 
-| Key | Default | Env Override | Notes |
-|---|---|---|---|
+| Key    | Default   | Env Override     | Notes                            |
+| ------ | --------- | ---------------- | -------------------------------- |
 | `host` | `0.0.0.0` | `NEON_HTTP_HOST` | Bind address for the HTTP server |
-| `port` | `8080` | `NEON_HTTP_PORT` | HTTP server port |
+| `port` | `8080`    | `NEON_HTTP_PORT` | HTTP server port                 |
 
 ---
 
@@ -199,11 +199,11 @@ neon.auth {
 }
 ```
 
-| Key | Default | Env Override | Notes |
-|---|---|---|---|
-| `session-max-age` | `30d` | | Maximum session token lifetime |
-| `session-renewal-threshold` | `15d` | | Sessions are renewed if older than this threshold |
-| `secure-cookies` | `true` | `NEON_AUTH_SECURE_COOKIES` | Set to `false` for local development (HTTP instead of HTTPS) |
+| Key                         | Default | Env Override               | Notes                                                        |
+| --------------------------- | ------- | -------------------------- | ------------------------------------------------------------ |
+| `session-max-age`           | `30d`   |                            | Maximum session token lifetime                               |
+| `session-renewal-threshold` | `15d`   |                            | Sessions are renewed if older than this threshold            |
+| `secure-cookies`            | `true`  | `NEON_AUTH_SECURE_COOKIES` | Set to `false` for local development (HTTP instead of HTTPS) |
 
 ---
 
@@ -220,23 +220,23 @@ object FlywayMigration:
       .migrate()
 ```
 
-| Setting | Value | Notes |
-|---|---|---|
-| Migration location | `db/migration` (classpath) | Standard Flyway convention |
-| Repeatable migrations | `db/R__*.sql` | Used for development seed data |
-| Connection source | Same host/port/database as R2DBC | JDBC URL constructed from R2DBC config |
+| Setting               | Value                            | Notes                                  |
+| --------------------- | -------------------------------- | -------------------------------------- |
+| Migration location    | `db/migration` (classpath)       | Standard Flyway convention             |
+| Repeatable migrations | `db/R__*.sql`                    | Used for development seed data         |
+| Connection source     | Same host/port/database as R2DBC | JDBC URL constructed from R2DBC config |
 
 ---
 
 ## Environment Variables Summary
 
-| Variable | Config Path | Default |
-|---|---|---|
-| `NEON_DB_HOST` | `pekko.persistence.r2dbc.connection-factory.host` | `localhost` |
-| `NEON_DB_PORT` | `pekko.persistence.r2dbc.connection-factory.port` | `5432` |
-| `NEON_DB_NAME` | `pekko.persistence.r2dbc.connection-factory.database` | `neon_wes` |
-| `NEON_DB_USER` | `pekko.persistence.r2dbc.connection-factory.user` | `neon` |
-| `NEON_DB_PASSWORD` | `pekko.persistence.r2dbc.connection-factory.password` | `neon` |
-| `NEON_HTTP_HOST` | `neon.http.host` | `0.0.0.0` |
-| `NEON_HTTP_PORT` | `neon.http.port` | `8080` |
-| `NEON_AUTH_SECURE_COOKIES` | `neon.auth.secure-cookies` | `true` |
+| Variable                   | Config Path                                           | Default     |
+| -------------------------- | ----------------------------------------------------- | ----------- |
+| `NEON_DB_HOST`             | `pekko.persistence.r2dbc.connection-factory.host`     | `localhost` |
+| `NEON_DB_PORT`             | `pekko.persistence.r2dbc.connection-factory.port`     | `5432`      |
+| `NEON_DB_NAME`             | `pekko.persistence.r2dbc.connection-factory.database` | `neon_wes`  |
+| `NEON_DB_USER`             | `pekko.persistence.r2dbc.connection-factory.user`     | `neon`      |
+| `NEON_DB_PASSWORD`         | `pekko.persistence.r2dbc.connection-factory.password` | `neon`      |
+| `NEON_HTTP_HOST`           | `neon.http.host`                                      | `0.0.0.0`   |
+| `NEON_HTTP_PORT`           | `neon.http.port`                                      | `8080`      |
+| `NEON_AUTH_SECURE_COOKIES` | `neon.auth.secure-cookies`                            | `true`      |

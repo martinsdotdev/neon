@@ -9,7 +9,6 @@ stack. That is a lot of ground to cover. Let's take a moment to look back at
 what we built, revisit the patterns that hold it together, and point toward
 where you might go from here.
 
-
 ## What We Built
 
 The journey began with a question: what is a Warehouse Execution System?
@@ -48,13 +47,11 @@ complete RBAC-protected HTTP API, CQRS projections for read-side queries,
 and structured observability from the HTTP boundary through actors and
 projections.
 
-
 ## The Five Patterns Revisited
 
 Five architectural patterns weave through the entire system. Each one
 appeared in context throughout the book. Let's name them explicitly and see
 how they connect.
-
 
 ### The Decider Pattern
 
@@ -67,7 +64,6 @@ is the `evolve` function, reconstructing state from events during recovery.
 The `EmptyState` is the `initialState`. The Decider pattern gives us a
 formal model for event-sourced domain logic.
 
-
 ### Railway Oriented Programming
 
 Scott Wlaschin's "Railway Oriented Programming" provides the error handling
@@ -77,7 +73,6 @@ failure track. `flatMap` chains switches together, and `Left` values bypass
 all remaining processing. The sealed trait ADTs enumerate every possible
 failure mode, and the compiler's exhaustive matching guarantee ensures
 nothing slips through. We explored this in depth in Chapter 18.
-
 
 ### Functional Core, Imperative Shell
 
@@ -91,7 +86,6 @@ repositories (impure), call policies (pure), and write results back
 testable. You do not need a database or an actor system to test a policy.
 You just call the function.
 
-
 ### The Elm Architecture
 
 The Elm programming language popularized a pattern for managing state:
@@ -102,7 +96,6 @@ The HTTP routes and CQRS projections are the View, transforming internal
 state into external representations. The actor's recovery process replays
 events through the event handler, reconstructing the Model from its history.
 This is the Elm Architecture applied to server-side event sourcing.
-
 
 ### Hexagonal Architecture
 
@@ -117,12 +110,10 @@ are adapters for the external boundary. The domain model has no knowledge of
 Pekko, PostgreSQL, or HTTP. It depends only on abstract traits defined in
 its own module.
 
-
 ## Further Reading
 
 Each pattern above has a canonical reference. Here are the primary sources,
 along with additional resources that shaped the design of Neon WES.
-
 
 ### Event Sourcing and Domain Modeling
 
@@ -131,15 +122,14 @@ along with additional resources that shaped the design of Neon WES.
   The formal model behind our aggregate design. Defines `decide`, `evolve`,
   and `initialState` as the three functions of an event-sourced entity.
 
-- **Vaughn Vernon, *Implementing Domain-Driven Design*** (Addison-Wesley, 2013).
+- **Vaughn Vernon, _Implementing Domain-Driven Design_** (Addison-Wesley, 2013).
   The standard reference for applying DDD tactically with aggregates,
   entities, value objects, domain events, and bounded contexts.
 
-- **Scott Wlaschin, *Domain Modeling Made Functional*** (Pragmatic Bookshelf, 2018).
+- **Scott Wlaschin, _Domain Modeling Made Functional_** (Pragmatic Bookshelf, 2018).
   Types as documentation, making illegal states unrepresentable, and modeling
   domain workflows with types and functions. The direct inspiration for our
   typestate approach, translated from F# to Scala 3.
-
 
 ### Error Handling and Architecture
 
@@ -158,7 +148,6 @@ along with additional resources that shaped the design of Neon WES.
   The original description of Ports and Adapters. Our repository traits are
   ports; Pekko and in-memory implementations are adapters.
 
-
 ### Infrastructure
 
 - **Apache Pekko Persistence Documentation**
@@ -171,7 +160,6 @@ along with additional resources that shaped the design of Neon WES.
   Model, Update, View. The same pattern our actors follow, applied in a
   frontend context.
 
-
 ### Security
 
 - **The Copenhagen Book**
@@ -180,16 +168,14 @@ along with additional resources that shaped the design of Neon WES.
   password hashing, cookie configuration, and CSRF protection. See
   ADR-0008.
 
-
 ### Craft and Inspiration
 
-- **Robert Nystrom, *Crafting Interpreters*** (Genever Benning, 2021).
+- **Robert Nystrom, _Crafting Interpreters_** (Genever Benning, 2021).
   https://craftinginterpreters.com/
   Not directly about warehouse systems, but a masterclass in building
   complex software incrementally, explaining every design decision along
   the way. The pedagogical approach of this book was inspired by Nystrom's
   chapter-by-chapter construction of a complete system.
-
 
 ## What You Could Build Next
 
@@ -220,7 +206,6 @@ systems.
 **A frontend.** Chapter 24 described the planned stack. Building an
 operator interface on top of the HTTP API (Chapter 13) is a full project
 in itself, combining real-time data with complex workflow UIs.
-
 
 ## Closing
 

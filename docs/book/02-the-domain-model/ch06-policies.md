@@ -3,15 +3,14 @@
 When a worker picks 7 items instead of the requested 10, who decides that a
 replacement task should be created for the remaining 3? When all tasks for a
 wave are finished, who detects that the wave itself is complete? The answer,
-in both cases, is a *policy*.
+in both cases, is a _policy_.
 
 In Chapter 4 we learned how typestate encoding makes illegal transitions
 unrepresentable. In Chapter 5 we saw how events record every state change as
 an immutable fact. But neither typestates nor events answer a critical
-question: *given some facts about the world, what should happen next?* That
+question: _given some facts about the world, what should happen next?_ That
 is the job of a policy. In this chapter, we will build the decision-making
 layer of Neon WES, one pure function at a time.
-
 
 ## What Is a Policy?
 
@@ -22,10 +21,10 @@ A policy is a pure function wrapped in a Scala `object`.
 This is a deliberate design choice, recorded in ADR-0002. The core module uses
 a three-layer pattern:
 
-- **Policies** decide *what* should happen. Pure business rules, no I/O.
-- **Services** orchestrate *how* it happens. They read from repositories, call
+- **Policies** decide _what_ should happen. Pure business rules, no I/O.
+- **Services** orchestrate _how_ it happens. They read from repositories, call
   policies, and write results back.
-- **Repositories** define *where* data lives. Abstract port traits with no
+- **Repositories** define _where_ data lives. Abstract port traits with no
   concrete implementation in the domain layer.
 
 Policies sit at the bottom of this stack. They depend on nothing. Services call
@@ -43,11 +42,10 @@ rules are trivially testable and reusable across services.
 
 @:@
 
-
 ## Anatomy of a Policy
 
 Let's start with the canonical example. When a pick task completes with fewer
-items than requested (a *shortpick*), the system needs to decide whether to
+items than requested (a _shortpick_), the system needs to decide whether to
 create a replacement task for the remainder. Here is the policy that makes
 that decision:
 
@@ -82,7 +80,7 @@ object ShortpickPolicy:
       )
 ```
 
-<small>*File: core/src/main/scala/neon/core/ShortpickPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/ShortpickPolicy.scala_</small>
 
 Let's walk through this line by line.
 
@@ -102,7 +100,7 @@ replacement task," and `None` means "no action needed." The tuple inside the
 `Some` follows the same `(NewState, Event)` pattern we saw in Chapter 4 for
 typestate transitions.
 
-Notice what the signature does *not* include: no `Future`, no `Either` wrapping
+Notice what the signature does _not_ include: no `Future`, no `Either` wrapping
 an I/O error, no repository to look up additional data. Everything the policy
 needs to make its decision arrives through the parameters.
 
@@ -117,7 +115,6 @@ small but important detail: the replacement task knows which original task
 spawned it. This parent-child link enables traceability. When an operator or
 supervisor wants to understand why a particular task exists, they can follow
 the chain back to the original shortpick.
-
 
 ## Testing Policies
 
@@ -182,7 +179,7 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
         assert(replacement.parentTaskId.value == task.id)
 ```
 
-<small>*File: core/src/test/scala/neon/core/ShortpickPolicySuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/ShortpickPolicySuite.scala_</small>
 
 A few things to notice about this test style.
 
@@ -210,7 +207,6 @@ These tests run in milliseconds. There is no database to start, no actor
 system to boot, no network to configure. This is the payoff of the policy
 pattern: the most important business rules in the system are the cheapest to
 test.
-
 
 ## The Policy Catalogue
 
@@ -244,7 +240,7 @@ object TaskCreationPolicy:
       )
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCreationPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCreationPolicy.scala_</small>
 
 This is the simplest kind of policy: a straight mapping. Each `TaskRequest`
 becomes exactly one `Task.Planned`. There is no filtering, no conditional
@@ -280,7 +276,7 @@ object WaveCompletionPolicy:
     else None
 ```
 
-<small>*File: core/src/main/scala/neon/core/WaveCompletionPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/WaveCompletionPolicy.scala_</small>
 
 **PickingCompletionPolicy** does the same for consolidation groups:
 
@@ -298,7 +294,7 @@ object PickingCompletionPolicy:
     else None
 ```
 
-<small>*File: core/src/main/scala/neon/core/PickingCompletionPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/PickingCompletionPolicy.scala_</small>
 
 Both policies rely on `TaskPredicates.isTerminal`, a shared helper:
 
@@ -311,7 +307,7 @@ private[core] object TaskPredicates:
     case _                 => false
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskPredicates.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskPredicates.scala_</small>
 
 The predicate uses pattern matching on the typestate-encoded `Task` trait. A
 task is terminal if it is `Completed` or `Cancelled`. All other states
@@ -350,7 +346,7 @@ object RoutingPolicy:
     }
 ```
 
-<small>*File: core/src/main/scala/neon/core/RoutingPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/RoutingPolicy.scala_</small>
 
 This policy is a single expression. The `Option` comes directly from
 `event.handlingUnitId`: if the completed task had a handling unit, create a
@@ -382,7 +378,7 @@ object ConsolidationGroupFormationPolicy:
       case OrderGrouping.Single => Nil
 ```
 
-<small>*File: core/src/main/scala/neon/core/ConsolidationGroupFormationPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/ConsolidationGroupFormationPolicy.scala_</small>
 
 The `OrderGrouping` enum (from Chapter 3) drives the decision. A `Multi` wave
 groups multiple orders together for consolidation at a workstation, so the
@@ -393,7 +389,6 @@ The return type here is `List` rather than `Option`. This makes sense because
 future extensions might create multiple consolidation groups per wave (for
 example, splitting a large wave into groups of manageable size). The `List`
 return type anticipates that possibility without requiring a signature change.
-
 
 ## Deep Dive: StockAllocationPolicy
 
@@ -424,7 +419,7 @@ case class AllocationResult(
 )
 ```
 
-<small>*File: core/src/main/scala/neon/core/StockAllocationPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/StockAllocationPolicy.scala_</small>
 
 An `AllocationRequest` says "I need this many units of this SKU." A
 `StockAllocation` says "take this many from this stock position, with these
@@ -446,7 +441,7 @@ object StockAllocationPolicy:
   ): Either[StockAllocationError, List[AllocationResult]] =
 ```
 
-<small>*File: core/src/main/scala/neon/core/StockAllocationPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/StockAllocationPolicy.scala_</small>
 
 This is the first policy we have seen that returns `Either` instead of
 `Option`. The reason: allocation can fail in ways that need to be
@@ -465,7 +460,7 @@ object StockAllocationError:
       extends StockAllocationError
 ```
 
-<small>*File: core/src/main/scala/neon/core/StockAllocationError.scala*</small>
+<small>_File: core/src/main/scala/neon/core/StockAllocationError.scala_</small>
 
 Even the error type is a sealed trait with descriptive case classes. No
 exception strings, no error codes. The caller can pattern match and handle each
@@ -526,11 +521,11 @@ private def sortByStrategy(
       positions
 ```
 
-<small>*File: core/src/main/scala/neon/core/StockAllocationPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/StockAllocationPolicy.scala_</small>
 
 The `sortBy` calls use tuple ordering to break ties. For FEFO, positions with
 no expiration date sort last (`LocalDate.MAX`), which is the safe default: if
-we do not know when something expires, pick the stock we *do* know about
+we do not know when something expires, pick the stock we _do_ know about
 first. The same logic applies to missing production dates in FIFO.
 
 ```scala
@@ -547,7 +542,7 @@ private def greedyAllocate(
   (allocations.toList, remaining)
 ```
 
-<small>*File: core/src/main/scala/neon/core/StockAllocationPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/StockAllocationPolicy.scala_</small>
 
 The greedy allocator is the only place in the entire policy that uses mutable
 state (a `var` and a `ListBuffer`). This is a pragmatic choice: the mutable
@@ -580,11 +575,10 @@ complexity in the architecture.
 
 @:@
 
-
 ## Architecture Note: Functional Core, Imperative Shell
 
 If the policy pattern feels familiar, you may be thinking of Gary Bernhardt's
-*Functional Core, Imperative Shell* architecture. The idea is to separate your
+_Functional Core, Imperative Shell_ architecture. The idea is to separate your
 system into two layers:
 
 - The **functional core** contains pure logic with no dependencies. You can
@@ -618,7 +612,6 @@ The aggregate transition methods and the policies together form a layer of
 pure, deterministic logic at the heart of the application. Everything else
 (services, repositories, actors, HTTP routes, projections) exists to feed data
 into this core and to act on its decisions.
-
 
 ## What Comes Next
 

@@ -32,7 +32,6 @@ tasks, completed picks (including a shortpick), and watched the wave close
 itself. Every line of code is real. Every transition follows the rules we
 built in the preceding six chapters.
 
-
 ## The Scenario
 
 Let's set the scene in concrete warehouse terms.
@@ -65,7 +64,6 @@ Here is the plan, step by step:
    `WaveCompletionPolicy` still sees an open task.
 6. **Complete the replacement task**: Now every task is terminal.
    `WaveCompletionPolicy` fires and transitions the wave to `Completed`.
-
 
 ## Setting the Stage
 
@@ -117,7 +115,7 @@ class InMemoryWaveRepository extends WaveRepository:
     events += event
 ```
 
-<small>*File: core/src/test/scala/neon/core/WaveReleaseServiceSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WaveReleaseServiceSuite.scala_</small>
 
 A `mutable.Map` for state, a `mutable.ListBuffer` for events. The `save`
 method updates the map and appends the event. The `findById` method looks up
@@ -143,7 +141,6 @@ barcode verification for any packaging level. In production, you would
 configure this per warehouse. For our walkthrough, we keep it simple.
 
 The stage is set. Two orders, four repositories, two services. Let's go.
-
 
 ## Step 1: Planning the Wave
 
@@ -173,7 +170,7 @@ object WavePlanner:
     WavePlan(released, event, taskRequests)
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WavePlanner.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WavePlanner.scala_</small>
 
 Let's trace this line by line with our data.
 
@@ -232,7 +229,6 @@ release. In the fast path, it is created and released in the same call.
 
 @:@
 
-
 ## Step 2: Releasing the Wave
 
 The wave plan is a pure data structure. Nothing has been persisted yet. That is
@@ -264,7 +260,7 @@ def release(
     tasks, consolidationGroups, stockAllocations)
 ```
 
-<small>*File: core/src/main/scala/neon/core/WaveReleaseService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/WaveReleaseService.scala_</small>
 
 Five things happen in sequence. Let's trace each one.
 
@@ -295,7 +291,7 @@ object TaskCreationPolicy:
       )
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCreationPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCreationPolicy.scala_</small>
 
 Pure function. No repositories, no side effects. Each `TaskRequest` becomes a
 `Task.Planned` paired with a `TaskEvent.TaskCreated`. The task type is always
@@ -329,7 +325,7 @@ object ConsolidationGroupFormationPolicy:
       case OrderGrouping.Single => Nil
 ```
 
-<small>*File: core/src/main/scala/neon/core/ConsolidationGroupFormationPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/ConsolidationGroupFormationPolicy.scala_</small>
 
 Our wave uses `OrderGrouping.Single`, so this returns `Nil`. No consolidation
 groups are created. If we had used `Multi` grouping, the policy would create a
@@ -344,14 +340,13 @@ val releaseResult = releaseService.release(wavePlan, at)
 After this call, the system state is:
 
 | Entity               | Count | State    |
-|----------------------|-------|----------|
+| -------------------- | ----- | -------- |
 | Wave                 | 1     | Released |
 | Tasks                | 2     | Planned  |
 | Consolidation Groups | 0     | n/a      |
 
 Two planned tasks, one released wave, zero consolidation groups. The wave
 is in motion.
-
 
 ## Step 3: Task Allocation and Assignment
 
@@ -399,13 +394,12 @@ audit trail. We repeat the same two transitions for task 2.
 System state after allocation and assignment:
 
 | Entity | Count | State    |
-|--------|-------|----------|
+| ------ | ----- | -------- |
 | Wave   | 1     | Released |
 | Task 1 | 1     | Assigned |
 | Task 2 | 1     | Assigned |
 
 Both tasks are ready for the picker.
-
 
 ## Step 4: Task Completion (Full Pick)
 
@@ -439,7 +433,7 @@ routing.foreach { (pending, event) =>
 // ... wave completion follows
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCompletionService.scala (simplified)*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala (simplified)_</small>
 
 **Cascade step 1: Complete the task.** `assigned.complete(10, at)` returns
 `(Task.Completed, TaskEvent.TaskCompleted)`. The typestate transition from
@@ -467,7 +461,6 @@ waveCompletion:  None
 ```
 
 One down, one to go.
-
 
 ## Step 5: Task Completion with Shortpick
 
@@ -513,7 +506,7 @@ object ShortpickPolicy:
       ))
 ```
 
-<small>*File: core/src/main/scala/neon/core/ShortpickPolicy.scala*</small>
+<small>_File: core/src/main/scala/neon/core/ShortpickPolicy.scala_</small>
 
 It calls `Task.create` with `requestedQuantity = 2`, inheriting the SKU,
 packaging level, order, and wave from the original task. Critically, it sets
@@ -530,7 +523,7 @@ replacement task (`Planned`). The replacement is not terminal.
 @:callout(info)
 
 This is a subtle but important interaction. The shortpick
-replacement task is persisted *before* the wave completion check runs. This
+replacement task is persisted _before_ the wave completion check runs. This
 means the policy sees the replacement in its task list. If the completion
 check ran first, it would see only two completed tasks and close the wave
 prematurely, leaving the remaining 2 units unfulfilled.
@@ -548,13 +541,12 @@ waveCompletion:  None
 
 System state:
 
-| Entity           | State     | Details             |
-|------------------|-----------|---------------------|
-| Wave             | Released  |                     |
-| Task 1           | Completed | 10 of 10 (full)     |
-| Task 2           | Completed | 3 of 5 (shortpick)  |
+| Entity           | State     | Details                  |
+| ---------------- | --------- | ------------------------ |
+| Wave             | Released  |                          |
+| Task 1           | Completed | 10 of 10 (full)          |
+| Task 2           | Completed | 3 of 5 (shortpick)       |
 | Replacement task | Planned   | 2 units, parent = task 2 |
-
 
 ## Step 6: Completing the Replacement Task
 
@@ -592,7 +584,6 @@ waveCompletion:  Some(Wave.Completed, WaveEvent.WaveCompleted)
 ```
 
 The wave is closed.
-
 
 ## The Full Picture
 
@@ -643,19 +634,18 @@ Order 2 (5x SKU-B)  ──┘                            │
 
 Final system state:
 
-| Entity            | State     | Quantities     |
-|-------------------|-----------|----------------|
-| Wave              | Completed |                |
-| Task 1 (SKU-A)    | Completed | 10 of 10       |
-| Task 2 (SKU-B)    | Completed | 3 of 5         |
-| Replacement (SKU-B)| Completed | 2 of 2        |
-| Consolidation Groups | (none) |               |
-| Transport Orders  | (none)    |                |
+| Entity               | State     | Quantities |
+| -------------------- | --------- | ---------- |
+| Wave                 | Completed |            |
+| Task 1 (SKU-A)       | Completed | 10 of 10   |
+| Task 2 (SKU-B)       | Completed | 3 of 5     |
+| Replacement (SKU-B)  | Completed | 2 of 2     |
+| Consolidation Groups | (none)    |            |
+| Transport Orders     | (none)    |            |
 
 Three tasks, one wave, zero open work. Every unit accounted for: 10 units of
 SKU-A picked in full, 5 units of SKU-B picked across two tasks (3 + 2). The
 event log in each repository records the complete history of every transition.
-
 
 ## Testing the Flow
 
@@ -678,7 +668,7 @@ describe("task creation"):
     assert(planned.waveId.value == wavePlan.wave.id)
 ```
 
-<small>*File: core/src/test/scala/neon/core/WaveReleaseServiceSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/WaveReleaseServiceSuite.scala_</small>
 
 And `TaskCompletionServiceSuite` tests the shortpick cascade:
 
@@ -696,7 +686,7 @@ describe("when actual is less than requested"):
     assert(event.requestedQuantity == 3)
 ```
 
-<small>*File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala_</small>
 
 Notice the test style: factory methods (`singleOrder()`, `assignedTask()`)
 create test data with sensible defaults. In-memory repositories provide
@@ -707,7 +697,6 @@ The suite also contains a test titled "when shortpick creates a replacement /
 prevents wave completion" that captures the ordering guarantee we traced in
 Step 5: the replacement is persisted before the wave completion check runs, so
 a partial pick cannot prematurely close the wave.
-
 
 ## What We Learned
 

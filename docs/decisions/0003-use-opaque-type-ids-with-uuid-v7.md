@@ -9,6 +9,7 @@ Accepted
 Every domain entity needs an identifier. Using raw `UUID` everywhere is type-unsafe: nothing prevents passing a `WaveId` where a `TaskId` is expected.
 
 **Options considered:**
+
 1. **Raw UUIDs**: Simple, no boilerplate.
 2. **Value classes**: Wrapper case classes with runtime overhead (boxing).
 3. **Opaque types**: Scala 3 feature providing compile-time type distinction with zero runtime overhead.
@@ -27,11 +28,13 @@ object TaskId:
 ## Consequences
 
 **Benefits:**
+
 - Type-safe: cannot pass `WaveId` where `TaskId` is expected
 - Zero runtime overhead: no boxing, no wrapper objects
 - Time-ordered UUIDs enable natural chronological sorting and better index performance
 - Defined in `common` module, shared across all domain modules
 
 **Tradeoffs:**
+
 - Opaque types require extension methods for access (`.value`)
 - Cannot add methods beyond extensions without a wrapper

@@ -16,7 +16,6 @@ every policy decision, and every service orchestration works correctly.
 In this chapter we will walk through each layer, study the conventions that
 keep tests consistent, and examine real test suites from the codebase.
 
-
 ## The Testing Pyramid in Neon WES
 
 Here is how the seven layers stack up, from the base (fastest, most numerous)
@@ -81,7 +80,6 @@ logic. Layers 4 through 7 are important but intentionally fewer, because
 the domain logic they exercise has already been validated by the lower layers.
 
 @:@
-
 
 ## Conventions
 
@@ -176,12 +174,11 @@ def releasedWave(id: WaveId = waveId): Wave.Released =
   Wave.Released(id, OrderGrouping.Single, List(orderId))
 ```
 
-<small>*File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala_</small>
 
 This pattern keeps tests readable. Instead of constructing a full
 `Task.Assigned` with twelve parameters in every test, we write
 `assignedTask(requestedQuantity = 5)` and let the defaults handle the rest.
-
 
 ## Layers 1 and 2: Domain and Policy Tests
 
@@ -234,7 +231,7 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
     )
 ```
 
-<small>*File: core/src/test/scala/neon/core/ShortpickPolicySuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/ShortpickPolicySuite.scala_</small>
 
 The `completed` factory creates a `Task.Completed` with configurable
 requested and actual quantities. Now let's see the test cases:
@@ -281,7 +278,7 @@ requested and actual quantities. Now let's see the test cases:
         assert(event.parentTaskId.value == task.id)
 ```
 
-<small>*File: core/src/test/scala/neon/core/ShortpickPolicySuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/ShortpickPolicySuite.scala_</small>
 
 Notice several things about this test suite:
 
@@ -296,7 +293,6 @@ has its own `describe` block.
 **Field-level assertions.** The "when actual is less than requested" block
 checks every field of the replacement task and event, catching subtle bugs
 where one field is accidentally swapped or omitted.
-
 
 ## Layer 3: Service Tests
 
@@ -326,7 +322,7 @@ class InMemoryTaskRepository extends TaskRepository:
     entries.foreach { (task, event) => save(task, event) }
 ```
 
-<small>*File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala_</small>
 
 The `store` map gives us the current state of every entity. The `events`
 buffer lets us assert on what was persisted. This same pattern appears across
@@ -367,7 +363,7 @@ describe("TaskCompletionService"):
       )
 ```
 
-<small>*File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala_</small>
 
 The first test verifies that completing a nonexistent task returns the
 correct error. The second test creates a `Task.Planned` (not `Task.Assigned`)
@@ -379,7 +375,6 @@ verify both the return value (`result.tasks.size == 1`) and the repository
 state (`waveRepository.store(wavePlan.wave.id).isInstanceOf[Wave.Released]`,
 `waveRepository.events.size == 1`). This double-checking ensures the service
 actually persisted its work, not just returned the right answer.
-
 
 ## Layer 4: Actor Tests
 
@@ -430,7 +425,7 @@ class WaveActorSuite
     esTestKit.clear()
 ```
 
-<small>*File: wave/src/test/scala/neon/wave/WaveActorSuite.scala*</small>
+<small>_File: wave/src/test/scala/neon/wave/WaveActorSuite.scala_</small>
 
 Key details:
 
@@ -471,7 +466,7 @@ describe("WaveActor"):
       )
 ```
 
-<small>*File: wave/src/test/scala/neon/wave/WaveActorSuite.scala*</small>
+<small>_File: wave/src/test/scala/neon/wave/WaveActorSuite.scala_</small>
 
 `runCommand` sends the command to the actor and returns a
 `CommandResultWithReply` that exposes:
@@ -502,14 +497,13 @@ One of the most valuable actor tests verifies recovery after restart:
         assert(result.reply.get.isInstanceOf[Wave.Released])
 ```
 
-<small>*File: wave/src/test/scala/neon/wave/WaveActorSuite.scala*</small>
+<small>_File: wave/src/test/scala/neon/wave/WaveActorSuite.scala_</small>
 
 `esTestKit.restart()` stops the actor and starts a fresh instance that
 replays events from the in-memory journal. After replay, the state should
 be identical to what it was before the restart. This tests the `eventHandler`
 function in isolation and catches bugs where the event handler does not
 reconstruct state correctly.
-
 
 ## Layers 5 through 7: Integration Tests
 
@@ -562,7 +556,7 @@ class WaveRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
         }
 ```
 
-<small>*File: app/src/test/scala/neon/app/http/WaveRoutesSuite.scala*</small>
+<small>_File: app/src/test/scala/neon/app/http/WaveRoutesSuite.scala_</small>
 
 Route tests use stub services (anonymous subclasses that return canned
 `Either` values) so they focus purely on HTTP behavior: request routing,
@@ -599,7 +593,7 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
       assert(count == 1L)
 ```
 
-<small>*File: app/src/test/scala/neon/app/projection/TaskProjectionHandlerSuite.scala*</small>
+<small>_File: app/src/test/scala/neon/app/projection/TaskProjectionHandlerSuite.scala_</small>
 
 These tests catch SQL syntax errors, incorrect column bindings, and
 `ON CONFLICT` clause issues that cannot be caught without a real database.
@@ -613,7 +607,6 @@ directory, while routes, projection handlers, and integration tests live
 in the `app` module.
 
 @:@
-
 
 ## What Comes Next
 

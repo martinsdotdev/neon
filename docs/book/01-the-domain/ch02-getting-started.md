@@ -17,7 +17,7 @@ Before we begin, make sure you have the following installed:
   or from [scala-sbt.org](https://www.scala-sbt.org/).
 
 - **Docker.** Some integration tests in the `app` module use
-  *Testcontainers* to spin up a PostgreSQL database automatically. You do not
+  _Testcontainers_ to spin up a PostgreSQL database automatically. You do not
   need Docker for the domain-level unit tests, but you will need it for the
   full test suite.
 
@@ -96,14 +96,14 @@ tiers:
    shared vocabulary: opaque ID types, enums like `Priority` and
    `PackagingLevel`, and utility traits.
 
-2. **Domain modules.** Both *reference data* modules and *event-sourced
-   aggregate* modules sit in this tier. They depend on `common`, and some
+2. **Domain modules.** Both _reference data_ modules and _event-sourced
+   aggregate_ modules sit in this tier. They depend on `common`, and some
    depend on each other when the domain requires it. For example, `wave`
    depends on `order` and `sku` because a wave is planned from customer
    orders and needs SKU information for UoM expansion.
 
 3. **Orchestration.** The `core` module depends on every domain module. It
-   contains the *policies* and *services* that coordinate work across
+   contains the _policies_ and _services_ that coordinate work across
    aggregates. When a task completes, `core` decides whether to trigger a
    shortpick, route the next transport order, or complete the parent wave.
    All of that cross-aggregate logic lives here.
@@ -154,8 +154,8 @@ will refuse to compile.
 
 @:callout(info)
 
-This layered dependency structure is an example of *Hexagonal
-Architecture* (also called Ports and Adapters). Domain modules define port
+This layered dependency structure is an example of _Hexagonal
+Architecture_ (also called Ports and Adapters). Domain modules define port
 interfaces; the `app` module provides the infrastructure adapters. We will
 explore this pattern in detail in Chapter 8.
 
@@ -267,7 +267,7 @@ save. We recommend enabling this so formatting never drifts.
 ## The Vertical Slice Convention
 
 Now that we can build and test, let's look more closely at how a single module
-is organized. Each event-sourced aggregate follows the same *vertical slice*
+is organized. Each event-sourced aggregate follows the same _vertical slice_
 pattern. Let's use `wave/` as our example:
 
 ```
@@ -289,7 +289,7 @@ The first six files follow a pattern that repeats across every event-sourced
 module. Let's briefly describe each one:
 
 - **`Wave.scala`** contains the domain aggregate itself, modeled as a sealed
-  trait hierarchy with *typestate encoding*. Each state (Planned, Released,
+  trait hierarchy with _typestate encoding_. Each state (Planned, Released,
   Completed, Cancelled) is a separate case class with transition methods that
   only exist on valid source states.
 
@@ -328,7 +328,7 @@ chapters.
 
 ## A Note on Directory and Package Naming
 
-You may have noticed that directory names use *kebab-case*
+You may have noticed that directory names use _kebab-case_
 (`consolidation-group/`, `handling-unit/`, `transport-order/`), while Scala
 package names use concatenated names (`neon.consolidationgroup`,
 `neon.handlingunit`, `neon.transportorder`). This is a deliberate convention.

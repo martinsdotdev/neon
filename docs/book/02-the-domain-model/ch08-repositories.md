@@ -8,7 +8,6 @@ Cluster Sharding to an event-sourced actor. The same service works with both,
 because it depends only on the trait, never on the implementation. This is the
 dual interface pattern.
 
-
 ## The Port Trait Pattern
 
 Let's start with the simplest repository in the system:
@@ -24,7 +23,7 @@ trait WaveRepository:
   def save(wave: Wave, event: WaveEvent): Unit
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveRepository.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveRepository.scala_</small>
 
 Two methods. That is the entire persistence interface for the wave aggregate.
 `findById` retrieves a wave by its identifier, returning `Option[Wave]` because
@@ -36,11 +35,11 @@ pure domain: `WaveId`, `Wave`, `WaveEvent`.
 Notice where this trait lives: in the `neon.wave` package, inside the `wave`
 module. Not in an infrastructure module. Not in the `app` module. The
 repository port belongs to the domain it serves. This is a deliberate choice.
-The domain module defines *what* persistence operations it needs, and some
-other module provides the *how*.
+The domain module defines _what_ persistence operations it needs, and some
+other module provides the _how_.
 
 The Scaladoc comment says "Port trait." This naming is intentional. In
-hexagonal architecture (which we will discuss later in this chapter), a *port*
+hexagonal architecture (which we will discuss later in this chapter), a _port_
 is an interface that the application defines for communicating with the outside
 world. The domain says "I need to find waves by ID and save them." It does not
 say how that happens. That is the adapter's job.
@@ -54,7 +53,6 @@ in-memory test implementation needs it for event tracking. The dual
 requirement is baked into the signature.
 
 @:@
-
 
 ## Sync vs Async: Two Traits for Two Worlds
 
@@ -72,7 +70,7 @@ trait AsyncWaveRepository:
   def save(wave: Wave, event: WaveEvent): Future[Unit]
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/AsyncWaveRepository.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/AsyncWaveRepository.scala_</small>
 
 The two traits define the same operations. The only difference is the return
 type: `Option[Wave]` becomes `Future[Option[Wave]]`, and `Unit` becomes
@@ -107,7 +105,6 @@ same business logic; they differ only in how they sequence repository calls
 (sequential statements vs. `Future` for-comprehensions). We will see this in
 detail later in this chapter.
 
-
 ## A Richer Port: TaskRepository
 
 Not every repository is as minimal as `WaveRepository`. Some aggregates need
@@ -122,7 +119,7 @@ trait TaskRepository:
   def saveAll(entries: List[(Task, TaskEvent)]): Unit
 ```
 
-<small>*File: task/src/main/scala/neon/task/TaskRepository.scala*</small>
+<small>_File: task/src/main/scala/neon/task/TaskRepository.scala_</small>
 
 This trait has three kinds of operations:
 
@@ -151,7 +148,7 @@ trait AsyncTaskRepository:
   def saveAll(entries: List[(Task, TaskEvent)]): Future[Unit]
 ```
 
-<small>*File: task/src/main/scala/neon/task/AsyncTaskRepository.scala*</small>
+<small>_File: task/src/main/scala/neon/task/AsyncTaskRepository.scala_</small>
 
 Note the Scaladoc on `saveAll` in the async trait: "Not transactional:
 individual entries may succeed or fail independently." This is a critical
@@ -178,7 +175,6 @@ implementation in Chapter 11.
 
 @:@
 
-
 ## In-Memory Implementations for Testing
 
 Here is the in-memory implementation of `TaskRepository`, taken directly from
@@ -201,7 +197,7 @@ class InMemoryTaskRepository extends TaskRepository:
     entries.foreach((task, event) => save(task, event))
 ```
 
-<small>*File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala_</small>
 
 Every method is one to three lines. `findById` delegates to `Map.get`.
 `findByWaveId` filters the map values by a predicate. `save` puts the task in
@@ -219,7 +215,7 @@ would.
 list is append-only during a test. Unlike the map (which overwrites previous
 state), the event buffer retains the full history.
 
-Why track events separately? Because tests need to assert on *what happened*,
+Why track events separately? Because tests need to assert on _what happened_,
 not just the final state. Consider a task completion test: after the service
 runs, we want to verify that a `TaskCompleted` event was produced, that a
 `TaskCreated` event was produced for the shortpick replacement, and that a
@@ -265,12 +261,11 @@ class InMemoryWaveRepository extends WaveRepository:
     events += event
 ```
 
-<small>*File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala*</small>
+<small>_File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala_</small>
 
 Four lines of implementation. The structural repetition is a feature. When you
 have seen one in-memory repository, you have seen them all. A new aggregate
 module can have a working test repository in under a minute.
-
 
 ## How Services Use Repositories
 
@@ -287,7 +282,7 @@ class TaskCompletionService(
 ):
 ```
 
-<small>*File: core/src/main/scala/neon/core/TaskCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
 
 Four repository traits, injected through the constructor. The service does not
 know whether it is talking to a mutable map or a Pekko actor cluster. It calls
@@ -319,7 +314,6 @@ business rules. The repository adapters embody the persistence strategy. The
 two concerns are completely decoupled. You can test business logic without a
 database. You can swap persistence strategies without touching business logic.
 
-
 ## The Async Service Pattern
 
 When a service needs to run in production with Pekko actors, it uses async
@@ -335,7 +329,7 @@ class AsyncTaskCompletionService(
 )(using ExecutionContext) extends LazyLogging:
 ```
 
-<small>*File: core/src/main/scala/neon/core/AsyncTaskCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/AsyncTaskCompletionService.scala_</small>
 
 The constructor mirrors the sync version, but every repository trait is the
 `Async` variant. The `(using ExecutionContext)` is a Scala 3 context parameter:
@@ -368,7 +362,7 @@ private def completeAssigned(
   )
 ```
 
-<small>*File: core/src/main/scala/neon/core/AsyncTaskCompletionService.scala*</small>
+<small>_File: core/src/main/scala/neon/core/AsyncTaskCompletionService.scala_</small>
 
 Let's read this line by line.
 
@@ -401,7 +395,6 @@ function call that returns immediately. Only the repository interactions are
 async. The domain logic sits at the center, untouched by the async machinery
 around it.
 
-
 ## Architecture Note: Hexagonal Architecture
 
 The repository pattern in Neon WES is a direct application of Alistair
@@ -412,7 +405,7 @@ interfaces for different contexts.
 
 In Neon WES, the pieces map as follows:
 
-**Driven ports** are the repository traits. The application *drives* outward
+**Driven ports** are the repository traits. The application _drives_ outward
 through them to persist and query data. `WaveRepository`, `TaskRepository`,
 `AsyncWaveRepository`, `AsyncTaskRepository` are all driven ports.
 
@@ -436,7 +429,7 @@ will find imports like `neon.task.TaskRepository` and `neon.wave.WaveRepository`
 You will never find `org.apache.pekko` or `io.r2dbc`. The `core` module is
 pure domain orchestration. Infrastructure lives in `app`.
 
-**`ServiceRegistry`** (Chapter 16) is the *composition root*: the single place
+**`ServiceRegistry`** (Chapter 16) is the _composition root_: the single place
 where adapters are created and wired to ports. In test suites, the test itself
 is the composition root. In production, `ServiceRegistry` does the wiring
 inside the `app` module.
@@ -465,22 +458,21 @@ are trivial to construct, and the services cannot tell the difference. The
 hexagonal boundary is not just an architectural diagram; it is enforced by the
 module dependency graph and by the import statements in every source file.
 
-
 ## The Complete Repository Catalogue
 
 Let's survey all the repository traits in the system. Each event-sourced
 aggregate defines both a sync and an async port:
 
-| Aggregate             | Sync Port                        | Async Port                            |
-|-----------------------|----------------------------------|---------------------------------------|
-| Wave                  | `WaveRepository`                 | `AsyncWaveRepository`                 |
-| Task                  | `TaskRepository`                 | `AsyncTaskRepository`                 |
-| ConsolidationGroup    | `ConsolidationGroupRepository`   | `AsyncConsolidationGroupRepository`   |
-| TransportOrder        | `TransportOrderRepository`       | `AsyncTransportOrderRepository`       |
-| HandlingUnit          | `HandlingUnitRepository`         | `AsyncHandlingUnitRepository`         |
-| Workstation           | `WorkstationRepository`          | `AsyncWorkstationRepository`          |
-| Slot                  | `SlotRepository`                 | `AsyncSlotRepository`                 |
-| StockPosition         | `StockPositionRepository`        | (wired through sync in current scope) |
+| Aggregate          | Sync Port                      | Async Port                            |
+| ------------------ | ------------------------------ | ------------------------------------- |
+| Wave               | `WaveRepository`               | `AsyncWaveRepository`                 |
+| Task               | `TaskRepository`               | `AsyncTaskRepository`                 |
+| ConsolidationGroup | `ConsolidationGroupRepository` | `AsyncConsolidationGroupRepository`   |
+| TransportOrder     | `TransportOrderRepository`     | `AsyncTransportOrderRepository`       |
+| HandlingUnit       | `HandlingUnitRepository`       | `AsyncHandlingUnitRepository`         |
+| Workstation        | `WorkstationRepository`        | `AsyncWorkstationRepository`          |
+| Slot               | `SlotRepository`               | `AsyncSlotRepository`                 |
+| StockPosition      | `StockPositionRepository`      | (wired through sync in current scope) |
 
 Every sync port follows the same structure: `findById` for single-entity
 lookup, `save` for persisting a state-event pair, and optional query methods
@@ -490,7 +482,6 @@ port mirrors the sync one with `Future` wrappers.
 The consistency across ports means that learning one repository teaches you
 all of them. A developer adding a new aggregate module (Chapter 20) can look
 at `WaveRepository` as a template and have a working port trait in minutes.
-
 
 ## What Comes Next
 

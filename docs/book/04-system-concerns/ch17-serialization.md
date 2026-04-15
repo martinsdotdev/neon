@@ -7,7 +7,6 @@ silently corrupts data or fails to recover. In this chapter, we will look at
 how Neon WES handles serialization at two boundaries: Jackson CBOR for the
 persistence layer and Circe JSON for the HTTP API.
 
-
 ## Two Boundaries, Two Serializers
 
 The persistence layer and the HTTP layer have different requirements.
@@ -23,7 +22,6 @@ Clients should see predictable, well-structured responses.
 
 Neon WES uses Jackson CBOR for persistence and Circe for HTTP. Let's
 examine each.
-
 
 ## Jackson CBOR for Persistence
 
@@ -42,7 +40,7 @@ to a serializer. Neon WES uses a single marker trait for this:
 trait CborSerializable
 ```
 
-<small>*File: common/src/main/scala/neon/common/serialization/CborSerializable.scala*</small>
+<small>_File: common/src/main/scala/neon/common/serialization/CborSerializable.scala_</small>
 
 That is the entire file. The trait has no methods, no fields, no type
 parameters. It exists solely as a type tag that tells Pekko "serialize this
@@ -72,7 +70,7 @@ pekko {
 }
 ```
 
-<small>*File: app/src/main/resources/application.conf*</small>
+<small>_File: app/src/main/resources/application.conf_</small>
 
 Three things happen here:
 
@@ -122,7 +120,6 @@ serializer class name changes.
 
 @:@
 
-
 ### Polymorphic Snapshot Deserialization
 
 Here is the trickiest part of the serialization story. Every event-sourced
@@ -158,7 +155,7 @@ object Wave:
   case class Cancelled(...) extends Wave
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/Wave.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/Wave.scala_</small>
 
 The `@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)` annotation tells Jackson to
 include the fully qualified class name in the serialized form. When
@@ -215,7 +212,6 @@ Here is the complete list of types that must extend `CborSerializable`:
 All four categories must be serializable because all four pass through
 Pekko's serialization boundary at some point during the actor lifecycle.
 
-
 ## Circe JSON for the HTTP API
 
 The HTTP layer uses a different serializer for different reasons. HTTP
@@ -244,7 +240,7 @@ case class TaskCompletionResponse(
 ) derives Encoder.AsObject
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/TaskRoutes.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/TaskRoutes.scala_</small>
 
 Request types derive `Decoder` (they are read from JSON). Response types
 derive `Encoder.AsObject` (they are written to JSON). The `derives` keyword
@@ -282,7 +278,7 @@ object CirceSupport:
       }
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/CirceSupport.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/CirceSupport.scala_</small>
 
 Two things to notice:
 
@@ -295,7 +291,6 @@ Two things to notice:
    be returned from a route, and any type with a `Decoder` can be
    extracted from a request body. The Pekko HTTP directives `complete(...)` and
    `entity(as[...])` find the marshallers through Scala's given resolution.
-
 
 ## Schema Evolution
 
@@ -385,19 +380,17 @@ remained stable. But the mechanism exists for when they do change. The key
 principle is that old events are never modified in the journal; adapters
 transform them on read.
 
-
 ## The Two Serializers Compared
 
-| Concern                | Jackson CBOR (Persistence)         | Circe JSON (HTTP)              |
-|------------------------|------------------------------------|--------------------------------|
-| Format                 | Binary (CBOR)                      | Text (JSON)                    |
-| Configuration          | `application.conf` binding         | `derives` on case classes      |
-| Polymorphism           | `@JsonTypeInfo` annotation         | Not needed (flat DTOs)         |
-| Null handling          | Preserved                          | `dropNullValues = true`        |
-| Schema evolution       | Jackson defaults + event adapters  | Decoder defaults               |
-| Scope                  | Commands, events, snapshots, state | HTTP request/response bodies   |
-| Integration            | Pekko Serialization                | Pekko HTTP Marshalling         |
-
+| Concern          | Jackson CBOR (Persistence)         | Circe JSON (HTTP)            |
+| ---------------- | ---------------------------------- | ---------------------------- |
+| Format           | Binary (CBOR)                      | Text (JSON)                  |
+| Configuration    | `application.conf` binding         | `derives` on case classes    |
+| Polymorphism     | `@JsonTypeInfo` annotation         | Not needed (flat DTOs)       |
+| Null handling    | Preserved                          | `dropNullValues = true`      |
+| Schema evolution | Jackson defaults + event adapters  | Decoder defaults             |
+| Scope            | Commands, events, snapshots, state | HTTP request/response bodies |
+| Integration      | Pekko Serialization                | Pekko HTTP Marshalling       |
 
 ## Summary
 

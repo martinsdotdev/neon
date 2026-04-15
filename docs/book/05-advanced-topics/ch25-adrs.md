@@ -14,7 +14,6 @@ decisions explicit, permanent, and discoverable. In this chapter, we will
 look at the ADR format, walk through every ADR in the Neon WES catalogue,
 and discuss how to write your own.
 
-
 ## What Are ADRs?
 
 An ADR is a short document that captures a single architectural decision.
@@ -57,16 +56,19 @@ Chosen option: "{title}", because {justification}.
 ### Consequences
 
 #### Positive
+
 - {Benefit}
 
 #### Negative
+
 - {Tradeoff}
 
 ### Confirmation
+
 - {How the decision is verified: test suite, code review, fitness function}
 ```
 
-<small>*File: docs/decisions/adr-template.md*</small>
+<small>_File: docs/decisions/adr-template.md_</small>
 
 The template is concise by design. An ADR should take 10 to 15 minutes to
 write. If it takes longer, the decision probably needs to be broken down
@@ -82,14 +84,12 @@ to be wrong.
 
 @:@
 
-
 ## The Neon WES Catalogue
 
 All ADRs live in `docs/decisions/` and follow the naming convention
 `NNNN-title-with-kebab-case.md`. As of now, the project has ten ADRs
 covering domain modeling, infrastructure, error handling, frontend
 technology, security, and observability. Let's walk through each one.
-
 
 ### ADR-0001: Typestate-Encoded Aggregates
 
@@ -99,10 +99,9 @@ status enum with runtime checks. Each state is a distinct case class, and
 transition methods exist only on valid source states. The compiler catches
 illegal transitions at compile time rather than at runtime.
 
-*See: [Chapter 4: Modeling State with Typestates](../02-the-domain-model/ch04-typestates.md)*
+_See: [Chapter 4: Modeling State with Typestates](../02-the-domain-model/ch04-typestates.md)_
 
-<small>*File: docs/decisions/0001-use-typestate-encoded-aggregates.md*</small>
-
+<small>_File: docs/decisions/0001-use-typestate-encoded-aggregates.md_</small>
 
 ### ADR-0002: Policy-Service-Repository Pattern
 
@@ -116,10 +115,9 @@ testable in isolation. Services inject repositories and policies, managing
 the cascade. Repositories define abstract port traits with no concrete
 implementations in the domain.
 
-*See: [Chapter 6: Policies](../02-the-domain-model/ch06-policies.md), [Chapter 7: Services](../02-the-domain-model/ch07-services.md), [Chapter 8: Repositories](../02-the-domain-model/ch08-repositories.md)*
+_See: [Chapter 6: Policies](../02-the-domain-model/ch06-policies.md), [Chapter 7: Services](../02-the-domain-model/ch07-services.md), [Chapter 8: Repositories](../02-the-domain-model/ch08-repositories.md)_
 
-<small>*File: docs/decisions/0002-use-policy-service-repository-pattern.md*</small>
-
+<small>_File: docs/decisions/0002-use-policy-service-repository-pattern.md_</small>
 
 ### ADR-0003: Opaque Type IDs with UUID v7
 
@@ -130,10 +128,9 @@ with zero runtime overhead (no boxing, no wrapper objects). UUID v7
 (time-ordered epoch via the uuid-creator library) provides natural
 chronological ordering and better database index performance.
 
-*See: [Chapter 3: The Common Foundation](../02-the-domain-model/ch03-common-foundation.md)*
+_See: [Chapter 3: The Common Foundation](../02-the-domain-model/ch03-common-foundation.md)_
 
-<small>*File: docs/decisions/0003-use-opaque-type-ids-with-uuid-v7.md*</small>
-
+<small>_File: docs/decisions/0003-use-opaque-type-ids-with-uuid-v7.md_</small>
 
 ### ADR-0004: Either-Based Error Handling
 
@@ -144,10 +141,9 @@ them. Exhaustive pattern matching ensures all error cases are addressed.
 Each error case class carries relevant context (the ID that was not found,
 the invalid quantity). No hidden control flow from thrown exceptions.
 
-*See: [Chapter 18: Error Handling Patterns](../04-system-concerns/ch18-error-handling.md)*
+_See: [Chapter 18: Error Handling Patterns](../04-system-concerns/ch18-error-handling.md)_
 
-<small>*File: docs/decisions/0004-use-either-based-error-handling.md*</small>
-
+<small>_File: docs/decisions/0004-use-either-based-error-handling.md_</small>
 
 ### ADR-0005: Domain-Driven sbt Modules
 
@@ -158,10 +154,9 @@ in `build.sbt`, providing compile-time enforcement of dependency boundaries.
 A module cannot accidentally import from a sibling. Incremental compilation
 is faster because changing one module does not recompile others.
 
-*See: [Chapter 2: Getting Started](../01-the-domain/ch02-getting-started.md)*
+_See: [Chapter 2: Getting Started](../01-the-domain/ch02-getting-started.md)_
 
-<small>*File: docs/decisions/0005-use-domain-driven-sbt-modules.md*</small>
-
+<small>_File: docs/decisions/0005-use-domain-driven-sbt-modules.md_</small>
 
 ### ADR-0006: TanStack Start React Frontend
 
@@ -172,10 +167,9 @@ auto-generated route tree, fast development via Vite HMR, and tight
 integration with TanStack Router and TanStack Query for data fetching.
 The tradeoff is a smaller ecosystem and community compared to Next.js.
 
-*See: [Chapter 24: The Frontend](ch24-frontend.md)*
+_See: [Chapter 24: The Frontend](ch24-frontend.md)_
 
-<small>*File: docs/decisions/0006-use-tanstack-start-react-frontend.md*</small>
-
+<small>_File: docs/decisions/0006-use-tanstack-start-react-frontend.md_</small>
 
 ### ADR-0007: shadcn + Base UI Component System
 
@@ -187,10 +181,9 @@ ownable project code. Base UI provides accessible primitives (ARIA, keyboard
 navigation), and Tailwind v4 with OKLch color tokens enables perceptually
 uniform theming.
 
-*See: [Chapter 24: The Frontend](ch24-frontend.md)*
+_See: [Chapter 24: The Frontend](ch24-frontend.md)_
 
-<small>*File: docs/decisions/0007-use-shadcn-base-ui-component-system.md*</small>
-
+<small>_File: docs/decisions/0007-use-shadcn-base-ui-component-system.md_</small>
 
 ### ADR-0008: Session-Based Authentication
 
@@ -203,10 +196,9 @@ renewal. Passwords are hashed with Argon2id. The key benefit is immediate
 session revocation on logout or security incidents, which JWT cannot
 provide without a blocklist.
 
-*See: [Chapter 13: The HTTP API](../03-the-infrastructure/ch13-http-api.md)*
+_See: [Chapter 13: The HTTP API](../03-the-infrastructure/ch13-http-api.md)_
 
-<small>*File: docs/decisions/0008-use-session-based-authentication.md*</small>
-
+<small>_File: docs/decisions/0008-use-session-based-authentication.md_</small>
 
 ### ADR-0009: RBAC with Per-User Permission Overrides
 
@@ -220,10 +212,9 @@ plus or minus overrides, with deny always winning. This is implemented with
 two PostgreSQL tables (`role_permissions`, `user_permission_overrides`) and
 a custom Pekko HTTP directive (`requirePermission`).
 
-*See: [Chapter 13: The HTTP API](../03-the-infrastructure/ch13-http-api.md)*
+_See: [Chapter 13: The HTTP API](../03-the-infrastructure/ch13-http-api.md)_
 
-<small>*File: docs/decisions/0009-use-rbac-with-per-user-permission-overrides.md*</small>
-
+<small>_File: docs/decisions/0009-use-rbac-with-per-user-permission-overrides.md_</small>
 
 ### ADR-0010: Structured Logging with Wide Events
 
@@ -237,29 +228,27 @@ duration, and user ID. MDC propagation uses three layers:
 `Behaviors.withMdc` (actors). Production output is structured JSON via
 LogstashEncoder, directly ingestible by Loki, Elasticsearch, or Datadog.
 
-*See: [Chapter 19: Observability and Logging](../04-system-concerns/ch19-observability.md)*
+_See: [Chapter 19: Observability and Logging](../04-system-concerns/ch19-observability.md)_
 
-<small>*File: docs/decisions/0010-use-structured-logging-with-wide-events.md*</small>
-
+<small>_File: docs/decisions/0010-use-structured-logging-with-wide-events.md_</small>
 
 ## Cross-Reference Map
 
 For quick navigation, here is the complete mapping between ADRs and book
 chapters:
 
-| ADR | Decision | Primary Chapter |
-|-----|----------|----------------|
-| 0001 | Typestate-Encoded Aggregates | [Ch 4: Typestates](../02-the-domain-model/ch04-typestates.md) |
-| 0002 | Policy-Service-Repository Pattern | [Ch 6](../02-the-domain-model/ch06-policies.md), [Ch 7](../02-the-domain-model/ch07-services.md), [Ch 8](../02-the-domain-model/ch08-repositories.md) |
-| 0003 | Opaque Type IDs with UUID v7 | [Ch 3: Common Foundation](../02-the-domain-model/ch03-common-foundation.md) |
-| 0004 | Either-Based Error Handling | [Ch 18: Error Handling](../04-system-concerns/ch18-error-handling.md) |
-| 0005 | Domain-Driven sbt Modules | [Ch 2: Getting Started](../01-the-domain/ch02-getting-started.md) |
-| 0006 | TanStack Start React Frontend | [Ch 24: Frontend](ch24-frontend.md) |
-| 0007 | shadcn + Base UI Component System | [Ch 24: Frontend](ch24-frontend.md) |
-| 0008 | Session-Based Authentication | [Ch 13: HTTP API](../03-the-infrastructure/ch13-http-api.md) |
-| 0009 | RBAC with Permission Overrides | [Ch 13: HTTP API](../03-the-infrastructure/ch13-http-api.md) |
-| 0010 | Structured Logging with Wide Events | [Ch 19: Observability](../04-system-concerns/ch19-observability.md) |
-
+| ADR  | Decision                            | Primary Chapter                                                                                                                                       |
+| ---- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0001 | Typestate-Encoded Aggregates        | [Ch 4: Typestates](../02-the-domain-model/ch04-typestates.md)                                                                                         |
+| 0002 | Policy-Service-Repository Pattern   | [Ch 6](../02-the-domain-model/ch06-policies.md), [Ch 7](../02-the-domain-model/ch07-services.md), [Ch 8](../02-the-domain-model/ch08-repositories.md) |
+| 0003 | Opaque Type IDs with UUID v7        | [Ch 3: Common Foundation](../02-the-domain-model/ch03-common-foundation.md)                                                                           |
+| 0004 | Either-Based Error Handling         | [Ch 18: Error Handling](../04-system-concerns/ch18-error-handling.md)                                                                                 |
+| 0005 | Domain-Driven sbt Modules           | [Ch 2: Getting Started](../01-the-domain/ch02-getting-started.md)                                                                                     |
+| 0006 | TanStack Start React Frontend       | [Ch 24: Frontend](ch24-frontend.md)                                                                                                                   |
+| 0007 | shadcn + Base UI Component System   | [Ch 24: Frontend](ch24-frontend.md)                                                                                                                   |
+| 0008 | Session-Based Authentication        | [Ch 13: HTTP API](../03-the-infrastructure/ch13-http-api.md)                                                                                          |
+| 0009 | RBAC with Permission Overrides      | [Ch 13: HTTP API](../03-the-infrastructure/ch13-http-api.md)                                                                                          |
+| 0010 | Structured Logging with Wide Events | [Ch 19: Observability](../04-system-concerns/ch19-observability.md)                                                                                   |
 
 ## Writing Your Own ADRs
 
@@ -307,7 +296,6 @@ reasoning) saves everyone's time.
 
 @:@
 
-
 ## ADRs and the Codebase
 
 One question that comes up frequently: should ADRs reference code, and
@@ -341,7 +329,6 @@ These references create a navigable web between decisions and
 implementations. When you encounter code and wonder why it was written that
 way, the ADR reference points you to the reasoning.
 
-
 ## Summary
 
 - **ADRs are short documents** that capture architectural decisions: the
@@ -354,7 +341,6 @@ way, the ADR reference points you to the reasoning.
 - **Use the template.** Consistency makes ADRs scannable and useful.
 - **Cross-reference.** ADRs reference code, code references ADRs, and the
   book cross-references both.
-
 
 ## What Comes Next
 

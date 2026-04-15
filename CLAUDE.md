@@ -59,6 +59,7 @@ object Task:
 ```
 
 Key state machines:
+
 - **Wave:** Planned → Released → Completed | Cancelled
 - **Task:** Planned → Allocated → Assigned → Completed | Cancelled
 - **TransportOrder:** Pending → Confirmed | Cancelled
@@ -114,6 +115,7 @@ TanStack Start + React 19 + TypeScript. UI with shadcn/ui (Base UI primitives + 
 ## Coding Conventions
 
 ### Scala
+
 - Scala 3.8.2, max line width 100 (scalafmt)
 - Scalafix enforces organized imports (`OrganizeImports` with `Merge` grouping)
 - Unabbreviated identifiers: no abbreviations in names or test descriptions
@@ -123,6 +125,7 @@ TanStack Start + React 19 + TypeScript. UI with shadcn/ui (Base UI primitives + 
 - Immutable collections (List preferred)
 
 ### Tests
+
 - ScalaTest `AnyFunSpec` with `describe`/`it` blocks
 - Suite naming: `<ComponentName>Suite` (e.g., `TaskCompletionServiceSuite`)
 - Mix-in traits: `OptionValues`, `EitherValues`
@@ -133,6 +136,7 @@ TanStack Start + React 19 + TypeScript. UI with shadcn/ui (Base UI primitives + 
 - `ScalatestRouteTest` with stub services for HTTP route tests
 
 ### Frontend
+
 - No semicolons, double quotes, 80-char line width
 - `cn()` utility for Tailwind class merging (clsx + tailwind-merge)
 - OKLch color tokens with light/dark mode support

@@ -12,7 +12,6 @@ responses, and nothing more. This keeps the domain logic testable in
 isolation (as we saw in Chapters 6 and 7) while giving us a clean, RESTful
 interface.
 
-
 ## Route Architecture
 
 Every domain area in Neon WES has its own route object. `HttpServer` wires
@@ -81,7 +80,7 @@ object HttpServer:
       )
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/HttpServer.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/HttpServer.scala_</small>
 
 Several things are worth noting here:
 
@@ -118,8 +117,7 @@ def start(
     .bind(routes(registry, secureCookies))
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/HttpServer.scala*</small>
-
+<small>_File: app/src/main/scala/neon/app/http/HttpServer.scala_</small>
 
 ## Circe JSON Marshalling
 
@@ -153,7 +151,7 @@ object CirceSupport:
       }
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/CirceSupport.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/CirceSupport.scala_</small>
 
 Let's unpack this:
 
@@ -163,7 +161,7 @@ output rather than appearing as `"field": null`. This produces cleaner
 responses.
 
 **Generic givens.** The `given [A: Encoder]` syntax creates a
-`ToEntityMarshaller[A]` for *any* type that has an `Encoder` instance. When
+`ToEntityMarshaller[A]` for _any_ type that has an `Encoder` instance. When
 a route calls `complete(someResponse)`, the compiler finds the marshaller
 through implicit resolution. No registration step is needed.
 
@@ -189,7 +187,7 @@ case class WaveReleaseResponse(
 ) derives Encoder.AsObject
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/WaveRoutes.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/WaveRoutes.scala_</small>
 
 `derives Decoder` generates a `Decoder` instance at compile time using
 Scala 3's typeclass derivation. `derives Encoder.AsObject` does the same for
@@ -204,7 +202,6 @@ type IDs. This keeps the JSON contract stable even if internal ID
 representations change.
 
 @:@
-
 
 ## Walkthrough: WaveRoutes
 
@@ -268,7 +265,7 @@ object WaveRoutes:
                     complete(StatusCodes.UnprocessableEntity)
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/WaveRoutes.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/WaveRoutes.scala_</small>
 
 Here is the flow, step by step:
 
@@ -276,7 +273,7 @@ Here is the flow, step by step:
    match the URL `/waves/plan-and-release`.
 
 2. **Authorization**: `AuthDirectives.requirePermission(Permission.WavePlan,
-   authService)` validates the session cookie and checks that the user has
+authService)` validates the session cookie and checks that the user has
    the `WavePlan` permission. If not, it short-circuits with 401 or 403.
 
 3. **Request parsing**: `entity(as[PlanAndReleaseRequest])` uses the circe
@@ -327,13 +324,12 @@ and path pattern:
                   complete(StatusCodes.Conflict)
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/WaveRoutes.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/WaveRoutes.scala_</small>
 
 `path(Segment)` captures the wave ID from the URL path. `DELETE
 /waves/abc-123-def` extracts `"abc-123-def"` as `waveIdStr`. The rest of the
 pattern is identical: authorize, call service, match on `Either`, return
 response.
-
 
 ## Error Mapping
 
@@ -341,12 +337,12 @@ Neon WES uses sealed trait ADTs for errors (as we saw in Chapter 7). The HTTP
 layer maps these domain errors to standard HTTP status codes. Here is the
 mapping convention used across all route objects:
 
-| Domain Error Pattern | HTTP Status | When |
-|---|---|---|
-| `XxxNotFound` | 404 Not Found | Entity does not exist |
-| `XxxAlreadyTerminal`, `XxxInWrongState` | 409 Conflict | State machine violation |
-| `InvalidXxx`, validation errors | 422 Unprocessable Entity | Valid request structure, invalid data |
-| `VerificationRequired` | 428 Precondition Required | Business precondition not met |
+| Domain Error Pattern                    | HTTP Status               | When                                  |
+| --------------------------------------- | ------------------------- | ------------------------------------- |
+| `XxxNotFound`                           | 404 Not Found             | Entity does not exist                 |
+| `XxxAlreadyTerminal`, `XxxInWrongState` | 409 Conflict              | State machine violation               |
+| `InvalidXxx`, validation errors         | 422 Unprocessable Entity  | Valid request structure, invalid data |
+| `VerificationRequired`                  | 428 Precondition Required | Business precondition not met         |
 
 Let's look at how `TaskRoutes` maps the `TaskCompletionError` ADT:
 
@@ -363,7 +359,7 @@ case Left(error) =>
       complete(StatusCodes.PreconditionRequired)
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/TaskRoutes.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/TaskRoutes.scala_</small>
 
 And `TaskRoutes` also factors out a reusable error mapper for lifecycle
 errors:
@@ -383,7 +379,7 @@ private def mapLifecycleError(error: TaskLifecycleError): Route =
       complete(StatusCodes.UnprocessableEntity)
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/TaskRoutes.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/TaskRoutes.scala_</small>
 
 This approach has an important benefit: the compiler guarantees exhaustive
 matching. If someone adds a new error case to the sealed trait, the route
@@ -398,7 +394,6 @@ error code and a human-readable message. The important thing is that the
 domain error ADT is the single source of truth for what can go wrong.
 
 @:@
-
 
 ## Authentication and Authorization
 
@@ -434,7 +429,7 @@ path("login"):
               complete(StatusCodes.Forbidden)
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/AuthRoutes.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/AuthRoutes.scala_</small>
 
 The session cookie is configured with security best practices: `httpOnly =
 true` (not accessible from JavaScript), `secure = true` in production (HTTPS
@@ -485,7 +480,7 @@ object AuthDirectives extends LazyLogging:
     }
 ```
 
-<small>*File: app/src/main/scala/neon/app/auth/AuthDirectives.scala*</small>
+<small>_File: app/src/main/scala/neon/app/auth/AuthDirectives.scala_</small>
 
 The flow works as follows:
 
@@ -529,7 +524,7 @@ def withRequestLogging: Directive0 =
   }
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/RequestLoggingDirective.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/RequestLoggingDirective.scala_</small>
 
 Every request gets a UUID v7 trace ID (time-ordered for easy sorting). The
 directive logs at INFO for 2xx/3xx responses, WARN for 4xx, and ERROR for
@@ -546,32 +541,30 @@ calls, repository queries, and projection updates.
 
 @:@
 
-
 ## The Full Route Catalogue
 
 For reference, here is every route object in the system and the endpoints it
 exposes:
 
-| Route Object | Path Prefix | Operations |
-|---|---|---|
-| `AuthRoutes` | `/auth` | Login, logout, current user |
-| `WaveRoutes` | `/waves` | Plan-and-release, cancel |
-| `TaskRoutes` | `/tasks` | Complete, allocate, assign, cancel |
-| `TransportOrderRoutes` | `/transport-orders` | Confirm, cancel |
-| `ConsolidationGroupRoutes` | `/consolidation-groups` | Complete, cancel |
-| `WorkstationRoutes` | `/workstations` | Assign, release, enable, disable |
-| `HandlingUnitRoutes` | `/handling-units` | Lifecycle operations |
-| `SlotRoutes` | `/slots` | Reserve, complete, release |
-| `InventoryRoutes` | `/inventory` | Create, reserve, release, consume |
-| `StockPositionRoutes` | `/stock-positions` | Create, allocate, deallocate |
-| `InboundRoutes` | `/inbound` | Create, receive, close |
-| `CycleCountRoutes` | `/cycle-counts` | Create, start, complete, cancel |
+| Route Object               | Path Prefix             | Operations                         |
+| -------------------------- | ----------------------- | ---------------------------------- |
+| `AuthRoutes`               | `/auth`                 | Login, logout, current user        |
+| `WaveRoutes`               | `/waves`                | Plan-and-release, cancel           |
+| `TaskRoutes`               | `/tasks`                | Complete, allocate, assign, cancel |
+| `TransportOrderRoutes`     | `/transport-orders`     | Confirm, cancel                    |
+| `ConsolidationGroupRoutes` | `/consolidation-groups` | Complete, cancel                   |
+| `WorkstationRoutes`        | `/workstations`         | Assign, release, enable, disable   |
+| `HandlingUnitRoutes`       | `/handling-units`       | Lifecycle operations               |
+| `SlotRoutes`               | `/slots`                | Reserve, complete, release         |
+| `InventoryRoutes`          | `/inventory`            | Create, reserve, release, consume  |
+| `StockPositionRoutes`      | `/stock-positions`      | Create, allocate, deallocate       |
+| `InboundRoutes`            | `/inbound`              | Create, receive, close             |
+| `CycleCountRoutes`         | `/cycle-counts`         | Create, start, complete, cancel    |
 
 All routes follow the same structure we explored in `WaveRoutes`:
 authenticate, parse request, call async service, match on `Either`, and
 return the appropriate status code. The consistency makes the codebase easy
 to navigate. If you understand one route file, you understand them all.
-
 
 ## What Comes Next
 

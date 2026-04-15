@@ -6,7 +6,6 @@ with a `TaskId`, enums that name concepts like priority and packaging level,
 and utility types that encode warehouse knowledge about lots and units of
 measure. Let's explore what lives here and why each type exists.
 
-
 ## The Problem of Primitive Types
 
 Imagine a function that assigns a warehouse task to a user:
@@ -23,7 +22,7 @@ with the arguments reversed:
 assignTaskToUser(userId, taskId)
 ```
 
-This is the *primitive obsession* problem. When you represent distinct domain
+This is the _primitive obsession_ problem. When you represent distinct domain
 concepts with the same underlying type, the compiler cannot help you keep them
 apart. The bug above will not produce a compile error, a warning, or even an
 exception. It will silently assign the wrong task to the wrong user, and you
@@ -34,10 +33,9 @@ In a system with over twenty distinct identifier types, this is not a
 theoretical concern. We need the compiler to reject these mistakes at the call
 site, before the code ever runs.
 
-
 ## Opaque Type IDs
 
-Scala 3 provides a feature called *opaque types* that solves this problem with
+Scala 3 provides a feature called _opaque types_ that solves this problem with
 zero runtime overhead. An opaque type is a compile-time alias that the compiler
 treats as a distinct type, but at runtime the JVM sees the underlying type
 directly. No wrapper object, no boxing, no extra allocation.
@@ -60,7 +58,7 @@ object WaveId:
   extension (id: WaveId) def value: UUID = id
 ```
 
-<small>*File: common/src/main/scala/neon/common/WaveId.scala*</small>
+<small>_File: common/src/main/scala/neon/common/WaveId.scala_</small>
 
 Let's walk through each piece.
 
@@ -99,7 +97,7 @@ types for free.
 
 You may have noticed that the `apply()` factory calls
 `UuidCreator.getTimeOrderedEpoch()` rather than `UUID.randomUUID()`. This
-generates a *UUID v7*, which encodes the current timestamp in its most
+generates a _UUID v7_, which encodes the current timestamp in its most
 significant bits.
 
 UUID v7 matters for two practical reasons:
@@ -155,7 +153,6 @@ The consistency is deliberate. When you add a new aggregate, you create a new
 opaque type file following the same three-line structure: the type alias, the
 companion with two `apply` overloads, and the `.value` extension.
 
-
 ## Shared Enums
 
 Beyond identifiers, the `common` module defines enums for categorical domain
@@ -172,9 +169,9 @@ enum Priority:
   case Critical
 ```
 
-<small>*File: common/src/main/scala/neon/common/Priority.scala*</small>
+<small>_File: common/src/main/scala/neon/common/Priority.scala_</small>
 
-*Priority* determines the urgency of orders and tasks. A `Normal` order follows
+_Priority_ determines the urgency of orders and tasks. A `Normal` order follows
 the standard warehouse workflow. A `High` order is expedited for same-day
 delivery promises. A `Critical` order jumps to the front of every queue, for
 situations like VIP escalations or regulatory recall shipments. During wave
@@ -191,9 +188,9 @@ enum PackagingLevel:
   case Each
 ```
 
-<small>*File: common/src/main/scala/neon/common/PackagingLevel.scala*</small>
+<small>_File: common/src/main/scala/neon/common/PackagingLevel.scala_</small>
 
-*PackagingLevel* models the GS1 packaging hierarchy from Chapter 1. A pallet
+_PackagingLevel_ models the GS1 packaging hierarchy from Chapter 1. A pallet
 contains cases, a case contains inner packs, and an inner pack contains
 individual eaches. This enum appears wherever the system reasons about
 packaging: in handling units, inventory records, and order lines.
@@ -213,9 +210,9 @@ enum InventoryStatus:
   case Expired
 ```
 
-<small>*File: common/src/main/scala/neon/common/InventoryStatus.scala*</small>
+<small>_File: common/src/main/scala/neon/common/InventoryStatus.scala_</small>
 
-*InventoryStatus* represents the disposition of stock. Only `Available` stock
+_InventoryStatus_ represents the disposition of stock. Only `Available` stock
 can be allocated to outbound orders. The other statuses represent restrictions:
 `QualityHold` (awaiting inspection), `Damaged` (physically harmed), `Blocked`
 (administrative holds such as regulatory recalls), and `Expired` (past shelf
@@ -232,9 +229,9 @@ enum AllocationStrategy:
   case NearestLocation
 ```
 
-<small>*File: common/src/main/scala/neon/common/AllocationStrategy.scala*</small>
+<small>_File: common/src/main/scala/neon/common/AllocationStrategy.scala_</small>
 
-*AllocationStrategy* controls how the system selects inventory positions when
+_AllocationStrategy_ controls how the system selects inventory positions when
 fulfilling demand. We discussed FEFO and FIFO in Chapter 1; here they become
 concrete enum values:
 
@@ -260,10 +257,10 @@ enum StockLockType:
   case Adjustment
 ```
 
-<small>*File: common/src/main/scala/neon/common/StockLockType.scala*</small>
+<small>_File: common/src/main/scala/neon/common/StockLockType.scala_</small>
 
 When stock is reserved for an operation but not yet physically moved,
-*StockLockType* records the reason. `Outbound` locks route to the allocated
+_StockLockType_ records the reason. `Outbound` locks route to the allocated
 quantity bucket (stock promised to a specific order). All other lock types
 route to the reserved quantity bucket (stock temporarily held for an internal
 process).
@@ -284,7 +281,6 @@ later chapters:
   `"wave:plan"` or `"task:complete"` that maps to a specific operation.
 
 All of these live in `common` because they are referenced by multiple modules.
-
 
 ## Utility Types
 
@@ -314,16 +310,16 @@ case class LotAttributes(
     expirationDate.exists(date => !referenceDate.isBefore(date))
 ```
 
-<small>*File: common/src/main/scala/neon/common/LotAttributes.scala*</small>
+<small>_File: common/src/main/scala/neon/common/LotAttributes.scala_</small>
 
 Each field maps to a GS1 Application Identifier (AI):
 
-| Field            | GS1 AI | Meaning                         |
-|:-----------------|:-------|:--------------------------------|
-| `lot`            | AI 10  | Batch or lot number             |
-| `expirationDate` | AI 17  | Shelf life expiration date      |
-| `productionDate` | AI 11  | Date of manufacture             |
-| `serialNumber`   | AI 21  | Item-level serial number        |
+| Field            | GS1 AI | Meaning                    |
+| :--------------- | :----- | :------------------------- |
+| `lot`            | AI 10  | Batch or lot number        |
+| `expirationDate` | AI 17  | Shelf life expiration date |
+| `productionDate` | AI 11  | Date of manufacture        |
+| `serialNumber`   | AI 21  | Item-level serial number   |
 
 All fields are `Option`s because not every product requires every attribute. A
 bag of bolts has no expiration date. A non-serialized consumer product has no
@@ -341,7 +337,7 @@ expired stock in a single pass.
 
 When a customer orders "2 cases" of a product, the system needs to know how
 many individual eaches that represents. This conversion is what
-*UomHierarchy* (Unit-of-Measure Hierarchy) encodes:
+_UomHierarchy_ (Unit-of-Measure Hierarchy) encodes:
 
 ```scala
 opaque type UomHierarchy = Map[PackagingLevel, Int]
@@ -367,7 +363,7 @@ object UomHierarchy:
     def isEmpty: Boolean  = h.isEmpty
 ```
 
-<small>*File: common/src/main/scala/neon/common/UomHierarchy.scala*</small>
+<small>_File: common/src/main/scala/neon/common/UomHierarchy.scala_</small>
 
 `UomHierarchy` is another opaque type, wrapping a `Map[PackagingLevel, Int]`.
 Each entry maps a packaging level to the number of eaches it contains. The
@@ -393,7 +389,6 @@ map (it is always implicitly 1), and every conversion factor must be positive.
 These checks catch configuration errors at construction time rather than
 letting invalid data propagate through the system.
 
-
 ## The CborSerializable Marker Trait
 
 In the `serialization` subpackage lives a trait with no methods at all:
@@ -404,9 +399,9 @@ package neon.common.serialization
 trait CborSerializable
 ```
 
-<small>*File: common/src/main/scala/neon/common/serialization/CborSerializable.scala*</small>
+<small>_File: common/src/main/scala/neon/common/serialization/CborSerializable.scala_</small>
 
-This *marker trait* serves a single purpose: it binds types to the Jackson CBOR
+This _marker trait_ serves a single purpose: it binds types to the Jackson CBOR
 serializer in Pekko's configuration. Every actor command, every command
 response, every state wrapper, and every event envelope in the system extends
 `CborSerializable`. When Pekko needs to serialize one of these types (to
@@ -416,7 +411,6 @@ it looks up the serializer binding and finds Jackson CBOR.
 We will see `extends CborSerializable` on dozens of types in the chapters
 ahead. For now, know that it exists and that it lives in `common` so every
 module can reference it. Chapter 17 covers Pekko serialization in depth.
-
 
 ## R2dbcProjectionQueries
 
@@ -436,7 +430,7 @@ trait R2dbcProjectionQueries:
   ): Future[List[UUID]]
 ```
 
-<small>*File: common/src/main/scala/neon/common/R2dbcProjectionQueries.scala*</small>
+<small>_File: common/src/main/scala/neon/common/R2dbcProjectionQueries.scala_</small>
 
 This trait provides helper methods for querying CQRS read-side projection
 tables via raw R2DBC and Pekko Streams. Several `PekkoXxxRepository`
@@ -448,10 +442,9 @@ that each task actor can receive a cancellation command.
 We will see `R2dbcProjectionQueries` mixed into Pekko repository
 implementations in Chapters 11 and 12.
 
-
 ## What Comes Next
 
 With the common types in hand, we are ready to build domain aggregates. In the
 next chapter, we will learn how Neon WES models state machines at compile time
-using a pattern called *typestate encoding*, turning invalid state transitions
+using a pattern called _typestate encoding_, turning invalid state transitions
 into compile errors.

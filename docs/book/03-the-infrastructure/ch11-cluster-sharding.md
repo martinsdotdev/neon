@@ -18,12 +18,11 @@ the cluster, how cross-entity queries combine CQRS projection tables with actor
 fan-out, and how to test actors with `EventSourcedBehaviorTestKit` without a
 running cluster.
 
-
 ## Cluster Sharding in 5 Minutes
 
 Before we look at code, let's build a mental model with four concepts.
 
-**EntityTypeKey** identifies a *type* of entity. In Neon WES, each aggregate has
+**EntityTypeKey** identifies a _type_ of entity. In Neon WES, each aggregate has
 its own key: `"Wave"`, `"Task"`, `"ConsolidationGroup"`, and so on. The key is
 defined as a constant in the actor's companion object:
 
@@ -32,13 +31,13 @@ val EntityKey: EntityTypeKey[Command] =
   EntityTypeKey[Command]("Wave")
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 The type parameter `[Command]` tells sharding what message type this entity
 accepts. The string `"Wave"` is the logical name used for persistence IDs and
 shard routing.
 
-**Entity ID** identifies a *specific instance* within a type. For waves, this
+**Entity ID** identifies a _specific instance_ within a type. For waves, this
 is the UUID rendered as a string. For tasks, it is the task's UUID string. The
 entity ID is the second coordinate in the two-dimensional address space that
 sharding maintains: type key plus entity ID uniquely identifies one actor in the
@@ -54,7 +53,7 @@ caller never has to think about any of this.
 **Shard management** is the lifecycle layer underneath. Sharding divides
 entities into shards (groups), distributes shards across cluster nodes, and
 handles rebalancing when nodes join or leave. Actors that have been idle for
-a configurable period are *passivated* (stopped to free memory) and will be
+a configurable period are _passivated_ (stopped to free memory) and will be
 restarted on demand when the next message arrives. From the caller's
 perspective, the entity is always "there"; sharding makes it so.
 
@@ -68,7 +67,6 @@ The caller says "I want the Wave entity with this ID." Sharding returns a
 reference. That reference might point to an actor on the local node, on a
 remote node, or one that does not exist yet. The caller does not need to
 distinguish between these cases.
-
 
 ## The PekkoRepository Pattern
 
@@ -120,7 +118,7 @@ class PekkoWaveRepository(system: ActorSystem[?])(using Timeout)
           .map(_ => ())
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/PekkoWaveRepository.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/PekkoWaveRepository.scala_</small>
 
 Let's walk through this piece by piece.
 
@@ -165,7 +163,6 @@ a driven port. `PekkoWaveRepository` is the adapter that wires the abstract
 calls `repository.save(wave, event)` and gets a `Future[Unit]` back. It has no
 idea that Pekko or sharding exist.
 
-
 ## Cross-Entity Queries
 
 Single-entity operations are straightforward: get an `EntityRef` by ID, send a
@@ -207,7 +204,7 @@ class PekkoTaskRepository(
     )
 ```
 
-<small>*File: task/src/main/scala/neon/task/PekkoTaskRepository.scala*</small>
+<small>_File: task/src/main/scala/neon/task/PekkoTaskRepository.scala_</small>
 
 Let's trace the `findByWaveId` call step by step.
 
@@ -238,7 +235,6 @@ wave completion checks, reporting).
 
 @:@
 
-
 ### The R2dbcProjectionQueries Trait
 
 The `queryProjectionIds` helper lives in the `R2dbcProjectionQueries` trait in
@@ -257,7 +253,7 @@ trait R2dbcProjectionQueries:
   ): Future[List[UUID]]
 ```
 
-<small>*File: common/src/main/scala/neon/common/R2dbcProjectionQueries.scala*</small>
+<small>_File: common/src/main/scala/neon/common/R2dbcProjectionQueries.scala_</small>
 
 The implementation acquires an R2DBC connection, binds the query parameters,
 streams the result rows into a list of UUIDs via Pekko Streams, and closes the
@@ -268,7 +264,6 @@ Everything is non-blocking: `Source.fromPublisher` wraps R2DBC's reactive
 Any `PekkoRepository` that needs cross-entity queries mixes in this trait,
 provides a `ConnectionFactory`, and calls `queryProjectionIds` with the
 appropriate SQL.
-
 
 ## Non-Transactional saveAll
 
@@ -284,7 +279,7 @@ line, each task being its own entity. The `AsyncTaskRepository` defines a
 def saveAll(entries: List[(Task, TaskEvent)]): Future[Unit]
 ```
 
-<small>*File: task/src/main/scala/neon/task/AsyncTaskRepository.scala*</small>
+<small>_File: task/src/main/scala/neon/task/AsyncTaskRepository.scala_</small>
 
 The Scaladoc makes the contract explicit: this is not transactional. Here is the
 implementation in `PekkoTaskRepository`:
@@ -294,7 +289,7 @@ def saveAll(entries: List[(Task, TaskEvent)]): Future[Unit] =
   Future.sequence(entries.map((task, event) => save(task, event))).map(_ => ())
 ```
 
-<small>*File: task/src/main/scala/neon/task/PekkoTaskRepository.scala*</small>
+<small>_File: task/src/main/scala/neon/task/PekkoTaskRepository.scala_</small>
 
 `Future.sequence` launches all individual `save` calls in parallel. Each `save`
 sends a command to its respective task actor via Cluster Sharding. If one actor
@@ -316,7 +311,6 @@ visible to every caller. When you see `saveAll` in a service, you know it
 fans out independently.
 
 @:@
-
 
 ## R2DBC Persistence Configuration
 
@@ -358,7 +352,7 @@ EventSourcedBehavior
   )
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 `snapshotEvery(100, 2)` means: take a snapshot every 100 events, and keep the
 2 most recent snapshots. On recovery, the actor loads the latest snapshot and
@@ -369,7 +363,6 @@ events, this dramatically reduces recovery time.
 The `PersistenceId` combines the entity type name and the entity ID:
 `PersistenceId("Wave", "550e8400-...")`. This string is the primary key in the
 journal table, uniquely identifying the event stream for one specific wave.
-
 
 ## Testing Actors with EventSourcedBehaviorTestKit
 
@@ -418,7 +411,7 @@ class WaveActorSuite
   )
 ```
 
-<small>*File: wave/src/test/scala/neon/wave/WaveActorSuite.scala*</small>
+<small>_File: wave/src/test/scala/neon/wave/WaveActorSuite.scala_</small>
 
 Let's unpack this.
 
@@ -472,14 +465,13 @@ describe("WaveActor"):
       )
 ```
 
-<small>*File: wave/src/test/scala/neon/wave/WaveActorSuite.scala*</small>
+<small>_File: wave/src/test/scala/neon/wave/WaveActorSuite.scala_</small>
 
 `runCommand` sends a command and returns a `CommandResult` containing the reply,
 the persisted events, and the resulting state. Unlike a normal `ask` (which only
 gives the reply), `CommandResult` lets us assert that the correct event was
 persisted (`result.event == event`) and that the state transitioned to the
 expected type (`ActiveState` containing a `Wave.Released`).
-
 
 ### Testing Command Rejection
 
@@ -497,13 +489,12 @@ it("rejects Complete in EmptyState"):
   assert(result.hasNoEvents)
 ```
 
-<small>*File: wave/src/test/scala/neon/wave/WaveActorSuite.scala*</small>
+<small>_File: wave/src/test/scala/neon/wave/WaveActorSuite.scala_</small>
 
 Sending `Complete` to an actor in `EmptyState` (no wave created yet) must fail.
 The test verifies two things: the reply is an error, and no events were
 persisted. The second assertion is critical. A rejected command must never write
 to the journal. If it did, the actor would recover into an inconsistent state.
-
 
 ### Testing Recovery
 
@@ -520,7 +511,7 @@ describe("event replay"):
     assert(result.reply.get.isInstanceOf[Wave.Released])
 ```
 
-<small>*File: wave/src/test/scala/neon/wave/WaveActorSuite.scala*</small>
+<small>_File: wave/src/test/scala/neon/wave/WaveActorSuite.scala_</small>
 
 This test creates a wave, then calls `esTestKit.restart()`. The restart stops
 the actor and starts a fresh instance, which reconstructs its state by replaying
@@ -543,14 +534,12 @@ correctly it handles commands on the first run.
 
 @:@
 
-
 ### The beforeEach Reset
 
 One subtle detail: the `beforeEach` method calls `esTestKit.clear()`, which
 resets the in-memory journal and restarts the actor before each test. Without
 this, events from one test would leak into the next. Each test starts with a
 clean slate: an empty journal and an actor in `EmptyState`.
-
 
 ## What Comes Next
 

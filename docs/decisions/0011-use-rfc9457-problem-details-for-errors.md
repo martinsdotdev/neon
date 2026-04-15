@@ -71,8 +71,8 @@ Content-Type: application/problem+json
 | `type`     | URI    | Identifies the problem category             |
 | `status`   | number | HTTP status code (mirrored from response)   |
 | `title`    | string | Short, human-readable summary               |
-| `detail`   | string | Explanation specific to this occurrence      |
-| `instance` | URI    | Identifies this specific problem occurrence  |
+| `detail`   | string | Explanation specific to this occurrence     |
+| `instance` | URI    | Identifies this specific problem occurrence |
 
 ### Extension Fields
 
@@ -86,12 +86,12 @@ For rate limiting:
 
 ### Error Type URIs
 
-| Type URI                        | Status | Usage                     |
-| ------------------------------- | ------ | ------------------------- |
-| `about:blank`                   | varies | Generic errors (use title)|
-| `urn:neon:error:validation`     | 422    | Request validation failed |
-| `urn:neon:error:unauthorized`   | 401    | Authentication required   |
-| `urn:neon:error:forbidden`      | 403    | Insufficient permissions  |
-| `urn:neon:error:not-found`      | 404    | Resource not found        |
-| `urn:neon:error:conflict`       | 409    | Resource conflict         |
-| `urn:neon:error:rate-limited`   | 429    | Too many requests         |
+| Type URI                      | Status | Usage                      |
+| ----------------------------- | ------ | -------------------------- |
+| `about:blank`                 | varies | Generic errors (use title) |
+| `urn:neon:error:validation`   | 422    | Request validation failed  |
+| `urn:neon:error:unauthorized` | 401    | Authentication required    |
+| `urn:neon:error:forbidden`    | 403    | Insufficient permissions   |
+| `urn:neon:error:not-found`    | 404    | Resource not found         |
+| `urn:neon:error:conflict`     | 409    | Resource conflict          |
+| `urn:neon:error:rate-limited` | 429    | Too many requests          |

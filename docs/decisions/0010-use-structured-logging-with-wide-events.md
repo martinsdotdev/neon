@@ -146,26 +146,36 @@ RequestLoggingDirective (emits canonical log line, restores MDC)
 ### Log Output Examples
 
 Development (colored console):
+
 ```
 14:23:45.123 INFO  neon.http.access    [0195...] [:] | POST /tasks/.../complete 200 45ms
 14:23:45.080 DEBUG neon.task.TaskActor [:] [Task:0195...] | Received Complete in state ActiveState
 ```
 
 Production (JSON via logstash-logback-encoder):
+
 ```json
-{"@timestamp":"...","level":"INFO","logger_name":"neon.http.access",
- "message":"POST /tasks/.../complete 200 45ms",
- "traceId":"0195...","method":"POST","path":"/tasks/.../complete",
- "status":200,"durationMs":45,"userId":"..."}
+{
+  "@timestamp": "...",
+  "level": "INFO",
+  "logger_name": "neon.http.access",
+  "message": "POST /tasks/.../complete 200 45ms",
+  "traceId": "0195...",
+  "method": "POST",
+  "path": "/tasks/.../complete",
+  "status": 200,
+  "durationMs": 45,
+  "userId": "..."
+}
 ```
 
 ### Dependencies
 
-| Library | Version | Purpose |
-| --- | --- | --- |
-| logstash-logback-encoder | 8.1 | Structured JSON output, StructuredArguments |
-| scala-logging | 4.0.0-RC1 | LazyLogging trait, SLF4J 2.x macro guards |
-| logback-classic | 1.5.18 | SLF4J backend (already present) |
+| Library                  | Version   | Purpose                                     |
+| ------------------------ | --------- | ------------------------------------------- |
+| logstash-logback-encoder | 8.1       | Structured JSON output, StructuredArguments |
+| scala-logging            | 4.0.0-RC1 | LazyLogging trait, SLF4J 2.x macro guards   |
+| logback-classic          | 1.5.18    | SLF4J backend (already present)             |
 
 ### MDC Propagation Strategy
 

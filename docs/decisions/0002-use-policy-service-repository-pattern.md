@@ -9,6 +9,7 @@ Accepted
 The core module orchestrates business logic across multiple domain aggregates. A single operation (e.g., completing a task) can trigger cascading state transitions across tasks, waves, transport orders, and consolidation groups.
 
 **Options considered:**
+
 1. **Fat services**: Services contain both business rules and orchestration logic.
 2. **Policy-Service-Repository**: Separate stateless decision objects (policies) from orchestration (services) and persistence (repositories).
 
@@ -23,11 +24,13 @@ Use three distinct layers in the core module:
 ## Consequences
 
 **Benefits:**
+
 - Policies are trivially testable: pure functions with no dependencies
 - Services are testable with in-memory repository implementations
 - Business rules (policies) are reusable across services
-- Clear separation: policies decide *what* should happen, services orchestrate *how*
+- Clear separation: policies decide _what_ should happen, services orchestrate _how_
 
 **Tradeoffs:**
+
 - More files per feature (policy + service + repository vs. just a service)
 - Indirection between where a rule is defined (policy) and where it's used (service)

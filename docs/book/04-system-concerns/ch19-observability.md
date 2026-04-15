@@ -6,7 +6,6 @@ event" philosophy across three layers: HTTP, services, and actors. The
 result is a system where every request leaves a structured trail from the
 route handler all the way into the event-sourced actor.
 
-
 ## The Wide Events Philosophy
 
 Traditional logging scatters `printf`-style messages throughout the
@@ -34,7 +33,6 @@ Neon WES implements wide events through three cooperating pieces:
 async propagation, and `Behaviors.withMdc` for actor context. Let's examine
 each one.
 
-
 ## MDC Propagation Across Three Layers
 
 The SLF4J Mapped Diagnostic Context (MDC) is a thread-local map of
@@ -43,7 +41,6 @@ and logging frameworks include them automatically in every log line. The
 challenge in an async system is that MDC is thread-local, but `Future`
 chains hop between threads. Neon WES solves this with a three-layer
 propagation strategy.
-
 
 ### Layer 1: RequestLoggingDirective
 
@@ -71,7 +68,7 @@ def withRequestLogging: Directive0 =
   }
 ```
 
-<small>*File: app/src/main/scala/neon/app/http/RequestLoggingDirective.scala*</small>
+<small>_File: app/src/main/scala/neon/app/http/RequestLoggingDirective.scala_</small>
 
 Three things happen here. First, a UUID v7 trace ID is generated for every
 request (time-ordered for chronological sorting). Second, MDC fields
@@ -81,7 +78,6 @@ route handler completes, emitting a single structured log line with the
 accumulated fields (including `userId`, which `AuthDirectives` adds during
 authentication). Log levels are chosen by status code: INFO for 2xx/3xx,
 WARN for 4xx, ERROR for 5xx.
-
 
 ### Layer 2: MdcExecutionContext
 
@@ -110,7 +106,7 @@ class MdcExecutionContext(delegate: ExecutionContext)
     delegate.reportFailure(cause)
 ```
 
-<small>*File: app/src/main/scala/neon/app/logging/MdcExecutionContext.scala*</small>
+<small>_File: app/src/main/scala/neon/app/logging/MdcExecutionContext.scala_</small>
 
 The pattern is snapshot-restore:
 
@@ -133,7 +129,6 @@ context-passing approaches instead.
 
 @:@
 
-
 ### Layer 3: Behaviors.withMdc for Actors
 
 The third layer provides context inside Pekko actors. Actors process messages
@@ -151,7 +146,7 @@ def apply(entityId: String): Behavior[Command] =
         .withEnforcedReplies[Command, WaveEvent, State](...)
 ```
 
-<small>*File: wave/src/main/scala/neon/wave/WaveActor.scala*</small>
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
 Every actor in the system follows this pattern. The `Behaviors.withMdc` call
 takes a static map of MDC fields that are installed before every message is
@@ -171,7 +166,6 @@ and include it in the `Behaviors.withMdc` map. Neon WES currently relies
 on correlating by timestamp and entity ID.
 
 @:@
-
 
 ## Structured JSON in Production
 
@@ -194,7 +188,7 @@ appender for human readability:
 </appender>
 ```
 
-<small>*File: app/src/main/resources/logback.xml*</small>
+<small>_File: app/src/main/resources/logback.xml_</small>
 
 The pattern includes MDC fields inline: `[%X{traceId:-}]` prints the trace
 ID (or nothing if absent), and `[%X{entityType:-}:%X{entityId:-}]` prints
@@ -223,20 +217,18 @@ other log aggregator. The production appender is wrapped in an
 `AsyncAppender` with `neverBlock=true`, ensuring log output never blocks
 application threads.
 
-
 ## Dev vs. Prod Configuration
 
-| Configuration | File | Appender | Level | Purpose |
-|--------------|------|----------|-------|---------|
-| Development | `logback.xml` | Colored console | neon=DEBUG, root=INFO | Human-readable, verbose |
-| Production | `logback-prod.xml` | Async JSON | neon=INFO, root=WARN | Machine-parseable, performant |
-| Test | `logback-test.xml` | Plain console | root=WARN | Quiet, only errors during tests |
+| Configuration | File               | Appender        | Level                 | Purpose                         |
+| ------------- | ------------------ | --------------- | --------------------- | ------------------------------- |
+| Development   | `logback.xml`      | Colored console | neon=DEBUG, root=INFO | Human-readable, verbose         |
+| Production    | `logback-prod.xml` | Async JSON      | neon=INFO, root=WARN  | Machine-parseable, performant   |
+| Test          | `logback-test.xml` | Plain console   | root=WARN             | Quiet, only errors during tests |
 
 Tests produce no log output unless something goes wrong at WARN level or
 above. Switching between configurations uses the standard Logback mechanism:
 `logback.xml` is the default, and production deploys set
 `-Dlogback.configurationFile=logback-prod.xml` as a JVM argument.
-
 
 ## Projection Logging
 
@@ -276,7 +268,7 @@ abstract class LoggingProjectionHandler[E](using
   ): Future[Done]
 ```
 
-<small>*File: app/src/main/scala/neon/app/projection/LoggingProjectionHandler.scala*</small>
+<small>_File: app/src/main/scala/neon/app/projection/LoggingProjectionHandler.scala_</small>
 
 The base class provides two things:
 
@@ -292,7 +284,6 @@ The base class provides two things:
 Subclasses implement `processEvent` and get logging for free. All 14
 projection handlers in Neon WES extend this base class.
 
-
 ## Summary
 
 - **Wide events:** one canonical log line per HTTP request with trace ID,
@@ -304,7 +295,6 @@ projection handlers in Neon WES extend this base class.
   production, quiet WARN-only for tests.
 - **LoggingProjectionHandler:** base class providing DEBUG entry logging
   and ERROR failure logging for all projection handlers.
-
 
 ## What Comes Next
 
