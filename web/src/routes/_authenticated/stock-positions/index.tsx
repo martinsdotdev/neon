@@ -6,6 +6,7 @@ import type { StockPosition } from "@/shared/api/stock-positions"
 import { stockPositionQueries } from "@/shared/api/stock-positions"
 import { DataGrid } from "@/shared/data-grid/data-grid"
 import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
+import { DataGridSelectionBar } from "@/shared/data-grid/data-grid-selection-bar"
 import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-column"
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
@@ -170,6 +171,7 @@ function StockPositionsPage() {
         </div>
       </div>
       <DataGrid {...gridProps} height={500} />
+      <DataGridSelectionBar table={gridProps.table} />
     </div>
   )
 }
