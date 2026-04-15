@@ -4,6 +4,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { getLocale } from "@/paraglide/runtime.js"
 import * as m from "@/paraglide/messages.js"
+import { ThemeProvider } from "@/shared/theme-provider"
 
 import appCss from "../app/styles.css?url"
 
@@ -33,12 +34,14 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={getLocale()}>
+    <html lang={getLocale()} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body>
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
         <TanStackDevtools
           config={{
             position: "bottom-right",
