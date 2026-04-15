@@ -1,3 +1,4 @@
+import { Fragment } from "react"
 import {
   createFileRoute,
   Link,
@@ -8,6 +9,7 @@ import {
 import {
   Archive,
   Barcode,
+  ChevronsUpDown,
   ClipboardCheck,
   ClipboardList,
   Database,
@@ -16,25 +18,42 @@ import {
   LogOut,
   MapPin,
   Monitor,
+  Moon,
   Package,
   PackagePlus,
   ScanBarcode,
+  Settings,
   Ship,
   ShoppingCart,
+  Sun,
   Truck,
   Users,
   Waves,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { motion } from "motion/react"
+import { useTheme } from "next-themes"
 import { authQueries, useLogout } from '@/shared/api/auth';
 import type { AuthUser } from '@/shared/api/auth';
-import { Badge } from "@/shared/ui/badge"
-import { ModeToggle } from "@/shared/ui/mode-toggle"
+import { Avatar, AvatarFallback } from "@/shared/ui/avatar"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/shared/ui/breadcrumb"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/ui/dropdown-menu"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarHeader,
@@ -44,7 +63,9 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@/shared/ui/sidebar"
+import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs"
 import * as m from "@/paraglide/messages.js"
 
 export const Route = createFileRoute("/_authenticated")({
@@ -113,12 +134,20 @@ const navigation: NavGroup[] = [
   },
 ]
 
+const navLabels = new Map(
+  navigation.flatMap((g) => g.items.map((i) => [i.to.slice(1), i.label])),
+)
+
 // ---------------------------------------------------------------------------
 // Layout
 // ---------------------------------------------------------------------------
 
 function AuthenticatedLayout() {
   const { user } = Route.useRouteContext()
+  const pathname = useRouterState({
+    select: (s) => s.location.pathname,
+  })
+  const segments = pathname.split("/").filter(Boolean)
 
   return (
     <SidebarProvider>
@@ -126,8 +155,31 @@ function AuthenticatedLayout() {
       <SidebarInset>
         <header className="flex h-12 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
-          <div className="flex-1" />
-          <ModeToggle />
+          <div className="bg-border h-4 w-px" />
+          <Breadcrumb>
+            <BreadcrumbList className="sm:gap-1">
+              {segments.map((segment, index) => {
+                const href = `/${segments.slice(0, index + 1).join("/")}`
+                const isLast = index === segments.length - 1
+                const label = navLabels.get(segment) ?? segment
+
+                return (
+                  <Fragment key={href}>
+                    {index > 0 && <BreadcrumbSeparator />}
+                    <BreadcrumbItem>
+                      {isLast ? (
+                        <BreadcrumbPage>{label}</BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink render={<Link to={href} />}>
+                          {label}
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                  </Fragment>
+                )
+              })}
+            </BreadcrumbList>
+          </Breadcrumb>
         </header>
         <main className="flex-1 p-6">
           <Outlet />
@@ -145,25 +197,85 @@ function AppSidebar({ user }: { user: AuthUser }) {
   const pathname = useRouterState({
     select: (s) => s.location.pathname,
   })
+  const { state } = useSidebar()
+  const { theme, setTheme } = useTheme()
   const logout = useLogout()
+
+  const initials = user.name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase()
 
   return (
     <Sidebar collapsible="icon" variant="inset">
-      {/* Header: brand */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              size="lg"
-              render={<Link to="/dashboard" />}
-            >
-              <div className="bg-primary text-primary-foreground flex size-7 shrink-0 items-center justify-center rounded-md font-mono text-xs font-bold">
-                N
-              </div>
-              <span className="font-heading truncate text-sm font-semibold tracking-[0.15em]">
-                NEON WES
-              </span>
-            </SidebarMenuButton>
+            <DropdownMenu>
+              <DropdownMenuTrigger render={<SidebarMenuButton size="lg" />}>
+                <Avatar className="size-8 shrink-0">
+                  <AvatarFallback className="font-mono text-xs font-medium">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                  {user.name}
+                </span>
+                <ChevronsUpDown className="text-muted-foreground ml-auto size-4 shrink-0" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-60"
+                side={state === "collapsed" ? "right" : "bottom"}
+                align="start"
+                sideOffset={8}
+              >
+                <div className="flex items-center gap-3 px-1 pt-1.5">
+                  <Avatar className="size-8">
+                    <AvatarFallback className="font-mono text-xs font-medium">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="text-foreground text-sm font-medium">
+                      {user.name}
+                    </span>
+                    <span className="text-muted-foreground text-xs">
+                      {user.role}
+                    </span>
+                  </div>
+                </div>
+                <div className="py-2.5">
+                  <Tabs value={theme ?? "system"} onValueChange={setTheme}>
+                    <TabsList className="w-full">
+                      <TabsTrigger value="light" className="h-6 flex-1">
+                        <Sun className="size-4" />
+                      </TabsTrigger>
+                      <TabsTrigger value="dark" className="h-6 flex-1">
+                        <Moon className="size-4" />
+                      </TabsTrigger>
+                      <TabsTrigger value="system" className="h-6 flex-1">
+                        <Monitor className="size-4" />
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Settings />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => logout.mutate()}
+                >
+                  <LogOut />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -188,7 +300,7 @@ function AppSidebar({ user }: { user: AuthUser }) {
                     {isActive && (
                       <motion.div
                         layoutId="sidebar-indicator"
-                        className="absolute inset-0 rounded-xl bg-sidebar-primary/12"
+                        className="absolute inset-0 rounded-xl bg-sidebar-primary/12 group-data-[collapsible=icon]:m-auto group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-full"
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
                       />
                     )}
@@ -207,39 +319,6 @@ function AppSidebar({ user }: { user: AuthUser }) {
           </SidebarGroup>
         ))}
       </SidebarContent>
-
-      {/* Footer: user */}
-      <SidebarFooter>
-        <div className="flex items-center gap-3 overflow-hidden px-1 py-1">
-          <div className="bg-muted flex size-8 shrink-0 items-center justify-center rounded-full font-mono text-xs font-medium">
-            {user.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")
-              .slice(0, 2)
-              .toUpperCase()}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium">{user.name}</p>
-            <div className="flex items-center gap-1.5">
-              <Badge
-                variant="secondary"
-                className="font-heading h-4 px-1 text-[0.5625rem] tracking-wider"
-              >
-                {user.role}
-              </Badge>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => logout.mutate()}
-            className="text-muted-foreground hover:text-foreground shrink-0 p-1 transition-colors"
-            title={m.auth_sign_out()}
-          >
-            <LogOut className="size-4" />
-          </button>
-        </div>
-      </SidebarFooter>
     </Sidebar>
   )
 }
