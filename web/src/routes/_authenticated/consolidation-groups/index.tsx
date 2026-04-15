@@ -12,6 +12,7 @@ import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { PageHeader } from "@/shared/ui/page-header"
+import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute(
   "/_authenticated/consolidation-groups/",
@@ -34,12 +35,22 @@ function ConsolidationGroupsPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "id",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.id}
+          </span>
+        ),
         header: "ID",
         meta: { cell: { variant: "short-text" as const }, label: "ID" },
         size: 120,
       },
       {
         accessorKey: "waveId",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.waveId}
+          </span>
+        ),
         header: "Wave",
         meta: {
           cell: { variant: "short-text" as const },
@@ -49,6 +60,11 @@ function ConsolidationGroupsPage() {
       },
       {
         accessorKey: "orderCount",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.orderCount}
+          </span>
+        ),
         header: "Order Count",
         meta: {
           cell: { variant: "number" as const },
@@ -58,6 +74,9 @@ function ConsolidationGroupsPage() {
       },
       {
         accessorKey: "state",
+        cell: ({ row }) => (
+          <StateBadge state={row.original.state} />
+        ),
         header: "State",
         meta: {
           cell: {
@@ -80,6 +99,11 @@ function ConsolidationGroupsPage() {
       },
       {
         accessorKey: "workstationId",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs text-muted-foreground">
+            {row.original.workstationId ?? "\u2014"}
+          </span>
+        ),
         header: "Workstation",
         meta: {
           cell: { variant: "short-text" as const },

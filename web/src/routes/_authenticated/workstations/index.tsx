@@ -11,7 +11,9 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
+import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
+import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute(
   "/_authenticated/workstations/",
@@ -32,12 +34,22 @@ function WorkstationsPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "id",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.id}
+          </span>
+        ),
         header: "ID",
         meta: { cell: { variant: "short-text" as const }, label: "ID" },
         size: 120,
       },
       {
         accessorKey: "workstationType",
+        cell: ({ row }) => (
+          <Badge variant="secondary">
+            {row.original.workstationType}
+          </Badge>
+        ),
         header: "Type",
         meta: {
           cell: {
@@ -53,6 +65,9 @@ function WorkstationsPage() {
       },
       {
         accessorKey: "mode",
+        cell: ({ row }) => (
+          <Badge variant="secondary">{row.original.mode}</Badge>
+        ),
         header: "Mode",
         meta: {
           cell: {
@@ -70,6 +85,11 @@ function WorkstationsPage() {
       },
       {
         accessorKey: "slotCount",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.slotCount}
+          </span>
+        ),
         header: "Slots",
         meta: {
           cell: { variant: "number" as const },
@@ -79,6 +99,9 @@ function WorkstationsPage() {
       },
       {
         accessorKey: "state",
+        cell: ({ row }) => (
+          <StateBadge state={row.original.state} />
+        ),
         header: "State",
         meta: {
           cell: {

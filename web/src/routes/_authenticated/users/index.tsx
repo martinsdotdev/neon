@@ -11,6 +11,7 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
+import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
 
 export const Route = createFileRoute("/_authenticated/users/")({
@@ -37,6 +38,11 @@ function UsersPage() {
       },
       {
         accessorKey: "login",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.login}
+          </span>
+        ),
         header: "Login",
         meta: {
           cell: { variant: "short-text" as const },
@@ -46,6 +52,9 @@ function UsersPage() {
       },
       {
         accessorKey: "role",
+        cell: ({ row }) => (
+          <Badge variant="secondary">{row.original.role}</Badge>
+        ),
         header: "Role",
         meta: {
           cell: {
@@ -63,6 +72,15 @@ function UsersPage() {
       },
       {
         accessorKey: "active",
+        cell: ({ row }) => (
+          <Badge
+            variant={
+              row.original.active ? "default" : "secondary"
+            }
+          >
+            {row.original.active ? "Active" : "Inactive"}
+          </Badge>
+        ),
         header: "Status",
         meta: {
           cell: {

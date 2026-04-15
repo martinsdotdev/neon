@@ -4,36 +4,39 @@ import type { BadgeProps } from '@/shared/ui/badge';
 type StateVariant = "neutral" | "active" | "success" | "destructive"
 
 const STATE_VARIANTS: Record<string, StateVariant> = {
-  // Neutral -- initial/pending states
-  Planned: "neutral",
-  Pending: "neutral",
-  Created: "neutral",
-  Available: "neutral",
-  PickCreated: "neutral",
-  ShipCreated: "neutral",
-
-  // Active -- in-progress states
-  Released: "active",
+  Active: "active",
   Allocated: "active",
   Assigned: "active",
-  Active: "active",
-  Reserved: "active",
-  Picked: "active",
-  ReadyForWorkstation: "active",
-  InBuffer: "active",
-  Packed: "active",
-  ReadyToShip: "active",
-  Idle: "active",
-
-  // Success -- terminal positive states
+  Available: "neutral",
+  Blocked: "destructive",
+  Cancelled: "destructive",
+  Closed: "success",
   Completed: "success",
   Confirmed: "success",
-  Shipped: "success",
-
-  // Destructive -- terminal negative states
-  Cancelled: "destructive",
+  Created: "neutral",
+  Damaged: "destructive",
   Disabled: "destructive",
   Empty: "destructive",
+  Expected: "neutral",
+  Expired: "destructive",
+  Idle: "active",
+  InBuffer: "active",
+  InProgress: "active",
+  Open: "neutral",
+  Packed: "active",
+  PartiallyReceived: "active",
+  Pending: "neutral",
+  PickCreated: "neutral",
+  Picked: "active",
+  Planned: "neutral",
+  QualityHold: "destructive",
+  ReadyForWorkstation: "active",
+  ReadyToShip: "active",
+  Received: "success",
+  Released: "active",
+  Reserved: "active",
+  ShipCreated: "neutral",
+  Shipped: "success",
 }
 
 const VARIANT_TO_BADGE: Record<StateVariant, BadgeProps["variant"]> = {

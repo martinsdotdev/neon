@@ -11,7 +11,9 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
+import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
+import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute("/_authenticated/tasks/")({
   component: TasksPage,
@@ -28,12 +30,22 @@ function TasksPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "id",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.id}
+          </span>
+        ),
         header: "ID",
         meta: { cell: { variant: "short-text" as const }, label: "ID" },
         size: 120,
       },
       {
         accessorKey: "taskType",
+        cell: ({ row }) => (
+          <Badge variant="secondary">
+            {row.original.taskType}
+          </Badge>
+        ),
         header: "Type",
         meta: {
           cell: {
@@ -51,6 +63,11 @@ function TasksPage() {
       },
       {
         accessorKey: "skuId",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.skuId}
+          </span>
+        ),
         header: "SKU",
         meta: {
           cell: { variant: "short-text" as const },
@@ -60,6 +77,9 @@ function TasksPage() {
       },
       {
         accessorKey: "state",
+        cell: ({ row }) => (
+          <StateBadge state={row.original.state} />
+        ),
         header: "State",
         meta: {
           cell: {
@@ -78,6 +98,11 @@ function TasksPage() {
       },
       {
         accessorKey: "requestedQuantity",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.requestedQuantity}
+          </span>
+        ),
         header: "Requested Qty",
         meta: {
           cell: { variant: "number" as const },
@@ -87,6 +112,11 @@ function TasksPage() {
       },
       {
         accessorKey: "assignedTo",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs text-muted-foreground">
+            {row.original.assignedTo ?? "\u2014"}
+          </span>
+        ),
         header: "Assigned To",
         meta: {
           cell: { variant: "short-text" as const },

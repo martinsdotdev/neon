@@ -11,7 +11,9 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
+import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
+import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute(
   "/_authenticated/handling-units/",
@@ -30,12 +32,22 @@ function HandlingUnitsPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "id",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.id}
+          </span>
+        ),
         header: "ID",
         meta: { cell: { variant: "short-text" as const }, label: "ID" },
         size: 120,
       },
       {
         accessorKey: "packagingLevel",
+        cell: ({ row }) => (
+          <Badge variant="secondary">
+            {row.original.packagingLevel}
+          </Badge>
+        ),
         header: "Packaging Level",
         meta: {
           cell: {
@@ -53,6 +65,11 @@ function HandlingUnitsPage() {
       },
       {
         accessorKey: "currentLocation",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs text-muted-foreground">
+            {row.original.currentLocation ?? "\u2014"}
+          </span>
+        ),
         header: "Location",
         meta: {
           cell: { variant: "short-text" as const },
@@ -62,6 +79,9 @@ function HandlingUnitsPage() {
       },
       {
         accessorKey: "state",
+        cell: ({ row }) => (
+          <StateBadge state={row.original.state} />
+        ),
         header: "State",
         meta: {
           cell: {

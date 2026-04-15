@@ -211,7 +211,7 @@ function DataGridRowImpl<TData>({
       {...props}
       ref={rowRef}
       className={cn(
-        "absolute flex w-full border-b [content-visibility:auto]",
+        "absolute flex w-full border-b hover:bg-muted/50 [content-visibility:auto]",
         !adjustLayout && "will-change-transform",
         className,
       )}

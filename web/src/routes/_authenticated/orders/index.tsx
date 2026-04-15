@@ -11,6 +11,7 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
+import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
 
 export const Route = createFileRoute("/_authenticated/orders/")({
@@ -28,6 +29,11 @@ function OrdersPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "id",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.id}
+          </span>
+        ),
         header: "Order ID",
         meta: {
           cell: { variant: "short-text" as const },
@@ -37,6 +43,18 @@ function OrdersPage() {
       },
       {
         accessorKey: "priority",
+        cell: ({ row }) => {
+          const v = row.original.priority
+          const variantMap: Record<string, "destructive" | "default" | "secondary"> = {
+            Critical: "destructive",
+            High: "default",
+          }
+          return (
+            <Badge variant={variantMap[v] ?? "secondary"}>
+              {v}
+            </Badge>
+          )
+        },
         header: "Priority",
         meta: {
           cell: {
@@ -54,6 +72,11 @@ function OrdersPage() {
       },
       {
         accessorFn: (row) => row.lines.length,
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.lines.length}
+          </span>
+        ),
         header: "Lines",
         id: "lineCount",
         meta: {
@@ -64,6 +87,11 @@ function OrdersPage() {
       },
       {
         accessorKey: "carrierId",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs text-muted-foreground">
+            {row.original.carrierId ?? "\u2014"}
+          </span>
+        ),
         header: "Carrier",
         meta: {
           cell: { variant: "short-text" as const },

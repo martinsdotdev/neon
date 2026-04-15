@@ -11,6 +11,7 @@ import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-column"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
+import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
 
 export const Route = createFileRoute("/_authenticated/carriers/")({
@@ -28,6 +29,11 @@ function CarriersPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "code",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.code}
+          </span>
+        ),
         header: "Code",
         meta: { cell: { variant: "short-text" as const }, label: "Code" },
         size: 120,
@@ -40,6 +46,11 @@ function CarriersPage() {
       },
       {
         accessorKey: "active",
+        cell: ({ row }) => (
+          <Badge variant={row.original.active ? "default" : "secondary"}>
+            {row.original.active ? "Active" : "Inactive"}
+          </Badge>
+        ),
         header: "Status",
         meta: {
           cell: {

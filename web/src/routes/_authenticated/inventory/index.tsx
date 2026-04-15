@@ -12,6 +12,7 @@ import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { PageHeader } from "@/shared/ui/page-header"
+import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute("/_authenticated/inventory/")({
   component: InventoryPage,
@@ -28,6 +29,11 @@ function InventoryPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "skuId",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.skuId}
+          </span>
+        ),
         header: "SKU",
         meta: {
           cell: { variant: "short-text" as const },
@@ -37,6 +43,11 @@ function InventoryPage() {
       },
       {
         accessorKey: "locationId",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.locationId}
+          </span>
+        ),
         header: "Location",
         meta: {
           cell: { variant: "short-text" as const },
@@ -46,6 +57,9 @@ function InventoryPage() {
       },
       {
         accessorKey: "status",
+        cell: ({ row }) => (
+          <StateBadge state={row.original.status} />
+        ),
         header: "Status",
         meta: {
           cell: {
@@ -64,6 +78,11 @@ function InventoryPage() {
       },
       {
         accessorKey: "onHand",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.onHand}
+          </span>
+        ),
         header: "On Hand",
         meta: {
           cell: { variant: "number" as const },
@@ -73,6 +92,11 @@ function InventoryPage() {
       },
       {
         accessorKey: "available",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.available}
+          </span>
+        ),
         header: "Available",
         meta: {
           cell: { variant: "number" as const },
@@ -82,6 +106,11 @@ function InventoryPage() {
       },
       {
         accessorKey: "reserved",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.reserved}
+          </span>
+        ),
         header: "Reserved",
         meta: {
           cell: { variant: "number" as const },

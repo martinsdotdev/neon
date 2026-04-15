@@ -12,6 +12,7 @@ import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { PageHeader } from "@/shared/ui/page-header"
+import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute("/_authenticated/deliveries/")({
   component: DeliveriesPage,
@@ -28,12 +29,22 @@ function DeliveriesPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "id",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.id}
+          </span>
+        ),
         header: "ID",
         meta: { cell: { variant: "short-text" as const }, label: "ID" },
         size: 120,
       },
       {
         accessorKey: "skuId",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.skuId}
+          </span>
+        ),
         header: "SKU",
         meta: {
           cell: { variant: "short-text" as const },
@@ -43,6 +54,11 @@ function DeliveriesPage() {
       },
       {
         accessorKey: "expectedQuantity",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.expectedQuantity}
+          </span>
+        ),
         header: "Expected Qty",
         meta: {
           cell: { variant: "number" as const },
@@ -52,6 +68,11 @@ function DeliveriesPage() {
       },
       {
         accessorKey: "receivedQuantity",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.receivedQuantity}
+          </span>
+        ),
         header: "Received Qty",
         meta: {
           cell: { variant: "number" as const },
@@ -61,6 +82,9 @@ function DeliveriesPage() {
       },
       {
         accessorKey: "state",
+        cell: ({ row }) => (
+          <StateBadge state={row.original.state} />
+        ),
         header: "State",
         meta: {
           cell: {

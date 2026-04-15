@@ -11,7 +11,9 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
+import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
+import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute("/_authenticated/waves/")({
   component: WavesPage,
@@ -28,12 +30,22 @@ function WavesPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "id",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.id}
+          </span>
+        ),
         header: "ID",
         meta: { cell: { variant: "short-text" as const }, label: "ID" },
         size: 120,
       },
       {
         accessorKey: "orderGrouping",
+        cell: ({ row }) => (
+          <Badge variant="secondary">
+            {row.original.orderGrouping}
+          </Badge>
+        ),
         header: "Order Grouping",
         meta: {
           cell: {
@@ -49,6 +61,11 @@ function WavesPage() {
       },
       {
         accessorKey: "orderCount",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.orderCount}
+          </span>
+        ),
         header: "Order Count",
         meta: {
           cell: { variant: "number" as const },
@@ -58,6 +75,9 @@ function WavesPage() {
       },
       {
         accessorKey: "state",
+        cell: ({ row }) => (
+          <StateBadge state={row.original.state} />
+        ),
         header: "State",
         meta: {
           cell: {

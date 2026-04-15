@@ -32,6 +32,11 @@ function StockPositionsPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "skuId",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.skuId}
+          </span>
+        ),
         header: "SKU",
         meta: {
           cell: { variant: "short-text" as const },
@@ -41,6 +46,11 @@ function StockPositionsPage() {
       },
       {
         accessorKey: "warehouseAreaId",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.warehouseAreaId}
+          </span>
+        ),
         header: "Area",
         meta: {
           cell: { variant: "short-text" as const },
@@ -50,6 +60,11 @@ function StockPositionsPage() {
       },
       {
         accessorKey: "onHandQuantity",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.onHandQuantity}
+          </span>
+        ),
         header: "On Hand",
         meta: {
           cell: { variant: "number" as const },
@@ -59,6 +74,11 @@ function StockPositionsPage() {
       },
       {
         accessorKey: "availableQuantity",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.availableQuantity}
+          </span>
+        ),
         header: "Available",
         meta: {
           cell: { variant: "number" as const },
@@ -68,6 +88,11 @@ function StockPositionsPage() {
       },
       {
         accessorKey: "blockedQuantity",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.blockedQuantity}
+          </span>
+        ),
         header: "Blocked",
         meta: {
           cell: { variant: "number" as const },

@@ -11,6 +11,7 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
+import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
 
 export const Route = createFileRoute("/_authenticated/locations/")({
@@ -28,6 +29,11 @@ function LocationsPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "code",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.code}
+          </span>
+        ),
         header: "Code",
         meta: {
           cell: { variant: "short-text" as const },
@@ -37,6 +43,11 @@ function LocationsPage() {
       },
       {
         accessorKey: "locationType",
+        cell: ({ row }) => (
+          <Badge variant="secondary">
+            {row.original.locationType}
+          </Badge>
+        ),
         header: "Type",
         meta: {
           cell: {
@@ -56,6 +67,11 @@ function LocationsPage() {
       },
       {
         accessorKey: "zoneId",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs text-muted-foreground">
+            {row.original.zoneId ?? "\u2014"}
+          </span>
+        ),
         header: "Zone",
         meta: {
           cell: { variant: "short-text" as const },
@@ -65,6 +81,11 @@ function LocationsPage() {
       },
       {
         accessorKey: "pickingSequence",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs text-muted-foreground">
+            {row.original.pickingSequence ?? "\u2014"}
+          </span>
+        ),
         header: "Pick Seq",
         meta: {
           cell: { variant: "number" as const },

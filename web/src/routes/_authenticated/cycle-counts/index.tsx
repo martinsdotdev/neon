@@ -11,7 +11,9 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
+import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
+import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute(
   "/_authenticated/cycle-counts/",
@@ -30,12 +32,22 @@ function CycleCountsPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "id",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.id}
+          </span>
+        ),
         header: "ID",
         meta: { cell: { variant: "short-text" as const }, label: "ID" },
         size: 120,
       },
       {
         accessorKey: "countType",
+        cell: ({ row }) => (
+          <Badge variant="secondary">
+            {row.original.countType}
+          </Badge>
+        ),
         header: "Type",
         meta: {
           cell: {
@@ -53,6 +65,11 @@ function CycleCountsPage() {
       },
       {
         accessorKey: "countMethod",
+        cell: ({ row }) => (
+          <Badge variant="secondary">
+            {row.original.countMethod}
+          </Badge>
+        ),
         header: "Method",
         meta: {
           cell: {
@@ -68,6 +85,11 @@ function CycleCountsPage() {
       },
       {
         accessorKey: "warehouseAreaId",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.warehouseAreaId}
+          </span>
+        ),
         header: "Area",
         meta: {
           cell: { variant: "short-text" as const },
@@ -77,6 +99,11 @@ function CycleCountsPage() {
       },
       {
         accessorKey: "taskCount",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.taskCount}
+          </span>
+        ),
         header: "Tasks",
         meta: {
           cell: { variant: "number" as const },
@@ -86,6 +113,9 @@ function CycleCountsPage() {
       },
       {
         accessorKey: "state",
+        cell: ({ row }) => (
+          <StateBadge state={row.original.state} />
+        ),
         header: "State",
         meta: {
           cell: {

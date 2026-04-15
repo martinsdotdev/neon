@@ -12,6 +12,7 @@ import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { PageHeader } from "@/shared/ui/page-header"
+import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute("/_authenticated/receipts/")({
   component: ReceiptsPage,
@@ -28,12 +29,22 @@ function ReceiptsPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "id",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.id}
+          </span>
+        ),
         header: "ID",
         meta: { cell: { variant: "short-text" as const }, label: "ID" },
         size: 120,
       },
       {
         accessorKey: "deliveryId",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.deliveryId}
+          </span>
+        ),
         header: "Delivery",
         meta: {
           cell: { variant: "short-text" as const },
@@ -43,6 +54,11 @@ function ReceiptsPage() {
       },
       {
         accessorFn: (row) => row.lines.length,
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">
+            {row.original.lines.length}
+          </span>
+        ),
         header: "Lines",
         id: "lineCount",
         meta: {
@@ -53,6 +69,9 @@ function ReceiptsPage() {
       },
       {
         accessorKey: "state",
+        cell: ({ row }) => (
+          <StateBadge state={row.original.state} />
+        ),
         header: "State",
         meta: {
           cell: {

@@ -13,6 +13,7 @@ import {
   ShortTextCell,
   UrlCell,
 } from "@/shared/data-grid/data-grid-cell-variants";
+import { DataGridCellWrapper } from "@/shared/data-grid/data-grid-cell-wrapper";
 import type { DataGridCellProps } from "@/shared/data-grid/types";
 
 export const DataGridCell = React.memo(DataGridCellImpl, (prev, next) => {
@@ -60,6 +61,28 @@ function DataGridCellImpl<TData>({
 }: DataGridCellProps<TData>) {
   const cellOpts = cell.column.columnDef.meta?.cell;
   const variant = cellOpts?.variant ?? "text";
+
+  // If a custom cell renderer is defined and we're not editing, use it for display
+  const customCell = cell.column.columnDef.cell;
+  if (customCell && typeof customCell === "function" && !isEditing) {
+    return (
+      <DataGridCellWrapper
+        cell={cell}
+        tableMeta={tableMeta}
+        rowIndex={rowIndex}
+        columnId={columnId}
+        rowHeight={rowHeight}
+        isEditing={false}
+        isFocused={isFocused}
+        isSelected={isSelected}
+        isSearchMatch={isSearchMatch}
+        isActiveSearchMatch={isActiveSearchMatch}
+        readOnly={readOnly}
+      >
+        {flexRenderCell(customCell, cell.getContext())}
+      </DataGridCellWrapper>
+    );
+  }
 
   let Comp: React.ComponentType<DataGridCellProps<TData>>;
 
@@ -112,4 +135,15 @@ function DataGridCellImpl<TData>({
       readOnly={readOnly}
     />
   );
+}
+
+// Minimal flexRender for custom cell functions
+function flexRenderCell<TProps>(
+  Comp: ((props: TProps) => React.ReactNode) | string | undefined,
+  props: TProps,
+): React.ReactNode {
+  if (typeof Comp === "function") {
+    return Comp(props);
+  }
+  return Comp ?? null;
 }

@@ -11,6 +11,7 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
+import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
 
 export const Route = createFileRoute("/_authenticated/skus/")({
@@ -28,6 +29,11 @@ function SkusPage() {
       getDataGridSelectColumn({ readOnly: true }),
       {
         accessorKey: "code",
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-medium">
+            {row.original.code}
+          </span>
+        ),
         header: "Code",
         meta: {
           cell: { variant: "short-text" as const },
@@ -46,6 +52,15 @@ function SkusPage() {
       },
       {
         accessorKey: "lotManaged",
+        cell: ({ row }) => (
+          <Badge
+            variant={
+              row.original.lotManaged ? "default" : "secondary"
+            }
+          >
+            {row.original.lotManaged ? "Lot-managed" : "No"}
+          </Badge>
+        ),
         header: "Lot Managed",
         meta: {
           cell: { variant: "checkbox" as const },
