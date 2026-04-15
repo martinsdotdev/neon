@@ -155,4 +155,13 @@
   html {
     @apply font-sans;
     }
+  /* Themed text selection -- amber primary at 25% so dark text stays readable */
+  ::selection {
+    background-color: oklch(0.852 0.199 91.936 / 0.25);
+    color: var(--foreground);
+  }
+  .dark ::selection {
+    background-color: oklch(0.852 0.199 91.936 / 0.35);
+    color: var(--foreground);
+  }
 }
