@@ -2,19 +2,21 @@ import type { AuthUser } from "@/shared/api/auth"
 
 export const useHasPermission = (
   user: AuthUser | null | undefined,
-  permission: string,
+  permission: string
 ): boolean => {
-  if (!user) {return false}
+  if (!user) {
+    return false
+  }
   return user.permissions.includes(permission)
 }
 
 export interface PermissionDomain {
   key: string
   label: string
-  permissions: string[]
+  permissions: Array<string>
 }
 
-export const PERMISSION_DOMAINS: PermissionDomain[] = [
+export const PERMISSION_DOMAINS: Array<PermissionDomain> = [
   {
     key: "outbound",
     label: "Outbound",
@@ -30,26 +32,17 @@ export const PERMISSION_DOMAINS: PermissionDomain[] = [
   {
     key: "consolidation",
     label: "Consolidation",
-    permissions: [
-      "consolidation-group:complete",
-      "consolidation-group:cancel",
-    ],
+    permissions: ["consolidation-group:complete", "consolidation-group:cancel"],
   },
   {
     key: "transport",
     label: "Transport",
-    permissions: [
-      "transport-order:confirm",
-      "transport-order:cancel",
-    ],
+    permissions: ["transport-order:confirm", "transport-order:cancel"],
   },
   {
     key: "workstation",
     label: "Workstation",
-    permissions: [
-      "workstation:assign",
-      "workstation:manage",
-    ],
+    permissions: ["workstation:assign", "workstation:manage"],
   },
   {
     key: "handling",
@@ -59,11 +52,7 @@ export const PERMISSION_DOMAINS: PermissionDomain[] = [
   {
     key: "inventory",
     label: "Inventory",
-    permissions: [
-      "inventory:manage",
-      "stock:manage",
-      "cycle-count:manage",
-    ],
+    permissions: ["inventory:manage", "stock:manage", "cycle-count:manage"],
   },
   {
     key: "other",
@@ -73,6 +62,4 @@ export const PERMISSION_DOMAINS: PermissionDomain[] = [
 ]
 
 export const formatPermissionLabel = (permission: string): string =>
-  permission
-    .replace(/[-:]/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase())
+  permission.replace(/[-:]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())

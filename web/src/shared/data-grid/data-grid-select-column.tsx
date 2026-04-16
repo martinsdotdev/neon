@@ -1,24 +1,24 @@
-"use client";
+"use client"
 
-import { Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router"
+import { ArrowUpRight } from "lucide-react"
+import * as React from "react"
 import type {
   CellContext,
   ColumnDef,
   HeaderContext,
   Row,
-} from "@tanstack/react-table";
-import { ArrowUpRight } from "lucide-react";
-import * as React from "react";
-import { Checkbox } from "@/shared/ui/checkbox";
-import { cn } from "@/shared/lib/utils";
+} from "@tanstack/react-table"
+import { Checkbox } from "@/shared/ui/checkbox"
+import { cn } from "@/shared/lib/utils"
 
-type HitboxSize = "default" | "sm" | "lg";
+type HitboxSize = "default" | "sm" | "lg"
 
 interface DataGridSelectHitboxProps {
-  htmlFor: string;
-  children: React.ReactNode;
-  size?: HitboxSize;
-  debug?: boolean;
+  htmlFor: string
+  children: React.ReactNode
+  size?: HitboxSize
+  debug?: boolean
 }
 
 function DataGridSelectHitbox({
@@ -33,7 +33,7 @@ function DataGridSelectHitbox({
         "group relative flex h-full items-center",
         size === "default" && "-ms-3 -me-2 ps-3 pe-2",
         size === "sm" && "-ms-3 -me-1.5 ps-3 pe-1.5",
-        size === "lg" && "-mx-3 px-3",
+        size === "lg" && "-mx-3 px-3"
       )}
     >
       {children}
@@ -41,19 +41,21 @@ function DataGridSelectHitbox({
         htmlFor={htmlFor}
         className={cn(
           "absolute inset-0 cursor-pointer",
-          debug && "border border-red-500 border-dashed bg-red-500/20",
+          debug && "border border-dashed border-red-500 bg-red-500/20"
         )}
       />
     </div>
-  );
+  )
 }
 
-interface DataGridSelectCheckboxProps
-  extends Omit<React.ComponentProps<typeof Checkbox>, "id"> {
-  rowNumber?: number;
-  hitboxSize?: HitboxSize;
-  debug?: boolean;
-  detailHref?: string;
+interface DataGridSelectCheckboxProps extends Omit<
+  React.ComponentProps<typeof Checkbox>,
+  "id"
+> {
+  rowNumber?: number
+  hitboxSize?: HitboxSize
+  debug?: boolean
+  detailHref?: string
 }
 
 function DataGridSelectCheckbox({
@@ -65,7 +67,7 @@ function DataGridSelectCheckbox({
   detailHref,
   ...props
 }: DataGridSelectCheckboxProps) {
-  const id = React.useId();
+  const id = React.useId()
 
   if (rowNumber !== undefined) {
     return (
@@ -75,7 +77,7 @@ function DataGridSelectCheckbox({
             id={id}
             className={cn(
               "relative transition-[shadow,border] hover:border-primary/40",
-              className,
+              className
             )}
             checked={checked}
             {...props}
@@ -84,14 +86,14 @@ function DataGridSelectCheckbox({
             <>
               <span
                 aria-hidden="true"
-                className="text-muted-foreground text-xs tabular-nums group-hover/row:hidden"
+                className="text-xs text-muted-foreground tabular-nums group-hover/row:hidden"
               >
                 {rowNumber}
               </span>
               <Link
                 to={detailHref}
                 aria-label="Open details"
-                className="relative z-20 hidden size-4 items-center justify-center text-muted-foreground hover:text-foreground group-hover/row:inline-flex"
+                className="relative z-20 hidden size-4 items-center justify-center text-muted-foreground group-hover/row:inline-flex hover:text-foreground"
                 onClick={(event) => event.stopPropagation()}
               >
                 <ArrowUpRight className="size-3.5" />
@@ -100,14 +102,14 @@ function DataGridSelectCheckbox({
           ) : (
             <span
               aria-hidden="true"
-              className="text-muted-foreground text-xs tabular-nums"
+              className="text-xs text-muted-foreground tabular-nums"
             >
               {rowNumber}
             </span>
           )}
         </div>
       </DataGridSelectHitbox>
-    );
+    )
   }
 
   return (
@@ -116,20 +118,22 @@ function DataGridSelectCheckbox({
         id={id}
         className={cn(
           "relative transition-[shadow,border] hover:border-primary/40",
-          className,
+          className
         )}
         checked={checked}
         {...props}
       />
     </DataGridSelectHitbox>
-  );
+  )
 }
 
-interface DataGridSelectHeaderProps<TData>
-  extends Pick<HeaderContext<TData, unknown>, "table"> {
-  hitboxSize?: HitboxSize;
-  readOnly?: boolean;
-  debug?: boolean;
+interface DataGridSelectHeaderProps<TData> extends Pick<
+  HeaderContext<TData, unknown>,
+  "table"
+> {
+  hitboxSize?: HitboxSize
+  readOnly?: boolean
+  debug?: boolean
 }
 
 function DataGridSelectHeader<TData>({
@@ -140,15 +144,15 @@ function DataGridSelectHeader<TData>({
 }: DataGridSelectHeaderProps<TData>) {
   const onCheckedChange = React.useCallback(
     (value: boolean) => table.toggleAllPageRowsSelected(value),
-    [table],
-  );
+    [table]
+  )
 
   if (readOnly) {
     return (
-      <div className="mt-1 flex items-center ps-1 text-muted-foreground text-sm">
+      <div className="mt-1 flex items-center ps-1 text-sm text-muted-foreground">
         #
       </div>
-    );
+    )
   }
 
   return (
@@ -162,16 +166,18 @@ function DataGridSelectHeader<TData>({
       hitboxSize={hitboxSize}
       debug={debug}
     />
-  );
+  )
 }
 
-interface DataGridSelectCellProps<TData>
-  extends Pick<CellContext<TData, unknown>, "row" | "table"> {
-  hitboxSize?: HitboxSize;
-  enableRowMarkers?: boolean;
-  readOnly?: boolean;
-  debug?: boolean;
-  detailHref?: (row: Row<TData>) => string | undefined;
+interface DataGridSelectCellProps<TData> extends Pick<
+  CellContext<TData, unknown>,
+  "row" | "table"
+> {
+  hitboxSize?: HitboxSize
+  enableRowMarkers?: boolean
+  readOnly?: boolean
+  debug?: boolean
+  detailHref?: (row: Row<TData>) => string | undefined
 }
 
 function DataGridSelectCell<TData>({
@@ -183,39 +189,39 @@ function DataGridSelectCell<TData>({
   debug,
   detailHref,
 }: DataGridSelectCellProps<TData>) {
-  const meta = table.options.meta;
+  const meta = table.options.meta
   const rowNumber = enableRowMarkers
     ? (meta?.getVisualRowIndex?.(row.id) ?? row.index + 1)
-    : undefined;
-  const href = detailHref?.(row);
+    : undefined
+  const href = detailHref?.(row)
 
   const onCheckedChange = React.useCallback(
     (value: boolean) => {
       if (meta?.onRowSelect) {
-        meta.onRowSelect(row.id, value, false);
+        meta.onRowSelect(row.id, value, false)
       } else {
-        row.toggleSelected(value);
+        row.toggleSelected(value)
       }
     },
-    [meta, row],
-  );
+    [meta, row]
+  )
 
   const onClick = React.useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       if (event.shiftKey) {
-        event.preventDefault();
-        meta?.onRowSelect?.(row.id, !row.getIsSelected(), true);
+        event.preventDefault()
+        meta?.onRowSelect?.(row.id, !row.getIsSelected(), true)
       }
     },
-    [meta, row],
-  );
+    [meta, row]
+  )
 
   if (readOnly) {
     return (
-      <div className="flex items-center ps-1 text-muted-foreground text-xs tabular-nums">
+      <div className="flex items-center ps-1 text-xs text-muted-foreground tabular-nums">
         {rowNumber ?? row.index + 1}
       </div>
-    );
+    )
   }
 
   return (
@@ -229,16 +235,18 @@ function DataGridSelectCell<TData>({
       debug={debug}
       detailHref={href}
     />
-  );
+  )
 }
 
-interface GetDataGridSelectColumnOptions<TData>
-  extends Omit<Partial<ColumnDef<TData>>, "id" | "header" | "cell"> {
-  enableRowMarkers?: boolean;
-  readOnly?: boolean;
-  hitboxSize?: HitboxSize;
-  debug?: boolean;
-  detailHref?: (row: Row<TData>) => string | undefined;
+interface GetDataGridSelectColumnOptions<TData> extends Omit<
+  Partial<ColumnDef<TData>>,
+  "id" | "header" | "cell"
+> {
+  enableRowMarkers?: boolean
+  readOnly?: boolean
+  hitboxSize?: HitboxSize
+  debug?: boolean
+  detailHref?: (row: Row<TData>) => string | undefined
 }
 
 export function getDataGridSelectColumn<TData>({
@@ -279,5 +287,5 @@ export function getDataGridSelectColumn<TData>({
     enableResizing,
     enableSorting,
     ...props,
-  };
+  }
 }

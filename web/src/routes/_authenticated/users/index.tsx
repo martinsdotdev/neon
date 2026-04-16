@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { useCallback, useMemo, useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { User } from "@/shared/api/users-api"
+import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { userQueries } from "@/shared/api/users-api"
 import { DataGrid } from "@/shared/data-grid/data-grid"
 import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
@@ -11,12 +12,11 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
-import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { Filters } from "@/shared/reui/filters"
 import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
 
-const filterFields: FilterFieldConfig[] = [
+const filterFields: Array<FilterFieldConfig> = [
   {
     key: "login",
     label: "Login",
@@ -49,7 +49,7 @@ export const Route = createFileRoute("/_authenticated/users/")({
 function UsersPage() {
   const { data: users } = useSuspenseQuery(userQueries.all())
   const [data, setData] = useState(users)
-  const [filters, setFilters] = useState<Filter[]>([])
+  const [filters, setFilters] = useState<Array<Filter>>([])
 
   const filteredData = useMemo(() => {
     if (filters.length === 0) return data
@@ -59,18 +59,23 @@ function UsersPage() {
         if (f.operator === "is" || f.operator === "is_any_of") {
           if (!f.values.some((v) => value === String(v))) return false
         } else if (f.operator === "contains") {
-          if (!f.values.some((v) => value.toLowerCase().includes(String(v).toLowerCase()))) return false
+          if (
+            !f.values.some((v) =>
+              value.toLowerCase().includes(String(v).toLowerCase())
+            )
+          )
+            return false
         }
       }
       return true
     })
   }, [data, filters])
 
-  const onFiltersChange = useCallback((newFilters: Filter[]) => {
+  const onFiltersChange = useCallback((newFilters: Array<Filter>) => {
     setFilters(newFilters)
   }, [])
 
-  const columns = useMemo<ColumnDef<User>[]>(
+  const columns = useMemo<Array<ColumnDef<User>>>(
     () => [
       getDataGridSelectColumn<User>({
         detailHref: (row) => `/users/${row.original.id}`,
@@ -122,11 +127,7 @@ function UsersPage() {
       {
         accessorKey: "active",
         cell: ({ row }) => (
-          <Badge
-            variant={
-              row.original.active ? "default" : "secondary"
-            }
-          >
+          <Badge variant={row.original.active ? "default" : "secondary"}>
             {row.original.active ? "Active" : "Inactive"}
           </Badge>
         ),
@@ -144,7 +145,7 @@ function UsersPage() {
         size: 120,
       },
     ],
-    [],
+    []
   )
 
   const gridProps = useDataGrid({

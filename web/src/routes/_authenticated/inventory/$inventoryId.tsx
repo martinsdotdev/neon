@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { inventoryQueries } from "@/shared/api/inventory"
@@ -7,20 +7,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card"
 import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
-export const Route = createFileRoute(
-  "/_authenticated/inventory/$inventoryId",
-)({
+export const Route = createFileRoute("/_authenticated/inventory/$inventoryId")({
   component: InventoryDetailPage,
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
-      inventoryQueries.detail(params.inventoryId),
+      inventoryQueries.detail(params.inventoryId)
     ),
 })
 
 function InventoryDetailPage() {
   const { inventoryId } = Route.useParams()
   const { data: record } = useSuspenseQuery(
-    inventoryQueries.detail(inventoryId),
+    inventoryQueries.detail(inventoryId)
   )
 
   if (!record) {
@@ -43,11 +41,7 @@ function InventoryDetailPage() {
       />
 
       <div className="mb-6">
-        <Button
-          render={<Link to="/inventory" />}
-          size="sm"
-          variant="ghost"
-        >
+        <Button render={<Link to="/inventory" />} size="sm" variant="ghost">
           <ArrowLeft className="size-4" />
           All inventory
         </Button>
@@ -62,54 +56,44 @@ function InventoryDetailPage() {
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-muted-foreground mb-1">ID</dt>
+              <dt className="mb-1 text-muted-foreground">ID</dt>
               <dd className="font-mono text-xs text-muted-foreground">
                 {record.id}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">SKU ID</dt>
+              <dt className="mb-1 text-muted-foreground">SKU ID</dt>
               <dd className="font-mono font-medium">{record.skuId}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Location ID</dt>
-              <dd className="font-mono font-medium">
-                {record.locationId}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Location ID</dt>
+              <dd className="font-mono font-medium">{record.locationId}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
-                Packaging Level
-              </dt>
-              <dd className="font-medium">
-                {record.packagingLevel}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Packaging Level</dt>
+              <dd className="font-medium">{record.packagingLevel}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Lot</dt>
+              <dt className="mb-1 text-muted-foreground">Lot</dt>
               <dd className="font-medium">{record.lot ?? "-"}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Status</dt>
+              <dt className="mb-1 text-muted-foreground">Status</dt>
               <dd>
                 <StateBadge state={record.status} />
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">On Hand</dt>
+              <dt className="mb-1 text-muted-foreground">On Hand</dt>
               <dd className="font-mono font-medium">{record.onHand}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Available</dt>
-              <dd className="font-mono font-medium">
-                {record.available}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Available</dt>
+              <dd className="font-mono font-medium">{record.available}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Reserved</dt>
-              <dd className="font-mono font-medium">
-                {record.reserved}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Reserved</dt>
+              <dd className="font-mono font-medium">{record.reserved}</dd>
             </div>
           </dl>
         </CardContent>

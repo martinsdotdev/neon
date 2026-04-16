@@ -8,13 +8,38 @@ export interface Sku {
   lotManaged: boolean
 }
 
-const MOCK_SKUS: Sku[] = import.meta.env.DEV
+const MOCK_SKUS: Array<Sku> = import.meta.env.DEV
   ? [
-      { code: "SKU-10001", description: "Widget A", id: "s001", lotManaged: false },
-      { code: "SKU-10002", description: "Widget B (lot-managed)", id: "s002", lotManaged: true },
-      { code: "SKU-20001", description: "Gadget X", id: "s003", lotManaged: false },
-      { code: "SKU-20002", description: "Gadget Y", id: "s004", lotManaged: true },
-      { code: "SKU-30001", description: "Component Alpha", id: "s005", lotManaged: false },
+      {
+        code: "SKU-10001",
+        description: "Widget A",
+        id: "s001",
+        lotManaged: false,
+      },
+      {
+        code: "SKU-10002",
+        description: "Widget B (lot-managed)",
+        id: "s002",
+        lotManaged: true,
+      },
+      {
+        code: "SKU-20001",
+        description: "Gadget X",
+        id: "s003",
+        lotManaged: false,
+      },
+      {
+        code: "SKU-20002",
+        description: "Gadget Y",
+        id: "s004",
+        lotManaged: true,
+      },
+      {
+        code: "SKU-30001",
+        description: "Component Alpha",
+        id: "s005",
+        lotManaged: false,
+      },
     ]
   : []
 
@@ -22,7 +47,7 @@ export const skuQueries = {
   all: () =>
     queryOptions({
       queryFn: async () => {
-        const result = await apiClient.get<Sku[]>("/api/skus")
+        const result = await apiClient.get<Array<Sku>>("/api/skus")
         return result.unwrapOr(MOCK_SKUS)
       },
       queryKey: ["skus"] as const,

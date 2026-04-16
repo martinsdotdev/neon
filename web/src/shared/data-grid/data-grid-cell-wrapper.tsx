@@ -1,14 +1,13 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { useComposedRefs } from "@/shared/data-grid/compose-refs";
-import { getCellKey } from "@/shared/data-grid/lib";
-import { cn } from "@/shared/lib/utils";
-import type { DataGridCellProps } from "@/shared/data-grid/types";
+import * as React from "react"
+import type { DataGridCellProps } from "@/shared/data-grid/types"
+import { useComposedRefs } from "@/shared/data-grid/compose-refs"
+import { getCellKey } from "@/shared/data-grid/lib"
+import { cn } from "@/shared/lib/utils"
 
 interface DataGridCellWrapperProps<TData>
-  extends DataGridCellProps<TData>,
-    React.ComponentProps<"div"> {}
+  extends DataGridCellProps<TData>, React.ComponentProps<"div"> {}
 
 export function DataGridCellWrapper<TData>({
   cell,
@@ -28,81 +27,73 @@ export function DataGridCellWrapper<TData>({
   ref,
   ...props
 }: DataGridCellWrapperProps<TData>) {
-  const cellMapRef = tableMeta?.cellMapRef;
+  const cellMapRef = tableMeta?.cellMapRef
 
   // Justify content based on cell variant: numbers right-aligned, booleans centered, others left-aligned
-  const variant = cell.column.columnDef.meta?.cell?.variant;
+  const variant = cell.column.columnDef.meta?.cell?.variant
   const justifyClass =
     variant === "number"
       ? "justify-end text-end"
       : variant === "checkbox"
         ? "justify-center text-center"
-        : "justify-start text-start";
+        : "justify-start text-start"
 
   const onCellChange = React.useCallback(
     (node: HTMLDivElement | null) => {
-      if (!cellMapRef) return;
+      if (!cellMapRef) return
 
-      const cellKey = getCellKey(rowIndex, columnId);
+      const cellKey = getCellKey(rowIndex, columnId)
 
       if (node) {
-        cellMapRef.current.set(cellKey, node);
+        cellMapRef.current.set(cellKey, node)
       } else {
-        cellMapRef.current.delete(cellKey);
+        cellMapRef.current.delete(cellKey)
       }
     },
-    [rowIndex, columnId, cellMapRef],
-  );
+    [rowIndex, columnId, cellMapRef]
+  )
 
-  const composedRef = useComposedRefs(ref, onCellChange);
+  const composedRef = useComposedRefs(ref, onCellChange)
 
   const onClick = React.useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       if (!isEditing) {
-        event.preventDefault();
-        onClickProp?.(event);
+        event.preventDefault()
+        onClickProp?.(event)
         if (isFocused && !readOnly) {
-          tableMeta?.onCellEditingStart?.(rowIndex, columnId);
+          tableMeta?.onCellEditingStart?.(rowIndex, columnId)
         } else {
-          tableMeta?.onCellClick?.(rowIndex, columnId, event);
+          tableMeta?.onCellClick?.(rowIndex, columnId, event)
         }
       }
     },
-    [
-      tableMeta,
-      rowIndex,
-      columnId,
-      isEditing,
-      isFocused,
-      readOnly,
-      onClickProp,
-    ],
-  );
+    [tableMeta, rowIndex, columnId, isEditing, isFocused, readOnly, onClickProp]
+  )
 
   const onContextMenu = React.useCallback(
     (event: React.MouseEvent) => {
       if (!isEditing) {
-        tableMeta?.onCellContextMenu?.(rowIndex, columnId, event);
+        tableMeta?.onCellContextMenu?.(rowIndex, columnId, event)
       }
     },
-    [tableMeta, rowIndex, columnId, isEditing],
-  );
+    [tableMeta, rowIndex, columnId, isEditing]
+  )
 
   const onDoubleClick = React.useCallback(
     (event: React.MouseEvent) => {
       if (!isEditing) {
-        event.preventDefault();
-        tableMeta?.onCellDoubleClick?.(rowIndex, columnId);
+        event.preventDefault()
+        tableMeta?.onCellDoubleClick?.(rowIndex, columnId)
       }
     },
-    [tableMeta, rowIndex, columnId, isEditing],
-  );
+    [tableMeta, rowIndex, columnId, isEditing]
+  )
 
   const onKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
-      onKeyDownProp?.(event);
+      onKeyDownProp?.(event)
 
-      if (event.defaultPrevented) return;
+      if (event.defaultPrevented) return
 
       if (
         event.key === "ArrowUp" ||
@@ -115,28 +106,28 @@ export function DataGridCellWrapper<TData>({
         event.key === "PageDown" ||
         event.key === "Tab"
       ) {
-        return;
+        return
       }
 
       if (isFocused && !isEditing && !readOnly) {
         if (event.key === "F2" || event.key === "Enter") {
-          event.preventDefault();
-          event.stopPropagation();
-          tableMeta?.onCellEditingStart?.(rowIndex, columnId);
-          return;
+          event.preventDefault()
+          event.stopPropagation()
+          tableMeta?.onCellEditingStart?.(rowIndex, columnId)
+          return
         }
 
         if (event.key === " ") {
-          event.preventDefault();
-          event.stopPropagation();
-          tableMeta?.onCellEditingStart?.(rowIndex, columnId);
-          return;
+          event.preventDefault()
+          event.stopPropagation()
+          tableMeta?.onCellEditingStart?.(rowIndex, columnId)
+          return
         }
 
         if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) {
-          event.preventDefault();
-          event.stopPropagation();
-          tableMeta?.onCellEditingStart?.(rowIndex, columnId);
+          event.preventDefault()
+          event.stopPropagation()
+          tableMeta?.onCellEditingStart?.(rowIndex, columnId)
         }
       }
     },
@@ -148,29 +139,29 @@ export function DataGridCellWrapper<TData>({
       tableMeta,
       rowIndex,
       columnId,
-    ],
-  );
+    ]
+  )
 
   const onMouseDown = React.useCallback(
     (event: React.MouseEvent) => {
       if (!isEditing) {
-        tableMeta?.onCellMouseDown?.(rowIndex, columnId, event);
+        tableMeta?.onCellMouseDown?.(rowIndex, columnId, event)
       }
     },
-    [tableMeta, rowIndex, columnId, isEditing],
-  );
+    [tableMeta, rowIndex, columnId, isEditing]
+  )
 
   const onMouseEnter = React.useCallback(() => {
     if (!isEditing) {
-      tableMeta?.onCellMouseEnter?.(rowIndex, columnId);
+      tableMeta?.onCellMouseEnter?.(rowIndex, columnId)
     }
-  }, [tableMeta, rowIndex, columnId, isEditing]);
+  }, [tableMeta, rowIndex, columnId, isEditing])
 
   const onMouseUp = React.useCallback(() => {
     if (!isEditing) {
-      tableMeta?.onCellMouseUp?.();
+      tableMeta?.onCellMouseUp?.()
     }
-  }, [tableMeta, isEditing]);
+  }, [tableMeta, isEditing])
 
   return (
     <div
@@ -190,8 +181,10 @@ export function DataGridCellWrapper<TData>({
           "bg-yellow-100 dark:bg-yellow-900/30":
             isSearchMatch && !isActiveSearchMatch,
           "bg-orange-200 dark:bg-orange-900/50": isActiveSearchMatch,
-          "bg-primary/10 group-hover/row:bg-primary/15": isSelected && !isEditing,
-          "group-hover/row:bg-accent/50": !isSelected && !isSearchMatch && !isActiveSearchMatch,
+          "bg-primary/10 group-hover/row:bg-primary/15":
+            isSelected && !isEditing,
+          "group-hover/row:bg-accent/50":
+            !isSelected && !isSearchMatch && !isActiveSearchMatch,
           "cursor-default": !isEditing,
           "**:data-[slot=grid-cell-content]:line-clamp-1":
             !isEditing && rowHeight === "short",
@@ -202,7 +195,7 @@ export function DataGridCellWrapper<TData>({
           "**:data-[slot=grid-cell-content]:line-clamp-4":
             !isEditing && rowHeight === "extra-tall",
         },
-        className,
+        className
       )}
       onClick={onClick}
       onContextMenu={onContextMenu}
@@ -212,5 +205,5 @@ export function DataGridCellWrapper<TData>({
       onMouseUp={onMouseUp}
       onKeyDown={onKeyDown}
     />
-  );
+  )
 }

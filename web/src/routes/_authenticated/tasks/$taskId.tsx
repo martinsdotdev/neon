@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { taskQueries } from "@/shared/api/tasks"
@@ -10,16 +10,12 @@ import { StateBadge } from "@/shared/ui/state-badge"
 export const Route = createFileRoute("/_authenticated/tasks/$taskId")({
   component: TaskDetailPage,
   loader: ({ context, params }) =>
-    context.queryClient.ensureQueryData(
-      taskQueries.detail(params.taskId),
-    ),
+    context.queryClient.ensureQueryData(taskQueries.detail(params.taskId)),
 })
 
 function TaskDetailPage() {
   const { taskId } = Route.useParams()
-  const { data: task } = useSuspenseQuery(
-    taskQueries.detail(taskId),
-  )
+  const { data: task } = useSuspenseQuery(taskQueries.detail(taskId))
 
   if (!task) {
     return (
@@ -56,43 +52,39 @@ function TaskDetailPage() {
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-muted-foreground mb-1">ID</dt>
+              <dt className="mb-1 text-muted-foreground">ID</dt>
               <dd className="font-mono text-xs text-muted-foreground">
                 {task.id}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Task Type</dt>
+              <dt className="mb-1 text-muted-foreground">Task Type</dt>
               <dd className="font-medium">{task.taskType}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">SKU ID</dt>
+              <dt className="mb-1 text-muted-foreground">SKU ID</dt>
               <dd className="font-mono font-medium">{task.skuId}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Order ID</dt>
+              <dt className="mb-1 text-muted-foreground">Order ID</dt>
               <dd className="font-mono font-medium">{task.orderId}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Wave ID</dt>
+              <dt className="mb-1 text-muted-foreground">Wave ID</dt>
               <dd className="font-mono font-medium">{task.waveId}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">State</dt>
+              <dt className="mb-1 text-muted-foreground">State</dt>
               <dd>
                 <StateBadge state={task.state} />
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
-                Source Location
-              </dt>
-              <dd className="font-mono font-medium">
-                {task.sourceLocation}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Source Location</dt>
+              <dd className="font-mono font-medium">{task.sourceLocation}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
+              <dt className="mb-1 text-muted-foreground">
                 Destination Location
               </dt>
               <dd className="font-mono font-medium">
@@ -100,27 +92,23 @@ function TaskDetailPage() {
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
-                Requested Quantity
-              </dt>
+              <dt className="mb-1 text-muted-foreground">Requested Quantity</dt>
               <dd className="font-mono font-medium">
                 {task.requestedQuantity}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
-                Actual Quantity
-              </dt>
+              <dt className="mb-1 text-muted-foreground">Actual Quantity</dt>
               <dd className="font-mono font-medium">
                 {task.actualQuantity ?? "-"}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Assigned To</dt>
+              <dt className="mb-1 text-muted-foreground">Assigned To</dt>
               <dd className="font-medium">{task.assignedTo ?? "-"}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Created At</dt>
+              <dt className="mb-1 text-muted-foreground">Created At</dt>
               <dd className="font-medium">{task.createdAt}</dd>
             </div>
           </dl>

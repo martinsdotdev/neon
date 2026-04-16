@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { waveQueries } from "@/shared/api/waves"
@@ -11,16 +11,12 @@ import { StateBadge } from "@/shared/ui/state-badge"
 export const Route = createFileRoute("/_authenticated/waves/$waveId")({
   component: WaveDetailPage,
   loader: ({ context, params }) =>
-    context.queryClient.ensureQueryData(
-      waveQueries.detail(params.waveId),
-    ),
+    context.queryClient.ensureQueryData(waveQueries.detail(params.waveId)),
 })
 
 function WaveDetailPage() {
   const { waveId } = Route.useParams()
-  const { data: wave } = useSuspenseQuery(
-    waveQueries.detail(waveId),
-  )
+  const { data: wave } = useSuspenseQuery(waveQueries.detail(waveId))
 
   if (!wave) {
     return (
@@ -57,33 +53,33 @@ function WaveDetailPage() {
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-muted-foreground mb-1">ID</dt>
+              <dt className="mb-1 text-muted-foreground">ID</dt>
               <dd className="font-mono text-xs text-muted-foreground">
                 {wave.id}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Order Grouping</dt>
+              <dt className="mb-1 text-muted-foreground">Order Grouping</dt>
               <dd className="font-medium">{wave.orderGrouping}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Order Count</dt>
+              <dt className="mb-1 text-muted-foreground">Order Count</dt>
               <dd className="font-mono font-medium">{wave.orderCount}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">State</dt>
+              <dt className="mb-1 text-muted-foreground">State</dt>
               <dd>
                 <StateBadge state={wave.state} />
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Created</dt>
+              <dt className="mb-1 text-muted-foreground">Created</dt>
               <dd>
                 <DateCell value={wave.createdAt} variant="detail" />
               </dd>
             </div>
             <div className="col-span-2">
-              <dt className="text-muted-foreground mb-1">Order IDs</dt>
+              <dt className="mb-1 text-muted-foreground">Order IDs</dt>
               <dd className="font-mono text-xs">
                 {wave.orderIds?.join(", ") ?? "-"}
               </dd>

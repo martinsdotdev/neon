@@ -1,10 +1,10 @@
-"use client";
+"use client"
 
-import { useDirection } from "@radix-ui/react-direction";
-import type { Table } from "@tanstack/react-table";
-import { Check, Settings2 } from "lucide-react";
-import * as React from "react";
-import { Button } from "@/shared/ui/button";
+import { useDirection } from "@radix-ui/react-direction"
+import { Check, Settings2 } from "lucide-react"
+import * as React from "react"
+import type { Table } from "@tanstack/react-table"
+import { Button } from "@/shared/ui/button"
 import {
   Command,
   CommandEmpty,
@@ -12,18 +12,15 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/shared/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/shared/ui/popover";
-import { cn } from "@/shared/lib/utils";
+} from "@/shared/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover"
+import { cn } from "@/shared/lib/utils"
 
-interface DataGridViewMenuProps<TData>
-  extends React.ComponentProps<typeof PopoverContent> {
-  table: Table<TData>;
-  disabled?: boolean;
+interface DataGridViewMenuProps<TData> extends React.ComponentProps<
+  typeof PopoverContent
+> {
+  table: Table<TData>
+  disabled?: boolean
 }
 
 export function DataGridViewMenu<TData>({
@@ -32,7 +29,7 @@ export function DataGridViewMenu<TData>({
   className,
   ...props
 }: DataGridViewMenuProps<TData>) {
-  const dir = useDirection();
+  const dir = useDirection()
 
   const columns = React.useMemo(
     () =>
@@ -40,10 +37,10 @@ export function DataGridViewMenu<TData>({
         .getAllColumns()
         .filter(
           (column) =>
-            typeof column.accessorFn !== "undefined" && column.getCanHide(),
+            typeof column.accessorFn !== "undefined" && column.getCanHide()
         ),
-    [table],
-  );
+    [table]
+  )
 
   return (
     <Popover>
@@ -84,7 +81,7 @@ export function DataGridViewMenu<TData>({
                   <Check
                     className={cn(
                       "ms-auto size-4 shrink-0",
-                      column.getIsVisible() ? "opacity-100" : "opacity-0",
+                      column.getIsVisible() ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>
@@ -94,5 +91,5 @@ export function DataGridViewMenu<TData>({
         </Command>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { useCallback, useMemo, useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { Delivery } from "@/shared/api/deliveries"
+import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { deliveryQueries } from "@/shared/api/deliveries"
 import { DataGrid } from "@/shared/data-grid/data-grid"
 import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
@@ -11,12 +12,11 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
-import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { Filters } from "@/shared/reui/filters"
 import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
-const filterFields: FilterFieldConfig[] = [
+const filterFields: Array<FilterFieldConfig> = [
   {
     key: "id",
     label: "ID",
@@ -49,7 +49,7 @@ export const Route = createFileRoute("/_authenticated/deliveries/")({
 function DeliveriesPage() {
   const { data: deliveries } = useSuspenseQuery(deliveryQueries.all())
   const [data, setData] = useState(deliveries)
-  const [filters, setFilters] = useState<Filter[]>([])
+  const [filters, setFilters] = useState<Array<Filter>>([])
 
   const filteredData = useMemo(() => {
     if (filters.length === 0) return data
@@ -59,18 +59,23 @@ function DeliveriesPage() {
         if (f.operator === "is" || f.operator === "is_any_of") {
           if (!f.values.some((v) => value === String(v))) return false
         } else if (f.operator === "contains") {
-          if (!f.values.some((v) => value.toLowerCase().includes(String(v).toLowerCase()))) return false
+          if (
+            !f.values.some((v) =>
+              value.toLowerCase().includes(String(v).toLowerCase())
+            )
+          )
+            return false
         }
       }
       return true
     })
   }, [data, filters])
 
-  const onFiltersChange = useCallback((newFilters: Filter[]) => {
+  const onFiltersChange = useCallback((newFilters: Array<Filter>) => {
     setFilters(newFilters)
   }, [])
 
-  const columns = useMemo<ColumnDef<Delivery>[]>(
+  const columns = useMemo<Array<ColumnDef<Delivery>>>(
     () => [
       getDataGridSelectColumn<Delivery>({
         detailHref: (row) => `/deliveries/${row.original.id}`,
@@ -131,9 +136,7 @@ function DeliveriesPage() {
       },
       {
         accessorKey: "state",
-        cell: ({ row }) => (
-          <StateBadge state={row.original.state} />
-        ),
+        cell: ({ row }) => <StateBadge state={row.original.state} />,
         header: "State",
         meta: {
           cell: {
@@ -153,7 +156,7 @@ function DeliveriesPage() {
         size: 160,
       },
     ],
-    [],
+    []
   )
 
   const gridProps = useDataGrid({

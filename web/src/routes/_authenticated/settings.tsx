@@ -36,9 +36,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs"
 import * as m from "@/paraglide/messages.js"
 
 const settingsSearchSchema = z.object({
-  tab: z
-    .enum(["profile", "appearance", "account"])
-    .catch("profile"),
+  tab: z.enum(["profile", "appearance", "account"]).catch("profile"),
 })
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -70,9 +68,7 @@ function SettingsPage() {
         }}
       >
         <TabsList
-          className={cn(
-            isMobile ? "mb-6" : "w-48 shrink-0 self-start",
-          )}
+          className={cn(isMobile ? "mb-6" : "w-48 shrink-0 self-start")}
         >
           <TabsTrigger value="profile">
             <User className="size-4" />
@@ -128,9 +124,7 @@ function ProfileSection({ user }: { user: AuthUser }) {
             </Avatar>
             <div>
               <div className="font-medium">{user.name}</div>
-              <div className="text-sm text-muted-foreground">
-                {user.role}
-              </div>
+              <div className="text-sm text-muted-foreground">{user.role}</div>
             </div>
           </div>
           <dl className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
@@ -174,11 +168,7 @@ function ProfileSection({ user }: { user: AuthUser }) {
 // Permissions
 // ---------------------------------------------------------------------------
 
-function PermissionsCard({
-  permissions,
-}: {
-  permissions: string[]
-}) {
+function PermissionsCard({ permissions }: { permissions: Array<string> }) {
   const granted = new Set(permissions)
 
   return (
@@ -192,7 +182,7 @@ function PermissionsCard({
       <CardContent className="flex flex-col gap-5">
         {PERMISSION_DOMAINS.map((domain) => (
           <div key={domain.key}>
-            <div className="font-heading mb-2 text-xs tracking-widest text-muted-foreground uppercase">
+            <div className="mb-2 font-heading text-xs tracking-widest text-muted-foreground uppercase">
               {domain.label}
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -202,9 +192,7 @@ function PermissionsCard({
                   <Badge
                     key={perm}
                     variant={isGranted ? "default" : "outline"}
-                    className={cn(
-                      !isGranted && "opacity-40",
-                    )}
+                    className={cn(!isGranted && "opacity-40")}
                   >
                     {formatPermissionLabel(perm)}
                   </Badge>
@@ -285,12 +273,10 @@ function ThemeCard({
         "flex flex-col items-center gap-3 rounded-3xl border-2 p-3 transition-all",
         active
           ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-          : "border-border hover:border-primary/30",
+          : "border-border hover:border-primary/30"
       )}
     >
-      <div className="w-full overflow-hidden rounded-2xl">
-        {preview}
-      </div>
+      <div className="w-full overflow-hidden rounded-2xl">{preview}</div>
       <div className="flex items-center gap-2 text-sm font-medium">
         <Icon className="size-4" />
         {label}
@@ -374,9 +360,7 @@ function AccountSection() {
         <CardContent className="flex flex-col gap-4">
           <Alert>
             <Info className="size-4" />
-            <AlertDescription>
-              {m.settings_account_managed()}
-            </AlertDescription>
+            <AlertDescription>{m.settings_account_managed()}</AlertDescription>
           </Alert>
           <div className="flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>

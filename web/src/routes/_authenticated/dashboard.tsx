@@ -12,14 +12,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
-import type { LucideIcon } from "lucide-react"
-import {
-  CheckCircle2,
-  Layers,
-  ShoppingCart,
-  Waves,
-} from "lucide-react"
+import { CheckCircle2, Layers, ShoppingCart, Waves } from "lucide-react"
 import { motion } from "motion/react"
+import type { LucideIcon } from "lucide-react"
+import type {ChartConfig} from "@/shared/ui/chart";
 import { waveQueries } from "@/shared/api/waves"
 import { taskQueries } from "@/shared/api/tasks"
 import { orderQueries } from "@/shared/api/orders"
@@ -32,12 +28,12 @@ import {
   CardTitle,
 } from "@/shared/ui/card"
 import {
+  
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
-  type ChartConfig,
+  ChartTooltip,
+  ChartTooltipContent
 } from "@/shared/ui/chart"
 import { PageHeader } from "@/shared/ui/page-header"
 import * as m from "@/paraglide/messages.js"
@@ -92,7 +88,7 @@ const orderPriorityConfig: ChartConfig = {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function countBy<T>(items: T[], key: (item: T) => string) {
+function countBy<T>(items: Array<T>, key: (item: T) => string) {
   const counts: Record<string, number> = {}
   for (const item of items) {
     const k = key(item)
@@ -101,20 +97,23 @@ function countBy<T>(items: T[], key: (item: T) => string) {
   return counts
 }
 
-function toChartData(counts: Record<string, number>, order: string[]) {
+function toChartData(counts: Record<string, number>, order: Array<string>) {
   return order
     .filter((key) => (counts[key] ?? 0) > 0)
     .map((key) => ({ name: key, value: counts[key] ?? 0 }))
 }
 
 const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.05 } },
+  hidden: { opacity: 1 },
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } },
 }
 
 const staggerDelayed = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.05, delayChildren: 0.15 } },
+  hidden: { opacity: 1 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05, delayChildren: 0.15 },
+  },
 }
 
 const fadeUp = {
@@ -134,22 +133,14 @@ function DashboardPage() {
   const { data: waves } = useSuspenseQuery(waveQueries.all())
   const { data: tasks } = useSuspenseQuery(taskQueries.all())
   const { data: orders } = useSuspenseQuery(orderQueries.all())
-  const { data: groups } = useSuspenseQuery(
-    consolidationGroupQueries.all(),
-  )
+  const { data: groups } = useSuspenseQuery(consolidationGroupQueries.all())
 
   const stats = useMemo(() => {
-    const releasedWaves = waves.filter(
-      (w) => w.state === "Released",
-    ).length
-    const completedTasks = tasks.filter(
-      (t) => t.state === "Completed",
-    ).length
-    const completedGroups = groups.filter(
-      (g) => g.state === "Completed",
-    ).length
+    const releasedWaves = waves.filter((w) => w.state === "Released").length
+    const completedTasks = tasks.filter((t) => t.state === "Completed").length
+    const completedGroups = groups.filter((g) => g.state === "Completed").length
     const highPriority = orders.filter(
-      (o) => o.priority === "High" || o.priority === "Critical",
+      (o) => o.priority === "High" || o.priority === "Critical"
     ).length
 
     return {
@@ -172,36 +163,36 @@ function DashboardPage() {
     () =>
       toChartData(
         countBy(tasks, (t) => t.state),
-        ["Planned", "Allocated", "Assigned", "Completed", "Cancelled"],
+        ["Planned", "Allocated", "Assigned", "Completed", "Cancelled"]
       ),
-    [tasks],
+    [tasks]
   )
 
   const waveStateData = useMemo(
     () =>
       toChartData(
         countBy(waves, (w) => w.state),
-        ["Planned", "Released", "Completed", "Cancelled"],
+        ["Planned", "Released", "Completed", "Cancelled"]
       ),
-    [waves],
+    [waves]
   )
 
   const taskTypeData = useMemo(
     () =>
       toChartData(
         countBy(tasks, (t) => t.taskType),
-        ["Pick", "Putaway", "Replenish", "Transfer"],
+        ["Pick", "Putaway", "Replenish", "Transfer"]
       ),
-    [tasks],
+    [tasks]
   )
 
   const orderPriorityData = useMemo(
     () =>
       toChartData(
         countBy(orders, (o) => o.priority),
-        ["Low", "Normal", "High", "Critical"],
+        ["Low", "Normal", "High", "Critical"]
       ),
-    [orders],
+    [orders]
   )
 
   return (
@@ -266,9 +257,7 @@ function DashboardPage() {
           <Card className="h-full">
             <CardHeader>
               <CardTitle>{m.dashboard_task_status()}</CardTitle>
-              <CardDescription>
-                Breakdown by current state
-              </CardDescription>
+              <CardDescription>Breakdown by current state</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer
@@ -276,9 +265,7 @@ function DashboardPage() {
                 className="mx-auto aspect-square max-h-64"
               >
                 <PieChart>
-                  <ChartTooltip
-                    content={<ChartTooltipContent hideLabel />}
-                  />
+                  <ChartTooltip content={<ChartTooltipContent hideLabel />} />
                   <Pie
                     data={taskStatusData}
                     dataKey="value"
@@ -337,12 +324,8 @@ function DashboardPage() {
         <motion.div variants={fadeUp}>
           <Card className="h-full">
             <CardHeader>
-              <CardTitle>
-                {m.dashboard_wave_completion()}
-              </CardTitle>
-              <CardDescription>
-                Waves by lifecycle stage
-              </CardDescription>
+              <CardTitle>{m.dashboard_wave_completion()}</CardTitle>
+              <CardDescription>Waves by lifecycle stage</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer
@@ -363,16 +346,8 @@ function DashboardPage() {
                     width={80}
                   />
                   <XAxis type="number" hide />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent hideLabel />
-                    }
-                  />
-                  <Bar
-                    dataKey="value"
-                    radius={[0, 6, 6, 0]}
-                    barSize={24}
-                  >
+                  <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                  <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={24}>
                     {waveStateData.map((entry) => (
                       <Cell
                         key={entry.name}
@@ -390,9 +365,7 @@ function DashboardPage() {
           <Card className="h-full">
             <CardHeader>
               <CardTitle>{m.dashboard_task_types()}</CardTitle>
-              <CardDescription>
-                Distribution by task category
-              </CardDescription>
+              <CardDescription>Distribution by task category</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer
@@ -401,22 +374,10 @@ function DashboardPage() {
               >
                 <BarChart data={taskTypeData}>
                   <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="name"
-                    tickLine={false}
-                    axisLine={false}
-                  />
+                  <XAxis dataKey="name" tickLine={false} axisLine={false} />
                   <YAxis tickLine={false} axisLine={false} />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent hideLabel />
-                    }
-                  />
-                  <Bar
-                    dataKey="value"
-                    radius={[6, 6, 0, 0]}
-                    barSize={40}
-                  >
+                  <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                  <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={40}>
                     {taskTypeData.map((entry) => (
                       <Cell
                         key={entry.name}
@@ -433,12 +394,8 @@ function DashboardPage() {
         <motion.div variants={fadeUp}>
           <Card className="h-full">
             <CardHeader>
-              <CardTitle>
-                {m.dashboard_order_priority()}
-              </CardTitle>
-              <CardDescription>
-                Orders by priority level
-              </CardDescription>
+              <CardTitle>{m.dashboard_order_priority()}</CardTitle>
+              <CardDescription>Orders by priority level</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer
@@ -446,11 +403,7 @@ function DashboardPage() {
                 className="mx-auto aspect-square max-h-64"
               >
                 <PieChart>
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent hideLabel />
-                    }
-                  />
+                  <ChartTooltip content={<ChartTooltipContent hideLabel />} />
                   <Pie
                     data={orderPriorityData}
                     dataKey="value"
@@ -532,7 +485,7 @@ function StatCard({
           <CardDescription>{title}</CardDescription>
           <Icon className="size-4 text-muted-foreground" />
         </div>
-        <CardTitle className="text-3xl font-bold tabular-nums tracking-normal">
+        <CardTitle className="text-3xl font-bold tracking-normal tabular-nums">
           {value}
         </CardTitle>
       </CardHeader>

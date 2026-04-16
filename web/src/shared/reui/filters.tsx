@@ -1,6 +1,5 @@
 "use client"
 
-import type React from "react"
 import {
   createContext,
   useCallback,
@@ -12,13 +11,11 @@ import {
   useState,
 } from "react"
 import { cva } from "class-variance-authority"
+import type React from "react"
 
 import { cn } from "@/shared/lib/utils"
 import { Button } from "@/shared/ui/button"
-import {
-  ButtonGroup,
-  ButtonGroupText,
-} from "@/shared/ui/button-group"
+import { ButtonGroup, ButtonGroupText } from "@/shared/ui/button-group"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -340,13 +337,10 @@ function FilterInput<T = unknown>({
   return (
     <InputGroup
       className={cn(
-        "w-36 bg-transparent border-s-0 rounded-none has-[[data-slot=input-group-control]:focus-visible]:ring-0",
-        context.size == "sm" &&
-          "h-8!",
-        context.size == "default" &&
-          "h-9!",
-        context.size == "lg" &&
-          "h-10!",
+        "w-36 rounded-none border-s-0 bg-transparent has-[[data-slot=input-group-control]:focus-visible]:ring-0",
+        context.size == "sm" && "h-8!",
+        context.size == "default" && "h-9!",
+        context.size == "lg" && "h-10!",
         className
       )}
     >
@@ -366,12 +360,9 @@ function FilterInput<T = unknown>({
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         className={cn(
-          context.size == "sm" &&
-            "h-8! text-xs",
-          context.size == "default" &&
-            "h-9!",
-          context.size == "lg" &&
-            "h-10!"
+          context.size == "sm" && "h-8! text-xs",
+          context.size == "default" && "h-9!",
+          context.size == "lg" && "h-10!"
         )}
         {...props}
       />
@@ -387,7 +378,7 @@ function FilterInput<T = unknown>({
                     hugeicons="AlertCircleIcon"
                     phosphor="WarningCircleIcon"
                     remixicon="RiErrorWarningLine"
-                    className="text-destructive size-3.5"
+                    className="size-3.5 text-destructive"
                   />
                 </InputGroupButton>
               </TooltipTrigger>
@@ -468,21 +459,21 @@ export interface FilterOperator {
 // Custom renderer props interface
 export interface CustomRendererProps<T = unknown> {
   field: FilterFieldConfig<T>
-  values: T[]
-  onChange: (values: T[]) => void
+  values: Array<T>
+  onChange: (values: Array<T>) => void
   operator: string
 }
 
 // Grouped field configuration interface
 export interface FilterFieldGroup<T = unknown> {
   group?: string
-  fields: FilterFieldConfig<T>[]
+  fields: Array<FilterFieldConfig<T>>
 }
 
 // Union type for both flat and grouped field configurations
 export type FilterFieldsConfig<T = unknown> =
-  | FilterFieldConfig<T>[]
-  | FilterFieldGroup<T>[]
+  | Array<FilterFieldConfig<T>>
+  | Array<FilterFieldGroup<T>>
 
 export interface FilterFieldConfig<T = unknown> {
   key?: string
@@ -491,14 +482,14 @@ export interface FilterFieldConfig<T = unknown> {
   type?: "select" | "multiselect" | "text" | "custom" | "separator"
   // Group-level configuration
   group?: string
-  fields?: FilterFieldConfig<T>[]
+  fields?: Array<FilterFieldConfig<T>>
   // Field-specific options
-  options?: FilterOption<T>[]
-  operators?: FilterOperator[]
+  options?: Array<FilterOption<T>>
+  operators?: Array<FilterOperator>
   customRenderer?: (props: CustomRendererProps<T>) => React.ReactNode
   customValueRenderer?: (
-    values: T[],
-    options: FilterOption<T>[]
+    values: Array<T>,
+    options: Array<FilterOption<T>>
   ) => React.ReactNode
   placeholder?: string
   searchable?: boolean
@@ -525,8 +516,8 @@ export interface FilterFieldConfig<T = unknown> {
   // Default operator to use when creating a filter for this field
   defaultOperator?: string
   // Controlled values support for this field
-  value?: T[]
-  onValueChange?: (values: T[]) => void
+  value?: Array<T>
+  onValueChange?: (values: Array<T>) => void
 }
 
 // Helper functions to handle both flat and grouped field configurations
@@ -545,8 +536,8 @@ const isGroupLevelField = <T = unknown,>(
 
 const flattenFields = <T = unknown,>(
   fields: FilterFieldsConfig<T>
-): FilterFieldConfig<T>[] => {
-  return fields.reduce<FilterFieldConfig<T>[]>((acc, item) => {
+): Array<FilterFieldConfig<T>> => {
+  return fields.reduce<Array<FilterFieldConfig<T>>>((acc, item) => {
     if (isFieldGroup(item)) {
       return [...acc, ...item.fields]
     }
@@ -577,7 +568,7 @@ const getFieldsMap = <T = unknown,>(
 // Helper function to create operators from i18n config
 const createOperatorsFromI18n = (
   i18n: FilterI18nConfig
-): Record<string, FilterOperator[]> => ({
+): Record<string, Array<FilterOperator>> => ({
   select: [
     { value: "is", label: i18n.operators.is },
     { value: "is_not", label: i18n.operators.isNot },
@@ -612,15 +603,15 @@ const createOperatorsFromI18n = (
 })
 
 // Default operators for different field types (using default i18n)
-export const DEFAULT_OPERATORS: Record<string, FilterOperator[]> =
+export const DEFAULT_OPERATORS: Record<string, Array<FilterOperator>> =
   createOperatorsFromI18n(DEFAULT_I18N)
 
 // Helper function to get operators for a field
 const getOperatorsForField = <T = unknown,>(
   field: FilterFieldConfig<T>,
-  values: T[],
+  values: Array<T>,
   i18n: FilterI18nConfig
-): FilterOperator[] => {
+): Array<FilterOperator> => {
   if (field.operators) return field.operators
 
   const operators = createOperatorsFromI18n(i18n)
@@ -644,7 +635,7 @@ const getOperatorsForField = <T = unknown,>(
 interface FilterOperatorDropdownProps<T = unknown> {
   field: FilterFieldConfig<T>
   operator: string
-  values: T[]
+  values: Array<T>
   onChange: (operator: string) => void
 }
 
@@ -679,7 +670,7 @@ function FilterOperatorDropdown<T = unknown>({
             key={op.value}
             onClick={() => onChange(op.value)}
             className={cn(
-              "data-highlighted:bg-accent data-highlighted:text-accent-foreground flex items-center justify-between"
+              "flex items-center justify-between data-highlighted:bg-accent data-highlighted:text-accent-foreground"
             )}
           >
             <span>{op.label}</span>
@@ -690,7 +681,7 @@ function FilterOperatorDropdown<T = unknown>({
               phosphor="CheckIcon"
               remixicon="RiCheckLine"
               className={cn(
-                "text-primary ms-auto",
+                "ms-auto text-primary",
                 op.value === operator ? "opacity-100" : "opacity-0"
               )}
             />
@@ -703,16 +694,16 @@ function FilterOperatorDropdown<T = unknown>({
 
 interface FilterValueSelectorProps<T = unknown> {
   field: FilterFieldConfig<T>
-  values: T[]
-  onChange: (values: T[]) => void
+  values: Array<T>
+  onChange: (values: Array<T>) => void
   operator: string
   autoFocus?: boolean
 }
 
 interface SelectOptionsPopoverProps<T = unknown> {
   field: FilterFieldConfig<T>
-  values: T[]
-  onChange: (values: T[]) => void
+  values: Array<T>
+  onChange: (values: Array<T>) => void
   onClose?: () => void
   inline?: boolean
 }
@@ -746,7 +737,7 @@ function SelectOptionsPopover<T = unknown>({
 
   const isMultiSelect = field.type === "multiselect" || values.length > 1
   const effectiveValues =
-    (field.value !== undefined ? (field.value as T[]) : values) || []
+    (field.value !== undefined ? (field.value) : values) || []
 
   const selectedOptions =
     field.options?.filter((opt) => effectiveValues.includes(opt.value)) || []
@@ -789,7 +780,7 @@ function SelectOptionsPopover<T = unknown>({
               field.label || ""
             )}
             className={cn(
-              "border-input h-8 rounded-none border-0 bg-transparent! px-2 text-sm shadow-none",
+              "h-8 rounded-none border-0 border-input bg-transparent! px-2 text-sm shadow-none",
               "focus-visible:border-border focus-visible:ring-0 focus-visible:ring-offset-0"
             )}
             value={searchInput}
@@ -817,12 +808,12 @@ function SelectOptionsPopover<T = unknown>({
                 e.preventDefault()
                 const option = allFilteredOptions[highlightedIndex]
                 if (option) {
-                  const isSelected = effectiveValues.includes(option.value as T)
+                  const isSelected = effectiveValues.includes(option.value)
                   const next = isSelected
-                    ? (effectiveValues.filter((v) => v !== option.value) as T[])
+                    ? (effectiveValues.filter((v) => v !== option.value))
                     : isMultiSelect
-                      ? ([...effectiveValues, option.value] as T[])
-                      : ([option.value] as T[])
+                      ? ([...effectiveValues, option.value] as Array<T>)
+                      : ([option.value] as Array<T>)
 
                   if (
                     !isSelected &&
@@ -855,7 +846,7 @@ function SelectOptionsPopover<T = unknown>({
         >
           <ScrollArea className="size-full min-h-0 **:data-[slot=scroll-area-scrollbar]:m-0 **:data-[slot=scroll-area-viewport]:h-full **:data-[slot=scroll-area-viewport]:overscroll-contain">
             {allFilteredOptions.length === 0 && (
-              <div className="text-muted-foreground py-2 text-center text-sm">
+              <div className="py-2 text-center text-sm text-muted-foreground">
                 {context.i18n.noResultsFound}
               </div>
             )}
@@ -886,7 +877,7 @@ function SelectOptionsPopover<T = unknown>({
                       onCheckedChange={() => {
                         const next = effectiveValues.filter(
                           (v) => v !== option.value
-                        ) as T[]
+                        )
                         if (field.onValueChange) {
                           field.onValueChange(next)
                         } else {
@@ -935,8 +926,8 @@ function SelectOptionsPopover<T = unknown>({
                       }}
                       onCheckedChange={() => {
                         const next = isMultiSelect
-                          ? ([...effectiveValues, option.value] as T[])
-                          : ([option.value] as T[])
+                          ? ([...effectiveValues, option.value] as Array<T>)
+                          : ([option.value] as Array<T>)
 
                         if (
                           isMultiSelect &&
@@ -1030,7 +1021,7 @@ function FilterValueSelector<T = unknown>({
 
   if (field.customRenderer) {
     return (
-      <ButtonGroupText className="hover:bg-accent aria-expanded:bg-accent bg-background dark:bg-input/30 text-start whitespace-nowrap outline-hidden">
+      <ButtonGroupText className="bg-background text-start whitespace-nowrap outline-hidden hover:bg-accent aria-expanded:bg-accent dark:bg-input/30">
         {field.customRenderer({ field, values, onChange, operator })}
       </ButtonGroupText>
     )
@@ -1041,7 +1032,7 @@ function FilterValueSelector<T = unknown>({
       <FilterInput
         type="text"
         value={(values[0] as string) || ""}
-        onChange={(e) => onChange([e.target.value] as T[])}
+        onChange={(e) => onChange([e.target.value] as Array<T>)}
         placeholder={field.placeholder}
         pattern={field.pattern}
         field={field}
@@ -1065,20 +1056,20 @@ export interface Filter<T = unknown> {
   id: string
   field: string
   operator: string
-  values: T[]
+  values: Array<T>
 }
 
 export interface FilterGroup<T = unknown> {
   id: string
   label?: string
-  filters: Filter<T>[]
-  fields: FilterFieldConfig<T>[]
+  filters: Array<Filter<T>>
+  fields: Array<FilterFieldConfig<T>>
 }
 
 interface FiltersContentProps<T = unknown> {
-  filters: Filter<T>[]
+  filters: Array<Filter<T>>
   fields: FilterFieldsConfig<T>
-  onChange: (filters: Filter<T>[]) => void
+  onChange: (filters: Array<Filter<T>>) => void
 }
 
 export const FiltersContent = <T = unknown,>({
@@ -1099,7 +1090,7 @@ export const FiltersContent = <T = unknown,>({
               updates.operator === "empty" ||
               updates.operator === "not_empty"
             ) {
-              updatedFilter.values = [] as T[]
+              updatedFilter.values = [] as Array<T>
             }
             return updatedFilter
           }
@@ -1162,9 +1153,9 @@ export const FiltersContent = <T = unknown,>({
 }
 
 interface FiltersProps<T = unknown> {
-  filters: Filter<T>[]
+  filters: Array<Filter<T>>
   fields: FilterFieldsConfig<T>
-  onChange: (filters: Filter<T>[]) => void
+  onChange: (filters: Array<Filter<T>>) => void
   className?: string
   variant?: "solid" | "default"
   size?: "sm" | "default" | "lg"
@@ -1182,7 +1173,7 @@ interface FiltersProps<T = unknown> {
 
 interface FilterSubmenuContentProps<T = unknown> {
   field: FilterFieldConfig<T>
-  currentValues: T[]
+  currentValues: Array<T>
   isMultiSelect: boolean
   onToggle: (value: T, isSelected: boolean) => void
   i18n: FilterI18nConfig
@@ -1285,7 +1276,7 @@ function FilterSubmenuContent<T = unknown>({
                 const option = filteredOptions[highlightedIndex]
                 if (option) {
                   onToggle(
-                    option.value as T,
+                    option.value,
                     currentValues.includes(option.value)
                   )
                   if (!isMultiSelect) {
@@ -1332,7 +1323,7 @@ function FilterSubmenuContent<T = unknown>({
                 const option = filteredOptions[highlightedIndex]
                 if (option) {
                   onToggle(
-                    option.value as T,
+                    option.value,
                     currentValues.includes(option.value)
                   )
                   if (!isMultiSelect) {
@@ -1349,7 +1340,7 @@ function FilterSubmenuContent<T = unknown>({
         >
           <ScrollArea className="size-full min-h-0 **:data-[slot=scroll-area-scrollbar]:m-0 **:data-[slot=scroll-area-viewport]:h-full **:data-[slot=scroll-area-viewport]:overscroll-contain">
             {filteredOptions.length === 0 ? (
-              <div className="text-muted-foreground py-2 text-center text-sm">
+              <div className="py-2 text-center text-sm text-muted-foreground">
                 {i18n.noResultsFound}
               </div>
             ) : (
@@ -1376,7 +1367,7 @@ function FilterSubmenuContent<T = unknown>({
                         if (isMultiSelect) e.preventDefault()
                       }}
                       onCheckedChange={() =>
-                        onToggle(option.value as T, isSelected)
+                        onToggle(option.value, isSelected)
                       }
                     >
                       {option.icon && option.icon}
@@ -1496,7 +1487,7 @@ export function Filters<T = unknown>({
               updates.operator === "empty" ||
               updates.operator === "not_empty"
             ) {
-              updatedFilter.values = [] as T[]
+              updatedFilter.values = [] as Array<T>
             }
             return updatedFilter
           }
@@ -1521,11 +1512,11 @@ export function Filters<T = unknown>({
         const defaultOperator =
           field.defaultOperator ||
           (field.type === "multiselect" ? "is_any_of" : "is")
-        const defaultValues: unknown[] = field.type === "text" ? [""] : []
+        const defaultValues: Array<unknown> = field.type === "text" ? [""] : []
         const newFilter = createFilter<T>(
           fieldKey,
           defaultOperator,
-          defaultValues as T[]
+          defaultValues as Array<T>
         )
         setLastAddedFilterId(newFilter.id)
         onChange([...filters, newFilter])
@@ -1587,9 +1578,11 @@ export function Filters<T = unknown>({
               }
             }}
           >
-            <DropdownMenuTrigger asChild>
-              {trigger || (
-                <Button variant="outline">
+            <DropdownMenuTrigger
+              render={trigger ?? <Button variant="outline" />}
+            >
+              {!trigger && (
+                <>
                   <IconPlaceholder
                     lucide="PlusIcon"
                     tabler="IconPlus"
@@ -1598,7 +1591,7 @@ export function Filters<T = unknown>({
                     remixicon="RiAddLine"
                   />
                   {mergedI18n.addFilter}
-                </Button>
+                </>
               )}
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -1689,7 +1682,7 @@ export function Filters<T = unknown>({
                       }}
                     />
                     {enableShortcut && shortcutLabel && (
-                      <Kbd className="bg-background absolute top-1/2 right-2 -translate-y-1/2 border">
+                      <Kbd className="absolute top-1/2 right-2 -translate-y-1/2 border bg-background">
                         {shortcutLabel}
                       </Kbd>
                     )}
@@ -1708,7 +1701,7 @@ export function Filters<T = unknown>({
                     {(() => {
                       if (filteredFields.length === 0) {
                         return (
-                          <div className="text-muted-foreground py-2 text-center text-sm">
+                          <div className="py-2 text-center text-sm text-muted-foreground">
                             {mergedI18n.noFieldsFound}
                           </div>
                         )
@@ -1754,7 +1747,7 @@ export function Filters<T = unknown>({
                                 aria-selected={isHighlighted}
                                 data-highlighted={isHighlighted || undefined}
                                 onMouseEnter={() => setHighlightedIndex(index)}
-                                className="data-[state=open]:bg-accent data-[state=open]:text-accent-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground"
+                                className="data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
                               >
                                 {field.icon}
                                 <span>{field.label}</span>
@@ -1781,8 +1774,8 @@ export function Filters<T = unknown>({
                                       const nextValues = isSelected
                                         ? (currentValues.filter(
                                             (v) => v !== value
-                                          ) as T[])
-                                        : ([...currentValues, value] as T[])
+                                          ))
+                                        : ([...currentValues, value] as Array<T>)
 
                                       if (sessionFilter) {
                                         if (nextValues.length === 0) {
@@ -1820,7 +1813,7 @@ export function Filters<T = unknown>({
                                       const newFilter = createFilter<T>(
                                         fieldKey,
                                         field.defaultOperator || "is",
-                                        [value] as T[]
+                                        [value] as Array<T>
                                       )
                                       setLastAddedFilterId(newFilter.id)
                                       onChange([...filters, newFilter])
@@ -1891,7 +1884,7 @@ export function Filters<T = unknown>({
 export const createFilter = <T = unknown,>(
   field: string,
   operator?: string,
-  values: T[] = []
+  values: Array<T> = []
 ): Filter<T> => ({
   id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
   field,
@@ -1902,8 +1895,8 @@ export const createFilter = <T = unknown,>(
 export const createFilterGroup = <T = unknown,>(
   id: string,
   label: string,
-  fields: FilterFieldConfig<T>[],
-  initialFilters: Filter<T>[] = []
+  fields: Array<FilterFieldConfig<T>>,
+  initialFilters: Array<Filter<T>> = []
 ): FilterGroup<T> => ({
   id,
   label,

@@ -8,11 +8,7 @@ import {
   isToday,
   isYesterday,
 } from "date-fns"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/shared/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/tooltip"
 import { cn } from "@/shared/lib/utils"
 
 interface DateCellProps {
@@ -45,22 +41,16 @@ const formatDate = (date: Date, now: Date): string => {
 }
 
 const Empty = () => (
-  <span className="text-muted-foreground/40 font-mono text-xs">
-    {"\u2014"}
-  </span>
+  <span className="font-mono text-xs text-muted-foreground/40">{"\u2014"}</span>
 )
 
-const DateCell = ({
-  className,
-  value,
-  variant = "compact",
-}: DateCellProps) => {
+const DateCell = ({ className, value, variant = "compact" }: DateCellProps) => {
   if (!value) return <Empty />
 
   const date = typeof value === "string" ? new Date(value) : value
   if (Number.isNaN(date.getTime())) {
     return (
-      <span className="text-muted-foreground/40 font-mono text-xs">
+      <span className="font-mono text-xs text-muted-foreground/40">
         invalid
       </span>
     )
@@ -73,8 +63,8 @@ const DateCell = ({
   if (variant === "detail") {
     return (
       <div className={cn("flex flex-col gap-0.5", className)}>
-        <span className="text-foreground text-sm font-medium">{display}</span>
-        <span className="text-muted-foreground font-mono text-xs">
+        <span className="text-sm font-medium text-foreground">{display}</span>
+        <span className="font-mono text-xs text-muted-foreground">
           {precise}
         </span>
       </div>
@@ -89,8 +79,8 @@ const DateCell = ({
         render={
           <span
             className={cn(
-              "font-mono text-xs tabular-nums cursor-default",
-              className,
+              "cursor-default font-mono text-xs tabular-nums",
+              className
             )}
           >
             {display}

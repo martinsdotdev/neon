@@ -1,6 +1,5 @@
 "use client"
 
-import type { Column } from "@tanstack/react-table"
 import {
   endOfMonth,
   endOfYear,
@@ -13,15 +12,12 @@ import {
 } from "date-fns"
 import { CalendarIcon, X } from "lucide-react"
 import { useState } from "react"
+import type { Column } from "@tanstack/react-table"
 import type { DateRange } from "react-day-picker"
 import { Button } from "@/shared/ui/button"
 import { Calendar } from "@/shared/ui/calendar"
 import { Card, CardContent } from "@/shared/ui/card"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/shared/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover"
 import { cn } from "@/shared/lib/utils"
 
 interface DataGridDateFilterProps<TData, TValue> {
@@ -76,16 +72,12 @@ const DataGridDateFilter = <TData, TValue>({
     <Popover>
       <PopoverTrigger
         render={
-          <Button
-            size="sm"
-            variant="outline"
-            className={cn("h-8", className)}
-          >
+          <Button size="sm" variant="outline" className={cn("h-8", className)}>
             {formatted ? (
               <>
                 <button
                   aria-label={`Clear ${title} filter`}
-                  className="text-muted-foreground hover:text-foreground -ms-1 me-0.5 inline-flex size-4 items-center justify-center rounded transition-colors"
+                  className="-ms-1 me-0.5 inline-flex size-4 items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground"
                   onClick={onClear}
                   type="button"
                 >
@@ -95,7 +87,7 @@ const DataGridDateFilter = <TData, TValue>({
               </>
             ) : (
               <>
-                <CalendarIcon className="text-muted-foreground/80 size-3.5" />
+                <CalendarIcon className="size-3.5 text-muted-foreground/80" />
                 <span>{title}</span>
               </>
             )}

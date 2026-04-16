@@ -1,5 +1,5 @@
-import { Badge } from '@/shared/ui/badge';
-import type { BadgeProps } from '@/shared/ui/badge';
+import type { BadgeProps } from "@/shared/ui/badge"
+import { Badge } from "@/shared/ui/badge"
 
 type StateVariant = "neutral" | "active" | "success" | "destructive"
 
@@ -65,7 +65,7 @@ const StateBadge = ({
   return (
     <Badge
       variant={VARIANT_TO_BADGE[variant]}
-      className={`${VARIANT_TO_CLASSES[variant]} font-mono text-[0.6875rem] uppercase tracking-wider ${className ?? ""}`}
+      className={`${VARIANT_TO_CLASSES[variant]} font-mono text-[0.6875rem] tracking-wider uppercase ${className ?? ""}`}
     >
       {state}
     </Badge>

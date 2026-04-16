@@ -1,5 +1,6 @@
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import {  cva } from "class-variance-authority"
+import type {VariantProps} from "class-variance-authority";
 
 import { cn } from "@/shared/lib/utils"
 
@@ -67,7 +68,7 @@ function AlertAction({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="alert-action"
-      className={cn("absolute top-2.5 end-3", className)}
+      className={cn("absolute end-3 top-2.5", className)}
       {...props}
     />
   )

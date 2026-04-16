@@ -1,4 +1,8 @@
-import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+  queryOptions,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 import { apiClient } from "./client"
 
@@ -7,29 +11,38 @@ export interface AuthUser {
   login: string
   name: string
   role: "Admin" | "Supervisor" | "Operator" | "Viewer"
-  permissions: string[]
+  permissions: Array<string>
 }
 
-const DEV_USER: AuthUser | null =
-  import.meta.env.DEV
-    ? {
-        login: "admin",
-        name: "Admin User",
-        permissions: [
-          "wave:plan", "wave:cancel",
-          "task:complete", "task:allocate", "task:assign", "task:cancel",
-          "consolidation-group:complete", "consolidation-group:cancel",
-          "workstation:assign", "workstation:manage",
-          "handling-unit:manage", "slot:manage",
-          "inventory:manage", "stock:manage",
-          "inbound:manage", "cycle-count:manage",
-          "user:manage",
-          "transport-order:confirm", "transport-order:cancel",
-        ],
-        role: "Admin",
-        userId: "00000000-0000-0000-0000-000000000001",
-      }
-    : null
+const DEV_USER: AuthUser | null = import.meta.env.DEV
+  ? {
+      login: "admin",
+      name: "Admin User",
+      permissions: [
+        "wave:plan",
+        "wave:cancel",
+        "task:complete",
+        "task:allocate",
+        "task:assign",
+        "task:cancel",
+        "consolidation-group:complete",
+        "consolidation-group:cancel",
+        "workstation:assign",
+        "workstation:manage",
+        "handling-unit:manage",
+        "slot:manage",
+        "inventory:manage",
+        "stock:manage",
+        "inbound:manage",
+        "cycle-count:manage",
+        "user:manage",
+        "transport-order:confirm",
+        "transport-order:cancel",
+      ],
+      role: "Admin",
+      userId: "00000000-0000-0000-0000-000000000001",
+    }
+  : null
 
 export const authQueries = {
   me: () =>
@@ -38,7 +51,7 @@ export const authQueries = {
         const result = await apiClient.get<AuthUser>("/api/auth/me")
         return result.match(
           (user) => user,
-          () => null,
+          () => null
         )
       },
       queryKey: ["auth", "me"] as const,

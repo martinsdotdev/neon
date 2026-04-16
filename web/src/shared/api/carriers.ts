@@ -9,7 +9,7 @@ export interface Carrier {
 }
 
 // Dev mock data -- used when backend is unavailable
-const MOCK_CARRIERS: Carrier[] = import.meta.env.DEV
+const MOCK_CARRIERS: Array<Carrier> = import.meta.env.DEV
   ? [
       { active: true, code: "DHL", id: "c001", name: "DHL Express" },
       { active: true, code: "FDX", id: "c002", name: "FedEx" },
@@ -24,7 +24,7 @@ export const carrierQueries = {
   all: () =>
     queryOptions({
       queryFn: async () => {
-        const result = await apiClient.get<Carrier[]>("/api/carriers")
+        const result = await apiClient.get<Array<Carrier>>("/api/carriers")
         return result.unwrapOr(MOCK_CARRIERS)
       },
       queryKey: ["carriers"] as const,
@@ -34,9 +34,7 @@ export const carrierQueries = {
       enabled: !!id,
       queryFn: async () => {
         const result = await apiClient.get<Carrier>(`/api/carriers/${id}`)
-        return result.unwrapOr(
-          MOCK_CARRIERS.find((c) => c.id === id) ?? null,
-        )
+        return result.unwrapOr(MOCK_CARRIERS.find((c) => c.id === id) ?? null)
       },
       queryKey: ["carriers", id] as const,
     }),

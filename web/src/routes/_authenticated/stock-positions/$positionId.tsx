@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { stockPositionQueries } from "@/shared/api/stock-positions"
@@ -7,29 +7,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card"
 import { PageHeader } from "@/shared/ui/page-header"
 
 export const Route = createFileRoute(
-  "/_authenticated/stock-positions/$positionId",
+  "/_authenticated/stock-positions/$positionId"
 )({
   component: StockPositionDetailPage,
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
-      stockPositionQueries.detail(params.positionId),
+      stockPositionQueries.detail(params.positionId)
     ),
 })
 
 function StockPositionDetailPage() {
   const { positionId } = Route.useParams()
   const { data: position } = useSuspenseQuery(
-    stockPositionQueries.detail(positionId),
+    stockPositionQueries.detail(positionId)
   )
 
   if (!position) {
     return (
       <div>
         <PageHeader title="Stock position not found" />
-        <Button
-          render={<Link to="/stock-positions" />}
-          variant="ghost"
-        >
+        <Button render={<Link to="/stock-positions" />} variant="ghost">
           <ArrowLeft className="size-4" />
           Back to stock positions
         </Button>
@@ -61,51 +58,37 @@ function StockPositionDetailPage() {
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-muted-foreground mb-1">ID</dt>
+              <dt className="mb-1 text-muted-foreground">ID</dt>
               <dd className="font-mono text-xs text-muted-foreground">
                 {position.id}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">SKU ID</dt>
-              <dd className="font-mono font-medium">
-                {position.skuId}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">SKU ID</dt>
+              <dd className="font-mono font-medium">{position.skuId}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
-                Warehouse Area
-              </dt>
-              <dd className="font-medium">
-                {position.warehouseArea}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Warehouse Area</dt>
+              <dd className="font-medium">{position.warehouseArea}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Lot</dt>
-              <dd className="font-medium">
-                {position.lot ?? "-"}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Lot</dt>
+              <dd className="font-medium">{position.lot ?? "-"}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
-                On Hand Quantity
-              </dt>
+              <dt className="mb-1 text-muted-foreground">On Hand Quantity</dt>
               <dd className="font-mono font-medium">
                 {position.onHandQuantity}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
-                Available Quantity
-              </dt>
+              <dt className="mb-1 text-muted-foreground">Available Quantity</dt>
               <dd className="font-mono font-medium">
                 {position.availableQuantity}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
-                Blocked Quantity
-              </dt>
+              <dt className="mb-1 text-muted-foreground">Blocked Quantity</dt>
               <dd className="font-mono font-medium">
                 {position.blockedQuantity}
               </dd>

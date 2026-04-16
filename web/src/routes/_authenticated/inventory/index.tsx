@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { useCallback, useMemo, useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { InventoryRecord } from "@/shared/api/inventory"
+import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { inventoryQueries } from "@/shared/api/inventory"
 import { DataGrid } from "@/shared/data-grid/data-grid"
 import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
@@ -11,12 +12,11 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
-import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { Filters } from "@/shared/reui/filters"
 import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
-const filterFields: FilterFieldConfig[] = [
+const filterFields: Array<FilterFieldConfig> = [
   {
     key: "locationId",
     label: "Location",
@@ -50,7 +50,7 @@ export const Route = createFileRoute("/_authenticated/inventory/")({
 function InventoryPage() {
   const { data: records } = useSuspenseQuery(inventoryQueries.all())
   const [data, setData] = useState(records)
-  const [filters, setFilters] = useState<Filter[]>([])
+  const [filters, setFilters] = useState<Array<Filter>>([])
 
   const filteredData = useMemo(() => {
     if (filters.length === 0) return data
@@ -60,18 +60,23 @@ function InventoryPage() {
         if (f.operator === "is" || f.operator === "is_any_of") {
           if (!f.values.some((v) => value === String(v))) return false
         } else if (f.operator === "contains") {
-          if (!f.values.some((v) => value.toLowerCase().includes(String(v).toLowerCase()))) return false
+          if (
+            !f.values.some((v) =>
+              value.toLowerCase().includes(String(v).toLowerCase())
+            )
+          )
+            return false
         }
       }
       return true
     })
   }, [data, filters])
 
-  const onFiltersChange = useCallback((newFilters: Filter[]) => {
+  const onFiltersChange = useCallback((newFilters: Array<Filter>) => {
     setFilters(newFilters)
   }, [])
 
-  const columns = useMemo<ColumnDef<InventoryRecord>[]>(
+  const columns = useMemo<Array<ColumnDef<InventoryRecord>>>(
     () => [
       getDataGridSelectColumn<InventoryRecord>({
         detailHref: (row) => `/inventory/${row.original.id}`,
@@ -107,9 +112,7 @@ function InventoryPage() {
       },
       {
         accessorKey: "status",
-        cell: ({ row }) => (
-          <StateBadge state={row.original.status} />
-        ),
+        cell: ({ row }) => <StateBadge state={row.original.status} />,
         header: "Status",
         meta: {
           cell: {
@@ -129,9 +132,7 @@ function InventoryPage() {
       {
         accessorKey: "onHand",
         cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.onHand}
-          </span>
+          <span className="font-mono text-xs">{row.original.onHand}</span>
         ),
         header: "On Hand",
         meta: {
@@ -143,9 +144,7 @@ function InventoryPage() {
       {
         accessorKey: "available",
         cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.available}
-          </span>
+          <span className="font-mono text-xs">{row.original.available}</span>
         ),
         header: "Available",
         meta: {
@@ -157,9 +156,7 @@ function InventoryPage() {
       {
         accessorKey: "reserved",
         cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.reserved}
-          </span>
+          <span className="font-mono text-xs">{row.original.reserved}</span>
         ),
         header: "Reserved",
         meta: {
@@ -169,7 +166,7 @@ function InventoryPage() {
         size: 120,
       },
     ],
-    [],
+    []
   )
 
   const gridProps = useDataGrid({

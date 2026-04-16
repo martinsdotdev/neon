@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Command as CommandPrimitive } from "cmdk"
 
+import { CheckIcon, SearchIcon } from "lucide-react"
 import { cn } from "@/shared/lib/utils"
 import {
   Dialog,
@@ -11,11 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/ui/dialog"
-import {
-  InputGroup,
-  InputGroupAddon,
-} from "@/shared/ui/input-group"
-import { SearchIcon, CheckIcon } from "lucide-react"
+import { InputGroup, InputGroupAddon } from "@/shared/ui/input-group"
 
 function Command({
   className,

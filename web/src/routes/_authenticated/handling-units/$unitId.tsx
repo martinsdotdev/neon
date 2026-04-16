@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { handlingUnitQueries } from "@/shared/api/handling-units"
@@ -7,30 +7,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card"
 import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
-export const Route = createFileRoute(
-  "/_authenticated/handling-units/$unitId",
-)({
+export const Route = createFileRoute("/_authenticated/handling-units/$unitId")({
   component: HandlingUnitDetailPage,
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
-      handlingUnitQueries.detail(params.unitId),
+      handlingUnitQueries.detail(params.unitId)
     ),
 })
 
 function HandlingUnitDetailPage() {
   const { unitId } = Route.useParams()
-  const { data: unit } = useSuspenseQuery(
-    handlingUnitQueries.detail(unitId),
-  )
+  const { data: unit } = useSuspenseQuery(handlingUnitQueries.detail(unitId))
 
   if (!unit) {
     return (
       <div>
         <PageHeader title="Handling unit not found" />
-        <Button
-          render={<Link to="/handling-units" />}
-          variant="ghost"
-        >
+        <Button render={<Link to="/handling-units" />} variant="ghost">
           <ArrowLeft className="size-4" />
           Back to handling units
         </Button>
@@ -65,39 +58,31 @@ function HandlingUnitDetailPage() {
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-muted-foreground mb-1">ID</dt>
+              <dt className="mb-1 text-muted-foreground">ID</dt>
               <dd className="font-mono text-xs text-muted-foreground">
                 {unit.id}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
-                Packaging Level
-              </dt>
+              <dt className="mb-1 text-muted-foreground">Packaging Level</dt>
               <dd className="font-medium">{unit.packagingLevel}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
-                Current Location
-              </dt>
-              <dd className="font-mono font-medium">
-                {unit.currentLocation}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Current Location</dt>
+              <dd className="font-mono font-medium">{unit.currentLocation}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Order ID</dt>
-              <dd className="font-mono font-medium">
-                {unit.orderId ?? "-"}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Order ID</dt>
+              <dd className="font-mono font-medium">{unit.orderId ?? "-"}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">State</dt>
+              <dt className="mb-1 text-muted-foreground">State</dt>
               <dd>
                 <StateBadge state={unit.state} />
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Created At</dt>
+              <dt className="mb-1 text-muted-foreground">Created At</dt>
               <dd className="font-medium">{unit.createdAt}</dd>
             </div>
           </dl>

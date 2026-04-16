@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { orderQueries } from "@/shared/api/orders"
@@ -15,7 +15,10 @@ import {
   TableRow,
 } from "@/shared/ui/table"
 
-const PRIORITY_VARIANT: Record<string, "default" | "secondary" | "destructive"> = {
+const PRIORITY_VARIANT: Record<
+  string,
+  "default" | "secondary" | "destructive"
+> = {
   Critical: "destructive",
   High: "default",
   Low: "secondary",
@@ -72,21 +75,21 @@ function OrderDetailPage() {
           <CardContent>
             <dl className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <dt className="text-muted-foreground mb-1">Order ID</dt>
+                <dt className="mb-1 text-muted-foreground">Order ID</dt>
                 <dd className="font-mono font-medium">{order.id}</dd>
               </div>
               <div>
-                <dt className="text-muted-foreground mb-1">Priority</dt>
+                <dt className="mb-1 text-muted-foreground">Priority</dt>
                 <dd>{order.priority}</dd>
               </div>
               <div>
-                <dt className="text-muted-foreground mb-1">Carrier</dt>
+                <dt className="mb-1 text-muted-foreground">Carrier</dt>
                 <dd className="font-mono text-xs">
                   {order.carrierId ?? "\u2014"}
                 </dd>
               </div>
               <div>
-                <dt className="text-muted-foreground mb-1">Lines</dt>
+                <dt className="mb-1 text-muted-foreground">Lines</dt>
                 <dd className="font-mono">{order.lines.length}</dd>
               </div>
             </dl>

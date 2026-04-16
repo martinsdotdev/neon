@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { useCallback, useMemo, useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { CycleCount } from "@/shared/api/cycle-counts"
+import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { cycleCountQueries } from "@/shared/api/cycle-counts"
 import { DataGrid } from "@/shared/data-grid/data-grid"
 import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
@@ -11,13 +12,12 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
-import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { Filters } from "@/shared/reui/filters"
 import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
-const filterFields: FilterFieldConfig[] = [
+const filterFields: Array<FilterFieldConfig> = [
   {
     key: "countMethod",
     label: "Method",
@@ -56,9 +56,7 @@ const filterFields: FilterFieldConfig[] = [
   },
 ]
 
-export const Route = createFileRoute(
-  "/_authenticated/cycle-counts/",
-)({
+export const Route = createFileRoute("/_authenticated/cycle-counts/")({
   component: CycleCountsPage,
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(cycleCountQueries.all()),
@@ -67,7 +65,7 @@ export const Route = createFileRoute(
 function CycleCountsPage() {
   const { data: counts } = useSuspenseQuery(cycleCountQueries.all())
   const [data, setData] = useState(counts)
-  const [filters, setFilters] = useState<Filter[]>([])
+  const [filters, setFilters] = useState<Array<Filter>>([])
 
   const filteredData = useMemo(() => {
     if (filters.length === 0) return data
@@ -77,18 +75,23 @@ function CycleCountsPage() {
         if (f.operator === "is" || f.operator === "is_any_of") {
           if (!f.values.some((v) => value === String(v))) return false
         } else if (f.operator === "contains") {
-          if (!f.values.some((v) => value.toLowerCase().includes(String(v).toLowerCase()))) return false
+          if (
+            !f.values.some((v) =>
+              value.toLowerCase().includes(String(v).toLowerCase())
+            )
+          )
+            return false
         }
       }
       return true
     })
   }, [data, filters])
 
-  const onFiltersChange = useCallback((newFilters: Filter[]) => {
+  const onFiltersChange = useCallback((newFilters: Array<Filter>) => {
     setFilters(newFilters)
   }, [])
 
-  const columns = useMemo<ColumnDef<CycleCount>[]>(
+  const columns = useMemo<Array<ColumnDef<CycleCount>>>(
     () => [
       getDataGridSelectColumn<CycleCount>({
         detailHref: (row) => `/cycle-counts/${row.original.id}`,
@@ -108,9 +111,7 @@ function CycleCountsPage() {
       {
         accessorKey: "countType",
         cell: ({ row }) => (
-          <Badge variant="secondary">
-            {row.original.countType}
-          </Badge>
+          <Badge variant="secondary">{row.original.countType}</Badge>
         ),
         header: "Type",
         meta: {
@@ -130,9 +131,7 @@ function CycleCountsPage() {
       {
         accessorKey: "countMethod",
         cell: ({ row }) => (
-          <Badge variant="secondary">
-            {row.original.countMethod}
-          </Badge>
+          <Badge variant="secondary">{row.original.countMethod}</Badge>
         ),
         header: "Method",
         meta: {
@@ -164,9 +163,7 @@ function CycleCountsPage() {
       {
         accessorKey: "taskCount",
         cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.taskCount}
-          </span>
+          <span className="font-mono text-xs">{row.original.taskCount}</span>
         ),
         header: "Tasks",
         meta: {
@@ -177,9 +174,7 @@ function CycleCountsPage() {
       },
       {
         accessorKey: "state",
-        cell: ({ row }) => (
-          <StateBadge state={row.original.state} />
-        ),
+        cell: ({ row }) => <StateBadge state={row.original.state} />,
         header: "State",
         meta: {
           cell: {
@@ -196,7 +191,7 @@ function CycleCountsPage() {
         size: 130,
       },
     ],
-    [],
+    []
   )
 
   const gridProps = useDataGrid({

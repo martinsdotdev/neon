@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { skuQueries } from "@/shared/api/skus"
@@ -32,9 +32,7 @@ function SkuDetailPage() {
   return (
     <div>
       <PageHeader
-        actions={
-          sku.lotManaged ? <Badge>Lot-managed</Badge> : null
-        }
+        actions={sku.lotManaged ? <Badge>Lot-managed</Badge> : null}
         title={sku.code}
       />
 
@@ -54,19 +52,19 @@ function SkuDetailPage() {
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-muted-foreground mb-1">Code</dt>
+              <dt className="mb-1 text-muted-foreground">Code</dt>
               <dd className="font-mono font-medium">{sku.code}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Description</dt>
+              <dt className="mb-1 text-muted-foreground">Description</dt>
               <dd>{sku.description}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Lot Managed</dt>
+              <dt className="mb-1 text-muted-foreground">Lot Managed</dt>
               <dd>{sku.lotManaged ? "Yes" : "No"}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">ID</dt>
+              <dt className="mb-1 text-muted-foreground">ID</dt>
               <dd className="font-mono text-xs text-muted-foreground">
                 {sku.id}
               </dd>

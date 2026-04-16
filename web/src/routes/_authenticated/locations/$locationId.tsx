@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { locationQueries } from "@/shared/api/locations"
@@ -11,14 +11,14 @@ export const Route = createFileRoute("/_authenticated/locations/$locationId")({
   component: LocationDetailPage,
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
-      locationQueries.detail(params.locationId),
+      locationQueries.detail(params.locationId)
     ),
 })
 
 function LocationDetailPage() {
   const { locationId } = Route.useParams()
   const { data: location } = useSuspenseQuery(
-    locationQueries.detail(locationId),
+    locationQueries.detail(locationId)
   )
 
   if (!location) {
@@ -56,27 +56,27 @@ function LocationDetailPage() {
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-muted-foreground mb-1">Code</dt>
+              <dt className="mb-1 text-muted-foreground">Code</dt>
               <dd className="font-mono font-medium">{location.code}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Type</dt>
+              <dt className="mb-1 text-muted-foreground">Type</dt>
               <dd>{location.locationType}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Zone</dt>
+              <dt className="mb-1 text-muted-foreground">Zone</dt>
               <dd className="font-mono text-xs">
                 {location.zoneId ?? "\u2014"}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Picking Sequence</dt>
+              <dt className="mb-1 text-muted-foreground">Picking Sequence</dt>
               <dd className="font-mono">
                 {location.pickingSequence ?? "\u2014"}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">ID</dt>
+              <dt className="mb-1 text-muted-foreground">ID</dt>
               <dd className="font-mono text-xs text-muted-foreground">
                 {location.id}
               </dd>

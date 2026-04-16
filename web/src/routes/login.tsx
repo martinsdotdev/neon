@@ -3,7 +3,7 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
 import { Eye, EyeOff } from "lucide-react"
-import { useLogin, authQueries } from "@/shared/api/auth"
+import { authQueries, useLogin } from "@/shared/api/auth"
 import { Alert, AlertDescription } from "@/shared/ui/alert"
 import { Button } from "@/shared/ui/button"
 import { Card, CardContent } from "@/shared/ui/card"
@@ -67,9 +67,7 @@ function LoginPage() {
               <form.Field name="login">
                 {(field) => (
                   <div className="space-y-2">
-                    <Label htmlFor="login">
-                      {m.auth_login_label()}
-                    </Label>
+                    <Label htmlFor="login">{m.auth_login_label()}</Label>
                     <Input
                       id="login"
                       type="text"
@@ -77,9 +75,7 @@ function LoginPage() {
                       autoFocus
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) =>
-                        field.handleChange(e.target.value)
-                      }
+                      onChange={(e) => field.handleChange(e.target.value)}
                       className="h-11 font-mono"
                     />
                   </div>
@@ -89,9 +85,7 @@ function LoginPage() {
               <form.Field name="password">
                 {(field) => (
                   <div className="space-y-2">
-                    <Label htmlFor="password">
-                      {m.auth_password_label()}
-                    </Label>
+                    <Label htmlFor="password">{m.auth_password_label()}</Label>
                     <div className="relative">
                       <Input
                         id="password"
@@ -99,9 +93,7 @@ function LoginPage() {
                         autoComplete="current-password"
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(e) =>
-                          field.handleChange(e.target.value)
-                        }
+                        onChange={(e) => field.handleChange(e.target.value)}
                         className="h-11 pe-10 font-mono"
                       />
                       <Button
@@ -109,9 +101,7 @@ function LoginPage() {
                         variant="ghost"
                         size="icon-sm"
                         className="absolute inset-y-0 end-1.5 my-auto text-muted-foreground"
-                        onClick={() =>
-                          setShowPassword((prev) => !prev)
-                        }
+                        onClick={() => setShowPassword((prev) => !prev)}
                         tabIndex={-1}
                       >
                         {showPassword ? (
@@ -138,18 +128,14 @@ function LoginPage() {
                 disabled={login.isPending}
                 className="h-11 w-full"
               >
-                {login.isPending ? (
-                  <Spinner />
-                ) : (
-                  m.auth_submit()
-                )}
+                {login.isPending ? <Spinner /> : m.auth_submit()}
               </Button>
             </form>
           </CardContent>
         </Card>
 
         {/* Version */}
-        <p className="mt-8 text-center font-mono text-2xs text-muted-foreground/40 tracking-wider">
+        <p className="text-2xs mt-8 text-center font-mono tracking-wider text-muted-foreground/40">
           v0.1.0
         </p>
       </div>

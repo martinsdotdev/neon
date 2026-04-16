@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { userQueries } from "@/shared/api/users-api"
@@ -59,23 +59,23 @@ function UserDetailPage() {
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-muted-foreground mb-1">Name</dt>
+              <dt className="mb-1 text-muted-foreground">Name</dt>
               <dd className="font-medium">{user.name}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Login</dt>
+              <dt className="mb-1 text-muted-foreground">Login</dt>
               <dd className="font-mono">{user.login}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Role</dt>
+              <dt className="mb-1 text-muted-foreground">Role</dt>
               <dd>{user.role}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Status</dt>
+              <dt className="mb-1 text-muted-foreground">Status</dt>
               <dd>{user.active ? "Active" : "Inactive"}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">ID</dt>
+              <dt className="mb-1 text-muted-foreground">ID</dt>
               <dd className="font-mono text-xs text-muted-foreground">
                 {user.id}
               </dd>

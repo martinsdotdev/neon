@@ -1,14 +1,8 @@
+import { Fragment, useCallback, useEffect, useRef, useState } from "react"
 import {
-  Fragment,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
-import {
-  createFileRoute,
   Link,
   Outlet,
+  createFileRoute,
   redirect,
   useNavigate,
   useRouterState,
@@ -38,10 +32,11 @@ import {
   Users,
   Waves,
 } from "lucide-react"
-import type { LucideIcon } from "lucide-react"
 import { useTheme } from "next-themes"
-import { authQueries, useLogout } from '@/shared/api/auth';
-import type { AuthUser } from '@/shared/api/auth';
+import type { LucideIcon } from "lucide-react"
+import type { AuthUser } from "@/shared/api/auth"
+import type {MenuIconHandle} from "@/shared/ui/menu";
+import { authQueries, useLogout } from "@/shared/api/auth"
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar"
 import {
   Breadcrumb,
@@ -63,12 +58,9 @@ import {
   CommandShortcut,
 } from "@/shared/ui/command"
 import { Button } from "@/shared/ui/button"
-import {
-  InputGroup,
-  InputGroupAddon,
-} from "@/shared/ui/input-group"
+import { InputGroup, InputGroupAddon } from "@/shared/ui/input-group"
 import { Kbd } from "@/shared/ui/kbd"
-import { MenuIcon, type MenuIconHandle } from "@/shared/ui/menu"
+import { MenuIcon  } from "@/shared/ui/menu"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -109,10 +101,17 @@ export const Route = createFileRoute("/_authenticated")({
 // Navigation definition
 // ---------------------------------------------------------------------------
 
-interface NavItem { to: string; icon: LucideIcon; label: string }
-interface NavGroup { label: string; items: NavItem[] }
+interface NavItem {
+  to: string
+  icon: LucideIcon
+  label: string
+}
+interface NavGroup {
+  label: string
+  items: Array<NavItem>
+}
 
-const navigation: NavGroup[] = [
+const navigation: Array<NavGroup> = [
   {
     items: [
       { icon: LayoutDashboard, label: m.nav_dashboard(), to: "/dashboard" },
@@ -123,7 +122,11 @@ const navigation: NavGroup[] = [
     items: [
       { icon: Waves, label: m.nav_waves(), to: "/waves" },
       { icon: ClipboardList, label: m.nav_tasks(), to: "/tasks" },
-      { icon: Layers, label: m.nav_consolidation_groups(), to: "/consolidation-groups" },
+      {
+        icon: Layers,
+        label: m.nav_consolidation_groups(),
+        to: "/consolidation-groups",
+      },
       { icon: Truck, label: m.nav_transport_orders(), to: "/transport-orders" },
       { icon: Package, label: m.nav_handling_units(), to: "/handling-units" },
       { icon: Monitor, label: m.nav_workstations(), to: "/workstations" },
@@ -139,7 +142,11 @@ const navigation: NavGroup[] = [
   },
   {
     items: [
-      { icon: Database, label: m.nav_stock_positions(), to: "/stock-positions" },
+      {
+        icon: Database,
+        label: m.nav_stock_positions(),
+        to: "/stock-positions",
+      },
       { icon: Archive, label: m.nav_inventory_records(), to: "/inventory" },
       { icon: ScanBarcode, label: m.nav_cycle_counts(), to: "/cycle-counts" },
     ],
@@ -158,7 +165,7 @@ const navigation: NavGroup[] = [
 ]
 
 const navLabels = new Map(
-  navigation.flatMap((g) => g.items.map((i) => [i.to.slice(1), i.label])),
+  navigation.flatMap((g) => g.items.map((i) => [i.to.slice(1), i.label]))
 )
 navLabels.set("settings", m.nav_settings())
 
@@ -176,23 +183,19 @@ function AuthenticatedLayout() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        e.key === "k" &&
-        (e.metaKey || e.ctrlKey)
-      ) {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
         setCommandOpen((prev) => !prev)
       }
     }
     window.addEventListener("keydown", handleKeyDown)
-    return () =>
-      window.removeEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
 
   return (
     <SidebarProvider>
       <AppSidebar />
-      <header className="fixed top-0 left-0 right-0 z-50 flex w-full items-center border-b border-sidebar-border bg-sidebar/95 backdrop-blur-xl backdrop-saturate-150">
+      <header className="fixed top-0 right-0 left-0 z-50 flex w-full items-center border-b border-sidebar-border bg-sidebar/95 backdrop-blur-xl backdrop-saturate-150">
         <div className="flex h-(--header-height) w-full items-center gap-2 px-3 md:px-4">
           <SidebarMenuTrigger />
           <Breadcrumb className="hidden sm:block">
@@ -200,23 +203,18 @@ function AuthenticatedLayout() {
               {segments.map((segment, index) => {
                 const href = `/${segments.slice(0, index + 1).join("/")}`
                 const isLast = index === segments.length - 1
-                const label =
-                  navLabels.get(segment) ?? segment
+                const label = navLabels.get(segment) ?? segment
 
                 return (
                   <Fragment key={href}>
-                    {index > 0 && (
-                      <BreadcrumbSeparator />
-                    )}
+                    {index > 0 && <BreadcrumbSeparator />}
                     <BreadcrumbItem>
                       {isLast ? (
                         <BreadcrumbPage className="font-medium">
                           {label}
                         </BreadcrumbPage>
                       ) : (
-                        <BreadcrumbLink
-                          render={<Link to={href} />}
-                        >
+                        <BreadcrumbLink render={<Link to={href} />}>
                           {label}
                         </BreadcrumbLink>
                       )}
@@ -228,7 +226,7 @@ function AuthenticatedLayout() {
           </Breadcrumb>
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-14 sm:px-20 md:px-32 lg:px-48">
             <InputGroup
-              className="pointer-events-auto w-full max-w-[calc(100%-1rem)] cursor-pointer gap-1.5 rounded-full transition-colors duration-[180ms] ease-out hover:bg-input/70 sm:max-w-sm md:max-w-md *:cursor-pointer"
+              className="pointer-events-auto w-full max-w-[calc(100%-1rem)] cursor-pointer gap-1.5 rounded-full transition-colors duration-[180ms] ease-out *:cursor-pointer hover:bg-input/70 sm:max-w-sm md:max-w-md"
               onClick={() => setCommandOpen(true)}
             >
               <InputGroupAddon>
@@ -237,10 +235,7 @@ function AuthenticatedLayout() {
               <span className="hidden flex-1 text-sm text-muted-foreground lg:inline">
                 Search...
               </span>
-              <InputGroupAddon
-                align="inline-end"
-                className="hidden md:flex"
-              >
+              <InputGroupAddon align="inline-end" className="hidden md:flex">
                 <Kbd>Ctrl</Kbd>
                 <Kbd>K</Kbd>
               </InputGroupAddon>
@@ -255,10 +250,7 @@ function AuthenticatedLayout() {
           <Outlet />
         </div>
       </SidebarInset>
-      <CommandPalette
-        open={commandOpen}
-        onOpenChange={setCommandOpen}
-      />
+      <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
     </SidebarProvider>
   )
 }
@@ -316,8 +308,7 @@ function AppSidebar() {
             <SidebarMenu>
               {group.items.map((item) => {
                 const isActive =
-                  pathname === item.to ||
-                  pathname.startsWith(`${item.to}/`)
+                  pathname === item.to || pathname.startsWith(`${item.to}/`)
 
                 return (
                   <SidebarMenuItem key={item.to}>
@@ -360,7 +351,7 @@ function CommandPalette({
       onOpenChange(false)
       command()
     },
-    [onOpenChange],
+    [onOpenChange]
   )
 
   return (
@@ -369,7 +360,7 @@ function CommandPalette({
       onOpenChange={onOpenChange}
       className="bg-popover/70 backdrop-blur-2xl backdrop-saturate-150"
     >
-      <Command className="bg-transparent **:[[cmdk-group-heading]]:font-heading **:[[cmdk-group-heading]]:text-2xs! **:[[cmdk-group-heading]]:tracking-[0.1em] **:[[cmdk-group-heading]]:uppercase">
+      <Command className="**:[[cmdk-group-heading]]:text-2xs! bg-transparent **:[[cmdk-group-heading]]:font-heading **:[[cmdk-group-heading]]:tracking-[0.1em] **:[[cmdk-group-heading]]:uppercase">
         <CommandInput placeholder="Search pages and actions..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
@@ -381,11 +372,7 @@ function CommandPalette({
               {group.items.map((item) => (
                 <CommandItem
                   key={item.to}
-                  onSelect={() =>
-                    runCommand(() =>
-                      navigate({ to: item.to }),
-                    )
-                  }
+                  onSelect={() => runCommand(() => navigate({ to: item.to }))}
                 >
                   <item.icon strokeWidth={1.75} />
                   <span>{item.label}</span>
@@ -397,27 +384,21 @@ function CommandPalette({
           <CommandGroup heading="Theme">
             <CommandItem
               data-checked={theme === "light"}
-              onSelect={() =>
-                runCommand(() => setTheme("light"))
-              }
+              onSelect={() => runCommand(() => setTheme("light"))}
             >
               <Sun strokeWidth={1.75} />
               <span>Light</span>
             </CommandItem>
             <CommandItem
               data-checked={theme === "dark"}
-              onSelect={() =>
-                runCommand(() => setTheme("dark"))
-              }
+              onSelect={() => runCommand(() => setTheme("dark"))}
             >
               <Moon strokeWidth={1.75} />
               <span>Dark</span>
             </CommandItem>
             <CommandItem
               data-checked={theme === "system"}
-              onSelect={() =>
-                runCommand(() => setTheme("system"))
-              }
+              onSelect={() => runCommand(() => setTheme("system"))}
             >
               <Monitor strokeWidth={1.75} />
               <span>System</span>
@@ -426,27 +407,17 @@ function CommandPalette({
           <CommandSeparator />
           <CommandGroup heading="Actions">
             <CommandItem
-              onSelect={() =>
-                runCommand(() =>
-                  navigate({ to: "/settings" }),
-                )
-              }
+              onSelect={() => runCommand(() => navigate({ to: "/settings" }))}
             >
               <Settings strokeWidth={1.75} />
               <span>Settings</span>
             </CommandItem>
-            <CommandItem
-              onSelect={() => runCommand(toggleSidebar)}
-            >
+            <CommandItem onSelect={() => runCommand(toggleSidebar)}>
               <PanelLeft strokeWidth={1.75} />
               <span>Toggle Sidebar</span>
               <CommandShortcut>⌘B</CommandShortcut>
             </CommandItem>
-            <CommandItem
-              onSelect={() =>
-                runCommand(() => logout.mutate())
-              }
-            >
+            <CommandItem onSelect={() => runCommand(() => logout.mutate())}>
               <LogOut strokeWidth={1.75} />
               <span>Log Out</span>
             </CommandItem>
@@ -454,19 +425,19 @@ function CommandPalette({
         </CommandList>
         <div className="flex items-center gap-4 border-t border-border/50 px-3 py-2 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <kbd className="font-heading inline-flex size-4 items-center justify-center rounded bg-muted/80 text-[0.5625rem]">
+            <kbd className="inline-flex size-4 items-center justify-center rounded bg-muted/80 font-heading text-[0.5625rem]">
               ↩
             </kbd>
             select
           </span>
           <span className="flex items-center gap-1.5">
-            <kbd className="font-heading inline-flex h-4 items-center rounded bg-muted/80 px-1 text-[0.5625rem]">
+            <kbd className="inline-flex h-4 items-center rounded bg-muted/80 px-1 font-heading text-[0.5625rem]">
               ↑↓
             </kbd>
             navigate
           </span>
           <span className="flex items-center gap-1.5">
-            <kbd className="font-heading inline-flex h-4 items-center rounded bg-muted/80 px-1 text-[0.5625rem]">
+            <kbd className="inline-flex h-4 items-center rounded bg-muted/80 px-1 font-heading text-[0.5625rem]">
               esc
             </kbd>
             close
@@ -494,9 +465,7 @@ function UserMenu({ user }: { user: AuthUser }) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        className="flex size-8 shrink-0 items-center justify-center rounded-full outline-none"
-      >
+      <DropdownMenuTrigger className="flex size-8 shrink-0 items-center justify-center rounded-full outline-none">
         <Avatar className="size-8">
           <AvatarFallback className="font-mono text-xs font-medium">
             {initials}
@@ -516,36 +485,22 @@ function UserMenu({ user }: { user: AuthUser }) {
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-foreground text-sm font-medium">
+            <span className="text-sm font-medium text-foreground">
               {user.name}
             </span>
-            <span className="text-muted-foreground text-xs">
-              {user.role}
-            </span>
+            <span className="text-xs text-muted-foreground">{user.role}</span>
           </div>
         </div>
         <div className="py-2.5">
-          <Tabs
-            value={theme ?? "system"}
-            onValueChange={setTheme}
-          >
+          <Tabs value={theme ?? "system"} onValueChange={setTheme}>
             <TabsList className="w-full">
-              <TabsTrigger
-                value="light"
-                className="h-6 flex-1"
-              >
+              <TabsTrigger value="light" className="h-6 flex-1">
                 <Sun className="size-4" />
               </TabsTrigger>
-              <TabsTrigger
-                value="dark"
-                className="h-6 flex-1"
-              >
+              <TabsTrigger value="dark" className="h-6 flex-1">
                 <Moon className="size-4" />
               </TabsTrigger>
-              <TabsTrigger
-                value="system"
-                className="h-6 flex-1"
-              >
+              <TabsTrigger value="system" className="h-6 flex-1">
                 <Monitor className="size-4" />
               </TabsTrigger>
             </TabsList>
@@ -557,10 +512,7 @@ function UserMenu({ user }: { user: AuthUser }) {
           Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          onClick={() => logout.mutate()}
-        >
+        <DropdownMenuItem variant="destructive" onClick={() => logout.mutate()}>
           <LogOut />
           Logout
         </DropdownMenuItem>

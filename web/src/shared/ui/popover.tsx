@@ -78,17 +78,8 @@ function PopoverDescription({
   )
 }
 
-function PopoverAnchor({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="popover-anchor"
-      className={className}
-      {...props}
-    />
-  )
+function PopoverAnchor({ className, ...props }: React.ComponentProps<"div">) {
+  return <div data-slot="popover-anchor" className={className} {...props} />
 }
 
 export {

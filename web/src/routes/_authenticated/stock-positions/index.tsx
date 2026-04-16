@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { useCallback, useMemo, useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { StockPosition } from "@/shared/api/stock-positions"
+import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { stockPositionQueries } from "@/shared/api/stock-positions"
 import { DataGrid } from "@/shared/data-grid/data-grid"
 import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
@@ -11,11 +12,10 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
-import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { Filters } from "@/shared/reui/filters"
 import { PageHeader } from "@/shared/ui/page-header"
 
-const filterFields: FilterFieldConfig[] = [
+const filterFields: Array<FilterFieldConfig> = [
   {
     key: "skuId",
     label: "SKU",
@@ -28,20 +28,16 @@ const filterFields: FilterFieldConfig[] = [
   },
 ]
 
-export const Route = createFileRoute(
-  "/_authenticated/stock-positions/",
-)({
+export const Route = createFileRoute("/_authenticated/stock-positions/")({
   component: StockPositionsPage,
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(stockPositionQueries.all()),
 })
 
 function StockPositionsPage() {
-  const { data: positions } = useSuspenseQuery(
-    stockPositionQueries.all(),
-  )
+  const { data: positions } = useSuspenseQuery(stockPositionQueries.all())
   const [data, setData] = useState(positions)
-  const [filters, setFilters] = useState<Filter[]>([])
+  const [filters, setFilters] = useState<Array<Filter>>([])
 
   const filteredData = useMemo(() => {
     if (filters.length === 0) return data
@@ -51,18 +47,23 @@ function StockPositionsPage() {
         if (f.operator === "is" || f.operator === "is_any_of") {
           if (!f.values.some((v) => value === String(v))) return false
         } else if (f.operator === "contains") {
-          if (!f.values.some((v) => value.toLowerCase().includes(String(v).toLowerCase()))) return false
+          if (
+            !f.values.some((v) =>
+              value.toLowerCase().includes(String(v).toLowerCase())
+            )
+          )
+            return false
         }
       }
       return true
     })
   }, [data, filters])
 
-  const onFiltersChange = useCallback((newFilters: Filter[]) => {
+  const onFiltersChange = useCallback((newFilters: Array<Filter>) => {
     setFilters(newFilters)
   }, [])
 
-  const columns = useMemo<ColumnDef<StockPosition>[]>(
+  const columns = useMemo<Array<ColumnDef<StockPosition>>>(
     () => [
       getDataGridSelectColumn<StockPosition>({
         detailHref: (row) => `/stock-positions/${row.original.id}`,
@@ -139,7 +140,7 @@ function StockPositionsPage() {
         size: 120,
       },
     ],
-    [],
+    []
   )
 
   const gridProps = useDataGrid({

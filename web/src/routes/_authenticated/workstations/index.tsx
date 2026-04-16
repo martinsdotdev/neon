@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { useCallback, useMemo, useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { Workstation } from "@/shared/api/workstations"
+import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { workstationQueries } from "@/shared/api/workstations"
 import { DataGrid } from "@/shared/data-grid/data-grid"
 import { DataGridRowHeightMenu } from "@/shared/data-grid/data-grid-row-height-menu"
@@ -11,13 +12,12 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
-import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
 import { Filters } from "@/shared/reui/filters"
 import { Badge } from "@/shared/ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
-const filterFields: FilterFieldConfig[] = [
+const filterFields: Array<FilterFieldConfig> = [
   {
     key: "id",
     label: "ID",
@@ -55,20 +55,16 @@ const filterFields: FilterFieldConfig[] = [
   },
 ]
 
-export const Route = createFileRoute(
-  "/_authenticated/workstations/",
-)({
+export const Route = createFileRoute("/_authenticated/workstations/")({
   component: WorkstationsPage,
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(workstationQueries.all()),
 })
 
 function WorkstationsPage() {
-  const { data: workstations } = useSuspenseQuery(
-    workstationQueries.all(),
-  )
+  const { data: workstations } = useSuspenseQuery(workstationQueries.all())
   const [data, setData] = useState(workstations)
-  const [filters, setFilters] = useState<Filter[]>([])
+  const [filters, setFilters] = useState<Array<Filter>>([])
 
   const filteredData = useMemo(() => {
     if (filters.length === 0) return data
@@ -78,18 +74,23 @@ function WorkstationsPage() {
         if (f.operator === "is" || f.operator === "is_any_of") {
           if (!f.values.some((v) => value === String(v))) return false
         } else if (f.operator === "contains") {
-          if (!f.values.some((v) => value.toLowerCase().includes(String(v).toLowerCase()))) return false
+          if (
+            !f.values.some((v) =>
+              value.toLowerCase().includes(String(v).toLowerCase())
+            )
+          )
+            return false
         }
       }
       return true
     })
   }, [data, filters])
 
-  const onFiltersChange = useCallback((newFilters: Filter[]) => {
+  const onFiltersChange = useCallback((newFilters: Array<Filter>) => {
     setFilters(newFilters)
   }, [])
 
-  const columns = useMemo<ColumnDef<Workstation>[]>(
+  const columns = useMemo<Array<ColumnDef<Workstation>>>(
     () => [
       getDataGridSelectColumn<Workstation>({
         detailHref: (row) => `/workstations/${row.original.id}`,
@@ -109,9 +110,7 @@ function WorkstationsPage() {
       {
         accessorKey: "workstationType",
         cell: ({ row }) => (
-          <Badge variant="secondary">
-            {row.original.workstationType}
-          </Badge>
+          <Badge variant="secondary">{row.original.workstationType}</Badge>
         ),
         header: "Type",
         meta: {
@@ -149,9 +148,7 @@ function WorkstationsPage() {
       {
         accessorKey: "slotCount",
         cell: ({ row }) => (
-          <span className="font-mono text-xs">
-            {row.original.slotCount}
-          </span>
+          <span className="font-mono text-xs">{row.original.slotCount}</span>
         ),
         header: "Slots",
         meta: {
@@ -162,9 +159,7 @@ function WorkstationsPage() {
       },
       {
         accessorKey: "state",
-        cell: ({ row }) => (
-          <StateBadge state={row.original.state} />
-        ),
+        cell: ({ row }) => <StateBadge state={row.original.state} />,
         header: "State",
         meta: {
           cell: {
@@ -180,7 +175,7 @@ function WorkstationsPage() {
         size: 120,
       },
     ],
-    [],
+    []
   )
 
   const gridProps = useDataGrid({

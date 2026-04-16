@@ -1,15 +1,15 @@
-"use client";
+"use client"
 
-import type { Table } from "@tanstack/react-table";
-import { RectangleHorizontalIcon, SquareIcon } from "lucide-react";
-import * as React from "react";
+import { RectangleHorizontalIcon, SquareIcon } from "lucide-react"
+import * as React from "react"
+import type { Table } from "@tanstack/react-table"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/shared/ui/select";
+} from "@/shared/ui/select"
 
 const rowHeights = [
   {
@@ -22,12 +22,13 @@ const rowHeights = [
     label: "Comfortable",
     value: "medium" as const,
   },
-] as const;
+] as const
 
-interface DataGridRowHeightMenuProps<TData>
-  extends React.ComponentProps<typeof SelectContent> {
-  table: Table<TData>;
-  disabled?: boolean;
+interface DataGridRowHeightMenuProps<TData> extends React.ComponentProps<
+  typeof SelectContent
+> {
+  table: Table<TData>
+  disabled?: boolean
 }
 
 export function DataGridRowHeightMenu<TData>({
@@ -35,14 +36,12 @@ export function DataGridRowHeightMenu<TData>({
   disabled,
   ...props
 }: DataGridRowHeightMenuProps<TData>) {
-  const rowHeight = table.options.meta?.rowHeight;
-  const onRowHeightChange = table.options.meta?.onRowHeightChange;
+  const rowHeight = table.options.meta?.rowHeight
+  const onRowHeightChange = table.options.meta?.onRowHeightChange
 
   const selectedRowHeight = React.useMemo(() => {
-    return (
-      rowHeights.find((opt) => opt.value === rowHeight) ?? rowHeights[0]
-    );
-  }, [rowHeight]);
+    return rowHeights.find((opt) => opt.value === rowHeight) ?? rowHeights[0]
+  }, [rowHeight])
 
   return (
     <Select
@@ -58,15 +57,15 @@ export function DataGridRowHeightMenu<TData>({
       </SelectTrigger>
       <SelectContent {...props}>
         {rowHeights.map((option) => {
-          const OptionIcon = option.icon;
+          const OptionIcon = option.icon
           return (
             <SelectItem key={option.value} value={option.value}>
               <OptionIcon className="size-4" />
               {option.label}
             </SelectItem>
-          );
+          )
         })}
       </SelectContent>
     </Select>
-  );
+  )
 }

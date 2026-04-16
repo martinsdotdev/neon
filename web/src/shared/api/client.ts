@@ -15,7 +15,7 @@ export type ApiError =
 const request = <T>(
   method: string,
   path: string,
-  body?: unknown,
+  body?: unknown
 ): ResultAsync<T, ApiError> =>
   ResultAsync.fromPromise(
     fetch(path, {
@@ -23,7 +23,7 @@ const request = <T>(
       headers: body ? { "Content-Type": "application/json" } : {},
       method,
     }),
-    (error): ApiError => ({ kind: "network", message: String(error) }),
+    (error): ApiError => ({ kind: "network", message: String(error) })
   ).andThen((res) => {
     if (!res.ok) {
       return ResultAsync.fromPromise(
@@ -39,9 +39,9 @@ const request = <T>(
             title: res.statusText,
             type: "about:blank",
           },
-        }),
+        })
       ).andThen((problem: ProblemDetails) =>
-        err({ kind: "problem" as const, problem }),
+        err({ kind: "problem" as const, problem })
       )
     }
 
@@ -51,7 +51,7 @@ const request = <T>(
 
     return ResultAsync.fromPromise(
       res.json() as Promise<T>,
-      (): ApiError => ({ kind: "network", message: "Failed to parse response" }),
+      (): ApiError => ({ kind: "network", message: "Failed to parse response" })
     )
   })
 

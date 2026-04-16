@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { useDirection } from "@radix-ui/react-direction";
-import { SearchIcon, XIcon } from "lucide-react";
-import * as React from "react";
-import { Button } from "@/shared/ui/button";
+import { useDirection } from "@radix-ui/react-direction"
+import { SearchIcon, XIcon } from "lucide-react"
+import * as React from "react"
+import { Button } from "@/shared/ui/button"
 import {
   Dialog,
   DialogClose,
@@ -11,27 +11,27 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/shared/ui/dialog";
-import { Input } from "@/shared/ui/input";
-import { Kbd, KbdGroup } from "@/shared/ui/kbd";
-import { Separator } from "@/shared/ui/separator";
+} from "@/shared/ui/dialog"
+import { Input } from "@/shared/ui/input"
+import { Kbd, KbdGroup } from "@/shared/ui/kbd"
+import { Separator } from "@/shared/ui/separator"
 
-const SHORTCUT_KEY = "/";
+const SHORTCUT_KEY = "/"
 
 interface ShortcutGroup {
-  title: string;
+  title: string
   shortcuts: Array<{
-    keys: string[];
-    description: string;
-  }>;
+    keys: Array<string>
+    description: string
+  }>
 }
 
 interface DataGridKeyboardShortcutsProps {
-  enableSearch?: boolean;
-  enableUndoRedo?: boolean;
-  enablePaste?: boolean;
-  enableRowAdd?: boolean;
-  enableRowsDelete?: boolean;
+  enableSearch?: boolean
+  enableUndoRedo?: boolean
+  enablePaste?: boolean
+  enableRowAdd?: boolean
+  enableRowsDelete?: boolean
 }
 
 export const DataGridKeyboardShortcuts = React.memo(
@@ -43,9 +43,9 @@ export const DataGridKeyboardShortcuts = React.memo(
       prev.enablePaste === next.enablePaste &&
       prev.enableRowAdd === next.enableRowAdd &&
       prev.enableRowsDelete === next.enableRowsDelete
-    );
-  },
-);
+    )
+  }
+)
 
 function DataGridKeyboardShortcutsImpl({
   enableSearch = false,
@@ -54,38 +54,38 @@ function DataGridKeyboardShortcutsImpl({
   enableRowAdd = false,
   enableRowsDelete = false,
 }: DataGridKeyboardShortcutsProps) {
-  const dir = useDirection();
-  const [open, setOpen] = React.useState(false);
-  const [input, setInput] = React.useState("");
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const dir = useDirection()
+  const [open, setOpen] = React.useState(false)
+  const [input, setInput] = React.useState("")
+  const inputRef = React.useRef<HTMLInputElement>(null)
 
   const isMac =
     typeof navigator !== "undefined"
       ? /Mac|iPhone|iPad|iPod/.test(navigator.userAgent)
-      : false;
+      : false
 
-  const modKey = isMac ? "⌘" : "Ctrl";
+  const modKey = isMac ? "⌘" : "Ctrl"
 
   const onOpenChange = React.useCallback((isOpen: boolean) => {
-    setOpen(isOpen);
+    setOpen(isOpen)
     if (!isOpen) {
-      setInput("");
+      setInput("")
     }
-  }, []);
+  }, [])
 
   const onOpenAutoFocus = React.useCallback((event: Event) => {
-    event.preventDefault();
-    inputRef.current?.focus();
-  }, []);
+    event.preventDefault()
+    inputRef.current?.focus()
+  }, [])
 
   const onInputChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      setInput(event.target.value);
+      setInput(event.target.value)
     },
-    [],
-  );
+    []
+  )
 
-  const shortcutGroups: ShortcutGroup[] = React.useMemo(
+  const shortcutGroups: Array<ShortcutGroup> = React.useMemo(
     () => [
       {
         title: "Navigation",
@@ -350,38 +350,38 @@ function DataGridKeyboardShortcutsImpl({
       enablePaste,
       enableRowAdd,
       enableRowsDelete,
-    ],
-  );
+    ]
+  )
 
   const filteredGroups = React.useMemo(() => {
-    if (!input.trim()) return shortcutGroups;
+    if (!input.trim()) return shortcutGroups
 
-    const query = input.toLowerCase();
+    const query = input.toLowerCase()
     return shortcutGroups
       .map((group) => ({
         ...group,
         shortcuts: group.shortcuts.filter(
           (shortcut) =>
             shortcut.description.toLowerCase().includes(query) ||
-            shortcut.keys.some((key) => key.toLowerCase().includes(query)),
+            shortcut.keys.some((key) => key.toLowerCase().includes(query))
         ),
       }))
-      .filter((group) => group.shortcuts.length > 0);
-  }, [shortcutGroups, input]);
+      .filter((group) => group.shortcuts.length > 0)
+  }, [shortcutGroups, input])
 
   React.useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if ((event.ctrlKey || event.metaKey) && event.key === SHORTCUT_KEY) {
-        event.preventDefault();
-        setOpen(true);
+        event.preventDefault()
+        setOpen(true)
       }
     }
 
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", onKeyDown)
     return () => {
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, []);
+      window.removeEventListener("keydown", onKeyDown)
+    }
+  }, [])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -423,10 +423,10 @@ function DataGridKeyboardShortcutsImpl({
                 <SearchIcon className="pointer-events-none size-6" />
               </div>
               <div className="flex flex-col gap-1">
-                <div className="font-medium text-lg tracking-tight">
+                <div className="text-lg font-medium tracking-tight">
                   No shortcuts found
                 </div>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Try searching for a different term.
                 </p>
               </div>
@@ -435,7 +435,7 @@ function DataGridKeyboardShortcutsImpl({
             <div className="flex flex-col gap-6">
               {filteredGroups.map((shortcutGroup) => (
                 <div key={shortcutGroup.title} className="flex flex-col gap-2">
-                  <h3 className="font-semibold text-foreground text-sm">
+                  <h3 className="text-sm font-semibold text-foreground">
                     {shortcutGroup.title}
                   </h3>
                   <div className="divide-y divide-border rounded-md border">
@@ -454,7 +454,7 @@ function DataGridKeyboardShortcutsImpl({
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
 function ShortcutCard({
@@ -468,12 +468,12 @@ function ShortcutCard({
         {keys.map((key, index) => (
           <React.Fragment key={key}>
             {index > 0 && (
-              <span className="text-muted-foreground text-xs">+</span>
+              <span className="text-xs text-muted-foreground">+</span>
             )}
             <Kbd>{key}</Kbd>
           </React.Fragment>
         ))}
       </KbdGroup>
     </div>
-  );
+  )
 }

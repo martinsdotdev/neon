@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { transportOrderQueries } from "@/shared/api/transport-orders"
@@ -8,29 +8,26 @@ import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute(
-  "/_authenticated/transport-orders/$orderId",
+  "/_authenticated/transport-orders/$orderId"
 )({
   component: TransportOrderDetailPage,
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
-      transportOrderQueries.detail(params.orderId),
+      transportOrderQueries.detail(params.orderId)
     ),
 })
 
 function TransportOrderDetailPage() {
   const { orderId } = Route.useParams()
   const { data: order } = useSuspenseQuery(
-    transportOrderQueries.detail(orderId),
+    transportOrderQueries.detail(orderId)
   )
 
   if (!order) {
     return (
       <div>
         <PageHeader title="Transport order not found" />
-        <Button
-          render={<Link to="/transport-orders" />}
-          variant="ghost"
-        >
+        <Button render={<Link to="/transport-orders" />} variant="ghost">
           <ArrowLeft className="size-4" />
           Back to transport orders
         </Button>
@@ -65,33 +62,27 @@ function TransportOrderDetailPage() {
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-muted-foreground mb-1">ID</dt>
+              <dt className="mb-1 text-muted-foreground">ID</dt>
               <dd className="font-mono text-xs text-muted-foreground">
                 {order.id}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
-                Handling Unit ID
-              </dt>
-              <dd className="font-mono font-medium">
-                {order.handlingUnitId}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Handling Unit ID</dt>
+              <dd className="font-mono font-medium">{order.handlingUnitId}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Destination</dt>
-              <dd className="font-mono font-medium">
-                {order.destination}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Destination</dt>
+              <dd className="font-mono font-medium">{order.destination}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">State</dt>
+              <dt className="mb-1 text-muted-foreground">State</dt>
               <dd>
                 <StateBadge state={order.state} />
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Created At</dt>
+              <dt className="mb-1 text-muted-foreground">Created At</dt>
               <dd className="font-medium">{order.createdAt}</dd>
             </div>
           </dl>

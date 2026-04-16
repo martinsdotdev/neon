@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { carrierQueries } from "@/shared/api/carriers"
@@ -11,15 +11,13 @@ export const Route = createFileRoute("/_authenticated/carriers/$carrierId")({
   component: CarrierDetailPage,
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
-      carrierQueries.detail(params.carrierId),
+      carrierQueries.detail(params.carrierId)
     ),
 })
 
 function CarrierDetailPage() {
   const { carrierId } = Route.useParams()
-  const { data: carrier } = useSuspenseQuery(
-    carrierQueries.detail(carrierId),
-  )
+  const { data: carrier } = useSuspenseQuery(carrierQueries.detail(carrierId))
 
   if (!carrier) {
     return (
@@ -60,21 +58,21 @@ function CarrierDetailPage() {
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-muted-foreground mb-1">Code</dt>
+              <dt className="mb-1 text-muted-foreground">Code</dt>
               <dd className="font-mono font-medium">{carrier.code}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Name</dt>
+              <dt className="mb-1 text-muted-foreground">Name</dt>
               <dd className="font-medium">{carrier.name}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">ID</dt>
+              <dt className="mb-1 text-muted-foreground">ID</dt>
               <dd className="font-mono text-xs text-muted-foreground">
                 {carrier.id}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Status</dt>
+              <dt className="mb-1 text-muted-foreground">Status</dt>
               <dd>{carrier.active ? "Active" : "Inactive"}</dd>
             </div>
           </dl>

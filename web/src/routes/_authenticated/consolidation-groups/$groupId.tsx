@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { consolidationGroupQueries } from "@/shared/api/consolidation-groups"
@@ -8,29 +8,26 @@ import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
 export const Route = createFileRoute(
-  "/_authenticated/consolidation-groups/$groupId",
+  "/_authenticated/consolidation-groups/$groupId"
 )({
   component: ConsolidationGroupDetailPage,
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
-      consolidationGroupQueries.detail(params.groupId),
+      consolidationGroupQueries.detail(params.groupId)
     ),
 })
 
 function ConsolidationGroupDetailPage() {
   const { groupId } = Route.useParams()
   const { data: group } = useSuspenseQuery(
-    consolidationGroupQueries.detail(groupId),
+    consolidationGroupQueries.detail(groupId)
   )
 
   if (!group) {
     return (
       <div>
         <PageHeader title="Consolidation group not found" />
-        <Button
-          render={<Link to="/consolidation-groups" />}
-          variant="ghost"
-        >
+        <Button render={<Link to="/consolidation-groups" />} variant="ghost">
           <ArrowLeft className="size-4" />
           Back to consolidation groups
         </Button>
@@ -65,41 +62,37 @@ function ConsolidationGroupDetailPage() {
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-muted-foreground mb-1">ID</dt>
+              <dt className="mb-1 text-muted-foreground">ID</dt>
               <dd className="font-mono text-xs text-muted-foreground">
                 {group.id}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Wave ID</dt>
+              <dt className="mb-1 text-muted-foreground">Wave ID</dt>
               <dd className="font-mono font-medium">{group.waveId}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Order Count</dt>
-              <dd className="font-mono font-medium">
-                {group.orderCount}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Order Count</dt>
+              <dd className="font-mono font-medium">{group.orderCount}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">State</dt>
+              <dt className="mb-1 text-muted-foreground">State</dt>
               <dd>
                 <StateBadge state={group.state} />
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">
-                Workstation ID
-              </dt>
+              <dt className="mb-1 text-muted-foreground">Workstation ID</dt>
               <dd className="font-mono font-medium">
                 {group.workstationId ?? "-"}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Created At</dt>
+              <dt className="mb-1 text-muted-foreground">Created At</dt>
               <dd className="font-medium">{group.createdAt}</dd>
             </div>
             <div className="col-span-2">
-              <dt className="text-muted-foreground mb-1">Order IDs</dt>
+              <dt className="mb-1 text-muted-foreground">Order IDs</dt>
               <dd className="font-mono text-xs">
                 {group.orderIds?.join(", ") ?? "-"}
               </dd>

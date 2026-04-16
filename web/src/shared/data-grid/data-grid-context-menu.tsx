@@ -1,24 +1,24 @@
-"use client";
+"use client"
 
-import type { ColumnDef, TableMeta } from "@tanstack/react-table";
-import { CopyIcon, EraserIcon, ScissorsIcon, Trash2Icon } from "lucide-react";
-import * as React from "react";
-import { toast } from "sonner";
+import { CopyIcon, EraserIcon, ScissorsIcon, Trash2Icon } from "lucide-react"
+import * as React from "react"
+import { toast } from "sonner"
+import type { ColumnDef, TableMeta } from "@tanstack/react-table"
+import type { CellUpdate, ContextMenuState } from "@/shared/data-grid/types"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu";
-import { useAsRef } from "@/shared/hooks/use-as-ref";
-import { parseCellKey } from "@/shared/data-grid/lib";
-import type { CellUpdate, ContextMenuState } from "@/shared/data-grid/types";
+} from "@/shared/ui/dropdown-menu"
+import { useAsRef } from "@/shared/hooks/use-as-ref"
+import { parseCellKey } from "@/shared/data-grid/lib"
 
 interface DataGridContextMenuProps<TData> {
-  tableMeta: TableMeta<TData>;
-  columns: Array<ColumnDef<TData>>;
-  contextMenu: ContextMenuState;
+  tableMeta: TableMeta<TData>
+  columns: Array<ColumnDef<TData>>
+  contextMenu: ContextMenuState
 }
 
 export function DataGridContextMenu<TData>({
@@ -26,15 +26,15 @@ export function DataGridContextMenu<TData>({
   columns,
   contextMenu,
 }: DataGridContextMenuProps<TData>) {
-  const onContextMenuOpenChange = tableMeta?.onContextMenuOpenChange;
-  const selectionState = tableMeta?.selectionState;
-  const dataGridRef = tableMeta?.dataGridRef;
-  const onDataUpdate = tableMeta?.onDataUpdate;
-  const onRowsDelete = tableMeta?.onRowsDelete;
-  const onCellsCopy = tableMeta?.onCellsCopy;
-  const onCellsCut = tableMeta?.onCellsCut;
+  const onContextMenuOpenChange = tableMeta?.onContextMenuOpenChange
+  const selectionState = tableMeta?.selectionState
+  const dataGridRef = tableMeta?.dataGridRef
+  const onDataUpdate = tableMeta?.onDataUpdate
+  const onRowsDelete = tableMeta?.onRowsDelete
+  const onCellsCopy = tableMeta?.onCellsCopy
+  const onCellsCut = tableMeta?.onCellsCut
 
-  if (!contextMenu.open) return null;
+  if (!contextMenu.open) return null
 
   return (
     <ContextMenu
@@ -49,11 +49,12 @@ export function DataGridContextMenu<TData>({
       onCellsCopy={onCellsCopy}
       onCellsCut={onCellsCut}
     />
-  );
+  )
 }
 
 interface ContextMenuProps<TData>
-  extends Pick<
+  extends
+    Pick<
       TableMeta<TData>,
       | "dataGridRef"
       | "onContextMenuOpenChange"
@@ -65,22 +66,22 @@ interface ContextMenuProps<TData>
       | "readOnly"
     >,
     Required<Pick<TableMeta<TData>, "contextMenu">> {
-  tableMeta: TableMeta<TData>;
-  columns: Array<ColumnDef<TData>>;
+  tableMeta: TableMeta<TData>
+  columns: Array<ColumnDef<TData>>
 }
 
 const ContextMenu = React.memo(ContextMenuImpl, (prev, next) => {
-  if (prev.contextMenu.open !== next.contextMenu.open) return false;
-  if (!next.contextMenu.open) return true;
-  if (prev.contextMenu.x !== next.contextMenu.x) return false;
-  if (prev.contextMenu.y !== next.contextMenu.y) return false;
+  if (prev.contextMenu.open !== next.contextMenu.open) return false
+  if (!next.contextMenu.open) return true
+  if (prev.contextMenu.x !== next.contextMenu.x) return false
+  if (prev.contextMenu.y !== next.contextMenu.y) return false
 
-  const prevSize = prev.selectionState?.selectedCells?.size ?? 0;
-  const nextSize = next.selectionState?.selectedCells?.size ?? 0;
-  if (prevSize !== nextSize) return false;
+  const prevSize = prev.selectionState?.selectedCells?.size ?? 0
+  const nextSize = next.selectionState?.selectedCells?.size ?? 0
+  if (prevSize !== nextSize) return false
 
-  return true;
-}) as typeof ContextMenuImpl;
+  return true
+}) as typeof ContextMenuImpl
 
 function ContextMenuImpl<TData>({
   tableMeta,
@@ -102,7 +103,7 @@ function ContextMenuImpl<TData>({
     onCellsCopy,
     onCellsCut,
     columns,
-  });
+  })
 
   const triggerStyle = React.useMemo<React.CSSProperties>(
     () => ({
@@ -118,90 +119,90 @@ function ContextMenuImpl<TData>({
       pointerEvents: "none",
       opacity: 0,
     }),
-    [contextMenu.x, contextMenu.y],
-  );
+    [contextMenu.x, contextMenu.y]
+  )
 
   const onCloseAutoFocus: NonNullable<
     React.ComponentProps<typeof DropdownMenuContent>["onCloseAutoFocus"]
   > = React.useCallback(
     (event) => {
-      event.preventDefault();
-      propsRef.current.dataGridRef?.current?.focus();
+      event.preventDefault()
+      propsRef.current.dataGridRef?.current?.focus()
     },
-    [propsRef],
-  );
+    [propsRef]
+  )
 
   const onCopy = React.useCallback(() => {
-    propsRef.current.onCellsCopy?.();
-  }, [propsRef]);
+    propsRef.current.onCellsCopy?.()
+  }, [propsRef])
 
   const onCut = React.useCallback(() => {
-    propsRef.current.onCellsCut?.();
-  }, [propsRef]);
+    propsRef.current.onCellsCut?.()
+  }, [propsRef])
 
   const onClear = React.useCallback(() => {
-    const { selectionState, columns, onDataUpdate } = propsRef.current;
+    const { selectionState, columns, onDataUpdate } = propsRef.current
 
     if (
       !selectionState?.selectedCells ||
       selectionState.selectedCells.size === 0
     )
-      return;
+      return
 
-    const updates: Array<CellUpdate> = [];
+    const updates: Array<CellUpdate> = []
 
     for (const cellKey of selectionState.selectedCells) {
-      const { rowIndex, columnId } = parseCellKey(cellKey);
+      const { rowIndex, columnId } = parseCellKey(cellKey)
 
       // Get column from columns array
       const column = columns.find((col) => {
-        if (col.id) return col.id === columnId;
-        if ("accessorKey" in col) return col.accessorKey === columnId;
-        return false;
-      });
-      const cellVariant = column?.meta?.cell?.variant;
+        if (col.id) return col.id === columnId
+        if ("accessorKey" in col) return col.accessorKey === columnId
+        return false
+      })
+      const cellVariant = column?.meta?.cell?.variant
 
-      let emptyValue: unknown = "";
+      let emptyValue: unknown = ""
       if (cellVariant === "multi-select" || cellVariant === "file") {
-        emptyValue = [];
+        emptyValue = []
       } else if (cellVariant === "number" || cellVariant === "date") {
-        emptyValue = null;
+        emptyValue = null
       } else if (cellVariant === "checkbox") {
-        emptyValue = false;
+        emptyValue = false
       }
 
-      updates.push({ rowIndex, columnId, value: emptyValue });
+      updates.push({ rowIndex, columnId, value: emptyValue })
     }
 
-    onDataUpdate?.(updates);
+    onDataUpdate?.(updates)
 
     toast.success(
-      `${updates.length} cell${updates.length !== 1 ? "s" : ""} cleared`,
-    );
-  }, [propsRef]);
+      `${updates.length} cell${updates.length !== 1 ? "s" : ""} cleared`
+    )
+  }, [propsRef])
 
   const onDelete = React.useCallback(async () => {
-    const { selectionState, onRowsDelete } = propsRef.current;
+    const { selectionState, onRowsDelete } = propsRef.current
 
     if (
       !selectionState?.selectedCells ||
       selectionState.selectedCells.size === 0
     )
-      return;
+      return
 
-    const rowIndices = new Set<number>();
+    const rowIndices = new Set<number>()
     for (const cellKey of selectionState.selectedCells) {
-      const { rowIndex } = parseCellKey(cellKey);
-      rowIndices.add(rowIndex);
+      const { rowIndex } = parseCellKey(cellKey)
+      rowIndices.add(rowIndex)
     }
 
-    const rowIndicesArray = Array.from(rowIndices).sort((a, b) => a - b);
-    const rowCount = rowIndicesArray.length;
+    const rowIndicesArray = Array.from(rowIndices).sort((a, b) => a - b)
+    const rowCount = rowIndicesArray.length
 
-    await onRowsDelete?.(rowIndicesArray);
+    await onRowsDelete?.(rowIndicesArray)
 
-    toast.success(`${rowCount} row${rowCount !== 1 ? "s" : ""} deleted`);
-  }, [propsRef]);
+    toast.success(`${rowCount} row${rowCount !== 1 ? "s" : ""} deleted`)
+  }, [propsRef])
 
   return (
     <DropdownMenu
@@ -238,5 +239,5 @@ function ContextMenuImpl<TData>({
         )}
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

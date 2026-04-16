@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import { receiptQueries } from "@/shared/api/receipts"
@@ -15,21 +15,17 @@ import {
   TableRow,
 } from "@/shared/ui/table"
 
-export const Route = createFileRoute(
-  "/_authenticated/receipts/$receiptId",
-)({
+export const Route = createFileRoute("/_authenticated/receipts/$receiptId")({
   component: ReceiptDetailPage,
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
-      receiptQueries.detail(params.receiptId),
+      receiptQueries.detail(params.receiptId)
     ),
 })
 
 function ReceiptDetailPage() {
   const { receiptId } = Route.useParams()
-  const { data: receipt } = useSuspenseQuery(
-    receiptQueries.detail(receiptId),
-  )
+  const { data: receipt } = useSuspenseQuery(receiptQueries.detail(receiptId))
 
   if (!receipt) {
     return (
@@ -51,11 +47,7 @@ function ReceiptDetailPage() {
       />
 
       <div className="mb-6">
-        <Button
-          render={<Link to="/receipts" />}
-          size="sm"
-          variant="ghost"
-        >
+        <Button render={<Link to="/receipts" />} size="sm" variant="ghost">
           <ArrowLeft className="size-4" />
           All receipts
         </Button>
@@ -70,25 +62,23 @@ function ReceiptDetailPage() {
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-muted-foreground mb-1">ID</dt>
+              <dt className="mb-1 text-muted-foreground">ID</dt>
               <dd className="font-mono text-xs text-muted-foreground">
                 {receipt.id}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Delivery ID</dt>
-              <dd className="font-mono font-medium">
-                {receipt.deliveryId}
-              </dd>
+              <dt className="mb-1 text-muted-foreground">Delivery ID</dt>
+              <dd className="font-mono font-medium">{receipt.deliveryId}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">State</dt>
+              <dt className="mb-1 text-muted-foreground">State</dt>
               <dd>
                 <StateBadge state={receipt.state} />
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground mb-1">Created At</dt>
+              <dt className="mb-1 text-muted-foreground">Created At</dt>
               <dd className="font-medium">{receipt.createdAt}</dd>
             </div>
           </dl>
@@ -120,7 +110,7 @@ function ReceiptDetailPage() {
                     </TableCell>
                     <TableCell>{line.packagingLevel}</TableCell>
                     <TableCell>{line.lot ?? "-"}</TableCell>
-                    <TableCell className="font-mono text-right text-xs">
+                    <TableCell className="text-right font-mono text-xs">
                       {line.quantity}
                     </TableCell>
                   </TableRow>
