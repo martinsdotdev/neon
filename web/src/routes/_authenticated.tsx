@@ -324,7 +324,7 @@ function AppSidebar() {
                     {isActive && (
                       <motion.div
                         layoutId="sidebar-indicator"
-                        className="absolute inset-0 rounded-xl bg-sidebar-primary/12 group-data-[collapsible=icon]:m-auto group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-full"
+                        className="absolute inset-0 rounded-xl bg-sidebar-primary/15 group-data-[collapsible=icon]:m-auto group-data-[collapsible=icon]:size-10 group-data-[collapsible=icon]:rounded-2xl"
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
                       />
                     )}
