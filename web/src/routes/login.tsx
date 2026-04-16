@@ -108,7 +108,7 @@ function LoginPage() {
                         type="button"
                         variant="ghost"
                         size="icon-sm"
-                        className="absolute end-1.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+                        className="absolute inset-y-0 end-1.5 my-auto text-muted-foreground"
                         onClick={() =>
                           setShowPassword((prev) => !prev)
                         }

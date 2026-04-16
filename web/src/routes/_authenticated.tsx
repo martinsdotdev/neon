@@ -229,7 +229,7 @@ function AuthenticatedLayout() {
           </Breadcrumb>
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-14 sm:px-20 md:px-32 lg:px-48">
             <InputGroup
-              className="pointer-events-auto w-full max-w-[calc(100%-1rem)] cursor-pointer rounded-full transition-colors duration-[180ms] ease-out hover:bg-input/70 sm:max-w-sm md:max-w-md"
+              className="pointer-events-auto w-full max-w-[calc(100%-1rem)] cursor-pointer gap-1.5 rounded-full transition-colors duration-[180ms] ease-out hover:bg-input/70 sm:max-w-sm md:max-w-md"
               onClick={() => setCommandOpen(true)}
             >
               <InputGroupAddon>
