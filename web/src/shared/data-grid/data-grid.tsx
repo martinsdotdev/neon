@@ -122,7 +122,7 @@ export function DataGrid<TData>({
           role="rowgroup"
           data-slot="grid-header"
           ref={headerRef}
-          className="sticky top-0 z-10 grid border-b bg-muted/30"
+          className="sticky top-0 z-10 grid border-b bg-card"
         >
           {table.getHeaderGroups().map((headerGroup, rowIndex) => (
             <div
