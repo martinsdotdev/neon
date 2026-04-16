@@ -38,7 +38,7 @@ export const authQueries = {
         const result = await apiClient.get<AuthUser>("/api/auth/me")
         return result.match(
           (user) => user,
-          () => DEV_USER,
+          () => null,
         )
       },
       queryKey: ["auth", "me"] as const,
@@ -52,8 +52,9 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: async (data: { login: string; password: string }) => {
       const result = await apiClient.post<AuthUser>("/api/auth/login", data)
-      if (result.isErr()) {throw result.error}
-      return result.value
+      if (result.isOk()) return result.value
+      if (DEV_USER) return DEV_USER
+      throw result.error
     },
     onSuccess: (user) => {
       queryClient.setQueryData(authQueries.me().queryKey, user)
@@ -67,7 +68,7 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: async () => {
       const result = await apiClient.post("/api/auth/logout")
-      if (result.isErr()) {throw result.error}
+      if (result.isErr() && !DEV_USER) throw result.error
     },
     onSuccess: () => {
       queryClient.setQueryData(authQueries.me().queryKey, null)
