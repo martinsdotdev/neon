@@ -149,7 +149,6 @@ function useDataGridUndoRedo<TData>({
         if (state.undoStack.length === 0) return null
 
         const entry = state.undoStack[state.undoStack.length - 1]
-        if (!entry) return null
 
         stateRef.current = {
           undoStack: state.undoStack.slice(0, -1),
@@ -164,7 +163,6 @@ function useDataGridUndoRedo<TData>({
         if (state.redoStack.length === 0) return null
 
         const entry = state.redoStack[state.redoStack.length - 1]
-        if (!entry) return null
 
         stateRef.current = {
           undoStack: [...state.undoStack, entry],

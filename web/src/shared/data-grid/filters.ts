@@ -145,7 +145,7 @@ export function getFilterFn<TData>(): FilterFn<TData> {
       return cellValue === false || !cellValue
     }
 
-    if (value === undefined || value === null || value === "") {
+    if (value === undefined || value === "") {
       return true
     }
 

@@ -26,13 +26,13 @@ export function DataGridContextMenu<TData>({
   columns,
   contextMenu,
 }: DataGridContextMenuProps<TData>) {
-  const onContextMenuOpenChange = tableMeta?.onContextMenuOpenChange
-  const selectionState = tableMeta?.selectionState
-  const dataGridRef = tableMeta?.dataGridRef
-  const onDataUpdate = tableMeta?.onDataUpdate
-  const onRowsDelete = tableMeta?.onRowsDelete
-  const onCellsCopy = tableMeta?.onCellsCopy
-  const onCellsCut = tableMeta?.onCellsCut
+  const onContextMenuOpenChange = tableMeta.onContextMenuOpenChange
+  const selectionState = tableMeta.selectionState
+  const dataGridRef = tableMeta.dataGridRef
+  const onDataUpdate = tableMeta.onDataUpdate
+  const onRowsDelete = tableMeta.onRowsDelete
+  const onCellsCopy = tableMeta.onCellsCopy
+  const onCellsCut = tableMeta.onCellsCut
 
   if (!contextMenu.open) return null
 
@@ -76,8 +76,8 @@ const ContextMenu = React.memo(ContextMenuImpl, (prev, next) => {
   if (prev.contextMenu.x !== next.contextMenu.x) return false
   if (prev.contextMenu.y !== next.contextMenu.y) return false
 
-  const prevSize = prev.selectionState?.selectedCells?.size ?? 0
-  const nextSize = next.selectionState?.selectedCells?.size ?? 0
+  const prevSize = prev.selectionState?.selectedCells.size ?? 0
+  const nextSize = next.selectionState?.selectedCells.size ?? 0
   if (prevSize !== nextSize) return false
 
   return true
@@ -220,11 +220,11 @@ function ContextMenuImpl<TData>({
           <CopyIcon />
           Copy
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={onCut} disabled={tableMeta?.readOnly}>
+        <DropdownMenuItem onSelect={onCut} disabled={tableMeta.readOnly}>
           <ScissorsIcon />
           Cut
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={onClear} disabled={tableMeta?.readOnly}>
+        <DropdownMenuItem onSelect={onClear} disabled={tableMeta.readOnly}>
           <EraserIcon />
           Clear
         </DropdownMenuItem>

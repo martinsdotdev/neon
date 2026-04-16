@@ -24,8 +24,8 @@ export function DataGridPasteDialog<TData>({
   tableMeta,
   pasteDialog,
 }: DataGridPasteDialogProps<TData>) {
-  const onPasteDialogOpenChange = tableMeta?.onPasteDialogOpenChange
-  const onCellsPaste = tableMeta?.onCellsPaste
+  const onPasteDialogOpenChange = tableMeta.onPasteDialogOpenChange
+  const onCellsPaste = tableMeta.onCellsPaste
 
   if (!pasteDialog.open) return null
 

@@ -74,9 +74,9 @@ export function ShortTextCell<TData>({
     // Read the current value directly from the DOM to avoid stale state
     const currentValue = cellRef.current?.textContent ?? ""
     if (!readOnly && currentValue !== initialValue) {
-      tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: currentValue })
+      tableMeta.onDataUpdate?.({ rowIndex, columnId, value: currentValue })
     }
-    tableMeta?.onCellEditingStop?.()
+    tableMeta.onCellEditingStop?.()
   }, [tableMeta, rowIndex, columnId, initialValue, readOnly])
 
   const onInput = React.useCallback(
@@ -94,24 +94,24 @@ export function ShortTextCell<TData>({
           event.preventDefault()
           const currentValue = cellRef.current?.textContent ?? ""
           if (currentValue !== initialValue) {
-            tableMeta?.onDataUpdate?.({
+            tableMeta.onDataUpdate?.({
               rowIndex,
               columnId,
               value: currentValue,
             })
           }
-          tableMeta?.onCellEditingStop?.({ moveToNextRow: true })
+          tableMeta.onCellEditingStop?.({ moveToNextRow: true })
         } else if (event.key === "Tab") {
           event.preventDefault()
           const currentValue = cellRef.current?.textContent ?? ""
           if (currentValue !== initialValue) {
-            tableMeta?.onDataUpdate?.({
+            tableMeta.onDataUpdate?.({
               rowIndex,
               columnId,
               value: currentValue,
             })
           }
-          tableMeta?.onCellEditingStop?.({
+          tableMeta.onCellEditingStop?.({
             direction: event.shiftKey ? "left" : "right",
           })
         } else if (event.key === "Escape") {
@@ -166,7 +166,7 @@ export function ShortTextCell<TData>({
     }
   }, [isEditing, value])
 
-  const displayValue = !isEditing ? (value ?? "") : ""
+  const displayValue = !isEditing ? value : ""
 
   return (
     <DataGridCellWrapper<TData>
@@ -218,7 +218,7 @@ export function LongTextCell<TData>({
   readOnly,
 }: DataGridCellProps<TData>) {
   const initialValue = cell.getValue() as string
-  const [value, setValue] = React.useState(initialValue ?? "")
+  const [value, setValue] = React.useState(initialValue)
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
   const containerRef = React.useRef<HTMLDivElement>(null)
   const pendingCharRef = React.useRef<string | null>(null)
@@ -227,42 +227,42 @@ export function LongTextCell<TData>({
   const prevInitialValueRef = React.useRef(initialValue)
   if (initialValue !== prevInitialValueRef.current) {
     prevInitialValueRef.current = initialValue
-    setValue(initialValue ?? "")
+    setValue(initialValue)
   }
 
   const debouncedSave = useDebouncedCallback((newValue: string) => {
     if (!readOnly) {
-      tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: newValue })
+      tableMeta.onDataUpdate?.({ rowIndex, columnId, value: newValue })
     }
   }, 300)
 
   const onSave = React.useCallback(() => {
     // Immediately save any pending changes and close the popover
     if (!readOnly && value !== initialValue) {
-      tableMeta?.onDataUpdate?.({ rowIndex, columnId, value })
+      tableMeta.onDataUpdate?.({ rowIndex, columnId, value })
     }
-    tableMeta?.onCellEditingStop?.()
+    tableMeta.onCellEditingStop?.()
   }, [tableMeta, value, initialValue, rowIndex, columnId, readOnly])
 
   const onCancel = React.useCallback(() => {
     // Restore the original value
-    setValue(initialValue ?? "")
+    setValue(initialValue)
     if (!readOnly) {
-      tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: initialValue })
+      tableMeta.onDataUpdate?.({ rowIndex, columnId, value: initialValue })
     }
-    tableMeta?.onCellEditingStop?.()
+    tableMeta.onCellEditingStop?.()
   }, [tableMeta, initialValue, rowIndex, columnId, readOnly])
 
   const onOpenChange = React.useCallback(
     (open: boolean) => {
       if (open && !readOnly) {
-        tableMeta?.onCellEditingStart?.(rowIndex, columnId)
+        tableMeta.onCellEditingStart?.(rowIndex, columnId)
       } else {
         // Immediately save any pending changes when closing
         if (!readOnly && value !== initialValue) {
-          tableMeta?.onDataUpdate?.({ rowIndex, columnId, value })
+          tableMeta.onDataUpdate?.({ rowIndex, columnId, value })
         }
-        tableMeta?.onCellEditingStop?.()
+        tableMeta.onCellEditingStop?.()
       }
     },
     [tableMeta, value, initialValue, rowIndex, columnId, readOnly]
@@ -318,9 +318,9 @@ export function LongTextCell<TData>({
   const onBlur = React.useCallback(() => {
     // Immediately save any pending changes on blur
     if (!readOnly && value !== initialValue) {
-      tableMeta?.onDataUpdate?.({ rowIndex, columnId, value })
+      tableMeta.onDataUpdate?.({ rowIndex, columnId, value })
     }
-    tableMeta?.onCellEditingStop?.()
+    tableMeta.onCellEditingStop?.()
   }, [tableMeta, value, initialValue, rowIndex, columnId, readOnly])
 
   const onChange = React.useCallback(
@@ -344,9 +344,9 @@ export function LongTextCell<TData>({
         event.preventDefault()
         // Save any pending changes
         if (value !== initialValue) {
-          tableMeta?.onDataUpdate?.({ rowIndex, columnId, value })
+          tableMeta.onDataUpdate?.({ rowIndex, columnId, value })
         }
-        tableMeta?.onCellEditingStop?.({
+        tableMeta.onCellEditingStop?.({
           direction: event.shiftKey ? "left" : "right",
         })
         return
@@ -414,7 +414,7 @@ export function NumberCell<TData>({
   readOnly,
 }: DataGridCellProps<TData>) {
   const initialValue = cell.getValue() as number
-  const [value, setValue] = React.useState(String(initialValue ?? ""))
+  const [value, setValue] = React.useState(String(initialValue))
   const inputRef = React.useRef<HTMLInputElement>(null)
   const containerRef = React.useRef<HTMLDivElement>(null)
 
@@ -429,15 +429,15 @@ export function NumberCell<TData>({
   const prevInitialValueRef = React.useRef(initialValue)
   if (initialValue !== prevInitialValueRef.current) {
     prevInitialValueRef.current = initialValue
-    setValue(String(initialValue ?? ""))
+    setValue(String(initialValue))
   }
 
   const onBlur = React.useCallback(() => {
     const numValue = value === "" ? null : Number(value)
     if (!readOnly && numValue !== initialValue) {
-      tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: numValue })
+      tableMeta.onDataUpdate?.({ rowIndex, columnId, value: numValue })
     }
-    tableMeta?.onCellEditingStop?.()
+    tableMeta.onCellEditingStop?.()
   }, [tableMeta, rowIndex, columnId, initialValue, value, readOnly])
 
   const onChange = React.useCallback(
@@ -454,21 +454,21 @@ export function NumberCell<TData>({
           event.preventDefault()
           const numValue = value === "" ? null : Number(value)
           if (numValue !== initialValue) {
-            tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: numValue })
+            tableMeta.onDataUpdate?.({ rowIndex, columnId, value: numValue })
           }
-          tableMeta?.onCellEditingStop?.({ moveToNextRow: true })
+          tableMeta.onCellEditingStop?.({ moveToNextRow: true })
         } else if (event.key === "Tab") {
           event.preventDefault()
           const numValue = value === "" ? null : Number(value)
           if (numValue !== initialValue) {
-            tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: numValue })
+            tableMeta.onDataUpdate?.({ rowIndex, columnId, value: numValue })
           }
-          tableMeta?.onCellEditingStop?.({
+          tableMeta.onCellEditingStop?.({
             direction: event.shiftKey ? "left" : "right",
           })
         } else if (event.key === "Escape") {
           event.preventDefault()
-          setValue(String(initialValue ?? ""))
+          setValue(String(initialValue))
           inputRef.current?.blur()
         }
       } else if (isFocused) {
@@ -543,7 +543,7 @@ export function UrlCell<TData>({
   readOnly,
 }: DataGridCellProps<TData>) {
   const initialValue = cell.getValue() as string
-  const [value, setValue] = React.useState(initialValue ?? "")
+  const [value, setValue] = React.useState(initialValue)
   const cellRef = React.useRef<HTMLDivElement>(null)
   const containerRef = React.useRef<HTMLDivElement>(null)
   const prevIsEditingRef = React.useRef(false)
@@ -551,9 +551,9 @@ export function UrlCell<TData>({
   const prevInitialValueRef = React.useRef(initialValue)
   if (initialValue !== prevInitialValueRef.current) {
     prevInitialValueRef.current = initialValue
-    setValue(initialValue ?? "")
+    setValue(initialValue)
     if (cellRef.current && !isEditing) {
-      cellRef.current.textContent = initialValue ?? ""
+      cellRef.current.textContent = initialValue
     }
   }
 
@@ -561,13 +561,13 @@ export function UrlCell<TData>({
     const currentValue = cellRef.current?.textContent?.trim() ?? ""
 
     if (!readOnly && currentValue !== initialValue) {
-      tableMeta?.onDataUpdate?.({
+      tableMeta.onDataUpdate?.({
         rowIndex,
         columnId,
         value: currentValue || null,
       })
     }
-    tableMeta?.onCellEditingStop?.()
+    tableMeta.onCellEditingStop?.()
   }, [tableMeta, rowIndex, columnId, initialValue, readOnly])
 
   const onInput = React.useCallback(
@@ -585,29 +585,29 @@ export function UrlCell<TData>({
           event.preventDefault()
           const currentValue = cellRef.current?.textContent?.trim() ?? ""
           if (!readOnly && currentValue !== initialValue) {
-            tableMeta?.onDataUpdate?.({
+            tableMeta.onDataUpdate?.({
               rowIndex,
               columnId,
               value: currentValue || null,
             })
           }
-          tableMeta?.onCellEditingStop?.({ moveToNextRow: true })
+          tableMeta.onCellEditingStop?.({ moveToNextRow: true })
         } else if (event.key === "Tab") {
           event.preventDefault()
           const currentValue = cellRef.current?.textContent?.trim() ?? ""
           if (!readOnly && currentValue !== initialValue) {
-            tableMeta?.onDataUpdate?.({
+            tableMeta.onDataUpdate?.({
               rowIndex,
               columnId,
               value: currentValue || null,
             })
           }
-          tableMeta?.onCellEditingStop?.({
+          tableMeta.onCellEditingStop?.({
             direction: event.shiftKey ? "left" : "right",
           })
         } else if (event.key === "Escape") {
           event.preventDefault()
-          setValue(initialValue ?? "")
+          setValue(initialValue)
           cellRef.current?.blur()
         }
       } else if (
@@ -690,7 +690,7 @@ export function UrlCell<TData>({
     }
   }, [isEditing, value])
 
-  const displayValue = !isEditing ? (value ?? "") : ""
+  const displayValue = !isEditing ? value : ""
   const urlHref = displayValue ? getUrlHref(displayValue) : ""
   const isDangerousUrl = displayValue && !urlHref
 
@@ -775,7 +775,7 @@ export function CheckboxCell<TData>({
     (checked: boolean) => {
       if (readOnly) return
       setValue(checked)
-      tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: checked })
+      tableMeta.onDataUpdate?.({ rowIndex, columnId, value: checked })
     },
     [tableMeta, rowIndex, columnId, readOnly]
   )
@@ -792,7 +792,7 @@ export function CheckboxCell<TData>({
         onCheckedChange(!value)
       } else if (isFocused && event.key === "Tab") {
         event.preventDefault()
-        tableMeta?.onCellEditingStop?.({
+        tableMeta.onCellEditingStop?.({
           direction: event.shiftKey ? "left" : "right",
         })
       }
@@ -896,8 +896,8 @@ export function SelectCell<TData>({
     (newValue: string) => {
       if (readOnly) return
       setValue(newValue)
-      tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: newValue })
-      tableMeta?.onCellEditingStop?.()
+      tableMeta.onDataUpdate?.({ rowIndex, columnId, value: newValue })
+      tableMeta.onCellEditingStop?.()
     },
     [tableMeta, rowIndex, columnId, readOnly]
   )
@@ -905,9 +905,9 @@ export function SelectCell<TData>({
   const onOpenChange = React.useCallback(
     (open: boolean) => {
       if (open && !readOnly) {
-        tableMeta?.onCellEditingStart?.(rowIndex, columnId)
+        tableMeta.onCellEditingStart?.(rowIndex, columnId)
       } else {
-        tableMeta?.onCellEditingStop?.()
+        tableMeta.onCellEditingStop?.()
       }
     },
     [tableMeta, rowIndex, columnId, readOnly]
@@ -918,10 +918,10 @@ export function SelectCell<TData>({
       if (isEditing && event.key === "Escape") {
         event.preventDefault()
         setValue(initialValue)
-        tableMeta?.onCellEditingStop?.()
+        tableMeta.onCellEditingStop?.()
       } else if (isFocused && event.key === "Tab") {
         event.preventDefault()
-        tableMeta?.onCellEditingStop?.({
+        tableMeta.onCellEditingStop?.({
           direction: event.shiftKey ? "left" : "right",
         })
       }
@@ -1012,7 +1012,7 @@ export function MultiSelectCell<TData>({
 }: DataGridCellProps<TData>) {
   const cellValue = React.useMemo(() => {
     const value = cell.getValue() as Array<string>
-    return value ?? []
+    return value
   }, [cell])
 
   const cellKey = getCellKey(rowIndex, columnId)
@@ -1056,7 +1056,7 @@ export function MultiSelectCell<TData>({
         return newValues
       })
       queueMicrotask(() => {
-        tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: newValues })
+        tableMeta.onDataUpdate?.({ rowIndex, columnId, value: newValues })
         inputRef.current?.focus()
       })
       setSearchValue("")
@@ -1075,7 +1075,7 @@ export function MultiSelectCell<TData>({
         return newValues
       })
       queueMicrotask(() => {
-        tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: newValues })
+        tableMeta.onDataUpdate?.({ rowIndex, columnId, value: newValues })
         inputRef.current?.focus()
       })
     },
@@ -1085,17 +1085,17 @@ export function MultiSelectCell<TData>({
   const clearAll = React.useCallback(() => {
     if (readOnly) return
     setSelectedValues([])
-    tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: [] })
+    tableMeta.onDataUpdate?.({ rowIndex, columnId, value: [] })
     queueMicrotask(() => inputRef.current?.focus())
   }, [tableMeta, rowIndex, columnId, readOnly])
 
   const onOpenChange = React.useCallback(
     (open: boolean) => {
       if (open && !readOnly) {
-        tableMeta?.onCellEditingStart?.(rowIndex, columnId)
+        tableMeta.onCellEditingStart?.(rowIndex, columnId)
       } else {
         setSearchValue("")
-        tableMeta?.onCellEditingStop?.()
+        tableMeta.onCellEditingStop?.()
       }
     },
     [tableMeta, rowIndex, columnId, readOnly]
@@ -1114,11 +1114,11 @@ export function MultiSelectCell<TData>({
         event.preventDefault()
         setSelectedValues(cellValue)
         setSearchValue("")
-        tableMeta?.onCellEditingStop?.()
+        tableMeta.onCellEditingStop?.()
       } else if (isFocused && event.key === "Tab") {
         event.preventDefault()
         setSearchValue("")
-        tableMeta?.onCellEditingStop?.({
+        tableMeta.onCellEditingStop?.({
           direction: event.shiftKey ? "left" : "right",
         })
       }
@@ -1138,7 +1138,7 @@ export function MultiSelectCell<TData>({
         })
         queueMicrotask(() => {
           if (newValues !== null) {
-            tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: newValues })
+            tableMeta.onDataUpdate?.({ rowIndex, columnId, value: newValues })
           }
           inputRef.current?.focus()
         })
@@ -1315,13 +1315,13 @@ export function DateCell<TData>({
   readOnly,
 }: DataGridCellProps<TData>) {
   const initialValue = cell.getValue() as string
-  const [value, setValue] = React.useState(initialValue ?? "")
+  const [value, setValue] = React.useState(initialValue)
   const containerRef = React.useRef<HTMLDivElement>(null)
 
   const prevInitialValueRef = React.useRef(initialValue)
   if (initialValue !== prevInitialValueRef.current) {
     prevInitialValueRef.current = initialValue
-    setValue(initialValue ?? "")
+    setValue(initialValue)
   }
 
   // Parse date as local time to avoid timezone shifts
@@ -1334,8 +1334,8 @@ export function DateCell<TData>({
       // Format using local date components to avoid timezone issues
       const formattedDate = formatDateToString(date)
       setValue(formattedDate)
-      tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: formattedDate })
-      tableMeta?.onCellEditingStop?.()
+      tableMeta.onDataUpdate?.({ rowIndex, columnId, value: formattedDate })
+      tableMeta.onCellEditingStop?.()
     },
     [tableMeta, rowIndex, columnId, readOnly]
   )
@@ -1343,9 +1343,9 @@ export function DateCell<TData>({
   const onOpenChange = React.useCallback(
     (open: boolean) => {
       if (open && !readOnly) {
-        tableMeta?.onCellEditingStart?.(rowIndex, columnId)
+        tableMeta.onCellEditingStart?.(rowIndex, columnId)
       } else {
-        tableMeta?.onCellEditingStop?.()
+        tableMeta.onCellEditingStop?.()
       }
     },
     [tableMeta, rowIndex, columnId, readOnly]
@@ -1356,10 +1356,10 @@ export function DateCell<TData>({
       if (isEditing && event.key === "Escape") {
         event.preventDefault()
         setValue(initialValue)
-        tableMeta?.onCellEditingStop?.()
+        tableMeta.onCellEditingStop?.()
       } else if (isFocused && event.key === "Tab") {
         event.preventDefault()
-        tableMeta?.onCellEditingStop?.({
+        tableMeta.onCellEditingStop?.({
           direction: event.shiftKey ? "left" : "right",
         })
       }
@@ -1425,7 +1425,7 @@ export function FileCell<TData>({
   readOnly,
 }: DataGridCellProps<TData>) {
   const cellValue = React.useMemo(
-    () => (cell.getValue() as Array<FileCellData>) ?? [],
+    () => cell.getValue() as Array<FileCellData>,
     [cell]
   )
 
@@ -1538,28 +1538,26 @@ export function FileCell<TData>({
 
       if (rejectedFiles.length > 0) {
         const firstError = rejectedFiles[0]
-        if (firstError) {
-          setError(firstError.reason)
+        setError(firstError.reason)
 
-          const truncatedName =
-            firstError.name.length > 20
-              ? `${firstError.name.slice(0, 20)}...`
-              : firstError.name
+        const truncatedName =
+          firstError.name.length > 20
+            ? `${firstError.name.slice(0, 20)}...`
+            : firstError.name
 
-          if (rejectedFiles.length === 1) {
-            toast(firstError.reason, {
-              description: `"${truncatedName}" has been rejected`,
-            })
-          } else {
-            toast(firstError.reason, {
-              description: `"${truncatedName}" and ${rejectedFiles.length - 1} more rejected`,
-            })
-          }
-
-          setTimeout(() => {
-            setError(null)
-          }, 2000)
+        if (rejectedFiles.length === 1) {
+          toast(firstError.reason, {
+            description: `"${truncatedName}" has been rejected`,
+          })
+        } else {
+          toast(firstError.reason, {
+            description: `"${truncatedName}" and ${rejectedFiles.length - 1} more rejected`,
+          })
         }
+
+        setTimeout(() => {
+          setError(null)
+        }, 2000)
       }
 
       if (filesToValidate.length > 0) {
@@ -1579,7 +1577,7 @@ export function FileCell<TData>({
 
           let uploadedFiles: Array<FileCellData> = []
 
-          if (tableMeta?.onFilesUpload) {
+          if (tableMeta.onFilesUpload) {
             try {
               uploadedFiles = await tableMeta.onFilesUpload({
                 files: filesToValidate,
@@ -1598,7 +1596,7 @@ export function FileCell<TData>({
             }
           } else {
             uploadedFiles = filesToValidate.map((f, i) => ({
-              id: tempFiles[i]?.id ?? crypto.randomUUID(),
+              id: tempFiles[i].id,
               name: f.name,
               size: f.size,
               type: f.type,
@@ -1617,7 +1615,7 @@ export function FileCell<TData>({
 
           setFiles(finalFiles)
           setUploadingFiles(new Set())
-          tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: finalFiles })
+          tableMeta.onDataUpdate?.({ rowIndex, columnId, value: finalFiles })
         } else {
           const newFilesData: Array<FileCellData> = filesToValidate.map((f) => ({
             id: crypto.randomUUID(),
@@ -1628,7 +1626,7 @@ export function FileCell<TData>({
           }))
           const updatedFiles = [...files, ...newFilesData]
           setFiles(updatedFiles)
-          tableMeta?.onDataUpdate?.({
+          tableMeta.onDataUpdate?.({
             rowIndex,
             columnId,
             value: updatedFiles,
@@ -1658,7 +1656,7 @@ export function FileCell<TData>({
 
       setDeletingFiles((prev) => new Set(prev).add(fileId))
 
-      if (tableMeta?.onFilesDelete) {
+      if (tableMeta.onFilesDelete) {
         try {
           await tableMeta.onFilesDelete({
             fileIds: [fileId],
@@ -1691,7 +1689,7 @@ export function FileCell<TData>({
         next.delete(fileId)
         return next
       })
-      tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: updatedFiles })
+      tableMeta.onDataUpdate?.({ rowIndex, columnId, value: updatedFiles })
     },
     [files, tableMeta, rowIndex, columnId, readOnly, isPending]
   )
@@ -1703,7 +1701,7 @@ export function FileCell<TData>({
     const fileIds = files.map((f) => f.id)
     setDeletingFiles(new Set(fileIds))
 
-    if (tableMeta?.onFilesDelete && files.length > 0) {
+    if (tableMeta.onFilesDelete && files.length > 0) {
       try {
         await tableMeta.onFilesDelete({
           fileIds,
@@ -1726,7 +1724,7 @@ export function FileCell<TData>({
     }
     setFiles([])
     setDeletingFiles(new Set())
-    tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: [] })
+    tableMeta.onDataUpdate?.({ rowIndex, columnId, value: [] })
   }, [files, tableMeta, rowIndex, columnId, readOnly, isPending])
 
   const onCellDragEnter = React.useCallback((event: React.DragEvent) => {
@@ -1840,10 +1838,10 @@ export function FileCell<TData>({
     (open: boolean) => {
       if (open && !readOnly) {
         setError(null)
-        tableMeta?.onCellEditingStart?.(rowIndex, columnId)
+        tableMeta.onCellEditingStart?.(rowIndex, columnId)
       } else {
         setError(null)
-        tableMeta?.onCellEditingStop?.()
+        tableMeta.onCellEditingStop?.()
       }
     },
     [tableMeta, rowIndex, columnId, readOnly]
@@ -1873,22 +1871,22 @@ export function FileCell<TData>({
           event.preventDefault()
           setFiles(cellValue)
           setError(null)
-          tableMeta?.onCellEditingStop?.()
+          tableMeta.onCellEditingStop?.()
         } else if (event.key === " ") {
           event.preventDefault()
           onDropzoneClick()
         } else if (event.key === "Tab") {
           event.preventDefault()
-          tableMeta?.onCellEditingStop?.({
+          tableMeta.onCellEditingStop?.({
             direction: event.shiftKey ? "left" : "right",
           })
         }
       } else if (isFocused && event.key === "Enter") {
         event.preventDefault()
-        tableMeta?.onCellEditingStart?.(rowIndex, columnId)
+        tableMeta.onCellEditingStart?.(rowIndex, columnId)
       } else if (isFocused && event.key === "Tab") {
         event.preventDefault()
-        tableMeta?.onCellEditingStop?.({
+        tableMeta.onCellEditingStop?.({
           direction: event.shiftKey ? "left" : "right",
         })
       }
@@ -2043,9 +2041,7 @@ export function FileCell<TData>({
                           data-pending={isFilePending ? "" : undefined}
                           className="flex items-center gap-2 rounded-md border bg-muted/50 px-2 py-1.5 data-pending:opacity-60"
                         >
-                          {FileIcon && (
-                            <FileIcon className="size-4 shrink-0 text-muted-foreground" />
-                          )}
+                          <FileIcon className="size-4 shrink-0 text-muted-foreground" />
                           <div className="flex-1 overflow-hidden">
                             <p className="truncate text-sm">{file.name}</p>
                             <p className="text-xs text-muted-foreground">
@@ -2106,7 +2102,7 @@ export function FileCell<TData>({
                 variant="secondary"
                 className="gap-1 px-1.5 py-px"
               >
-                {FileIcon && <FileIcon className="size-3 shrink-0" />}
+                <FileIcon className="size-3 shrink-0" />
                 <span className="max-w-[100px] truncate">{file.name}</span>
               </Badge>
             )

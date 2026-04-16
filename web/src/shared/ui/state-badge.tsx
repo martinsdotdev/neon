@@ -1,5 +1,4 @@
-import type { BadgeProps } from "@/shared/ui/badge"
-import { Badge } from "@/shared/ui/badge"
+import { cn } from "@/shared/lib/utils"
 
 type StateVariant = "neutral" | "active" | "success" | "destructive"
 
@@ -39,18 +38,11 @@ const STATE_VARIANTS: Record<string, StateVariant> = {
   Shipped: "success",
 }
 
-const VARIANT_TO_BADGE: Record<StateVariant, BadgeProps["variant"]> = {
-  active: "default",
-  destructive: "destructive",
-  neutral: "secondary",
-  success: "default",
-}
-
-const VARIANT_TO_CLASSES: Record<StateVariant, string> = {
-  active: "bg-warning/15 text-warning-foreground border-warning/25",
-  destructive: "",
-  neutral: "",
-  success: "bg-success/15 text-success-foreground border-success/25",
+const DOT_CLASSES: Record<StateVariant, string> = {
+  neutral: "bg-muted-foreground/50",
+  active: "bg-warning",
+  success: "bg-success",
+  destructive: "bg-destructive",
 }
 
 const StateBadge = ({
@@ -63,12 +55,17 @@ const StateBadge = ({
   const variant = STATE_VARIANTS[state] ?? "neutral"
 
   return (
-    <Badge
-      variant={VARIANT_TO_BADGE[variant]}
-      className={`${VARIANT_TO_CLASSES[variant]} font-mono text-[0.6875rem] tracking-wider uppercase ${className ?? ""}`}
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full bg-muted/60 px-2 py-0.5 text-xs font-medium text-foreground",
+        className
+      )}
     >
+      <span
+        className={cn("size-1.5 shrink-0 rounded-full", DOT_CLASSES[variant])}
+      />
       {state}
-    </Badge>
+    </span>
   )
 }
 

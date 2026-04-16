@@ -109,7 +109,6 @@ export function DataGridFilterMenu<TData>({
 
   const onFilterAdd = React.useCallback(() => {
     const firstColumn = columns[0]
-    if (!firstColumn) return
 
     const variant = columnVariants.get(firstColumn.id) ?? "short-text"
     const defaultOperator = getDefaultOperator(variant)
@@ -128,12 +127,11 @@ export function DataGridFilterMenu<TData>({
 
   const onFilterUpdate = React.useCallback(
     (filterId: string, updates: Partial<ColumnFilter>) => {
-      table.setColumnFilters((prevFilters) => {
-        if (!prevFilters) return prevFilters
-        return prevFilters.map((filter) =>
+      table.setColumnFilters((prevFilters) =>
+        prevFilters.map((filter) =>
           filter.id === filterId ? { ...filter, ...updates } : filter
         )
-      })
+      )
     },
     [table]
   )
@@ -148,7 +146,7 @@ export function DataGridFilterMenu<TData>({
   )
 
   const onFiltersReset = React.useCallback(() => {
-    table.setColumnFilters(table.initialState.columnFilters ?? [])
+    table.setColumnFilters(table.initialState.columnFilters)
   }, [table])
 
   React.useEffect(() => {
