@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedWorkstationsIndexRouteImport } from './routes/_authenticated/workstations/index'
 import { Route as AuthenticatedWavesIndexRouteImport } from './routes/_authenticated/waves/index'
@@ -59,6 +60,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -257,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/carriers/$carrierId': typeof AuthenticatedCarriersCarrierIdRoute
   '/consolidation-groups/$groupId': typeof AuthenticatedConsolidationGroupsGroupIdRoute
   '/cycle-counts/$countId': typeof AuthenticatedCycleCountsCountIdRoute
@@ -294,6 +301,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/carriers/$carrierId': typeof AuthenticatedCarriersCarrierIdRoute
   '/consolidation-groups/$groupId': typeof AuthenticatedConsolidationGroupsGroupIdRoute
   '/cycle-counts/$countId': typeof AuthenticatedCycleCountsCountIdRoute
@@ -333,6 +341,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/carriers/$carrierId': typeof AuthenticatedCarriersCarrierIdRoute
   '/_authenticated/consolidation-groups/$groupId': typeof AuthenticatedConsolidationGroupsGroupIdRoute
   '/_authenticated/cycle-counts/$countId': typeof AuthenticatedCycleCountsCountIdRoute
@@ -372,6 +381,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/dashboard'
+    | '/settings'
     | '/carriers/$carrierId'
     | '/consolidation-groups/$groupId'
     | '/cycle-counts/$countId'
@@ -409,6 +419,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/dashboard'
+    | '/settings'
     | '/carriers/$carrierId'
     | '/consolidation-groups/$groupId'
     | '/cycle-counts/$countId'
@@ -447,6 +458,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/login'
     | '/_authenticated/dashboard'
+    | '/_authenticated/settings'
     | '/_authenticated/carriers/$carrierId'
     | '/_authenticated/consolidation-groups/$groupId'
     | '/_authenticated/cycle-counts/$countId'
@@ -509,6 +521,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -746,6 +765,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedCarriersCarrierIdRoute: typeof AuthenticatedCarriersCarrierIdRoute
   AuthenticatedConsolidationGroupsGroupIdRoute: typeof AuthenticatedConsolidationGroupsGroupIdRoute
   AuthenticatedCycleCountsCountIdRoute: typeof AuthenticatedCycleCountsCountIdRoute
@@ -782,6 +802,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedCarriersCarrierIdRoute: AuthenticatedCarriersCarrierIdRoute,
   AuthenticatedConsolidationGroupsGroupIdRoute:
     AuthenticatedConsolidationGroupsGroupIdRoute,

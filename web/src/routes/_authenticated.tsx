@@ -161,6 +161,7 @@ const navigation: NavGroup[] = [
 const navLabels = new Map(
   navigation.flatMap((g) => g.items.map((i) => [i.to.slice(1), i.label])),
 )
+navLabels.set("settings", m.nav_settings())
 
 // ---------------------------------------------------------------------------
 // Layout
@@ -434,6 +435,16 @@ function CommandPalette({
           <CommandSeparator />
           <CommandGroup heading="Actions">
             <CommandItem
+              onSelect={() =>
+                runCommand(() =>
+                  navigate({ to: "/settings" }),
+                )
+              }
+            >
+              <Settings strokeWidth={1.75} />
+              <span>Settings</span>
+            </CommandItem>
+            <CommandItem
               onSelect={() => runCommand(toggleSidebar)}
             >
               <PanelLeft strokeWidth={1.75} />
@@ -550,7 +561,7 @@ function UserMenu({ user }: { user: AuthUser }) {
           </Tabs>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem render={<Link to="/settings" />}>
           <Settings />
           Settings
         </DropdownMenuItem>
