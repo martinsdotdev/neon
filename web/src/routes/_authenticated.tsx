@@ -269,16 +269,16 @@ function AuthenticatedLayout() {
 // ---------------------------------------------------------------------------
 
 function SidebarMenuTrigger() {
-  const { toggleSidebar, state } = useSidebar()
+  const { toggleSidebar, state, isMobile } = useSidebar()
   const iconRef = useRef<MenuIconHandle>(null)
 
   useEffect(() => {
-    if (state === "expanded") {
-      iconRef.current?.startAnimation()
-    } else {
+    if (isMobile || state !== "expanded") {
       iconRef.current?.stopAnimation()
+    } else {
+      iconRef.current?.startAnimation()
     }
-  }, [state])
+  }, [state, isMobile])
 
   return (
     <Button
