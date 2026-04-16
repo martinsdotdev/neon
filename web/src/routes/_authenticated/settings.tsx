@@ -301,37 +301,14 @@ function ThemeCard({
 
 function LightPreview() {
   return (
-    <div
-      className="flex h-16"
-      style={{ background: "oklch(1 0 0)" }}
-    >
-      <div
-        className="w-3.5 shrink-0"
-        style={{ background: "oklch(0.986 0.002 67.8)" }}
-      />
+    <div className="flex h-16 bg-white">
+      <div className="w-3.5 shrink-0 bg-neutral-50" />
       <div className="flex flex-1 flex-col">
-        <div
-          className="h-2 shrink-0"
-          style={{
-            background: "oklch(0.986 0.002 67.8)",
-            borderBottom: "1px solid oklch(0.922 0.005 34.3)",
-          }}
-        />
+        <div className="h-2 shrink-0 border-b border-neutral-200 bg-neutral-50" />
         <div className="flex-1 p-1.5">
-          <div
-            className="h-1.5 w-8 rounded-full"
-            style={{
-              background: "oklch(0.852 0.199 91.936)",
-            }}
-          />
-          <div
-            className="mt-1 h-1 w-12 rounded-full"
-            style={{ background: "oklch(0.96 0.002 17.2)" }}
-          />
-          <div
-            className="mt-1 h-1 w-10 rounded-full"
-            style={{ background: "oklch(0.96 0.002 17.2)" }}
-          />
+          <div className="h-1.5 w-8 rounded-full bg-primary" />
+          <div className="mt-1 h-1 w-12 rounded-full bg-neutral-100" />
+          <div className="mt-1 h-1 w-10 rounded-full bg-neutral-100" />
         </div>
       </div>
     </div>
@@ -340,42 +317,14 @@ function LightPreview() {
 
 function DarkPreview() {
   return (
-    <div
-      className="flex h-16"
-      style={{ background: "oklch(0.18 0.008 49.3)" }}
-    >
-      <div
-        className="w-3.5 shrink-0"
-        style={{ background: "oklch(0.214 0.009 43.1)" }}
-      />
+    <div className="flex h-16 bg-neutral-900">
+      <div className="w-3.5 shrink-0 bg-neutral-800" />
       <div className="flex flex-1 flex-col">
-        <div
-          className="h-2 shrink-0"
-          style={{
-            background: "oklch(0.214 0.009 43.1)",
-            borderBottom:
-              "1px solid oklch(1 0 0 / 10%)",
-          }}
-        />
+        <div className="h-2 shrink-0 border-b border-neutral-700 bg-neutral-800" />
         <div className="flex-1 p-1.5">
-          <div
-            className="h-1.5 w-8 rounded-full"
-            style={{
-              background: "oklch(0.795 0.184 86.047)",
-            }}
-          />
-          <div
-            className="mt-1 h-1 w-12 rounded-full"
-            style={{
-              background: "oklch(0.268 0.011 36.5)",
-            }}
-          />
-          <div
-            className="mt-1 h-1 w-10 rounded-full"
-            style={{
-              background: "oklch(0.268 0.011 36.5)",
-            }}
-          />
+          <div className="h-1.5 w-8 rounded-full bg-primary" />
+          <div className="mt-1 h-1 w-12 rounded-full bg-neutral-700" />
+          <div className="mt-1 h-1 w-10 rounded-full bg-neutral-700" />
         </div>
       </div>
     </div>
@@ -385,71 +334,23 @@ function DarkPreview() {
 function SystemPreview() {
   return (
     <div className="flex h-16 overflow-hidden">
-      {/* Left half: light */}
-      <div
-        className="flex flex-1"
-        style={{ background: "oklch(1 0 0)" }}
-      >
-        <div
-          className="w-2 shrink-0"
-          style={{ background: "oklch(0.986 0.002 67.8)" }}
-        />
+      <div className="flex flex-1 bg-white">
+        <div className="w-2 shrink-0 bg-neutral-50" />
         <div className="flex flex-1 flex-col">
-          <div
-            className="h-2 shrink-0"
-            style={{
-              background: "oklch(0.986 0.002 67.8)",
-              borderBottom:
-                "1px solid oklch(0.922 0.005 34.3)",
-            }}
-          />
+          <div className="h-2 shrink-0 border-b border-neutral-200 bg-neutral-50" />
           <div className="flex-1 p-1">
-            <div
-              className="h-1.5 w-6 rounded-full"
-              style={{
-                background: "oklch(0.852 0.199 91.936)",
-              }}
-            />
-            <div
-              className="mt-1 h-1 w-8 rounded-full"
-              style={{
-                background: "oklch(0.96 0.002 17.2)",
-              }}
-            />
+            <div className="h-1.5 w-6 rounded-full bg-primary" />
+            <div className="mt-1 h-1 w-8 rounded-full bg-neutral-100" />
           </div>
         </div>
       </div>
-      {/* Right half: dark */}
-      <div
-        className="flex flex-1"
-        style={{ background: "oklch(0.18 0.008 49.3)" }}
-      >
-        <div
-          className="w-2 shrink-0"
-          style={{ background: "oklch(0.214 0.009 43.1)" }}
-        />
+      <div className="flex flex-1 bg-neutral-900">
+        <div className="w-2 shrink-0 bg-neutral-800" />
         <div className="flex flex-1 flex-col">
-          <div
-            className="h-2 shrink-0"
-            style={{
-              background: "oklch(0.214 0.009 43.1)",
-              borderBottom:
-                "1px solid oklch(1 0 0 / 10%)",
-            }}
-          />
+          <div className="h-2 shrink-0 border-b border-neutral-700 bg-neutral-800" />
           <div className="flex-1 p-1">
-            <div
-              className="h-1.5 w-6 rounded-full"
-              style={{
-                background: "oklch(0.795 0.184 86.047)",
-              }}
-            />
-            <div
-              className="mt-1 h-1 w-8 rounded-full"
-              style={{
-                background: "oklch(0.268 0.011 36.5)",
-              }}
-            />
+            <div className="h-1.5 w-6 rounded-full bg-primary" />
+            <div className="mt-1 h-1 w-8 rounded-full bg-neutral-700" />
           </div>
         </div>
       </div>

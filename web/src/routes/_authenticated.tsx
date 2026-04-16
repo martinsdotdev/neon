@@ -39,7 +39,6 @@ import {
   Waves,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
-import { motion } from "motion/react"
 import { useTheme } from "next-themes"
 import { authQueries, useLogout } from '@/shared/api/auth';
 import type { AuthUser } from '@/shared/api/auth';
@@ -229,7 +228,7 @@ function AuthenticatedLayout() {
           </Breadcrumb>
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-14 sm:px-20 md:px-32 lg:px-48">
             <InputGroup
-              className="pointer-events-auto w-full max-w-[calc(100%-1rem)] cursor-pointer gap-1.5 rounded-full transition-colors duration-[180ms] ease-out hover:bg-input/70 sm:max-w-sm md:max-w-md"
+              className="pointer-events-auto w-full max-w-[calc(100%-1rem)] cursor-pointer gap-1.5 rounded-full transition-colors duration-[180ms] ease-out hover:bg-input/70 sm:max-w-sm md:max-w-md *:cursor-pointer"
               onClick={() => setCommandOpen(true)}
             >
               <InputGroupAddon>
@@ -322,17 +321,9 @@ function AppSidebar() {
 
                 return (
                   <SidebarMenuItem key={item.to}>
-                    {isActive && (
-                      <motion.div
-                        layoutId="sidebar-indicator"
-                        className="absolute inset-0 rounded-xl bg-sidebar-primary/15 group-data-[collapsible=icon]:m-auto group-data-[collapsible=icon]:size-10 group-data-[collapsible=icon]:rounded-2xl"
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                      />
-                    )}
                     <SidebarMenuButton
                       isActive={isActive}
                       render={<Link to={item.to} />}
-                      className="relative z-10"
                     >
                       <item.icon strokeWidth={isActive ? 2.4 : 1.75} />
                       <span>{item.label}</span>

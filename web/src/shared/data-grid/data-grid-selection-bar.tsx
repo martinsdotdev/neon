@@ -41,10 +41,6 @@ const DataGridSelectionBar = <TData,>({
           <span
             aria-hidden="true"
             className="text-primary font-mono text-sm font-semibold tabular-nums"
-            style={{
-              textShadow:
-                "0 0 12px oklch(0.852 0.199 91.936 / 0.4)",
-            }}
           >
             {selectedCount}
           </span>

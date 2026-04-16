@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
@@ -33,7 +31,7 @@ function DropdownMenuContent({
   return (
     <MenuPrimitive.Portal>
       <MenuPrimitive.Positioner
-        className="z-50 outline-none"
+        className="isolate z-50 outline-none"
         align={align}
         alignOffset={alignOffset}
         side={side}
