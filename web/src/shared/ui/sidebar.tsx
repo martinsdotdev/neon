@@ -26,7 +26,7 @@ const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
-const SIDEBAR_WIDTH_ICON = "4rem"
+const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
 type SidebarContextProps = {
@@ -385,7 +385,7 @@ function SidebarGroup({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="sidebar-group"
       data-sidebar="group"
       className={cn(
-        "relative flex w-full min-w-0 flex-col p-2 group-data-[collapsible=icon]:px-4",
+        "relative flex w-full min-w-0 flex-col p-2",
         className
       )}
       {...props}
@@ -478,7 +478,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button group/menu-button flex w-full items-center gap-2 overflow-hidden rounded-xl px-3 py-2 text-start text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding,background-color,color] duration-150 ease-out group-has-data-[sidebar=menu-action]/menu-item:pe-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent/60 active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-open:hover:bg-sidebar-accent/50 data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-primary/15 data-active:font-medium data-active:text-sidebar-accent-foreground [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-colors [&_svg]:duration-150 data-active:[&_svg]:text-sidebar-primary [&>span:last-child]:truncate",
+  "peer/menu-button group/menu-button flex w-full items-center gap-2 overflow-hidden rounded-xl px-3 py-2 text-start text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding,background-color,color] duration-150 ease-out group-has-data-[sidebar=menu-action]/menu-item:pe-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent/60 active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-open:hover:bg-sidebar-accent/50 data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-primary/15 data-active:font-medium data-active:text-sidebar-accent-foreground data-active:[&_svg]:text-sidebar-primary [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-colors [&_svg]:duration-150 [&>span:last-child]:truncate",
   {
     variants: {
       variant: {
