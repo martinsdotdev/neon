@@ -262,21 +262,29 @@ function AuthenticatedLayout() {
 function SidebarMenuTrigger() {
   const { toggleSidebar, state, isMobile } = useSidebar()
   const iconRef = useRef<MenuIconHandle>(null)
+  const canMorph = !isMobile && state === "expanded"
 
   useEffect(() => {
-    if (isMobile || state !== "expanded") {
+    if (!canMorph) {
       iconRef.current?.stopAnimation()
-    } else {
-      iconRef.current?.startAnimation()
     }
-  }, [state, isMobile])
+  }, [canMorph])
 
   return (
     <Button
       variant="ghost"
       size="icon-sm"
-      className="-ml-1"
+      className="-ms-1 shrink-0"
       onClick={toggleSidebar}
+      aria-label="Toggle sidebar"
+      onMouseEnter={() => {
+        if (canMorph) {
+          iconRef.current?.startAnimation()
+        }
+      }}
+      onMouseLeave={() => {
+        iconRef.current?.stopAnimation()
+      }}
     >
       <MenuIcon ref={iconRef} size={18} />
     </Button>
