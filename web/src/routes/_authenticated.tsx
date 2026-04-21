@@ -195,7 +195,7 @@ function AuthenticatedLayout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <header className="fixed top-0 right-0 left-0 z-50 flex w-full items-center border-b border-sidebar-border bg-sidebar/95 backdrop-blur-xl backdrop-saturate-150">
+      <header className="fixed top-0 right-0 left-0 z-50 flex w-full items-center border-b border-sidebar-border bg-sidebar">
         <div className="flex h-(--header-height) w-full items-center gap-2 px-3 md:px-4">
           <SidebarMenuTrigger />
           <Breadcrumb className="hidden sm:block">
