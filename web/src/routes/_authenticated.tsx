@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from "react"
+import { Fragment, useCallback, useEffect, useState } from "react"
 import {
   Link,
   Outlet,
@@ -35,7 +35,6 @@ import {
 import { useTheme } from "next-themes"
 import type { LucideIcon } from "lucide-react"
 import type { AuthUser } from "@/shared/api/auth"
-import type {MenuIconHandle} from "@/shared/ui/menu";
 import { authQueries, useLogout } from "@/shared/api/auth"
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar"
 import {
@@ -261,14 +260,8 @@ function AuthenticatedLayout() {
 
 function SidebarMenuTrigger() {
   const { toggleSidebar, state, isMobile } = useSidebar()
-  const iconRef = useRef<MenuIconHandle>(null)
+  const [hovered, setHovered] = useState(false)
   const canMorph = !isMobile && state === "expanded"
-
-  useEffect(() => {
-    if (!canMorph) {
-      iconRef.current?.stopAnimation()
-    }
-  }, [canMorph])
 
   return (
     <Button
@@ -277,16 +270,10 @@ function SidebarMenuTrigger() {
       className="-ms-1 shrink-0"
       onClick={toggleSidebar}
       aria-label="Toggle sidebar"
-      onMouseEnter={() => {
-        if (canMorph) {
-          iconRef.current?.startAnimation()
-        }
-      }}
-      onMouseLeave={() => {
-        iconRef.current?.stopAnimation()
-      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <MenuIcon ref={iconRef} size={18} />
+      <MenuIcon morph={hovered && canMorph} size={18} />
     </Button>
   )
 }

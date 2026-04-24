@@ -1,19 +1,14 @@
 "use client"
 
-import { motion, useAnimation } from "motion/react"
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react"
+import { motion } from "motion/react"
 import type { Variants } from "motion/react"
 import type { HTMLAttributes } from "react"
 
 import { cn } from "@/shared/lib/utils"
 
-export interface MenuIconHandle {
-  startAnimation: () => void
-  stopAnimation: () => void
-}
-
-interface MenuIconProps extends HTMLAttributes<HTMLDivElement> {
+type MenuIconProps = HTMLAttributes<HTMLDivElement> & {
   size?: number
+  morph?: boolean
 }
 
 const LINE_VARIANTS: Variants = {
@@ -34,95 +29,61 @@ const LINE_VARIANTS: Variants = {
   }),
 }
 
-const MenuIcon = forwardRef<MenuIconHandle, MenuIconProps>(
-  ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const controls = useAnimation()
-    const isControlledRef = useRef(false)
+function MenuIcon({
+  className,
+  size = 28,
+  morph = false,
+  ...props
+}: MenuIconProps) {
+  const animate = morph ? "animate" : "normal"
 
-    useImperativeHandle(ref, () => {
-      isControlledRef.current = true
-
-      return {
-        startAnimation: () => controls.start("animate"),
-        stopAnimation: () => controls.start("normal"),
-      }
-    })
-
-    const handleMouseEnter = useCallback(
-      (e: React.MouseEvent<HTMLDivElement>) => {
-        if (isControlledRef.current) {
-          onMouseEnter?.(e)
-        } else {
-          controls.start("animate")
-        }
-      },
-      [controls, onMouseEnter]
-    )
-
-    const handleMouseLeave = useCallback(
-      (e: React.MouseEvent<HTMLDivElement>) => {
-        if (isControlledRef.current) {
-          onMouseLeave?.(e)
-        } else {
-          controls.start("normal")
-        }
-      },
-      [controls, onMouseLeave]
-    )
-    return (
-      <div
-        className={cn(className)}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        {...props}
+  return (
+    <div className={cn(className)} {...props}>
+      <svg
+        fill="none"
+        height={size}
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+        width={size}
+        xmlns="http://www.w3.org/2000/svg"
       >
-        <svg
-          fill="none"
-          height={size}
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          width={size}
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <motion.line
-            initial="normal"
-            animate={controls}
-            custom={1}
-            variants={LINE_VARIANTS}
-            x1="4"
-            x2="20"
-            y1="6"
-            y2="6"
-          />
-          <motion.line
-            initial="normal"
-            animate={controls}
-            custom={2}
-            variants={LINE_VARIANTS}
-            x1="4"
-            x2="20"
-            y1="12"
-            y2="12"
-          />
-          <motion.line
-            initial="normal"
-            animate={controls}
-            custom={3}
-            variants={LINE_VARIANTS}
-            x1="4"
-            x2="20"
-            y1="18"
-            y2="18"
-          />
-        </svg>
-      </div>
-    )
-  }
-)
-
-MenuIcon.displayName = "MenuIcon"
+        <motion.line
+          initial="normal"
+          animate={animate}
+          custom={1}
+          variants={LINE_VARIANTS}
+          x1="4"
+          x2="20"
+          y1="6"
+          y2="6"
+        />
+        <motion.line
+          initial="normal"
+          animate={animate}
+          custom={2}
+          variants={LINE_VARIANTS}
+          x1="4"
+          x2="20"
+          y1="12"
+          y2="12"
+        />
+        <motion.line
+          initial="normal"
+          animate={animate}
+          custom={3}
+          variants={LINE_VARIANTS}
+          x1="4"
+          x2="20"
+          y1="18"
+          y2="18"
+        />
+      </svg>
+    </div>
+  )
+}
 
 export { MenuIcon }
+export type { MenuIconProps }
