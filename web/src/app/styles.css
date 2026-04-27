@@ -76,6 +76,39 @@
   --state-layer-pressed: 0.12;
   --state-layer-dragged: 0.16;
   --state-layer-selected: 0.12;
+
+  /* Per-state hues — used by StateBadge, stepper, kanban, dashboard flow */
+  --state-planned: oklch(0.65 0.03 230);
+  --state-planned-soft: oklch(0.95 0.015 230);
+  --state-released: oklch(0.58 0.14 240);
+  --state-released-soft: oklch(0.95 0.04 240);
+  --state-allocated: oklch(0.68 0.13 80);
+  --state-allocated-soft: oklch(0.96 0.04 80);
+  --state-assigned: oklch(0.58 0.14 240);
+  --state-assigned-soft: oklch(0.95 0.04 240);
+  --state-completed: oklch(0.55 0.14 150);
+  --state-completed-soft: oklch(0.95 0.04 150);
+  --state-cancelled: oklch(0.58 0.17 22);
+  --state-cancelled-soft: oklch(0.96 0.03 22);
+  --state-picked: oklch(0.62 0.13 195);
+  --state-picked-soft: oklch(0.95 0.03 195);
+  --state-ready: oklch(0.6 0.15 290);
+  --state-ready-soft: oklch(0.96 0.03 290);
+  --state-active: oklch(0.55 0.14 150);
+  --state-active-soft: oklch(0.95 0.04 150);
+  --state-idle: oklch(0.65 0.03 230);
+  --state-idle-soft: oklch(0.95 0.015 230);
+  --state-pending: oklch(0.65 0.03 230);
+  --state-pending-soft: oklch(0.95 0.015 230);
+  --state-confirmed: oklch(0.55 0.14 150);
+  --state-confirmed-soft: oklch(0.95 0.04 150);
+  --state-created: oklch(0.65 0.03 230);
+  --state-created-soft: oklch(0.95 0.015 230);
+
+  --priority-critical: oklch(0.58 0.2 22);
+  --priority-high: oklch(0.68 0.15 50);
+  --priority-normal: oklch(0.65 0.03 230);
+  --priority-low: oklch(0.75 0.02 230);
 }
 
 .dark {
@@ -141,6 +174,38 @@
   --inverse-surface: oklch(0.987 0.002 197.1);
   --inverse-on-surface: oklch(0.218 0.008 223.9);
   --inverse-primary: oklch(0.527 0.154 150.069);
+
+  --state-planned: oklch(0.7 0.03 230);
+  --state-planned-soft: oklch(0.26 0.02 230);
+  --state-released: oklch(0.7 0.14 240);
+  --state-released-soft: oklch(0.25 0.06 240);
+  --state-allocated: oklch(0.78 0.13 80);
+  --state-allocated-soft: oklch(0.26 0.06 80);
+  --state-assigned: oklch(0.7 0.14 240);
+  --state-assigned-soft: oklch(0.25 0.06 240);
+  --state-completed: oklch(0.72 0.15 150);
+  --state-completed-soft: oklch(0.24 0.06 150);
+  --state-cancelled: oklch(0.72 0.16 22);
+  --state-cancelled-soft: oklch(0.26 0.07 22);
+  --state-picked: oklch(0.74 0.12 195);
+  --state-picked-soft: oklch(0.25 0.05 195);
+  --state-ready: oklch(0.72 0.14 290);
+  --state-ready-soft: oklch(0.26 0.06 290);
+  --state-active: oklch(0.72 0.15 150);
+  --state-active-soft: oklch(0.24 0.06 150);
+  --state-idle: oklch(0.7 0.03 230);
+  --state-idle-soft: oklch(0.26 0.02 230);
+  --state-pending: oklch(0.7 0.03 230);
+  --state-pending-soft: oklch(0.26 0.02 230);
+  --state-confirmed: oklch(0.72 0.15 150);
+  --state-confirmed-soft: oklch(0.24 0.06 150);
+  --state-created: oklch(0.7 0.03 230);
+  --state-created-soft: oklch(0.26 0.02 230);
+
+  --priority-critical: oklch(0.72 0.2 22);
+  --priority-high: oklch(0.78 0.15 50);
+  --priority-normal: oklch(0.7 0.03 230);
+  --priority-low: oklch(0.58 0.02 230);
 }
 
 @theme inline {
@@ -232,6 +297,36 @@
   --color-inverse-surface: var(--inverse-surface);
   --color-inverse-on-surface: var(--inverse-on-surface);
   --color-inverse-primary: var(--inverse-primary);
+  --color-state-planned: var(--state-planned);
+  --color-state-planned-soft: var(--state-planned-soft);
+  --color-state-released: var(--state-released);
+  --color-state-released-soft: var(--state-released-soft);
+  --color-state-allocated: var(--state-allocated);
+  --color-state-allocated-soft: var(--state-allocated-soft);
+  --color-state-assigned: var(--state-assigned);
+  --color-state-assigned-soft: var(--state-assigned-soft);
+  --color-state-completed: var(--state-completed);
+  --color-state-completed-soft: var(--state-completed-soft);
+  --color-state-cancelled: var(--state-cancelled);
+  --color-state-cancelled-soft: var(--state-cancelled-soft);
+  --color-state-picked: var(--state-picked);
+  --color-state-picked-soft: var(--state-picked-soft);
+  --color-state-ready: var(--state-ready);
+  --color-state-ready-soft: var(--state-ready-soft);
+  --color-state-active: var(--state-active);
+  --color-state-active-soft: var(--state-active-soft);
+  --color-state-idle: var(--state-idle);
+  --color-state-idle-soft: var(--state-idle-soft);
+  --color-state-pending: var(--state-pending);
+  --color-state-pending-soft: var(--state-pending-soft);
+  --color-state-confirmed: var(--state-confirmed);
+  --color-state-confirmed-soft: var(--state-confirmed-soft);
+  --color-state-created: var(--state-created);
+  --color-state-created-soft: var(--state-created-soft);
+  --color-priority-critical: var(--priority-critical);
+  --color-priority-high: var(--priority-high);
+  --color-priority-normal: var(--priority-normal);
+  --color-priority-low: var(--priority-low);
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-standard-decelerate: cubic-bezier(0, 0, 0, 1);
   --ease-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);

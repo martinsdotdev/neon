@@ -11,7 +11,8 @@ import type { QueryClient } from "@tanstack/react-query"
 import { getLocale } from "@/paraglide/runtime.js"
 import * as m from "@/paraglide/messages.js"
 import { ThemeProvider } from "@/shared/theme-provider"
-
+import { Toaster } from "@/shared/ui/sonner"
+import { TooltipProvider } from "@/shared/ui/tooltip"
 
 interface RouterContext {
   queryClient: QueryClient
@@ -49,7 +50,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <TooltipProvider delay={400}>
+            {children}
+            <Toaster richColors closeButton position="bottom-right" />
+          </TooltipProvider>
         </ThemeProvider>
         <TanStackDevtools
           config={{
