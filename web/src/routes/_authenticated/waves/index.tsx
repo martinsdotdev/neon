@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { useCallback, useMemo, useState } from "react"
+import { Plus } from "lucide-react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { Wave } from "@/shared/api/waves"
 import type { Filter, FilterFieldConfig } from "@/shared/reui/filters"
@@ -15,6 +16,7 @@ import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { Filters } from "@/shared/reui/filters"
 import { Badge } from "@/shared/ui/badge"
+import { Button } from "@/shared/ui/button"
 import { DateCell } from "@/shared/ui/date-cell"
 import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
@@ -182,6 +184,12 @@ function WavesPage() {
   return (
     <div>
       <PageHeader
+        actions={
+          <Button render={<Link to="/waves/new" />} size="sm">
+            <Plus className="size-4" />
+            New wave
+          </Button>
+        }
         description="Wave planning and release management"
         title="Waves"
       />

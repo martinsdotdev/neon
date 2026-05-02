@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query"
+import { ResultAsync, errAsync } from "neverthrow"
 import { apiClient } from "./client"
 
 export interface Wave {
@@ -129,4 +130,56 @@ export const waveQueries = {
       },
       queryKey: ["waves", id] as const,
     }),
+}
+
+// ---------------------------------------------------------------------------
+// Mutations — kept in shared/api per FSD ("CRUD belongs in shared, not
+// entities"). Surface returns ResultAsync<T, ApiError> so callers can
+// `.match(onOk, onErr)` and drive toast / navigation without throwing.
+// ---------------------------------------------------------------------------
+
+export interface PlanAndReleaseRequest {
+  orderIds: Array<string>
+  grouping: Wave["orderGrouping"]
+  dockAssignments: Array<{ dockId: string; carrierId: string }>
+}
+
+export interface WaveReleaseResponse {
+  consolidationGroupsCreated: number
+  status: string
+  tasksCreated: number
+  waveId: string
+}
+
+// Generate a synthetic wave ID for the dev mock. Math.random is fine here —
+// no SSR exposure (mutations only fire on user click, never during render).
+const mockWaveId = () => `w_${Math.random().toString(36).slice(2, 8)}`
+
+// Synthesize a plan-and-release response that mirrors what the backend
+// would return. Used only when the real fetch errors out in dev (no
+// running backend) so the wizard's success-redirect flow still works.
+const mockPlanResponse = (
+  body: PlanAndReleaseRequest
+): WaveReleaseResponse => ({
+  consolidationGroupsCreated:
+    body.grouping === "Single" ? 1 : body.orderIds.length,
+  status: "Released",
+  tasksCreated: body.orderIds.length * 3,
+  waveId: mockWaveId(),
+})
+
+export const waveMutations = {
+  planAndRelease: (body: PlanAndReleaseRequest) =>
+    apiClient
+      .post<WaveReleaseResponse>("/api/waves/plan-and-release", body)
+      .orElse((error) => {
+        // Only fall back in dev on a network error — production must surface
+        // real errors to the user instead of pretending they succeeded.
+        if (!import.meta.env.DEV || error.kind !== "network") {
+          return errAsync(error)
+        }
+        return ResultAsync.fromSafePromise(
+          Promise.resolve(mockPlanResponse(body))
+        )
+      }),
 }

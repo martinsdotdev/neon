@@ -436,7 +436,7 @@ function DashboardActions() {
       >
         <RefreshCw className="size-4" />
       </Button>
-      <Button render={<Link to="/waves" />} size="sm">
+      <Button render={<Link to="/waves/new" />} size="sm">
         <Plus className="size-4" />
         Plan wave
       </Button>

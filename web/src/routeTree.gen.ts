@@ -31,6 +31,7 @@ import { Route as AuthenticatedCycleCountsIndexRouteImport } from './routes/_aut
 import { Route as AuthenticatedConsolidationGroupsIndexRouteImport } from './routes/_authenticated/consolidation-groups/index'
 import { Route as AuthenticatedCarriersIndexRouteImport } from './routes/_authenticated/carriers/index'
 import { Route as AuthenticatedWorkstationsWorkstationIdRouteImport } from './routes/_authenticated/workstations/$workstationId'
+import { Route as AuthenticatedWavesNewRouteImport } from './routes/_authenticated/waves/new'
 import { Route as AuthenticatedWavesWaveIdRouteImport } from './routes/_authenticated/waves/$waveId'
 import { Route as AuthenticatedUsersUserIdRouteImport } from './routes/_authenticated/users/$userId'
 import { Route as AuthenticatedTransportOrdersOrderIdRouteImport } from './routes/_authenticated/transport-orders/$orderId'
@@ -169,6 +170,11 @@ const AuthenticatedWorkstationsWorkstationIdRoute =
     path: '/workstations/$workstationId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedWavesNewRoute = AuthenticatedWavesNewRouteImport.update({
+  id: '/waves/new',
+  path: '/waves/new',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedWavesWaveIdRoute =
   AuthenticatedWavesWaveIdRouteImport.update({
     id: '/waves/$waveId',
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/transport-orders/$orderId': typeof AuthenticatedTransportOrdersOrderIdRoute
   '/users/$userId': typeof AuthenticatedUsersUserIdRoute
   '/waves/$waveId': typeof AuthenticatedWavesWaveIdRoute
+  '/waves/new': typeof AuthenticatedWavesNewRoute
   '/workstations/$workstationId': typeof AuthenticatedWorkstationsWorkstationIdRoute
   '/carriers/': typeof AuthenticatedCarriersIndexRoute
   '/consolidation-groups/': typeof AuthenticatedConsolidationGroupsIndexRoute
@@ -317,6 +324,7 @@ export interface FileRoutesByTo {
   '/transport-orders/$orderId': typeof AuthenticatedTransportOrdersOrderIdRoute
   '/users/$userId': typeof AuthenticatedUsersUserIdRoute
   '/waves/$waveId': typeof AuthenticatedWavesWaveIdRoute
+  '/waves/new': typeof AuthenticatedWavesNewRoute
   '/workstations/$workstationId': typeof AuthenticatedWorkstationsWorkstationIdRoute
   '/carriers': typeof AuthenticatedCarriersIndexRoute
   '/consolidation-groups': typeof AuthenticatedConsolidationGroupsIndexRoute
@@ -357,6 +365,7 @@ export interface FileRoutesById {
   '/_authenticated/transport-orders/$orderId': typeof AuthenticatedTransportOrdersOrderIdRoute
   '/_authenticated/users/$userId': typeof AuthenticatedUsersUserIdRoute
   '/_authenticated/waves/$waveId': typeof AuthenticatedWavesWaveIdRoute
+  '/_authenticated/waves/new': typeof AuthenticatedWavesNewRoute
   '/_authenticated/workstations/$workstationId': typeof AuthenticatedWorkstationsWorkstationIdRoute
   '/_authenticated/carriers/': typeof AuthenticatedCarriersIndexRoute
   '/_authenticated/consolidation-groups/': typeof AuthenticatedConsolidationGroupsIndexRoute
@@ -397,6 +406,7 @@ export interface FileRouteTypes {
     | '/transport-orders/$orderId'
     | '/users/$userId'
     | '/waves/$waveId'
+    | '/waves/new'
     | '/workstations/$workstationId'
     | '/carriers/'
     | '/consolidation-groups/'
@@ -435,6 +445,7 @@ export interface FileRouteTypes {
     | '/transport-orders/$orderId'
     | '/users/$userId'
     | '/waves/$waveId'
+    | '/waves/new'
     | '/workstations/$workstationId'
     | '/carriers'
     | '/consolidation-groups'
@@ -474,6 +485,7 @@ export interface FileRouteTypes {
     | '/_authenticated/transport-orders/$orderId'
     | '/_authenticated/users/$userId'
     | '/_authenticated/waves/$waveId'
+    | '/_authenticated/waves/new'
     | '/_authenticated/workstations/$workstationId'
     | '/_authenticated/carriers/'
     | '/_authenticated/consolidation-groups/'
@@ -655,6 +667,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkstationsWorkstationIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/waves/new': {
+      id: '/_authenticated/waves/new'
+      path: '/waves/new'
+      fullPath: '/waves/new'
+      preLoaderRoute: typeof AuthenticatedWavesNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/waves/$waveId': {
       id: '/_authenticated/waves/$waveId'
       path: '/waves/$waveId'
@@ -781,6 +800,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedTransportOrdersOrderIdRoute: typeof AuthenticatedTransportOrdersOrderIdRoute
   AuthenticatedUsersUserIdRoute: typeof AuthenticatedUsersUserIdRoute
   AuthenticatedWavesWaveIdRoute: typeof AuthenticatedWavesWaveIdRoute
+  AuthenticatedWavesNewRoute: typeof AuthenticatedWavesNewRoute
   AuthenticatedWorkstationsWorkstationIdRoute: typeof AuthenticatedWorkstationsWorkstationIdRoute
   AuthenticatedCarriersIndexRoute: typeof AuthenticatedCarriersIndexRoute
   AuthenticatedConsolidationGroupsIndexRoute: typeof AuthenticatedConsolidationGroupsIndexRoute
@@ -823,6 +843,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedTransportOrdersOrderIdRoute,
   AuthenticatedUsersUserIdRoute: AuthenticatedUsersUserIdRoute,
   AuthenticatedWavesWaveIdRoute: AuthenticatedWavesWaveIdRoute,
+  AuthenticatedWavesNewRoute: AuthenticatedWavesNewRoute,
   AuthenticatedWorkstationsWorkstationIdRoute:
     AuthenticatedWorkstationsWorkstationIdRoute,
   AuthenticatedCarriersIndexRoute: AuthenticatedCarriersIndexRoute,
