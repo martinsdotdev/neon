@@ -32,6 +32,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/shared/ui/empty"
+import { EntityLink } from "@/shared/ui/entity-link"
 import {
   HoverCard,
   HoverCardContent,
@@ -126,9 +127,11 @@ function TasksPage() {
       {
         accessorKey: "id",
         cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.id}
-          </span>
+          <EntityLink
+            className="text-xs font-medium"
+            id={row.original.id}
+            kind="task"
+          />
         ),
         header: "ID",
         meta: { cell: { variant: "short-text" as const }, label: "ID" },
@@ -152,9 +155,11 @@ function TasksPage() {
       {
         accessorKey: "skuId",
         cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.skuId}
-          </span>
+          <EntityLink
+            className="text-xs font-medium"
+            id={row.original.skuId}
+            kind="sku"
+          />
         ),
         header: "SKU",
         meta: {
@@ -196,9 +201,11 @@ function TasksPage() {
       {
         accessorKey: "assignedTo",
         cell: ({ row }) => (
-          <span className="font-mono text-xs text-muted-foreground">
-            {row.original.assignedTo ?? "—"}
-          </span>
+          <EntityLink
+            className="text-xs"
+            id={row.original.assignedTo}
+            kind="user"
+          />
         ),
         header: "Assigned To",
         meta: {

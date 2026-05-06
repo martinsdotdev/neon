@@ -14,6 +14,7 @@ import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { Filters } from "@/shared/reui/filters"
 import { Badge } from "@/shared/ui/badge"
+import { EntityLink } from "@/shared/ui/entity-link"
 import { PageHeader } from "@/shared/ui/page-header"
 
 const filterFields: Array<FilterFieldConfig> = [
@@ -93,9 +94,13 @@ function UsersPage() {
       {
         accessorKey: "login",
         cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
+          <EntityLink
+            className="text-xs font-medium"
+            id={row.original.id}
+            kind="user"
+          >
             {row.original.login}
-          </span>
+          </EntityLink>
         ),
         header: "Login",
         meta: {

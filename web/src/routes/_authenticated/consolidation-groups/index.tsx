@@ -13,6 +13,7 @@ import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { Filters } from "@/shared/reui/filters"
+import { EntityLink } from "@/shared/ui/entity-link"
 import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
@@ -86,9 +87,11 @@ function ConsolidationGroupsPage() {
       {
         accessorKey: "id",
         cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.id}
-          </span>
+          <EntityLink
+            className="text-xs font-medium"
+            id={row.original.id}
+            kind="consolidation-group"
+          />
         ),
         header: "ID",
         meta: { cell: { variant: "short-text" as const }, label: "ID" },
@@ -97,9 +100,11 @@ function ConsolidationGroupsPage() {
       {
         accessorKey: "waveId",
         cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.waveId}
-          </span>
+          <EntityLink
+            className="text-xs font-medium"
+            id={row.original.waveId}
+            kind="wave"
+          />
         ),
         header: "Wave",
         meta: {
@@ -146,9 +151,11 @@ function ConsolidationGroupsPage() {
       {
         accessorKey: "workstationId",
         cell: ({ row }) => (
-          <span className="font-mono text-xs text-muted-foreground">
-            {row.original.workstationId ?? "\u2014"}
-          </span>
+          <EntityLink
+            className="text-xs"
+            id={row.original.workstationId}
+            kind="workstation"
+          />
         ),
         header: "Workstation",
         meta: {

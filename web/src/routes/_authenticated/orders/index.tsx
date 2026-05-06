@@ -14,6 +14,7 @@ import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { Filters } from "@/shared/reui/filters"
 import { Badge } from "@/shared/ui/badge"
+import { EntityLink } from "@/shared/ui/entity-link"
 import { PageHeader } from "@/shared/ui/page-header"
 
 const filterFields: Array<FilterFieldConfig> = [
@@ -79,9 +80,11 @@ function OrdersPage() {
       {
         accessorKey: "id",
         cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.id}
-          </span>
+          <EntityLink
+            className="text-xs font-medium"
+            id={row.original.id}
+            kind="order"
+          />
         ),
         header: "Order ID",
         meta: {
@@ -134,9 +137,11 @@ function OrdersPage() {
       {
         accessorKey: "carrierId",
         cell: ({ row }) => (
-          <span className="font-mono text-xs text-muted-foreground">
-            {row.original.carrierId ?? "\u2014"}
-          </span>
+          <EntityLink
+            className="text-xs"
+            id={row.original.carrierId}
+            kind="carrier"
+          />
         ),
         header: "Carrier",
         meta: {

@@ -14,6 +14,7 @@ import { getDataGridSelectColumn } from "@/shared/data-grid/data-grid-select-col
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { Filters } from "@/shared/reui/filters"
 import { Badge } from "@/shared/ui/badge"
+import { EntityLink } from "@/shared/ui/entity-link"
 import { PageHeader } from "@/shared/ui/page-header"
 
 const filterFields: Array<FilterFieldConfig> = [
@@ -82,9 +83,13 @@ function CarriersPage() {
       {
         accessorKey: "code",
         cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
+          <EntityLink
+            className="text-xs font-medium"
+            id={row.original.id}
+            kind="carrier"
+          >
             {row.original.code}
-          </span>
+          </EntityLink>
         ),
         header: "Code",
         meta: { cell: { variant: "short-text" as const }, label: "Code" },

@@ -18,6 +18,7 @@ import { Filters } from "@/shared/reui/filters"
 import { Badge } from "@/shared/ui/badge"
 import { Button } from "@/shared/ui/button"
 import { DateCell } from "@/shared/ui/date-cell"
+import { EntityLink } from "@/shared/ui/entity-link"
 import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
@@ -93,9 +94,11 @@ function WavesPage() {
       {
         accessorKey: "id",
         cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.id}
-          </span>
+          <EntityLink
+            className="text-xs font-medium"
+            id={row.original.id}
+            kind="wave"
+          />
         ),
         header: "ID",
         meta: { cell: { variant: "short-text" as const }, label: "ID" },

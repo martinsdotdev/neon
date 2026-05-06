@@ -13,6 +13,7 @@ import { DataGridSortMenu } from "@/shared/data-grid/data-grid-sort-menu"
 import { DataGridViewMenu } from "@/shared/data-grid/data-grid-view-menu"
 import { useDataGrid } from "@/shared/hooks/use-data-grid"
 import { Filters } from "@/shared/reui/filters"
+import { EntityLink } from "@/shared/ui/entity-link"
 import { PageHeader } from "@/shared/ui/page-header"
 import { StateBadge } from "@/shared/ui/state-badge"
 
@@ -85,9 +86,11 @@ function InventoryPage() {
       {
         accessorKey: "skuId",
         cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.skuId}
-          </span>
+          <EntityLink
+            className="text-xs font-medium"
+            id={row.original.skuId}
+            kind="sku"
+          />
         ),
         header: "SKU",
         meta: {
@@ -99,9 +102,11 @@ function InventoryPage() {
       {
         accessorKey: "locationId",
         cell: ({ row }) => (
-          <span className="font-mono text-xs font-medium">
-            {row.original.locationId}
-          </span>
+          <EntityLink
+            className="text-xs font-medium"
+            id={row.original.locationId}
+            kind="location"
+          />
         ),
         header: "Location",
         meta: {
