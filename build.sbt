@@ -56,7 +56,7 @@ lazy val order = project
   .settings(name := "neon-order")
 
 lazy val location = project
-  .in(file("location"))
+  .in(file("order/location"))
   .dependsOn(common)
   .settings(name := "neon-location")
 
