@@ -23,17 +23,25 @@ object AuthRoutes:
       login: String,
       name: String,
       role: String,
-      permissions: List[String]
+      permissions: List[String],
+      // Only present on the /auth/login response for non-browser clients
+      // (mobile) — browser clients also receive the session via HttpOnly cookie
+      // and ignore this field. Empty on /auth/me.
+      token: Option[String] = None
   ) derives Encoder.AsObject
 
   private object AuthResponse:
-    def fromContext(context: AuthContext): AuthResponse =
+    def fromContext(
+        context: AuthContext,
+        token: Option[String] = None
+    ): AuthResponse =
       AuthResponse(
         userId = context.userId.value.toString,
         login = context.login,
         name = context.name,
         role = context.role.toString,
-        permissions = context.permissions.map(_.key).toList.sorted
+        permissions = context.permissions.map(_.key).toList.sorted,
+        token = token
       )
 
   private val cookieMaxAge = 30L * 24 * 60 * 60
@@ -85,7 +93,7 @@ object AuthRoutes:
                     case Right((token, context)) =>
                       setCookie(sessionCookie(token, secureCookies)):
                         complete(
-                          AuthResponse.fromContext(context)
+                          AuthResponse.fromContext(context, Some(token))
                         )
                     case Left(
                           AuthError.InvalidCredentials

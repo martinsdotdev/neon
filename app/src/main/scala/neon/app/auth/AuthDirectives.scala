@@ -12,30 +12,25 @@ import scala.concurrent.ExecutionContext
 
 object AuthDirectives extends LazyLogging:
 
-  /** Validates the session cookie and provides an AuthContext. Sets MDC "userId" for downstream
-    * logging; cleanup is handled by RequestLoggingDirective.withRequestLogging which restores the
+  private val bearerPrefix = "Bearer "
+
+  /** Validates the session and provides an AuthContext. Tries the
+    * `Authorization: Bearer <token>` header first (used by mobile and other
+    * non-browser clients), then falls back to the `session` cookie (used by
+    * the web app). Sets MDC "userId" for downstream logging; cleanup is
+    * handled by RequestLoggingDirective.withRequestLogging which restores the
     * previous MDC state after each request.
     */
   def authenticated(authService: AuthenticationService)(using
       ExecutionContext
   ): Directive1[AuthContext] =
-    optionalCookie("session").flatMap {
-      case Some(cookie) =>
-        onSuccess(authService.validateSession(cookie.value))
-          .flatMap {
-            case Right(context) =>
-              MDC.put(
-                "userId",
-                context.userId.value.toString
-              )
-              provide(context)
-            case Left(AuthError.AccountInactive) =>
-              complete(StatusCodes.Forbidden)
-            case Left(_) =>
-              complete(StatusCodes.Unauthorized)
-          }
+    bearerToken.flatMap {
+      case Some(token) => validateToken(authService, token)
       case None =>
-        complete(StatusCodes.Unauthorized)
+        optionalCookie("session").flatMap {
+          case Some(cookie) => validateToken(authService, cookie.value)
+          case None         => complete(StatusCodes.Unauthorized)
+        }
     }
 
   def requirePermission(
@@ -51,4 +46,25 @@ object AuthDirectives extends LazyLogging:
           kv("requiredPermission", permission.key)
         )
         complete(StatusCodes.Forbidden)
+    }
+
+  private def bearerToken: Directive1[Option[String]] =
+    optionalHeaderValueByName("Authorization").map {
+      case Some(value) if value.startsWith(bearerPrefix) =>
+        Some(value.substring(bearerPrefix.length))
+      case _ => None
+    }
+
+  private def validateToken(
+      authService: AuthenticationService,
+      token: String
+  )(using ExecutionContext): Directive1[AuthContext] =
+    onSuccess(authService.validateSession(token)).flatMap {
+      case Right(context) =>
+        MDC.put("userId", context.userId.value.toString)
+        provide(context)
+      case Left(AuthError.AccountInactive) =>
+        complete(StatusCodes.Forbidden)
+      case Left(_) =>
+        complete(StatusCodes.Unauthorized)
     }
