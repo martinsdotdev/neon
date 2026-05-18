@@ -1,7 +1,7 @@
 import type { ApiError } from "@neon/domain/error"
 import { useQuery } from "@tanstack/react-query"
 import { router, useLocalSearchParams } from "expo-router"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import {
   ActivityIndicator,
   Alert,
@@ -15,6 +15,8 @@ import {
 import { locationQueries } from "@/src/api/locations"
 import { skuQueries } from "@/src/api/skus"
 import { taskQueries, useCompleteTask } from "@/src/api/tasks"
+import { ScannerOverlay } from "@/src/scanner/ScannerOverlay"
+import { type BarcodeScanned, useScanner } from "@/src/scanner/useScanner"
 
 export default function TaskDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -36,6 +38,47 @@ export default function TaskDetailScreen() {
   })
 
   const [quantity, setQuantity] = useState<string>("")
+  const [sourceVerified, setSourceVerified] = useState(false)
+  const [skuVerified, setSkuVerified] = useState(false)
+  const [lastScan, setLastScan] = useState<string | null>(null)
+
+  const onScan = useCallback(
+    (event: BarcodeScanned) => {
+      setLastScan(event.value)
+      // Match against the SKU's barcode (SKU.code) or location code. The
+      // first matching slot wins; "destination" is left to a later step.
+      if (source.data?.code && event.value === source.data.code) {
+        setSourceVerified(true)
+        scanner.closeCamera()
+        return
+      }
+      if (sku.data?.code && event.value === sku.data.code) {
+        setSkuVerified(true)
+        scanner.closeCamera()
+        return
+      }
+      // No-match leaves the modal open so the operator can re-scan.
+    },
+    // scanner is declared below; safe-by-construction (useCallback runs
+    // after declaration on every render).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [source.data?.code, sku.data?.code],
+  )
+  const scanner = useScanner(onScan)
+
+  const startScan = async () => {
+    if (!scanner.permissionGranted) {
+      const granted = await scanner.requestPermission()
+      if (!granted) {
+        Alert.alert(
+          "Camera access required",
+          "Open Settings → Apps → Neon WES to grant camera permission.",
+        )
+        return
+      }
+    }
+    scanner.openCamera()
+  }
 
   if (query.isLoading) {
     return (
@@ -82,6 +125,7 @@ export default function TaskDetailScreen() {
         label="SKU"
         primary={sku.data?.code ?? shortId(task.skuId)}
         secondary={sku.data?.description}
+        verified={skuVerified}
       />
       <Field label="Order" primary={shortId(task.orderId)} />
       <Field
@@ -95,6 +139,7 @@ export default function TaskDetailScreen() {
           (task.sourceLocationId ? shortId(task.sourceLocationId) : "—")
         }
         secondary={source.data?.locationType}
+        verified={sourceVerified}
       />
       <Field
         label="Destination"
@@ -109,6 +154,20 @@ export default function TaskDetailScreen() {
       {task.handlingUnitId && (
         <Field label="Handling unit" primary={shortId(task.handlingUnitId)} />
       )}
+
+      {task.state === "Assigned" && (
+        <TouchableOpacity onPress={startScan} style={styles.scanButton}>
+          <Text style={styles.scanButtonText}>
+            {sourceVerified && skuVerified
+              ? "Scan again"
+              : "Scan source / SKU"}
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      {lastScan ? (
+        <Text style={styles.lastScan}>Last scanned: {lastScan}</Text>
+      ) : null}
 
       {task.state === "Assigned" && (
         <View style={styles.completeSection}>
@@ -137,6 +196,19 @@ export default function TaskDetailScreen() {
           </TouchableOpacity>
         </View>
       )}
+
+      <ScannerOverlay
+        hint={
+          sourceVerified
+            ? sku.data?.code
+              ? `Scan SKU ${sku.data.code}`
+              : undefined
+            : source.data?.code
+              ? `Scan source ${source.data.code}`
+              : undefined
+        }
+        scanner={scanner}
+      />
     </ScrollView>
   )
 }
@@ -145,15 +217,20 @@ const Field = ({
   label,
   primary,
   secondary,
+  verified,
 }: {
   label: string
   primary: string
   secondary?: string
+  verified?: boolean
 }) => (
   <View style={styles.field}>
     <Text style={styles.fieldLabel}>{label}</Text>
     <View style={styles.fieldValueColumn}>
-      <Text style={styles.fieldValue}>{primary}</Text>
+      <View style={styles.fieldValueRow}>
+        {verified ? <Text style={styles.fieldCheck}>✓</Text> : null}
+        <Text style={styles.fieldValue}>{primary}</Text>
+      </View>
       {secondary ? (
         <Text style={styles.fieldSecondary}>{secondary}</Text>
       ) : null}
@@ -237,6 +314,34 @@ const styles = StyleSheet.create({
   fieldValueColumn: {
     alignItems: "flex-end",
     flex: 1,
+  },
+  fieldValueRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 6,
+  },
+  fieldCheck: {
+    color: "#16a34a",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  lastScan: {
+    color: "#6b7280",
+    fontSize: 12,
+    marginTop: 8,
+    textAlign: "center",
+  },
+  scanButton: {
+    alignItems: "center",
+    backgroundColor: "#0f172a",
+    borderRadius: 8,
+    marginTop: 16,
+    paddingVertical: 14,
+  },
+  scanButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
   },
   state: {
     color: "#16a34a",
