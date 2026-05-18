@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Neon WES is a Warehouse Execution System with a Scala 3 backend and a React/TanStack Start frontend (`web/`).
+Neon WES is a Warehouse Execution System with a Scala 3 backend, a React/TanStack Start web frontend (`apps/web/`), and a React Native + Expo mobile client (`apps/mobile/`). The JS/TS workspace is managed via Bun workspaces; shared types, API client, and design tokens live under `packages/`.
 
 ## Build & Test Commands
 
@@ -23,13 +23,21 @@ sbt scalafixAll          # Run scalafix (import organization)
 ### Web Frontend
 
 ```bash
-cd web
-bun install              # Install dependencies
-bun run dev              # Dev server on port 3000
-bun run build            # Production build
-bun run test             # Run Vitest tests
-bun run lint             # ESLint
-bun run format           # Prettier (no semicolons, double quotes, trailing commas)
+bun install              # Install workspace dependencies (run at repo root)
+bun dev:web              # Dev server on port 3000
+bun --cwd apps/web run build    # Production build
+bun --cwd apps/web run test     # Run Vitest tests
+bun --cwd apps/web run lint     # ESLint
+bun --cwd apps/web run format   # Prettier (no semicolons, double quotes, trailing commas)
+```
+
+### Mobile (Expo)
+
+```bash
+bun dev:mobile           # Metro on port 8081 (Expo dev server)
+bun --cwd apps/mobile run android   # Open in Android emulator (camera scanning)
+bun --cwd apps/mobile run ios       # Open in iOS simulator
+# Custom Dev Client (required for DataWedge): see apps/mobile/AGENTS.md
 ```
 
 ## Architecture
@@ -108,9 +116,16 @@ Sealed trait ADTs for errors, `Either[Error, Result]` return types. No exception
 
 Provides opaque type ID wrappers (UUID v7 via uuid-creator) for all entities, shared enums (`Priority`, `PackagingLevel`), utility types (`UomHierarchy`, `Lot`), `CborSerializable` marker trait, and `R2dbcProjectionQueries` trait for cross-entity queries.
 
-### Frontend (web/)
+### Frontend workspace (`apps/`, `packages/`)
 
-TanStack Start + React 19 + TypeScript. UI with shadcn/ui (Base UI primitives + CVA variants + Tailwind CSS v4). File-based routing in `src/routes/`. Path alias `@/*` maps to `src/*`.
+Bun workspaces. Two apps:
+- **`apps/web/`** — TanStack Start + React 19 + TypeScript. UI with shadcn/ui (Base UI primitives + CVA variants + Tailwind CSS v4). File-based routing in `src/routes/`. Path alias `@/*` maps to `apps/web/src/*`.
+- **`apps/mobile/`** — Expo SDK 53+ with Expo Router v4. React Native + TypeScript. Theming via `react-native-unistyles`. Auth via Bearer token in `expo-secure-store`. Scanner abstraction supports DataWedge (rugged Android) + `expo-camera` (consumer phones).
+
+Shared packages:
+- **`packages/domain/`** — TS types mirroring the Scala domain (Task, Wave, ConsolidationGroup, etc.), Zod schemas, label maps, legal-transition tables.
+- **`packages/client/`** — `createApiClient({ baseUrl, getAuthToken })` factory returning `ResultAsync<T, ApiError>` (neverthrow). Web calls it with `getAuthToken: () => undefined` (cookie auth); mobile passes a SecureStore-backed getter.
+- **`packages/tokens/`** — OKLch design tokens as a JS object. Web continues using CSS vars (generated from the JS object); mobile consumes the object directly via Unistyles.
 
 ## Coding Conventions
 

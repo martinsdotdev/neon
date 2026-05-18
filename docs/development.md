@@ -61,34 +61,39 @@ sbt wave/test              # Run wave tests only
    ```
 5. Add to root `aggregate(...)` list
 
-## Frontend (web/)
+## Frontend workspace (`apps/`, `packages/`)
+
+Bun workspaces: `apps/web/` (existing web app), `apps/mobile/` (Expo mobile),
+and shared packages under `packages/{domain,client,tokens}`.
 
 ### Build & Test
 
 ```bash
-cd web
-bun install                # Install dependencies
-bun run dev                # Dev server (port 3000)
-bun run build              # Production build
-bun run test               # Run Vitest tests
+bun install                       # Install workspace deps (run at repo root)
+bun dev:web                       # Web dev server on port 3000
+bun dev:mobile                    # Expo Metro on port 8081
+bun --cwd apps/web run build      # Production build (web)
+bun --cwd apps/web run test       # Run Vitest tests (web)
+bun --cwd apps/mobile run android # Open mobile in Android emulator
 ```
 
 ### Code Quality
 
 ```bash
-bun run lint               # ESLint
-bun run format             # Prettier (no semicolons, double quotes, trailing commas)
-bun run check              # Ultracite check (oxlint + oxfmt)
-bun run fix                # Ultracite auto-fix
-bun run typecheck          # TypeScript type checking
+bun --cwd apps/web run lint       # ESLint (web)
+bun --cwd apps/web run format     # Prettier (no semicolons, double quotes, trailing commas)
+bun --cwd apps/web run check      # Ultracite check (oxlint + oxfmt)
+bun --cwd apps/web run fix        # Ultracite auto-fix
+bun typecheck                     # Type-check every workspace package
 ```
 
 ### Pre-commit Hooks
 
-Lefthook runs `ultracite fix` on staged files before each commit. Install hooks with:
+Root `lefthook.yml` runs `ultracite fix` on staged JS/TS/JSON/CSS files across
+all workspaces. Install hooks with:
 
 ```bash
-bun run prepare            # Installs lefthook hooks
+bun run prepare                   # Installs lefthook hooks
 ```
 
 ## Commit Convention

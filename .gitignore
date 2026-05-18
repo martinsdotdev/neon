@@ -30,3 +30,27 @@ metals.sbt
 .idea
 .idea_modules
 /.worksheet/
+
+# Node / Bun
+node_modules/
+.bun/
+*.tsbuildinfo
+
+# Expo (mobile)
+.expo/
+.expo-shared/
+apps/mobile/dist/
+apps/mobile/android/build/
+apps/mobile/android/app/build/
+apps/mobile/ios/build/
+apps/mobile/ios/Pods/
+
+# Build artefacts
+apps/web/dist/
+apps/web/.nitro/
+apps/web/.tanstack/
+apps/web/.output/
+
+# Logs / caches
+*.log
+.cache/
