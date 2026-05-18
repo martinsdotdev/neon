@@ -4,7 +4,10 @@ import com.typesafe.scalalogging.LazyLogging
 import neon.common.Permission
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.Directive1
+import org.apache.pekko.http.scaladsl.server.{
+  AuthorizationFailedRejection,
+  Directive1
+}
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.slf4j.MDC
 
@@ -45,7 +48,11 @@ object AuthDirectives extends LazyLogging:
           kv("userId", context.userId.value),
           kv("requiredPermission", permission.key)
         )
-        complete(StatusCodes.Forbidden)
+        // Reject instead of completing so Pekko HTTP's concat can fall
+        // through to sibling routes. The route-level RejectionHandler in
+        // ProblemRouteHandlers converts unmapped AuthorizationFailedRejection
+        // into the RFC 9457 problem-details 403 response.
+        reject(AuthorizationFailedRejection)
     }
 
   private def bearerToken: Directive1[Option[String]] =
