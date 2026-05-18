@@ -1,7 +1,9 @@
 package neon.app.projection
 
+import neon.app.notification.NotificationEvent
 import neon.task.TaskEvent
 import org.apache.pekko.Done
+import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.persistence.query.typed.EventEnvelope
 import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
 
@@ -9,9 +11,14 @@ import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Projection handler that consumes task events and populates the `task_by_wave` and
-  * `task_by_handling_unit` read-side tables.
+  * `task_by_handling_unit` read-side tables. Also republishes mobile-facing
+  * notifications to the actor system event stream so the WebSocket route can
+  * fan them out to connected operators.
   */
-class TaskProjectionHandler(using ExecutionContext) extends LoggingProjectionHandler[TaskEvent]:
+class TaskProjectionHandler(using ExecutionContext, ActorSystem[?])
+    extends LoggingProjectionHandler[TaskEvent]:
+
+  private val eventStream = summon[ActorSystem[?]].eventStream
 
   override protected def processEvent(
       session: R2dbcSession,
@@ -53,6 +60,15 @@ class TaskProjectionHandler(using ExecutionContext) extends LoggingProjectionHan
       case e: TaskEvent.TaskAllocated =>
         updateState(session, e.taskId.value, "Allocated")
       case e: TaskEvent.TaskAssigned =>
+        eventStream.tell(
+          org.apache.pekko.actor.typed.eventstream.EventStream.Publish(
+            NotificationEvent.TaskAssignedToUser(
+              targetUser = e.userId,
+              taskId = e.taskId,
+              at = e.occurredAt
+            )
+          )
+        )
         updateState(session, e.taskId.value, "Assigned")
       case e: TaskEvent.TaskCompleted =>
         updateState(session, e.taskId.value, "Completed")

@@ -8,13 +8,15 @@ import org.apache.pekko.http.scaladsl.server.Route
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import scala.language.implicitConversions
+
 /** Binds the HTTP route tree and starts the Pekko HTTP server. */
 object HttpServer:
 
   def routes(
       registry: ServiceRegistry,
       secureCookies: Boolean = true
-  )(using ExecutionContext): Route =
+  )(using ExecutionContext, ActorSystem[?]): Route =
     handleExceptions(ProblemRouteHandlers.exceptionHandler):
       handleRejections(ProblemRouteHandlers.rejectionHandler):
         RequestLoggingDirective.withRequestLogging:
@@ -80,14 +82,16 @@ object HttpServer:
             CycleCountRoutes(
               registry.cycleCountService,
               registry.authenticationService
-            )
+            ),
+            NotificationRoutes(registry.authenticationService)
           )
 
   def start(
       registry: ServiceRegistry,
-      system: ActorSystem[?]
+      systemRef: ActorSystem[?]
   )(using ExecutionContext): Future[Http.ServerBinding] =
-    given ActorSystem[?] = system
+    given ActorSystem[?] = systemRef
+    val system = systemRef
     val httpConfig = system.settings.config.getConfig("neon.http")
     val host = httpConfig.getString("host")
     val port = httpConfig.getInt("port")
