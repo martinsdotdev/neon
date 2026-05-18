@@ -114,6 +114,8 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
         Future.successful(Nil)
       def findByHandlingUnitId(id: HandlingUnitId) =
         Future.successful(Nil)
+      def findAssignedTo(userId: UserId, state: Option[String]) =
+        Future.successful(Nil)
       def save(task: Task, event: TaskEvent) =
         Future.successful(())
       def saveAll(entries: List[(Task, TaskEvent)]) =
@@ -142,6 +144,8 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
       def findByWaveId(waveId: WaveId) =
         Future.successful(Nil)
       def findByHandlingUnitId(id: HandlingUnitId) =
+        Future.successful(Nil)
+      def findAssignedTo(userId: UserId, state: Option[String]) =
         Future.successful(Nil)
       def save(task: Task, event: TaskEvent) =
         Future.successful(())

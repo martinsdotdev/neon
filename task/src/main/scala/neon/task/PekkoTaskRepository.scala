@@ -1,7 +1,7 @@
 package neon.task
 
 import io.r2dbc.spi.ConnectionFactory
-import neon.common.{HandlingUnitId, R2dbcProjectionQueries, TaskId, WaveId}
+import neon.common.{HandlingUnitId, R2dbcProjectionQueries, TaskId, UserId, WaveId}
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
@@ -38,6 +38,27 @@ class PekkoTaskRepository(
       handlingUnitId.value,
       "task_id"
     ).flatMap(ids => Future.sequence(ids.map(id => findById(TaskId(id)))).map(_.flatten))
+
+  def findAssignedTo(
+      userId: UserId,
+      state: Option[String] = None
+  ): Future[List[Task]] =
+    val ids = state match
+      case Some(s) =>
+        queryProjectionIds(
+          "SELECT task_id FROM task_by_assignee WHERE user_id = $1 AND state = $2",
+          List(userId.value, s),
+          "task_id"
+        )
+      case None =>
+        queryProjectionIds(
+          "SELECT task_id FROM task_by_assignee WHERE user_id = $1",
+          userId.value,
+          "task_id"
+        )
+    ids.flatMap(taskIds =>
+      Future.sequence(taskIds.map(id => findById(TaskId(id)))).map(_.flatten)
+    )
 
   def save(task: Task, event: TaskEvent): Future[Unit] =
     val entityRef = sharding.entityRefFor(TaskActor.EntityKey, task.id.value.toString)

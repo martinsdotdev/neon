@@ -1,6 +1,6 @@
 package neon.task
 
-import neon.common.{HandlingUnitId, TaskId, WaveId}
+import neon.common.{HandlingUnitId, TaskId, UserId, WaveId}
 
 import scala.concurrent.Future
 
@@ -9,6 +9,16 @@ trait AsyncTaskRepository:
   def findById(id: TaskId): Future[Option[Task]]
   def findByWaveId(waveId: WaveId): Future[List[Task]]
   def findByHandlingUnitId(handlingUnitId: HandlingUnitId): Future[List[Task]]
+
+  /** Returns tasks ever assigned to the given user. Optional state filter
+    * narrows to active work (`Some("Assigned")`) or history. Read-side query
+    * against the `task_by_assignee` projection.
+    */
+  def findAssignedTo(
+      userId: UserId,
+      state: Option[String] = None
+  ): Future[List[Task]]
+
   def save(task: Task, event: TaskEvent): Future[Unit]
 
   /** Persists multiple entries by fanning out to individual entity actors. Not transactional:

@@ -41,6 +41,12 @@ object ProjectionBootstrap:
       () => TaskProjectionHandler()
     )
 
+    initProjection[TaskEvent](
+      "task-by-assignee-projection",
+      "Task",
+      () => TaskByAssigneeProjectionHandler()
+    )
+
     initProjection[ConsolidationGroupEvent](
       "consolidation-group-projection",
       "ConsolidationGroup",

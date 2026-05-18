@@ -25,6 +25,17 @@ object HttpServer:
               registry.taskLifecycleService,
               registry.authenticationService
             ),
+            MobileTaskRoutes(
+              registry.taskRepository,
+              registry.taskLifecycleService,
+              registry.authenticationService
+            ),
+            MobileLookupRoutes(
+              registry.skuRepository,
+              registry.locationRepository,
+              registry.handlingUnitRepository,
+              registry.authenticationService
+            ),
             WaveRoutes(
               registry.waveCancellationService,
               registry.wavePlanningService,
