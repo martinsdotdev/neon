@@ -1,98 +1,179 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useQuery } from "@tanstack/react-query"
+import { Link, router } from "expo-router"
+import { useEffect } from "react"
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native"
+import { type MobileTask, taskQueries } from "@/src/api/tasks"
+import { useAuth } from "@/src/auth/AuthProvider"
+import { useNotifications } from "@/src/notifications/useNotifications"
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+export default function TasksScreen() {
+  const { user, status, logout } = useAuth()
 
-export default function HomeScreen() {
+  useEffect(() => {
+    if (status === "unauthenticated") router.replace("/login")
+  }, [status])
+
+  useNotifications(status === "authenticated")
+
+  const query = useQuery({
+    ...taskQueries.assigned(user?.userId ?? "", "Assigned"),
+    enabled: status === "authenticated" && user !== null,
+  })
+
+  if (status !== "authenticated" || !user) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator />
+      </View>
+    )
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.headerText}>
+          <Text style={styles.greeting}>Hi, {user.name}</Text>
+          <Text style={styles.role}>{user.role}</Text>
+        </View>
+        <TouchableOpacity onPress={logout}>
+          <Text style={styles.signOut}>Sign out</Text>
+        </TouchableOpacity>
+      </View>
+      <FlatList
+        ListEmptyComponent={
+          query.isLoading ? (
+            <View style={styles.centered}>
+              <ActivityIndicator />
+            </View>
+          ) : (
+            <View style={styles.centered}>
+              <Text style={styles.empty}>
+                {query.isError
+                  ? "Couldn't load tasks — pull down to retry."
+                  : "No tasks assigned right now."}
+              </Text>
+            </View>
+          )
+        }
+        data={query.data ?? []}
+        keyExtractor={(item) => item.id}
+        refreshControl={
+          <RefreshControl
+            onRefresh={query.refetch}
+            refreshing={query.isFetching}
+          />
+        }
+        renderItem={({ item }) => <TaskRow task={item} />}
+      />
+    </View>
+  )
 }
 
+const TaskRow = ({ task }: { task: MobileTask }) => (
+  <Link
+    asChild
+    href={{ params: { id: task.id }, pathname: "/tasks/[id]" }}
+  >
+    <TouchableOpacity style={styles.row}>
+      <View style={styles.rowMain}>
+        <Text style={styles.rowTitle}>{task.taskType}</Text>
+        <Text style={styles.rowSubtitle}>
+          SKU {shortId(task.skuId)} · qty {task.requestedQuantity}
+        </Text>
+      </View>
+      <View style={styles.rowMeta}>
+        <Text style={styles.rowLocation}>
+          {task.sourceLocationId ? shortId(task.sourceLocationId) : "—"}
+        </Text>
+        <Text style={styles.rowStateBadge}>{task.state}</Text>
+      </View>
+    </TouchableOpacity>
+  </Link>
+)
+
+const shortId = (id: string): string => id.slice(0, 8)
+
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  centered: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+    paddingVertical: 40,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  container: {
+    backgroundColor: "#f9fafb",
+    flex: 1,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  empty: {
+    color: "#6b7280",
+    fontSize: 15,
   },
-});
+  greeting: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  header: {
+    alignItems: "center",
+    borderBottomColor: "#e5e7eb",
+    borderBottomWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  headerText: {
+    flexDirection: "column",
+  },
+  role: {
+    color: "#6b7280",
+    fontSize: 13,
+  },
+  row: {
+    alignItems: "center",
+    backgroundColor: "white",
+    borderBottomColor: "#e5e7eb",
+    borderBottomWidth: 1,
+    flexDirection: "row",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  rowLocation: {
+    color: "#374151",
+    fontSize: 13,
+    fontVariant: ["tabular-nums"],
+  },
+  rowMain: {
+    flex: 1,
+  },
+  rowMeta: {
+    alignItems: "flex-end",
+    gap: 4,
+  },
+  rowStateBadge: {
+    color: "#16a34a",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  rowSubtitle: {
+    color: "#6b7280",
+    fontSize: 13,
+    marginTop: 2,
+  },
+  rowTitle: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  signOut: {
+    color: "#ef4444",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+})
