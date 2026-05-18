@@ -13,6 +13,7 @@ enum Permission(val key: String):
   case WorkstationManage extends Permission("workstation:manage")
   case TransportOrderCancel extends Permission("transport-order:cancel")
   case ConsolidationGroupCancel extends Permission("consolidation-group:cancel")
+  case ConsolidationGroupAdvance extends Permission("consolidation-group:advance")
   case HandlingUnitManage extends Permission("handling-unit:manage")
   case SlotManage extends Permission("slot:manage")
   case InventoryManage extends Permission("inventory:manage")

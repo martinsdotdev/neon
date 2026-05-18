@@ -15,6 +15,46 @@ class AsyncConsolidationGroupCompletionService(
 )(using ExecutionContext)
     extends LazyLogging:
 
+  /** Advances a [[ConsolidationGroup.Picked]] to [[ConsolidationGroup.ReadyForWorkstation]].
+    * Closes the previously HTTP-unreachable gap between picking completion and
+    * workstation assignment.
+    */
+  def markReadyForWorkstation(
+      consolidationGroupId: ConsolidationGroupId,
+      at: Instant
+  ): Future[
+    Either[
+      ConsolidationGroupAdvanceError,
+      ConsolidationGroupAdvanceResult
+    ]
+  ] =
+    logger.debug(
+      "Marking consolidation group ready for workstation {}",
+      consolidationGroupId.value
+    )
+    consolidationGroupRepository
+      .findById(consolidationGroupId)
+      .flatMap:
+        case None =>
+          Future.successful(
+            Left(
+              ConsolidationGroupAdvanceError
+                .ConsolidationGroupNotFound(consolidationGroupId)
+            )
+          )
+        case Some(picked: ConsolidationGroup.Picked) =>
+          val (ready, event) = picked.readyForWorkstation(at)
+          consolidationGroupRepository
+            .save(ready, event)
+            .map(_ => Right(ConsolidationGroupAdvanceResult(ready, event)))
+        case Some(_) =>
+          Future.successful(
+            Left(
+              ConsolidationGroupAdvanceError
+                .ConsolidationGroupNotPicked(consolidationGroupId)
+            )
+          )
+
   def complete(
       consolidationGroupId: ConsolidationGroupId,
       at: Instant

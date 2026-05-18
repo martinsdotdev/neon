@@ -10,6 +10,20 @@ import neon.workstation.{Workstation, WorkstationEvent, WorkstationRepository}
 
 import java.time.Instant
 
+/** Errors emitted by [[AsyncConsolidationGroupCompletionService.markReadyForWorkstation]]. */
+sealed trait ConsolidationGroupAdvanceError
+
+object ConsolidationGroupAdvanceError:
+  case class ConsolidationGroupNotFound(consolidationGroupId: ConsolidationGroupId)
+      extends ConsolidationGroupAdvanceError
+  case class ConsolidationGroupNotPicked(consolidationGroupId: ConsolidationGroupId)
+      extends ConsolidationGroupAdvanceError
+
+case class ConsolidationGroupAdvanceResult(
+    ready: ConsolidationGroup.ReadyForWorkstation,
+    event: ConsolidationGroupEvent.ConsolidationGroupReadyForWorkstation
+)
+
 /** Errors that can occur during consolidation group completion. */
 sealed trait ConsolidationGroupCompletionError
 

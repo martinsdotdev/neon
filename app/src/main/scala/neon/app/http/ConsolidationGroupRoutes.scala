@@ -6,6 +6,7 @@ import neon.common.{ConsolidationGroupId, Permission}
 import neon.core.{
   AsyncConsolidationGroupCancellationService,
   AsyncConsolidationGroupCompletionService,
+  ConsolidationGroupAdvanceError,
   ConsolidationGroupCancellationError,
   ConsolidationGroupCompletionError
 }
@@ -28,6 +29,11 @@ object ConsolidationGroupRoutes:
   ) derives Encoder.AsObject
 
   case class ConsolidationGroupCancellationResponse(
+      status: String,
+      consolidationGroupId: String
+  ) derives Encoder.AsObject
+
+  case class ConsolidationGroupReadyResponse(
       status: String,
       consolidationGroupId: String
   ) derives Encoder.AsObject
@@ -71,6 +77,33 @@ object ConsolidationGroupRoutes:
                         StatusCodes.UnprocessableEntity
                       )
                     case _: ConsolidationGroupCompletionError.WorkstationNotActive =>
+                      complete(StatusCodes.Conflict)
+        ,
+        AuthDirectives.requirePermission(
+          Permission.ConsolidationGroupAdvance,
+          authService
+        ): _ =>
+          path(Segment / "ready-for-workstation"): consolidationGroupIdStr =>
+            post:
+              val id = ConsolidationGroupId(
+                UUID.fromString(consolidationGroupIdStr)
+              )
+              onSuccess(
+                completionService
+                  .markReadyForWorkstation(id, Instant.now())
+              ):
+                case Right(result) =>
+                  complete(
+                    ConsolidationGroupReadyResponse(
+                      status = "ready-for-workstation",
+                      consolidationGroupId = result.ready.id.value.toString
+                    )
+                  )
+                case Left(error) =>
+                  error match
+                    case _: ConsolidationGroupAdvanceError.ConsolidationGroupNotFound =>
+                      complete(StatusCodes.NotFound)
+                    case _: ConsolidationGroupAdvanceError.ConsolidationGroupNotPicked =>
                       complete(StatusCodes.Conflict)
         ,
         AuthDirectives.requirePermission(
