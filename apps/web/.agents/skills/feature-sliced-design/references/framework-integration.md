@@ -126,26 +126,26 @@ entities/user/
 
 ```typescript
 // entities/user/index.ts — shared (types, pure logic, no components)
-export type { User } from "./model/user";
-export { formatUserName } from "./model/user";
+export type { User } from "./model/user"
+export { formatUserName } from "./model/user"
 
 // entities/user/index.client.ts — client components only
-export { UserAvatar } from "./ui/UserAvatar";
+export { UserAvatar } from "./ui/UserAvatar"
 
 // entities/user/index.server.ts — server components + server-only code
-export { UserProfileCard } from "./ui/UserProfileCard";
-export { fetchUser } from "./api/user-queries.server";
+export { UserProfileCard } from "./ui/UserProfileCard"
+export { fetchUser } from "./api/user-queries.server"
 ```
 
 ```typescript
 // Consumers import from the appropriate entry point:
 
 // In a Server Component (pages/profile/ui/ProfilePage.tsx)
-import { UserProfileCard } from "@/entities/user/index.server";
-import type { User } from "@/entities/user";
+import { UserProfileCard } from "@/entities/user/index.server"
+import type { User } from "@/entities/user"
 
 // In a Client Component (features/comment/ui/CommentAuthor.tsx)
-import { UserAvatar } from "@/entities/user/index.client";
+import { UserAvatar } from "@/entities/user/index.client"
 ```
 
 **Rules for split public APIs:**
@@ -208,7 +208,7 @@ my-nuxt-project/
   <HomePage />
 </template>
 <script setup>
-import { HomePage } from "@/pages/home";
+import { HomePage } from "@/pages/home"
 </script>
 
 <!-- pages/profile.vue -->
@@ -216,7 +216,7 @@ import { HomePage } from "@/pages/home";
   <ProfilePage />
 </template>
 <script setup>
-import { ProfilePage } from "@/pages/profile";
+import { ProfilePage } from "@/pages/profile"
 </script>
 ```
 
@@ -224,7 +224,7 @@ import { ProfilePage } from "@/pages/profile";
 
 ```typescript
 // nuxt.config.ts
-import { resolve } from "path";
+import { resolve } from "path"
 
 export default defineNuxtConfig({
   alias: {
@@ -235,7 +235,7 @@ export default defineNuxtConfig({
     "@/entities": resolve(__dirname, "src/entities"),
     "@/shared": resolve(__dirname, "src/shared"),
   },
-});
+})
 ```
 
 ---
@@ -263,9 +263,9 @@ my-vite-project/
 
 ```typescript
 // vite.config.ts
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { resolve } from "path";
+import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
+import { resolve } from "path"
 
 export default defineConfig({
   plugins: [react()],
@@ -279,7 +279,7 @@ export default defineConfig({
       "@/shared": resolve(__dirname, "src/shared"),
     },
   },
-});
+})
 ```
 
 Also configure `tsconfig.json` paths (same as Next.js example above) for
@@ -295,7 +295,7 @@ CRA does not natively support path aliases without ejecting. Options:
 
    ```javascript
    // craco.config.js
-   const path = require("path");
+   const path = require("path")
    module.exports = {
      webpack: {
        alias: {
@@ -307,7 +307,7 @@ CRA does not natively support path aliases without ejecting. Options:
          "@/shared": path.resolve(__dirname, "src/shared"),
        },
      },
-   };
+   }
    ```
 
 2. **Migrate to Vite** — recommended for new projects. CRA is no longer

@@ -41,7 +41,9 @@ export const receiptQueries = {
   all: () =>
     queryOptions({
       queryFn: async () => {
-        const result = await apiClient.get<Array<Receipt>>("/api/inbound/receipts")
+        const result = await apiClient.get<Array<Receipt>>(
+          "/api/inbound/receipts"
+        )
         return result.unwrapOr(MOCK_RECEIPTS)
       },
       queryKey: ["receipts"] as const,

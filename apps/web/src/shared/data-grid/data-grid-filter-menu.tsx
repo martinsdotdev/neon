@@ -560,7 +560,9 @@ interface DataGridFilterInputProps<TData> {
   column: Column<TData>
   inputId: string
   onValueChange: (value: string | number | Array<string> | undefined) => void
-  onEndValueChange?: (value: string | number | Array<string> | undefined) => void
+  onEndValueChange?: (
+    value: string | number | Array<string> | undefined
+  ) => void
 }
 
 function DataGridFilterInput<TData>({
@@ -613,7 +615,7 @@ function DataGridFilterInput<TData>({
             type="number"
             inputMode="numeric"
             placeholder="Start"
-            value={(localValue as number | undefined) ?? ""}
+            value={localValue ?? ""}
             onChange={(event) => {
               const val = event.target.value
               const newValue = val === "" ? undefined : Number(val)
@@ -627,7 +629,7 @@ function DataGridFilterInput<TData>({
             type="number"
             inputMode="numeric"
             placeholder="End"
-            value={(localEndValue as number | undefined) ?? ""}
+            value={localEndValue ?? ""}
             onChange={(event) => {
               const val = event.target.value
               const newValue = val === "" ? undefined : Number(val)
@@ -646,7 +648,7 @@ function DataGridFilterInput<TData>({
         type="number"
         inputMode="numeric"
         placeholder={placeholder}
-        value={(localValue as number | undefined) ?? ""}
+        value={localValue ?? ""}
         onChange={(event) => {
           const val = event.target.value
           const newValue = val === "" ? undefined : Number(val)
@@ -965,7 +967,7 @@ function DataGridFilterInput<TData>({
           type="text"
           placeholder="Start"
           className="h-8 w-full flex-1 rounded"
-          value={(localValue as string | undefined) ?? ""}
+          value={localValue ?? ""}
           onChange={(event) => {
             const val = event.target.value
             const newValue = val === "" ? undefined : val
@@ -978,7 +980,7 @@ function DataGridFilterInput<TData>({
           type="text"
           placeholder="End"
           className="h-8 w-full flex-1 rounded"
-          value={(localEndValue as string | undefined) ?? ""}
+          value={localEndValue ?? ""}
           onChange={(event) => {
             const val = event.target.value
             const newValue = val === "" ? undefined : val
@@ -996,7 +998,7 @@ function DataGridFilterInput<TData>({
       type="text"
       placeholder={placeholder}
       className="h-8 w-full rounded"
-      value={(localValue as string | undefined) ?? ""}
+      value={localValue ?? ""}
       onChange={(event) => {
         const val = event.target.value
         const newValue = val === "" ? undefined : val

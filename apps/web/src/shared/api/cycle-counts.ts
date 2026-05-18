@@ -51,7 +51,8 @@ export const cycleCountQueries = {
   all: () =>
     queryOptions({
       queryFn: async () => {
-        const result = await apiClient.get<Array<CycleCount>>("/api/cycle-counts")
+        const result =
+          await apiClient.get<Array<CycleCount>>("/api/cycle-counts")
         return result.unwrapOr(MOCK_CCS)
       },
       queryKey: ["cycle-counts"] as const,

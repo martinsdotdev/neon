@@ -55,7 +55,8 @@ export const inventoryQueries = {
   all: () =>
     queryOptions({
       queryFn: async () => {
-        const result = await apiClient.get<Array<InventoryRecord>>("/api/inventory")
+        const result =
+          await apiClient.get<Array<InventoryRecord>>("/api/inventory")
         return result.unwrapOr(MOCK_INV)
       },
       queryKey: ["inventory"] as const,

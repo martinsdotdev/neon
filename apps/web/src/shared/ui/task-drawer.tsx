@@ -359,7 +359,7 @@ function TimelineSection({
   const all: Array<TimelineRow> = [
     ...seedEvents.map((event) => ({ event, future: false })),
     ...futureStates.map((s) => ({
-      event: { at: "", by: "", state: s } as TaskTimelineEvent,
+      event: { at: "", by: "", state: s },
       future: true,
     })),
   ]

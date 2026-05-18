@@ -305,8 +305,8 @@ Every slice must have an `index.ts` that re-exports its public interface:
 
 ```typescript
 // entities/user/index.ts
-export { UserAvatar } from "./ui/UserAvatar";
-export { useUser, type User } from "./model/user";
+export { UserAvatar } from "./ui/UserAvatar"
+export { useUser, type User } from "./model/user"
 ```
 
 ---

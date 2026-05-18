@@ -59,7 +59,7 @@ import {
 import { Button } from "@/shared/ui/button"
 import { InputGroup, InputGroupAddon } from "@/shared/ui/input-group"
 import { Kbd } from "@/shared/ui/kbd"
-import { MenuIcon  } from "@/shared/ui/menu"
+import { MenuIcon } from "@/shared/ui/menu"
 import {
   DropdownMenu,
   DropdownMenuContent,

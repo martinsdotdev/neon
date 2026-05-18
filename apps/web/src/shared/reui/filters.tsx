@@ -603,8 +603,10 @@ const createOperatorsFromI18n = (
 })
 
 // Default operators for different field types (using default i18n)
-export const DEFAULT_OPERATORS: Record<string, Array<FilterOperator>> =
-  createOperatorsFromI18n(DEFAULT_I18N)
+export const DEFAULT_OPERATORS: Record<
+  string,
+  Array<FilterOperator>
+> = createOperatorsFromI18n(DEFAULT_I18N)
 
 // Helper function to get operators for a field
 const getOperatorsForField = <T = unknown,>(
@@ -737,7 +739,7 @@ function SelectOptionsPopover<T = unknown>({
 
   const isMultiSelect = field.type === "multiselect" || values.length > 1
   const effectiveValues =
-    (field.value !== undefined ? (field.value) : values) || []
+    (field.value !== undefined ? field.value : values) || []
 
   const selectedOptions =
     field.options?.filter((opt) => effectiveValues.includes(opt.value)) || []
@@ -810,7 +812,7 @@ function SelectOptionsPopover<T = unknown>({
                 if (option) {
                   const isSelected = effectiveValues.includes(option.value)
                   const next = isSelected
-                    ? (effectiveValues.filter((v) => v !== option.value))
+                    ? effectiveValues.filter((v) => v !== option.value)
                     : isMultiSelect
                       ? ([...effectiveValues, option.value] as Array<T>)
                       : ([option.value] as Array<T>)
@@ -1275,10 +1277,7 @@ function FilterSubmenuContent<T = unknown>({
                 e.preventDefault()
                 const option = filteredOptions[highlightedIndex]
                 if (option) {
-                  onToggle(
-                    option.value,
-                    currentValues.includes(option.value)
-                  )
+                  onToggle(option.value, currentValues.includes(option.value))
                   if (!isMultiSelect) {
                     onBack?.()
                   }
@@ -1322,10 +1321,7 @@ function FilterSubmenuContent<T = unknown>({
                 e.preventDefault()
                 const option = filteredOptions[highlightedIndex]
                 if (option) {
-                  onToggle(
-                    option.value,
-                    currentValues.includes(option.value)
-                  )
+                  onToggle(option.value, currentValues.includes(option.value))
                   if (!isMultiSelect) {
                     onBack?.()
                   }
@@ -1366,9 +1362,7 @@ function FilterSubmenuContent<T = unknown>({
                       onSelect={(e) => {
                         if (isMultiSelect) e.preventDefault()
                       }}
-                      onCheckedChange={() =>
-                        onToggle(option.value, isSelected)
-                      }
+                      onCheckedChange={() => onToggle(option.value, isSelected)}
                     >
                       {option.icon && option.icon}
                       <span className="truncate">{option.label}</span>
@@ -1772,10 +1766,13 @@ export function Filters<T = unknown>({
                                   onToggle={(value, isSelected) => {
                                     if (isMultiSelect) {
                                       const nextValues = isSelected
-                                        ? (currentValues.filter(
+                                        ? currentValues.filter(
                                             (v) => v !== value
-                                          ))
-                                        : ([...currentValues, value] as Array<T>)
+                                          )
+                                        : ([
+                                            ...currentValues,
+                                            value,
+                                          ] as Array<T>)
 
                                       if (sessionFilter) {
                                         if (nextValues.length === 0) {

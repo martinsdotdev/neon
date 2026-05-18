@@ -1,6 +1,7 @@
-import type { ComponentProps, ReactNode } from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import { cva } from "class-variance-authority"
 import { ArrowDown, ArrowRight, ArrowUp } from "lucide-react"
+import type { VariantProps } from "class-variance-authority"
+import type { ComponentProps, ReactNode } from "react"
 
 import { cn } from "@/shared/lib/utils"
 

@@ -1617,13 +1617,15 @@ export function FileCell<TData>({
           setUploadingFiles(new Set())
           tableMeta.onDataUpdate?.({ rowIndex, columnId, value: finalFiles })
         } else {
-          const newFilesData: Array<FileCellData> = filesToValidate.map((f) => ({
-            id: crypto.randomUUID(),
-            name: f.name,
-            size: f.size,
-            type: f.type,
-            url: URL.createObjectURL(f),
-          }))
+          const newFilesData: Array<FileCellData> = filesToValidate.map(
+            (f) => ({
+              id: crypto.randomUUID(),
+              name: f.name,
+              size: f.size,
+              type: f.type,
+              url: URL.createObjectURL(f),
+            })
+          )
           const updatedFiles = [...files, ...newFilesData]
           setFiles(updatedFiles)
           tableMeta.onDataUpdate?.({

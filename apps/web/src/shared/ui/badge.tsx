@@ -1,7 +1,7 @@
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
-import {  cva } from "class-variance-authority"
-import type {VariantProps} from "class-variance-authority";
+import { cva } from "class-variance-authority"
+import type { VariantProps } from "class-variance-authority"
 
 import { cn } from "@/shared/lib/utils"
 
@@ -10,13 +10,12 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary/15 text-primary dark:bg-primary/20 [a]:hover:bg-primary/25",
-        secondary:
-          "bg-muted text-muted-foreground [a]:hover:bg-muted/80",
+        default:
+          "bg-primary/15 text-primary dark:bg-primary/20 [a]:hover:bg-primary/25",
+        secondary: "bg-muted text-muted-foreground [a]:hover:bg-muted/80",
         destructive:
-          "bg-destructive/10 text-destructive dark:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
-        outline:
-          "border-border text-muted-foreground [a]:hover:bg-muted",
+          "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
+        outline: "border-border text-muted-foreground [a]:hover:bg-muted",
         ghost:
           "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
         link: "text-primary underline-offset-4 hover:underline",

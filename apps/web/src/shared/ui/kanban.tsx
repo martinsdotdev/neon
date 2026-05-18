@@ -7,18 +7,30 @@ import {
   useMemo,
   useState,
 } from "react"
-import type { CSSProperties, HTMLAttributes, ReactNode } from "react"
 import {
-  defaultDropAnimationSideEffects,
   DndContext,
   DragOverlay,
   KeyboardSensor,
   MeasuringStrategy,
   MouseSensor,
   TouchSensor,
+  defaultDropAnimationSideEffects,
   useSensor,
   useSensors,
 } from "@dnd-kit/core"
+import {
+  SortableContext,
+  arrayMove,
+  defaultAnimateLayoutChanges,
+  rectSortingStrategy,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import { Slot } from "radix-ui"
+import { createPortal } from "react-dom"
+import type { AnimateLayoutChanges } from "@dnd-kit/sortable"
 import type {
   DragEndEvent,
   DragOverEvent,
@@ -29,27 +41,15 @@ import type {
   Modifiers,
   UniqueIdentifier,
 } from "@dnd-kit/core"
-import {
-  arrayMove,
-  defaultAnimateLayoutChanges,
-  rectSortingStrategy,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable"
-import type { AnimateLayoutChanges } from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
-import { Slot } from "radix-ui"
-import { createPortal } from "react-dom"
+import type { CSSProperties, HTMLAttributes, ReactNode } from "react"
 
 import { cn } from "@/shared/lib/utils"
 
 interface KanbanContextProps<T> {
-  columns: Record<string, T[]>
-  setColumns: (columns: Record<string, T[]>) => void
+  columns: Record<string, Array<T>>
+  setColumns: (columns: Record<string, Array<T>>) => void
   getItemId: (item: T) => string
-  columnIds: string[]
+  columnIds: Array<string>
   activeId: UniqueIdentifier | null
   setActiveId: (id: UniqueIdentifier | null) => void
   findContainer: (id: UniqueIdentifier) => string | undefined
@@ -115,8 +115,8 @@ export interface KanbanMoveEvent {
 }
 
 export interface KanbanRootProps<T> extends HTMLAttributes<HTMLDivElement> {
-  value: Record<string, T[]>
-  onValueChange: (value: Record<string, T[]>) => void
+  value: Record<string, Array<T>>
+  onValueChange: (value: Record<string, Array<T>>) => void
   getItemValue: (item: T) => string
   children: ReactNode
   onMove?: (event: KanbanMoveEvent) => void
@@ -288,7 +288,7 @@ function Kanban<T>({
             activeIndex,
             overIndex
           )
-          const newColumns: Record<string, T[]> = {}
+          const newColumns: Record<string, Array<T>> = {}
           newOrder.forEach((key) => {
             newColumns[key] = columns[key]
           })

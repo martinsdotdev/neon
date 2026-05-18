@@ -3,7 +3,7 @@
 import * as React from "react"
 import useEmblaCarousel from "embla-carousel-react"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
-import type {UseEmblaCarouselType} from "embla-carousel-react";
+import type { UseEmblaCarouselType } from "embla-carousel-react"
 
 import { cn } from "@/shared/lib/utils"
 import { Button } from "@/shared/ui/button"

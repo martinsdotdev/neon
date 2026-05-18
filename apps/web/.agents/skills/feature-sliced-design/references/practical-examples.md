@@ -18,30 +18,30 @@ business logic. Keep them in shared:
 
 ```typescript
 // shared/auth/token.ts
-const TOKEN_KEY = "auth_token";
+const TOKEN_KEY = "auth_token"
 
-export const getToken = (): string | null => localStorage.getItem(TOKEN_KEY);
+export const getToken = (): string | null => localStorage.getItem(TOKEN_KEY)
 
 export const setToken = (token: string): void =>
-  localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(TOKEN_KEY, token)
 
-export const clearToken = (): void => localStorage.removeItem(TOKEN_KEY);
+export const clearToken = (): void => localStorage.removeItem(TOKEN_KEY)
 
 // shared/auth/session.ts
 export interface Session {
-  userId: string;
-  email: string;
-  role: "admin" | "user";
+  userId: string
+  email: string
+  role: "admin" | "user"
 }
 
 export const useSession = (): Session | null => {
   // Implementation depends on your auth provider
   // (React Context, Zustand, etc.)
-};
+}
 
 // shared/auth/index.ts
-export { getToken, setToken, clearToken } from "./token";
-export { useSession, type Session } from "./session";
+export { getToken, setToken, clearToken } from "./token"
+export { useSession, type Session } from "./session"
 ```
 
 ### Auth UI → pages (single use) or features (multi-use)
@@ -105,17 +105,17 @@ The location of type definitions follows the same rules as any other code:
 ```typescript
 // shared/api/product.ts — API response shapes
 export interface ProductDTO {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-  createdAt: string;
+  id: string
+  name: string
+  price: number
+  category: string
+  createdAt: string
 }
 
 export interface ProductListResponse {
-  items: ProductDTO[];
-  total: number;
-  page: number;
+  items: ProductDTO[]
+  total: number
+  page: number
 }
 ```
 
@@ -123,14 +123,14 @@ export interface ProductListResponse {
 
 ```typescript
 // entities/product/model/product.ts — domain model with logic
-import type { ProductDTO } from "@/shared/api/product";
+import type { ProductDTO } from "@/shared/api/product"
 
 export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  formattedPrice: string;
-  isOnSale: boolean;
+  id: string
+  name: string
+  price: number
+  formattedPrice: string
+  isOnSale: boolean
 }
 
 export const fromDTO = (dto: ProductDTO): Product => ({
@@ -139,7 +139,7 @@ export const fromDTO = (dto: ProductDTO): Product => ({
   price: dto.price,
   formattedPrice: `$${dto.price.toFixed(2)}`,
   isOnSale: dto.price < 10,
-});
+})
 ```
 
 **Key principle:** Raw API shapes go in `shared/api/`. Domain models with
@@ -155,40 +155,40 @@ just for types.
 
 ```typescript
 // pages/product-detail/api/fetch-product.ts
-import { apiClient } from "@/shared/api/client";
-import type { ProductDTO } from "@/shared/api/product";
+import { apiClient } from "@/shared/api/client"
+import type { ProductDTO } from "@/shared/api/product"
 
 export const fetchProduct = async (id: string): Promise<ProductDTO> => {
-  const response = await apiClient.get(`/products/${id}`);
-  return response.data;
-};
+  const response = await apiClient.get(`/products/${id}`)
+  return response.data
+}
 ```
 
 ### Shared API client setup
 
 ```typescript
 // shared/api/client.ts
-import axios from "axios";
-import { getToken } from "@/shared/auth/token";
+import axios from "axios"
+import { getToken } from "@/shared/auth/token"
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-});
+})
 
 apiClient.interceptors.request.use((config) => {
-  const token = getToken();
+  const token = getToken()
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`
   }
-  return config;
-});
+  return config
+})
 ```
 
 ### CRUD helpers in shared
 
 ```typescript
 // shared/api/crud.ts
-import { apiClient } from "./client";
+import { apiClient } from "./client"
 
 export const createCrudApi = <T>(resource: string) => ({
   getAll: () => apiClient.get<T[]>(`/${resource}`).then((r) => r.data),
@@ -199,14 +199,14 @@ export const createCrudApi = <T>(resource: string) => ({
   update: (id: string, data: Partial<T>) =>
     apiClient.put<T>(`/${resource}/${id}`, data).then((r) => r.data),
   remove: (id: string) => apiClient.delete(`/${resource}/${id}`),
-});
+})
 
 // Usage in pages or features:
 // pages/products/api/products-api.ts
-import { createCrudApi } from "@/shared/api/crud";
-import type { ProductDTO } from "@/shared/api/product";
+import { createCrudApi } from "@/shared/api/crud"
+import type { ProductDTO } from "@/shared/api/product"
 
-export const productsApi = createCrudApi<ProductDTO>("products");
+export const productsApi = createCrudApi<ProductDTO>("products")
 ```
 
 ---
@@ -217,49 +217,49 @@ export const productsApi = createCrudApi<ProductDTO>("products");
 
 ```typescript
 // features/todo-list/model/todo.ts
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { apiClient } from "@/shared/api/client";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { apiClient } from "@/shared/api/client"
 
 interface Todo {
-  id: string;
-  title: string;
-  completed: boolean;
+  id: string
+  title: string
+  completed: boolean
 }
 
 interface TodoState {
-  items: Todo[];
-  loading: boolean;
+  items: Todo[]
+  loading: boolean
 }
 
 export const fetchTodos = createAsyncThunk("todos/fetch", async () => {
-  const response = await apiClient.get<Todo[]>("/todos");
-  return response.data;
-});
+  const response = await apiClient.get<Todo[]>("/todos")
+  return response.data
+})
 
 const todoSlice = createSlice({
   name: "todos",
   initialState: { items: [], loading: false } as TodoState,
   reducers: {
     toggleTodo: (state, action) => {
-      const todo = state.items.find((t) => t.id === action.payload);
-      if (todo) todo.completed = !todo.completed;
+      const todo = state.items.find((t) => t.id === action.payload)
+      if (todo) todo.completed = !todo.completed
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchTodos.pending, (state) => {
-        state.loading = true;
+        state.loading = true
       })
       .addCase(fetchTodos.fulfilled, (state, action) => {
-        state.items = action.payload;
-        state.loading = false;
-      });
+        state.items = action.payload
+        state.loading = false
+      })
   },
-});
+})
 
-export const { toggleTodo } = todoSlice.actions;
-export const selectTodos = (state: RootState) => state.todos.items;
-export default todoSlice.reducer;
+export const { toggleTodo } = todoSlice.actions
+export const selectTodos = (state: RootState) => state.todos.items
+export default todoSlice.reducer
 ```
 
 **Key:** The entire Redux slice (reducer + selectors + thunks) lives in a
@@ -270,18 +270,18 @@ single domain-named file, not split across `reducers.ts`, `selectors.ts`,
 
 ```typescript
 // app/providers/store.ts
-import { configureStore } from "@reduxjs/toolkit";
-import todoReducer from "@/features/todo-list/model/todo";
-import userReducer from "@/entities/user/model/user";
+import { configureStore } from "@reduxjs/toolkit"
+import todoReducer from "@/features/todo-list/model/todo"
+import userReducer from "@/entities/user/model/user"
 
 export const store = configureStore({
   reducer: {
     todos: todoReducer,
     user: userReducer,
   },
-});
+})
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof store.getState>
 ```
 
 ---
@@ -292,43 +292,43 @@ export type RootState = ReturnType<typeof store.getState>;
 
 ```typescript
 // entities/user/api/user-queries.ts
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiClient } from "@/shared/api/client";
-import type { User } from "../model/user";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { apiClient } from "@/shared/api/client"
+import type { User } from "../model/user"
 
 export const useUser = (userId: string) =>
   useQuery({
     queryKey: ["user", userId],
     queryFn: () => apiClient.get<User>(`/users/${userId}`).then((r) => r.data),
-  });
+  })
 
 export const useUpdateUser = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: { id: string; updates: Partial<User> }) =>
       apiClient.put(`/users/${data.id}`, data.updates),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["user", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["user", variables.id] })
     },
-  });
-};
+  })
+}
 
 // entities/user/index.ts
-export { useUser, useUpdateUser } from "./api/user-queries";
-export { type User } from "./model/user";
+export { useUser, useUpdateUser } from "./api/user-queries"
+export { type User } from "./model/user"
 ```
 
 ### Page-specific queries (not extracted)
 
 ```typescript
 // pages/dashboard/api/dashboard-queries.ts
-import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/shared/api/client";
+import { useQuery } from "@tanstack/react-query"
+import { apiClient } from "@/shared/api/client"
 
 interface DashboardStats {
-  totalUsers: number;
-  revenue: number;
-  activeOrders: number;
+  totalUsers: number
+  revenue: number
+  activeOrders: number
 }
 
 export const useDashboardStats = () =>
@@ -337,7 +337,7 @@ export const useDashboardStats = () =>
     queryFn: () =>
       apiClient.get<DashboardStats>("/dashboard/stats").then((r) => r.data),
     staleTime: 30_000,
-  });
+  })
 ```
 
 **Key principle:** Place React Query hooks in the slice that owns the domain.

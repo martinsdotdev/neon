@@ -115,7 +115,7 @@ function WaveStepperCard({ wave }: { wave: Wave }) {
   // activeStep is 1-based per ReUI Stepper. For cancelled waves we still
   // render the happy-path but highlight only the last confirmed state; the
   // CancelledNote takes the narrative from there.
-  const activeStep = stateIndex(wave.state as HappyState)
+  const activeStep = stateIndex(wave.state)
   // Vertical stepper on small screens; the 3-step horizontal layout cramps
   // when timestamps render below labels in a narrow viewport.
   const orientation = isMobile ? "vertical" : "horizontal"

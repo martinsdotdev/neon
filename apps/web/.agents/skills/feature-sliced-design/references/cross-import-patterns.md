@@ -138,19 +138,19 @@ const PostPage = ({ post }) => (
 // features/notifications/model/notifications.ts
 // Instead of importing from features/user directly, accept a callback:
 interface NotificationDeps {
-  getUserName: (userId: string) => string;
+  getUserName: (userId: string) => string
 }
 
 export const createNotificationService = (deps: NotificationDeps) => ({
   formatNotification: (notification) =>
     `${deps.getUserName(notification.userId)}: ${notification.message}`,
-});
+})
 
 // pages/dashboard/model/setup.ts — wire dependencies here
-import { createNotificationService } from "@/features/notifications";
-import { getUserName } from "@/entities/user";
+import { createNotificationService } from "@/features/notifications"
+import { getUserName } from "@/entities/user"
 
-export const notificationService = createNotificationService({ getUserName });
+export const notificationService = createNotificationService({ getUserName })
 ```
 
 **When to use:** The slices are genuinely independent concepts, and the
@@ -184,15 +184,15 @@ entities/
 
 ```typescript
 // entities/user/@x/order.ts — exposes only what order needs
-export { getUserDisplayName } from "../model/user";
+export { getUserDisplayName } from "../model/user"
 
 // entities/order/model/order-summary.ts
-import { getUserDisplayName } from "@/entities/user/@x/order";
+import { getUserDisplayName } from "@/entities/user/@x/order"
 
 export const formatOrderSummary = (order, userId) => {
-  const name = getUserDisplayName(userId);
-  return `${name}'s order #${order.id}`;
-};
+  const name = getUserDisplayName(userId)
+  return `${name}'s order #${order.id}`
+}
 ```
 
 ### @x Rules

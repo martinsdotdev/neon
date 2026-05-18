@@ -1,24 +1,25 @@
 import { useDirection } from "@radix-ui/react-direction"
 import {
-  
-  
-  
-  
-  
-  
-  
-  
-  
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
-  useReactTable
+  useReactTable,
 } from "@tanstack/react-table"
-import {  useVirtualizer } from "@tanstack/react-virtual"
+import { useVirtualizer } from "@tanstack/react-virtual"
 import * as React from "react"
 import { toast } from "sonner"
-import type {Virtualizer} from "@tanstack/react-virtual";
-import type {ColumnDef, ColumnFiltersState, Row, RowSelectionState, SortingState, TableMeta, TableOptions, TableState, Updater} from "@tanstack/react-table";
+import type { Virtualizer } from "@tanstack/react-virtual"
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  Row,
+  RowSelectionState,
+  SortingState,
+  TableMeta,
+  TableOptions,
+  TableState,
+  Updater,
+} from "@tanstack/react-table"
 
 import type {
   CellPosition,
@@ -122,7 +123,10 @@ interface UseDataGridProps<TData> extends Omit<
     event?: React.MouseEvent<HTMLDivElement>
   ) => Partial<CellPosition> | Promise<Partial<CellPosition> | null> | null
   onRowsAdd?: (count: number) => void | Promise<void>
-  onRowsDelete?: (rows: Array<TData>, rowIndices: Array<number>) => void | Promise<void>
+  onRowsDelete?: (
+    rows: Array<TData>,
+    rowIndices: Array<number>
+  ) => void | Promise<void>
   onPaste?: (updates: Array<CellUpdate>) => void | Promise<void>
   onFilesUpload?: (params: {
     files: Array<File>
@@ -962,7 +966,7 @@ function useDataGrid<TData>({
                       ) {
                         processedValue = parsed.map((f) => f.name).join(", ")
                       } else if (parsed.every((v) => typeof v === "string")) {
-                        processedValue = (parsed).join(", ")
+                        processedValue = parsed.join(", ")
                       }
                     } else if (typeof parsed === "boolean") {
                       processedValue = parsed ? "Checked" : "Unchecked"

@@ -61,7 +61,9 @@ function composeRefs<T>(...refs: Array<PossibleRef<T>>): React.RefCallback<T> {
  * A custom hook that composes multiple refs
  * Accepts callback refs and RefObject(s)
  */
-function useComposedRefs<T>(...refs: Array<PossibleRef<T>>): React.RefCallback<T> {
+function useComposedRefs<T>(
+  ...refs: Array<PossibleRef<T>>
+): React.RefCallback<T> {
   // biome-ignore lint/correctness/useExhaustiveDependencies: we don't want to re-run this callback when the refs change
   return React.useCallback(composeRefs(...refs), refs)
 }
