@@ -18,6 +18,11 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, "node_modules"),
 ]
 
-config.resolver.disableHierarchicalLookup = true
+// Bun's isolated install layout puts transitive deps at
+// node_modules/.bun/<name>@<hash>/node_modules/<name>. Leaving hierarchical
+// lookup ON lets Metro walk up into those nested node_modules so peer deps
+// declared by sub-packages still resolve without us hoisting every one to
+// apps/mobile/node_modules.
+config.resolver.disableHierarchicalLookup = false
 
 module.exports = config
