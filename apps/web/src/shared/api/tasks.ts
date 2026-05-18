@@ -2,16 +2,17 @@ import {
   ALL_TASK_STATES as DOMAIN_ALL_TASK_STATES,
   LEGAL_TRANSITIONS as DOMAIN_LEGAL_TRANSITIONS,
   STATE_LABEL as DOMAIN_STATE_LABEL,
-  STATE_ORDER as DOMAIN_STATE_ORDER
-  
-  
-  
-  
-  
+  STATE_ORDER as DOMAIN_STATE_ORDER,
 } from "@neon/domain/task"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
-import type {PackagingLevel, Task, TaskPriority, TaskState, TaskTimelineEvent} from "@neon/domain/task";
+import type {
+  PackagingLevel,
+  Task,
+  TaskPriority,
+  TaskState,
+  TaskTimelineEvent,
+} from "@neon/domain/task"
 
 export type { PackagingLevel, Task, TaskPriority, TaskState, TaskTimelineEvent }
 
