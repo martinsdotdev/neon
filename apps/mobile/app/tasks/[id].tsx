@@ -12,12 +12,28 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
+import { locationQueries } from "@/src/api/locations"
+import { skuQueries } from "@/src/api/skus"
 import { taskQueries, useCompleteTask } from "@/src/api/tasks"
 
 export default function TaskDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const query = useQuery(taskQueries.byId(id))
   const complete = useCompleteTask(id)
+
+  const task = query.data
+  const sku = useQuery({
+    ...skuQueries.byId(task?.skuId ?? ""),
+    enabled: Boolean(task?.skuId),
+  })
+  const source = useQuery({
+    ...locationQueries.byId(task?.sourceLocationId ?? ""),
+    enabled: Boolean(task?.sourceLocationId),
+  })
+  const destination = useQuery({
+    ...locationQueries.byId(task?.destinationLocationId ?? ""),
+    enabled: Boolean(task?.destinationLocationId),
+  })
 
   const [quantity, setQuantity] = useState<string>("")
 
@@ -29,7 +45,7 @@ export default function TaskDetailScreen() {
     )
   }
 
-  if (query.isError || !query.data) {
+  if (query.isError || !task) {
     return (
       <View style={styles.centered}>
         <Text style={styles.error}>Task not found.</Text>
@@ -37,7 +53,6 @@ export default function TaskDetailScreen() {
     )
   }
 
-  const task = query.data
   const hasQuantity = quantity.length > 0 && !Number.isNaN(Number(quantity))
 
   const onComplete = async () => {
@@ -63,22 +78,36 @@ export default function TaskDetailScreen() {
       <Text style={styles.taskType}>{task.taskType}</Text>
       <Text style={styles.state}>{task.state}</Text>
 
-      <Field label="SKU" value={task.skuId} />
-      <Field label="Order" value={task.orderId} />
+      <Field
+        label="SKU"
+        primary={sku.data?.code ?? shortId(task.skuId)}
+        secondary={sku.data?.description}
+      />
+      <Field label="Order" primary={shortId(task.orderId)} />
       <Field
         label="Requested quantity"
-        value={task.requestedQuantity.toString()}
+        primary={task.requestedQuantity.toString()}
       />
       <Field
         label="Source"
-        value={task.sourceLocationId ?? "—"}
+        primary={
+          source.data?.code ??
+          (task.sourceLocationId ? shortId(task.sourceLocationId) : "—")
+        }
+        secondary={source.data?.locationType}
       />
       <Field
         label="Destination"
-        value={task.destinationLocationId ?? "—"}
+        primary={
+          destination.data?.code ??
+          (task.destinationLocationId
+            ? shortId(task.destinationLocationId)
+            : "—")
+        }
+        secondary={destination.data?.locationType}
       />
       {task.handlingUnitId && (
-        <Field label="Handling unit" value={task.handlingUnitId} />
+        <Field label="Handling unit" primary={shortId(task.handlingUnitId)} />
       )}
 
       {task.state === "Assigned" && (
@@ -112,12 +141,27 @@ export default function TaskDetailScreen() {
   )
 }
 
-const Field = ({ label, value }: { label: string; value: string }) => (
+const Field = ({
+  label,
+  primary,
+  secondary,
+}: {
+  label: string
+  primary: string
+  secondary?: string
+}) => (
   <View style={styles.field}>
     <Text style={styles.fieldLabel}>{label}</Text>
-    <Text style={styles.fieldValue}>{value}</Text>
+    <View style={styles.fieldValueColumn}>
+      <Text style={styles.fieldValue}>{primary}</Text>
+      {secondary ? (
+        <Text style={styles.fieldSecondary}>{secondary}</Text>
+      ) : null}
+    </View>
   </View>
 )
+
+const shortId = (id: string): string => id.slice(0, 8)
 
 const styles = StyleSheet.create({
   centered: {
@@ -170,17 +214,29 @@ const styles = StyleSheet.create({
   },
   field: {
     flexDirection: "row",
+    gap: 12,
     justifyContent: "space-between",
-    paddingVertical: 6,
+    paddingVertical: 8,
   },
   fieldLabel: {
     color: "#6b7280",
     fontSize: 14,
   },
+  fieldSecondary: {
+    color: "#6b7280",
+    fontSize: 12,
+    marginTop: 2,
+    textAlign: "right",
+  },
   fieldValue: {
     color: "#111827",
     fontSize: 14,
     fontVariant: ["tabular-nums"],
+    textAlign: "right",
+  },
+  fieldValueColumn: {
+    alignItems: "flex-end",
+    flex: 1,
   },
   state: {
     color: "#16a34a",

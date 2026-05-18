@@ -10,6 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
+import { locationQueries } from "@/src/api/locations"
+import { skuQueries } from "@/src/api/skus"
 import { type MobileTask, taskQueries } from "@/src/api/tasks"
 import { useAuth } from "@/src/auth/AuthProvider"
 import { useNotifications } from "@/src/notifications/useNotifications"
@@ -77,27 +79,39 @@ export default function TasksScreen() {
   )
 }
 
-const TaskRow = ({ task }: { task: MobileTask }) => (
-  <Link
-    asChild
-    href={{ params: { id: task.id }, pathname: "/tasks/[id]" }}
-  >
-    <TouchableOpacity style={styles.row}>
-      <View style={styles.rowMain}>
-        <Text style={styles.rowTitle}>{task.taskType}</Text>
-        <Text style={styles.rowSubtitle}>
-          SKU {shortId(task.skuId)} · qty {task.requestedQuantity}
-        </Text>
-      </View>
-      <View style={styles.rowMeta}>
-        <Text style={styles.rowLocation}>
-          {task.sourceLocationId ? shortId(task.sourceLocationId) : "—"}
-        </Text>
-        <Text style={styles.rowStateBadge}>{task.state}</Text>
-      </View>
-    </TouchableOpacity>
-  </Link>
-)
+const TaskRow = ({ task }: { task: MobileTask }) => {
+  // Lookups are React-Query-cached and deduped, so multiple rows sharing a
+  // SKU or location only hit the backend once per session.
+  const sku = useQuery(skuQueries.byId(task.skuId))
+  const source = useQuery({
+    ...locationQueries.byId(task.sourceLocationId ?? ""),
+    enabled: Boolean(task.sourceLocationId),
+  })
+  return (
+    <Link
+      asChild
+      href={{ params: { id: task.id }, pathname: "/tasks/[id]" }}
+    >
+      <TouchableOpacity style={styles.row}>
+        <View style={styles.rowMain}>
+          <Text style={styles.rowTitle}>
+            {task.taskType} · {sku.data?.code ?? shortId(task.skuId)}
+          </Text>
+          <Text style={styles.rowSubtitle} numberOfLines={1}>
+            {sku.data?.description ?? "loading…"} · qty {task.requestedQuantity}
+          </Text>
+        </View>
+        <View style={styles.rowMeta}>
+          <Text style={styles.rowLocation}>
+            {source.data?.code ??
+              (task.sourceLocationId ? shortId(task.sourceLocationId) : "—")}
+          </Text>
+          <Text style={styles.rowStateBadge}>{task.state}</Text>
+        </View>
+      </TouchableOpacity>
+    </Link>
+  )
+}
 
 const shortId = (id: string): string => id.slice(0, 8)
 
