@@ -1,14 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
+import type { Workstation } from "@neon/domain/workstation"
 
-export interface Workstation {
-  createdAt: string
-  id: string
-  mode: "Receiving" | "Picking" | "Counting" | "Relocation"
-  slotCount: number
-  state: "Disabled" | "Idle" | "Active"
-  workstationType: "PutWall" | "PackStation"
-}
+export type { Workstation }
 
 const MOCK_WS: Array<Workstation> = import.meta.env.DEV
   ? [
@@ -43,7 +37,8 @@ export const workstationQueries = {
   all: () =>
     queryOptions({
       queryFn: async () => {
-        const result = await apiClient.get<Array<Workstation>>("/api/workstations")
+        const result =
+          await apiClient.get<Array<Workstation>>("/api/workstations")
         return result.unwrapOr(MOCK_WS)
       },
       queryKey: ["workstations"] as const,

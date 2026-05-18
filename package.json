@@ -14,8 +14,7 @@
     "typecheck": "bun run --filter '*' typecheck",
     "test": "bun run --filter '*' test",
     "check": "bun run --filter '*' check",
-    "fix": "bun run --filter '*' fix",
-    "prepare": "lefthook install"
+    "fix": "bun run --filter '*' fix"
   },
   "devDependencies": {
     "lefthook": "^2.1.5",

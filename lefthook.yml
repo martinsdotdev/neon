@@ -1,3 +1,9 @@
+# Lefthook is NOT installed automatically by `bun install` at the root.
+# To opt in locally, run `bun x lefthook install` from the repo root.
+#
+# The `ultracite-web` job runs Ultracite (oxlint + oxfmt) over apps/web/ on
+# pre-commit. There are pre-existing lint errors in apps/web (see #TODO) that
+# block this job; clean those up before reactivating the hook by default.
 pre-commit:
   jobs:
     - name: ultracite-web

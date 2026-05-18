@@ -5,14 +5,9 @@ import {
 } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 import { apiClient } from "./client"
+import type { AuthUser } from "@neon/domain/auth"
 
-export interface AuthUser {
-  userId: string
-  login: string
-  name: string
-  role: "Admin" | "Supervisor" | "Operator" | "Viewer"
-  permissions: Array<string>
-}
+export type { AuthUser }
 
 const DEV_USER: AuthUser | null = import.meta.env.DEV
   ? {

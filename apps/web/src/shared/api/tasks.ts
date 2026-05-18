@@ -1,45 +1,19 @@
+import {
+  ALL_TASK_STATES as DOMAIN_ALL_TASK_STATES,
+  LEGAL_TRANSITIONS as DOMAIN_LEGAL_TRANSITIONS,
+  STATE_LABEL as DOMAIN_STATE_LABEL,
+  STATE_ORDER as DOMAIN_STATE_ORDER
+  
+  
+  
+  
+  
+} from "@neon/domain/task"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
+import type {PackagingLevel, Task, TaskPriority, TaskState, TaskTimelineEvent} from "@neon/domain/task";
 
-export type TaskState =
-  | "Planned"
-  | "Allocated"
-  | "Assigned"
-  | "Completed"
-  | "Cancelled"
-
-export type TaskPriority = "high" | "medium" | "low"
-
-export type PackagingLevel = "Each" | "Inner" | "Case" | "Pallet"
-
-export interface TaskTimelineEvent {
-  state: TaskState
-  at: string
-  by: string
-  note?: string
-}
-
-export interface Task {
-  actualQuantity: number | null
-  assignedTo: string | null
-  createdAt: string
-  destinationLocationId: string | null
-  id: string
-  orderId: string
-  requestedQuantity: number
-  skuId: string
-  sourceLocationId: string | null
-  state: TaskState
-  taskType: "Pick" | "Putaway" | "Replenish" | "Transfer"
-  waveId: string | null
-  // Optional rich fields populated by mock + (eventually) projection joins.
-  // Kept optional so existing consumers (kanban, table) compile unchanged.
-  priority?: TaskPriority
-  skuName?: string
-  packagingLevel?: PackagingLevel
-  handlingUnitId?: string | null
-  timeline?: Array<TaskTimelineEvent>
-}
+export type { PackagingLevel, Task, TaskPriority, TaskState, TaskTimelineEvent }
 
 // SKU and packaging metadata, keyed off skuId. The real backend joins these
 // from the SKU aggregate; here it's a small lookup table that gives the
@@ -76,32 +50,15 @@ const ORDER_PRIORITY: Record<string, TaskPriority> = {
 
 // Happy-path states (no Cancelled) for stepper / timeline rendering. The
 // happy path is what the wave / task aggregates linearly walk through.
-const STATE_ORDER: ReadonlyArray<TaskState> = [
-  "Planned",
-  "Allocated",
-  "Assigned",
-  "Completed",
-]
+const STATE_ORDER = DOMAIN_STATE_ORDER
 
 // All five states. Used by the kanban (5 columns), filter options, and any
 // caller that needs to reason about Cancelled as a terminal branch.
-export const ALL_TASK_STATES: ReadonlyArray<TaskState> = [
-  "Planned",
-  "Allocated",
-  "Assigned",
-  "Completed",
-  "Cancelled",
-]
+export const ALL_TASK_STATES = DOMAIN_ALL_TASK_STATES
 
 // Centralized display label per state — kept here so toast text + tooltip
 // text + filter labels never drift from each other.
-export const STATE_LABEL: Record<TaskState, string> = {
-  Allocated: "Allocated",
-  Assigned: "Assigned",
-  Cancelled: "Cancelled",
-  Completed: "Completed",
-  Planned: "Planned",
-}
+export const STATE_LABEL = DOMAIN_STATE_LABEL
 
 // Tailwind class map for the state's accent dot. Keeps the dot's color in
 // the same place as the state's textual identity so both can be imported
@@ -118,13 +75,7 @@ export const STATE_DOT_CLASS: Record<TaskState, string> = {
 // Legal state transitions mirror the Scala typestate (Task.scala). The
 // kanban's drag-to-transition + drawer's state-aware action set both read
 // from this so the rules stay in one place.
-export const LEGAL_TRANSITIONS: Record<TaskState, ReadonlyArray<TaskState>> = {
-  Allocated: ["Assigned", "Cancelled"],
-  Assigned: ["Completed", "Cancelled"],
-  Cancelled: [],
-  Completed: [],
-  Planned: ["Allocated", "Cancelled"],
-}
+export const LEGAL_TRANSITIONS = DOMAIN_LEGAL_TRANSITIONS
 
 // Build the timeline retroactively from the task's createdAt + state.
 // Each transition gets a synthetic delta from creation. Realistic but
