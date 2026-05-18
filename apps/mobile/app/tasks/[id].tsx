@@ -155,21 +155,25 @@ export default function TaskDetailScreen() {
         <Field label="Handling unit" primary={shortId(task.handlingUnitId)} />
       )}
 
-      {task.state === "Assigned" && (
+      {task.state === "Assigned" && !(sourceVerified && skuVerified) ? (
         <TouchableOpacity onPress={startScan} style={styles.scanButton}>
           <Text style={styles.scanButtonText}>
-            {sourceVerified && skuVerified
-              ? "Scan again"
-              : "Scan source / SKU"}
+            {!sourceVerified
+              ? source.data?.code
+                ? `Scan source ${source.data.code}`
+                : "Scan source"
+              : sku.data?.code
+                ? `Scan SKU ${sku.data.code}`
+                : "Scan SKU"}
           </Text>
         </TouchableOpacity>
-      )}
+      ) : null}
 
-      {lastScan ? (
+      {lastScan && !(sourceVerified && skuVerified) ? (
         <Text style={styles.lastScan}>Last scanned: {lastScan}</Text>
       ) : null}
 
-      {task.state === "Assigned" && (
+      {task.state === "Assigned" && sourceVerified && skuVerified && (
         <View style={styles.completeSection}>
           <Text style={styles.completeLabel}>Actual picked quantity</Text>
           <TextInput
