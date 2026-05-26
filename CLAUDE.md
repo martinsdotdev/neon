@@ -137,6 +137,7 @@ Shared packages:
 - Package structure: `neon.<module>` (e.g., `neon.core`, `neon.wave`, `neon.location`)
 - Directory names use kebab-case (`consolidation-group`), packages use concatenated names (`neon.consolidationgroup`)
 - `require()` for precondition validation on aggregate creation
+- **Named arguments**: when calling project-defined methods/constructors/factories, name **all** arguments if the call (a) passes two or more parameters of the same type, (b) passes a boolean or bare numeric literal positionally, or (c) has five or more arguments. Name every argument, not just the ambiguous ones. Excludes `.copy(...)`, higher-order/single-lambda calls (`map`, `filter`, `fold`, `ask`), and third-party/standard-library calls (e.g. Pekko `snapshotEvery`).
 - Immutable collections (List preferred)
 
 ### Tests
