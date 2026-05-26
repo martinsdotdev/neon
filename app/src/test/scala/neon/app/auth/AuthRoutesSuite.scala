@@ -50,7 +50,8 @@ class AuthRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
   private def validSessionToken(): String =
     Await
       .result(
-        authService.login("admin", "secret123", None, None),
+        authService
+          .login(login = "admin", password = "secret123", ipAddress = None, userAgent = None),
         5.seconds
       )
       .toOption
@@ -62,7 +63,7 @@ class AuthRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
       it("returns 200 and sets session cookie on success"):
         Post(
           "/auth/login",
-          loginJson("admin", "secret123")
+          loginJson(login = "admin", password = "secret123")
         ) ~> routes ~> check {
           assert(status == StatusCodes.OK)
           val setCookie =
@@ -92,7 +93,7 @@ class AuthRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
       it("returns 401 on wrong password"):
         Post(
           "/auth/login",
-          loginJson("admin", "wrong")
+          loginJson(login = "admin", password = "wrong")
         ) ~> routes ~> check {
           assert(status == StatusCodes.Unauthorized)
         }
@@ -100,7 +101,7 @@ class AuthRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
       it("returns 401 on unknown user"):
         Post(
           "/auth/login",
-          loginJson("nobody", "secret123")
+          loginJson(login = "nobody", password = "secret123")
         ) ~> routes ~> check {
           assert(status == StatusCodes.Unauthorized)
         }

@@ -36,9 +36,9 @@ class TransportOrderProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              event,
-              s"TransportOrder|${transportOrderId.value}",
-              "TransportOrder"
+              event = event,
+              persistenceId = s"TransportOrder|${transportOrderId.value}",
+              entityType = "TransportOrder"
             )
           )
           .futureValue
@@ -81,9 +81,9 @@ class TransportOrderProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              created,
-              s"TransportOrder|${transportOrderId.value}",
-              "TransportOrder"
+              event = created,
+              persistenceId = s"TransportOrder|${transportOrderId.value}",
+              entityType = "TransportOrder"
             )
           )
           .futureValue
@@ -91,9 +91,9 @@ class TransportOrderProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              confirmed,
-              s"TransportOrder|${transportOrderId.value}",
-              "TransportOrder"
+              event = confirmed,
+              persistenceId = s"TransportOrder|${transportOrderId.value}",
+              entityType = "TransportOrder"
             )
           )
           .futureValue
@@ -137,9 +137,9 @@ class TransportOrderProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              created,
-              s"TransportOrder|${transportOrderId.value}",
-              "TransportOrder"
+              event = created,
+              persistenceId = s"TransportOrder|${transportOrderId.value}",
+              entityType = "TransportOrder"
             )
           )
           .futureValue
@@ -147,9 +147,9 @@ class TransportOrderProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              cancelled,
-              s"TransportOrder|${transportOrderId.value}",
-              "TransportOrder"
+              event = cancelled,
+              persistenceId = s"TransportOrder|${transportOrderId.value}",
+              entityType = "TransportOrder"
             )
           )
           .futureValue

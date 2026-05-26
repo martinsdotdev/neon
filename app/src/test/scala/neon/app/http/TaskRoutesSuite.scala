@@ -45,36 +45,36 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
   private val at = Instant.now()
 
   private val completedTask = Task.Completed(
-    taskId,
-    TaskType.Pick,
-    skuId,
-    PackagingLevel.Each,
-    10,
-    10,
-    orderId,
-    Some(waveId),
-    None,
-    None,
-    None,
-    sourceLocationId,
-    destinationLocationId,
-    userId
+    id = taskId,
+    taskType = TaskType.Pick,
+    skuId = skuId,
+    packagingLevel = PackagingLevel.Each,
+    requestedQuantity = 10,
+    actualQuantity = 10,
+    orderId = orderId,
+    waveId = Some(waveId),
+    parentTaskId = None,
+    handlingUnitId = None,
+    stockPositionId = None,
+    sourceLocationId = sourceLocationId,
+    destinationLocationId = destinationLocationId,
+    assignedTo = userId
   )
 
   private val completedEvent = TaskEvent.TaskCompleted(
-    taskId,
-    TaskType.Pick,
-    skuId,
-    PackagingLevel.Each,
-    Some(waveId),
-    None,
-    None,
-    sourceLocationId,
-    destinationLocationId,
-    10,
-    10,
-    userId,
-    at
+    taskId = taskId,
+    taskType = TaskType.Pick,
+    skuId = skuId,
+    packagingLevel = PackagingLevel.Each,
+    waveId = Some(waveId),
+    parentTaskId = None,
+    handlingUnitId = None,
+    sourceLocationId = sourceLocationId,
+    destinationLocationId = destinationLocationId,
+    requestedQuantity = 10,
+    actualQuantity = 10,
+    assignedTo = userId,
+    occurredAt = at
   )
 
   private val hasher = PasswordHasher()
@@ -98,7 +98,8 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
   private val sessionToken: String = Await
     .result(
-      authService.login("operator", "password", None, None),
+      authService
+        .login(login = "operator", password = "password", ipAddress = None, userAgent = None),
       5.seconds
     )
     .toOption
@@ -122,11 +123,11 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
         Future.successful(())
 
     new AsyncTaskCompletionService(
-      stubRepo,
-      null,
-      null,
-      null,
-      VerificationProfile.disabled
+      taskRepository = stubRepo,
+      waveRepository = null,
+      consolidationGroupRepository = null,
+      transportOrderRepository = null,
+      verificationProfile = VerificationProfile.disabled
     ):
       override def complete(
           taskId: TaskId,

@@ -11,9 +11,8 @@ import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Projection handler that consumes task events and populates the `task_by_wave` and
-  * `task_by_handling_unit` read-side tables. Also republishes mobile-facing
-  * notifications to the actor system event stream so the WebSocket route can
-  * fan them out to connected operators.
+  * `task_by_handling_unit` read-side tables. Also republishes mobile-facing notifications to the
+  * actor system event stream so the WebSocket route can fan them out to connected operators.
   */
 class TaskProjectionHandler(using ExecutionContext, ActorSystem[?])
     extends LoggingProjectionHandler[TaskEvent]:
@@ -32,9 +31,9 @@ class TaskProjectionHandler(using ExecutionContext, ActorSystem[?])
             |ON CONFLICT (task_id) DO UPDATE SET state = $5""".stripMargin
         )
         stmt.bind(0, e.taskId.value)
-        bindOptionalUuid(stmt, 1, e.waveId.map(_.value))
+        bindOptionalUuid(stmt = stmt, index = 1, value = e.waveId.map(_.value))
         stmt.bind(2, e.orderId.value)
-        bindOptionalUuid(stmt, 3, e.handlingUnitId.map(_.value))
+        bindOptionalUuid(stmt = stmt, index = 3, value = e.handlingUnitId.map(_.value))
         stmt.bind(4, "Planned")
 
         val insertHandlingUnit = e.handlingUnitId.map { handlingUnitId =>
@@ -45,7 +44,7 @@ class TaskProjectionHandler(using ExecutionContext, ActorSystem[?])
           )
           stmt2.bind(0, e.taskId.value)
           stmt2.bind(1, handlingUnitId.value)
-          bindOptionalUuid(stmt2, 2, e.waveId.map(_.value))
+          bindOptionalUuid(stmt = stmt2, index = 2, value = e.waveId.map(_.value))
           stmt2.bind(3, e.orderId.value)
           stmt2.bind(4, "Planned")
           stmt2

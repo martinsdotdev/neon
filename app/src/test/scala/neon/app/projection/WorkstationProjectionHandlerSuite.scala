@@ -34,9 +34,9 @@ class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              event,
-              s"Workstation|${workstationId.value}",
-              "Workstation"
+              event = event,
+              persistenceId = s"Workstation|${workstationId.value}",
+              entityType = "Workstation"
             )
           )
           .futureValue
@@ -75,9 +75,9 @@ class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              initialized,
-              s"Workstation|${workstationId.value}",
-              "Workstation"
+              event = initialized,
+              persistenceId = s"Workstation|${workstationId.value}",
+              entityType = "Workstation"
             )
           )
           .futureValue
@@ -85,9 +85,9 @@ class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              enabled,
-              s"Workstation|${workstationId.value}",
-              "Workstation"
+              event = enabled,
+              persistenceId = s"Workstation|${workstationId.value}",
+              entityType = "Workstation"
             )
           )
           .futureValue
@@ -129,9 +129,9 @@ class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              initialized,
-              s"Workstation|${workstationId.value}",
-              "Workstation"
+              event = initialized,
+              persistenceId = s"Workstation|${workstationId.value}",
+              entityType = "Workstation"
             )
           )
           .futureValue
@@ -139,9 +139,9 @@ class WorkstationProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              assigned,
-              s"Workstation|${workstationId.value}",
-              "Workstation"
+              event = assigned,
+              persistenceId = s"Workstation|${workstationId.value}",
+              entityType = "Workstation"
             )
           )
           .futureValue

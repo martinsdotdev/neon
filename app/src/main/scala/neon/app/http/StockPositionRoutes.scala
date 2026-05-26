@@ -66,11 +66,11 @@ object StockPositionRoutes:
                 )
                 onSuccess(
                   stockPositionService.create(
-                    skuId,
-                    warehouseAreaId,
-                    lotAttributes,
-                    request.onHandQuantity,
-                    Instant.now()
+                    skuId = skuId,
+                    warehouseAreaId = warehouseAreaId,
+                    lotAttributes = lotAttributes,
+                    onHandQuantity = request.onHandQuantity,
+                    at = Instant.now()
                   )
                 ):
                   case Right(result) =>

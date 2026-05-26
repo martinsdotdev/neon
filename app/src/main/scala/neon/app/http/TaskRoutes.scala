@@ -129,10 +129,10 @@ object TaskRoutes:
                 )
                 onSuccess(
                   taskLifecycleService.allocate(
-                    taskId,
-                    sourceLocationId,
-                    destinationLocationId,
-                    Instant.now()
+                    taskId = taskId,
+                    sourceLocationId = sourceLocationId,
+                    destinationLocationId = destinationLocationId,
+                    at = Instant.now()
                   )
                 ):
                   case Right(result) =>

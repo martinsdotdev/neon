@@ -50,7 +50,8 @@ class InventoryRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
   private val sessionToken: String = Await
     .result(
-      authService.login("operator", "password", None, None),
+      authService
+        .login(login = "operator", password = "password", ipAddress = None, userAgent = None),
       5.seconds
     )
     .toOption
@@ -132,12 +133,12 @@ class InventoryRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
     describe("POST /inventory"):
       it("returns 200 with created response on success"):
         val (inventory, event) = Inventory.create(
-          locationId,
-          skuId,
-          PackagingLevel.Each,
-          None,
-          100,
-          at
+          locationId = locationId,
+          skuId = skuId,
+          packagingLevel = PackagingLevel.Each,
+          lot = None,
+          onHand = 100,
+          at = at
         )
         val result =
           InventoryCreateResult(inventory, event)
@@ -198,9 +199,9 @@ class InventoryRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
             ),
             Left(
               InventoryError.InsufficientAvailable(
-                inventoryId,
-                50,
-                10
+                id = inventoryId,
+                requested = 50,
+                available = 10
               )
             )
           ),

@@ -38,9 +38,9 @@ class InventoryProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              event,
-              s"Inventory|${inventoryId.value}",
-              "Inventory"
+              event = event,
+              persistenceId = s"Inventory|${inventoryId.value}",
+              entityType = "Inventory"
             )
           )
           .futureValue
@@ -77,9 +77,9 @@ class InventoryProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              event,
-              s"Inventory|${inventoryId.value}",
-              "Inventory"
+              event = event,
+              persistenceId = s"Inventory|${inventoryId.value}",
+              entityType = "Inventory"
             )
           )
           .futureValue
@@ -122,9 +122,9 @@ class InventoryProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              created,
-              s"Inventory|${inventoryId.value}",
-              "Inventory"
+              event = created,
+              persistenceId = s"Inventory|${inventoryId.value}",
+              entityType = "Inventory"
             )
           )
           .futureValue
@@ -132,9 +132,9 @@ class InventoryProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              reserved,
-              s"Inventory|${inventoryId.value}",
-              "Inventory"
+              event = reserved,
+              persistenceId = s"Inventory|${inventoryId.value}",
+              entityType = "Inventory"
             )
           )
           .futureValue
@@ -190,9 +190,9 @@ class InventoryProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              created,
-              s"Inventory|${inventoryId.value}",
-              "Inventory"
+              event = created,
+              persistenceId = s"Inventory|${inventoryId.value}",
+              entityType = "Inventory"
             )
           )
           .futureValue
@@ -200,9 +200,9 @@ class InventoryProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              reserved,
-              s"Inventory|${inventoryId.value}",
-              "Inventory"
+              event = reserved,
+              persistenceId = s"Inventory|${inventoryId.value}",
+              entityType = "Inventory"
             )
           )
           .futureValue
@@ -210,9 +210,9 @@ class InventoryProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              consumed,
-              s"Inventory|${inventoryId.value}",
-              "Inventory"
+              event = consumed,
+              persistenceId = s"Inventory|${inventoryId.value}",
+              entityType = "Inventory"
             )
           )
           .futureValue
@@ -265,9 +265,9 @@ class InventoryProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              created,
-              s"Inventory|${inventoryId.value}",
-              "Inventory"
+              event = created,
+              persistenceId = s"Inventory|${inventoryId.value}",
+              entityType = "Inventory"
             )
           )
           .futureValue
@@ -275,9 +275,9 @@ class InventoryProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              corrected,
-              s"Inventory|${inventoryId.value}",
-              "Inventory"
+              event = corrected,
+              persistenceId = s"Inventory|${inventoryId.value}",
+              entityType = "Inventory"
             )
           )
           .futureValue

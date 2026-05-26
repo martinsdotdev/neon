@@ -37,9 +37,9 @@ class ConsolidationGroupProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              event,
-              s"ConsolidationGroup|${consolidationGroupId.value}",
-              "ConsolidationGroup"
+              event = event,
+              persistenceId = s"ConsolidationGroup|${consolidationGroupId.value}",
+              entityType = "ConsolidationGroup"
             )
           )
           .futureValue
@@ -80,9 +80,9 @@ class ConsolidationGroupProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              created,
-              s"ConsolidationGroup|${consolidationGroupId.value}",
-              "ConsolidationGroup"
+              event = created,
+              persistenceId = s"ConsolidationGroup|${consolidationGroupId.value}",
+              entityType = "ConsolidationGroup"
             )
           )
           .futureValue
@@ -90,9 +90,9 @@ class ConsolidationGroupProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              picked,
-              s"ConsolidationGroup|${consolidationGroupId.value}",
-              "ConsolidationGroup"
+              event = picked,
+              persistenceId = s"ConsolidationGroup|${consolidationGroupId.value}",
+              entityType = "ConsolidationGroup"
             )
           )
           .futureValue
@@ -135,9 +135,9 @@ class ConsolidationGroupProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              created,
-              s"ConsolidationGroup|${consolidationGroupId.value}",
-              "ConsolidationGroup"
+              event = created,
+              persistenceId = s"ConsolidationGroup|${consolidationGroupId.value}",
+              entityType = "ConsolidationGroup"
             )
           )
           .futureValue
@@ -145,9 +145,9 @@ class ConsolidationGroupProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              completed,
-              s"ConsolidationGroup|${consolidationGroupId.value}",
-              "ConsolidationGroup"
+              event = completed,
+              persistenceId = s"ConsolidationGroup|${consolidationGroupId.value}",
+              entityType = "ConsolidationGroup"
             )
           )
           .futureValue

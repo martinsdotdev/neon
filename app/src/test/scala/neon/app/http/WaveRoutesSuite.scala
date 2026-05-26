@@ -52,7 +52,8 @@ class WaveRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
   private val sessionToken: String = Await
     .result(
-      authService.login("operator", "password", None, None),
+      authService
+        .login(login = "operator", password = "password", ipAddress = None, userAgent = None),
       5.seconds
     )
     .toOption
@@ -71,10 +72,10 @@ class WaveRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
       ]
   ): AsyncWaveCancellationService =
     new AsyncWaveCancellationService(
-      null,
-      null,
-      null,
-      null
+      waveRepository = null,
+      taskRepository = null,
+      transportOrderRepository = null,
+      consolidationGroupRepository = null
     ):
       override def cancel(
           waveId: WaveId,
@@ -91,7 +92,11 @@ class WaveRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
       result: Either[WavePlanningError, WavePlanningResult]
   ): AsyncWavePlanningService =
     new AsyncWavePlanningService(
-      null, null, null, null, null
+      carrierRepository = null,
+      locationRepository = null,
+      waveDispatchAssignmentRepository = null,
+      waveDispatchRulesProvider = null,
+      waveReleaseService = null
     ):
       override def planAndRelease(
           orders: List[Order],

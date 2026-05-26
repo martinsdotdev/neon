@@ -32,9 +32,9 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              event,
-              s"Slot|${slotId.value}",
-              "Slot"
+              event = event,
+              persistenceId = s"Slot|${slotId.value}",
+              entityType = "Slot"
             )
           )
           .futureValue
@@ -72,9 +72,9 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              initialized,
-              s"Slot|${slotId.value}",
-              "Slot"
+              event = initialized,
+              persistenceId = s"Slot|${slotId.value}",
+              entityType = "Slot"
             )
           )
           .futureValue
@@ -82,9 +82,9 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              reserved,
-              s"Slot|${slotId.value}",
-              "Slot"
+              event = reserved,
+              persistenceId = s"Slot|${slotId.value}",
+              entityType = "Slot"
             )
           )
           .futureValue
@@ -131,9 +131,9 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              initialized,
-              s"Slot|${slotId.value}",
-              "Slot"
+              event = initialized,
+              persistenceId = s"Slot|${slotId.value}",
+              entityType = "Slot"
             )
           )
           .futureValue
@@ -141,9 +141,9 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              reserved,
-              s"Slot|${slotId.value}",
-              "Slot"
+              event = reserved,
+              persistenceId = s"Slot|${slotId.value}",
+              entityType = "Slot"
             )
           )
           .futureValue
@@ -151,9 +151,9 @@ class SlotProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              released,
-              s"Slot|${slotId.value}",
-              "Slot"
+              event = released,
+              persistenceId = s"Slot|${slotId.value}",
+              entityType = "Slot"
             )
           )
           .futureValue

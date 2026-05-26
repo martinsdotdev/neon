@@ -61,7 +61,8 @@ class ConsolidationGroupRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
   private val sessionToken: String = Await
     .result(
-      authService.login("operator", "password", None, None),
+      authService
+        .login(login = "operator", password = "password", ipAddress = None, userAgent = None),
       5.seconds
     )
     .toOption
@@ -75,8 +76,8 @@ class ConsolidationGroupRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
       ]
   ): AsyncConsolidationGroupCompletionService =
     new AsyncConsolidationGroupCompletionService(
-      null,
-      null
+      consolidationGroupRepository = null,
+      workstationRepository = null
     ):
       override def complete(
           consolidationGroupId: ConsolidationGroupId,
@@ -124,10 +125,10 @@ class ConsolidationGroupRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
             at
           )
         val idle = Workstation.Idle(
-          workstationId,
-          WorkstationType.PutWall,
-          8,
-          WorkstationMode.Picking
+          id = workstationId,
+          workstationType = WorkstationType.PutWall,
+          slotCount = 8,
+          mode = WorkstationMode.Picking
         )
         val workstationEvent =
           WorkstationEvent.WorkstationReleased(

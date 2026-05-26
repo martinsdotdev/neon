@@ -59,12 +59,12 @@ object InventoryRoutes:
                 val lot = request.lot.map(Lot(_))
                 onSuccess(
                   inventoryService.create(
-                    locationId,
-                    skuId,
-                    packagingLevel,
-                    lot,
-                    request.onHand,
-                    Instant.now()
+                    locationId = locationId,
+                    skuId = skuId,
+                    packagingLevel = packagingLevel,
+                    lot = lot,
+                    onHand = request.onHand,
+                    at = Instant.now()
                   )
                 ):
                   case Right(result) =>

@@ -62,7 +62,8 @@ class TransportOrderRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
   private val sessionToken: String = Await
     .result(
-      authService.login("operator", "password", None, None),
+      authService
+        .login(login = "operator", password = "password", ipAddress = None, userAgent = None),
       5.seconds
     )
     .toOption
@@ -76,10 +77,10 @@ class TransportOrderRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
       ]
   ): AsyncTransportOrderConfirmationService =
     new AsyncTransportOrderConfirmationService(
-      null,
-      null,
-      null,
-      null
+      transportOrderRepository = null,
+      handlingUnitRepository = null,
+      taskRepository = null,
+      consolidationGroupRepository = null
     ):
       override def confirm(
           transportOrderId: TransportOrderId,

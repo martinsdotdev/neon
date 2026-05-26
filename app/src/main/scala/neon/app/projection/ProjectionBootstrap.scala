@@ -36,87 +36,87 @@ object ProjectionBootstrap:
     given ExecutionContext = system.executionContext
 
     initProjection[TaskEvent](
-      "task-projection",
-      "Task",
-      () => TaskProjectionHandler()
+      name = "task-projection",
+      entityType = "Task",
+      handlerFactory = () => TaskProjectionHandler()
     )
 
     initProjection[TaskEvent](
-      "task-by-assignee-projection",
-      "Task",
-      () => TaskByAssigneeProjectionHandler()
+      name = "task-by-assignee-projection",
+      entityType = "Task",
+      handlerFactory = () => TaskByAssigneeProjectionHandler()
     )
 
     initProjection[ConsolidationGroupEvent](
-      "consolidation-group-projection",
-      "ConsolidationGroup",
-      () => ConsolidationGroupProjectionHandler()
+      name = "consolidation-group-projection",
+      entityType = "ConsolidationGroup",
+      handlerFactory = () => ConsolidationGroupProjectionHandler()
     )
 
     initProjection[TransportOrderEvent](
-      "transport-order-projection",
-      "TransportOrder",
-      () => TransportOrderProjectionHandler()
+      name = "transport-order-projection",
+      entityType = "TransportOrder",
+      handlerFactory = () => TransportOrderProjectionHandler()
     )
 
     initProjection[WorkstationActor.ActorEvent](
-      "workstation-projection",
-      "Workstation",
-      () => WorkstationProjectionHandler()
+      name = "workstation-projection",
+      entityType = "Workstation",
+      handlerFactory = () => WorkstationProjectionHandler()
     )
 
     initProjection[HandlingUnitActor.ActorEvent](
-      "handling-unit-projection",
-      "HandlingUnit",
-      () => HandlingUnitProjectionHandler()
+      name = "handling-unit-projection",
+      entityType = "HandlingUnit",
+      handlerFactory = () => HandlingUnitProjectionHandler()
     )
 
     initProjection[SlotActor.ActorEvent](
-      "slot-projection",
-      "Slot",
-      () => SlotProjectionHandler()
+      name = "slot-projection",
+      entityType = "Slot",
+      handlerFactory = () => SlotProjectionHandler()
     )
 
     initProjection[InventoryEvent](
-      "inventory-projection",
-      "Inventory",
-      () => InventoryProjectionHandler()
+      name = "inventory-projection",
+      entityType = "Inventory",
+      handlerFactory = () => InventoryProjectionHandler()
     )
 
     initProjection[StockPositionEvent](
-      "stock-position-projection",
-      "StockPosition",
-      () => StockPositionProjectionHandler()
+      name = "stock-position-projection",
+      entityType = "StockPosition",
+      handlerFactory = () => StockPositionProjectionHandler()
     )
 
     initProjection[HandlingUnitStockEvent](
-      "handling-unit-stock-projection",
-      "HandlingUnitStock",
-      () => HandlingUnitStockProjectionHandler()
+      name = "handling-unit-stock-projection",
+      entityType = "HandlingUnitStock",
+      handlerFactory = () => HandlingUnitStockProjectionHandler()
     )
 
     initProjection[InboundDeliveryEvent](
-      "inbound-delivery-projection",
-      "InboundDelivery",
-      () => InboundDeliveryProjectionHandler()
+      name = "inbound-delivery-projection",
+      entityType = "InboundDelivery",
+      handlerFactory = () => InboundDeliveryProjectionHandler()
     )
 
     initProjection[GoodsReceiptEvent](
-      "goods-receipt-projection",
-      "GoodsReceipt",
-      () => GoodsReceiptProjectionHandler()
+      name = "goods-receipt-projection",
+      entityType = "GoodsReceipt",
+      handlerFactory = () => GoodsReceiptProjectionHandler()
     )
 
     initProjection[CycleCountEvent](
-      "cycle-count-projection",
-      "CycleCount",
-      () => CycleCountProjectionHandler()
+      name = "cycle-count-projection",
+      entityType = "CycleCount",
+      handlerFactory = () => CycleCountProjectionHandler()
     )
 
     initProjection[CountTaskEvent](
-      "count-task-projection",
-      "CountTask",
-      () => CountTaskProjectionHandler()
+      name = "count-task-projection",
+      entityType = "CountTask",
+      handlerFactory = () => CountTaskProjectionHandler()
     )
 
   private def initProjection[E](

@@ -73,11 +73,11 @@ object CycleCountRoutes:
                   CountMethod.valueOf(request.countMethod)
                 onSuccess(
                   cycleCountService.create(
-                    warehouseAreaId,
-                    skuIds,
-                    countType,
-                    countMethod,
-                    Instant.now()
+                    warehouseAreaId = warehouseAreaId,
+                    skuIds = skuIds,
+                    countType = countType,
+                    countMethod = countMethod,
+                    at = Instant.now()
                   )
                 ):
                   case Right(result) =>

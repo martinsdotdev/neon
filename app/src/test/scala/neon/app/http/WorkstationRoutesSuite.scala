@@ -63,7 +63,8 @@ class WorkstationRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
   private val sessionToken: String = Await
     .result(
-      authService.login("operator", "password", None, None),
+      authService
+        .login(login = "operator", password = "password", ipAddress = None, userAgent = None),
       5.seconds
     )
     .toOption
@@ -76,7 +77,10 @@ class WorkstationRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
         WorkstationAssignmentResult
       ]
   ): AsyncWorkstationAssignmentService =
-    new AsyncWorkstationAssignmentService(null, null):
+    new AsyncWorkstationAssignmentService(
+      consolidationGroupRepository = null,
+      workstationRepository = null
+    ):
       override def assign(
           consolidationGroupId: ConsolidationGroupId,
           at: Instant
@@ -159,19 +163,19 @@ class WorkstationRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
             at
           )
         val active = Workstation.Active(
-          workstationId,
-          WorkstationType.PutWall,
-          8,
-          WorkstationMode.Picking,
-          consolidationGroupId.value
+          id = workstationId,
+          workstationType = WorkstationType.PutWall,
+          slotCount = 8,
+          mode = WorkstationMode.Picking,
+          assignmentId = consolidationGroupId.value
         )
         val workstationEvent =
           WorkstationEvent.WorkstationAssigned(
-            workstationId,
-            WorkstationType.PutWall,
-            WorkstationMode.Picking,
-            consolidationGroupId.value,
-            at
+            workstationId = workstationId,
+            workstationType = WorkstationType.PutWall,
+            mode = WorkstationMode.Picking,
+            assignmentId = consolidationGroupId.value,
+            occurredAt = at
           )
         val result = WorkstationAssignmentResult(
           consolidationGroup = assigned,
@@ -285,9 +289,9 @@ class WorkstationRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
     describe("POST /workstations"):
       it("returns 200 with created response on success"):
         val disabled = Workstation.Disabled(
-          workstationId,
-          WorkstationType.PutWall,
-          8
+          id = workstationId,
+          workstationType = WorkstationType.PutWall,
+          slotCount = 8
         )
         val result = WorkstationCreateResult(disabled)
         val routes = WorkstationRoutes(
@@ -336,17 +340,17 @@ class WorkstationRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
     describe("POST /workstations/:id/enable"):
       it("returns 200 with enabled response on success"):
         val idle = Workstation.Idle(
-          workstationId,
-          WorkstationType.PutWall,
-          8,
-          WorkstationMode.Picking
+          id = workstationId,
+          workstationType = WorkstationType.PutWall,
+          slotCount = 8,
+          mode = WorkstationMode.Picking
         )
         val event = WorkstationEvent.WorkstationEnabled(
-          workstationId,
-          WorkstationType.PutWall,
-          8,
-          WorkstationMode.Picking,
-          at
+          workstationId = workstationId,
+          workstationType = WorkstationType.PutWall,
+          slotCount = 8,
+          mode = WorkstationMode.Picking,
+          occurredAt = at
         )
         val result = WorkstationEnableResult(idle, event)
         val routes = WorkstationRoutes(

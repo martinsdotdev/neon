@@ -57,7 +57,12 @@ class AuthenticationServiceSuite extends AnyFunSpec with EitherValues:
       it("succeeds with valid credentials and returns a session token"):
         val svc = service()
         val result = await(
-          svc.login("operator", "correct-password", None, None)
+          svc.login(
+            login = "operator",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         )
         val (token, context) = result.value
         assert(token.nonEmpty)
@@ -67,21 +72,36 @@ class AuthenticationServiceSuite extends AnyFunSpec with EitherValues:
       it("fails with unknown login"):
         val svc = service()
         val result = await(
-          svc.login("nobody", "correct-password", None, None)
+          svc.login(
+            login = "nobody",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         )
         assert(result.left.value == AuthError.InvalidCredentials)
 
       it("fails with wrong password"):
         val svc = service()
         val result = await(
-          svc.login("operator", "wrong-password", None, None)
+          svc.login(
+            login = "operator",
+            password = "wrong-password",
+            ipAddress = None,
+            userAgent = None
+          )
         )
         assert(result.left.value == AuthError.InvalidCredentials)
 
       it("fails for inactive user"):
         val svc = service()
         val result = await(
-          svc.login("inactive", "correct-password", None, None)
+          svc.login(
+            login = "inactive",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         )
         assert(result.left.value == AuthError.AccountInactive)
 
@@ -93,7 +113,7 @@ class AuthenticationServiceSuite extends AnyFunSpec with EitherValues:
         )
         val svc = service(users = Seq(noPasswordUser))
         val result = await(
-          svc.login("nopw", "any-password", None, None)
+          svc.login(login = "nopw", password = "any-password", ipAddress = None, userAgent = None)
         )
         assert(
           result.left.value == AuthError.InvalidCredentials
@@ -102,7 +122,12 @@ class AuthenticationServiceSuite extends AnyFunSpec with EitherValues:
       it("includes effective permissions in the returned context"):
         val svc = service()
         val (_, context) = await(
-          svc.login("operator", "correct-password", None, None)
+          svc.login(
+            login = "operator",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         ).value
         assert(
           context.permissions == Set(
@@ -115,7 +140,12 @@ class AuthenticationServiceSuite extends AnyFunSpec with EitherValues:
       it("validates a token returned from login"):
         val svc = service()
         val (token, _) = await(
-          svc.login("operator", "correct-password", None, None)
+          svc.login(
+            login = "operator",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         ).value
         val context = await(svc.validateSession(token)).value
         assert(context.login == "operator")
@@ -127,17 +157,22 @@ class AuthenticationServiceSuite extends AnyFunSpec with EitherValues:
 
       it("rejects an expired session"):
         val svc = AuthenticationService(
-          InMemoryAsyncUserRepository(activeUser),
-          InMemorySessionRepository(),
-          InMemoryPermissionRepository(
+          userRepository = InMemoryAsyncUserRepository(activeUser),
+          sessionRepository = InMemorySessionRepository(),
+          permissionRepository = InMemoryPermissionRepository(
             Map(Role.Operator -> Set(Permission.TaskComplete))
           ),
-          hasher,
+          passwordHasher = hasher,
           sessionMaxAge = Duration.ofMillis(1),
           sessionRenewalThreshold = Duration.ZERO
         )
         val (token, _) = await(
-          svc.login("operator", "correct-password", None, None)
+          svc.login(
+            login = "operator",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         ).value
         Thread.sleep(5)
         val result = await(svc.validateSession(token))
@@ -155,7 +190,12 @@ class AuthenticationServiceSuite extends AnyFunSpec with EitherValues:
           hasher
         )
         val (token, _) = await(
-          svc.login("operator", "correct-password", None, None)
+          svc.login(
+            login = "operator",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         ).value
         userRepo.updateUser(activeUser.copy(active = false))
         val result = await(svc.validateSession(token))
@@ -167,7 +207,12 @@ class AuthenticationServiceSuite extends AnyFunSpec with EitherValues:
       it("invalidates the session token"):
         val svc = service()
         val (token, _) = await(
-          svc.login("operator", "correct-password", None, None)
+          svc.login(
+            login = "operator",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         ).value
         await(svc.logout(token))
         val result = await(svc.validateSession(token))
@@ -177,10 +222,20 @@ class AuthenticationServiceSuite extends AnyFunSpec with EitherValues:
       it("invalidates all sessions for a user"):
         val svc = service()
         val (token1, _) = await(
-          svc.login("operator", "correct-password", None, None)
+          svc.login(
+            login = "operator",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         ).value
         val (token2, _) = await(
-          svc.login("operator", "correct-password", None, None)
+          svc.login(
+            login = "operator",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         ).value
         await(svc.logoutAll(activeUser.id))
         assert(
@@ -196,7 +251,12 @@ class AuthenticationServiceSuite extends AnyFunSpec with EitherValues:
       it("returns role default permissions"):
         val svc = service()
         val (_, context) = await(
-          svc.login("operator", "correct-password", None, None)
+          svc.login(
+            login = "operator",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         ).value
         assert(
           context.permissions == Set(
@@ -214,7 +274,12 @@ class AuthenticationServiceSuite extends AnyFunSpec with EitherValues:
           )
         )
         val (_, context) = await(
-          svc.login("operator", "correct-password", None, None)
+          svc.login(
+            login = "operator",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         ).value
         assert(context.permissions.contains(Permission.WavePlan))
         assert(
@@ -230,7 +295,12 @@ class AuthenticationServiceSuite extends AnyFunSpec with EitherValues:
           )
         )
         val (_, context) = await(
-          svc.login("operator", "correct-password", None, None)
+          svc.login(
+            login = "operator",
+            password = "correct-password",
+            ipAddress = None,
+            userAgent = None
+          )
         ).value
         assert(
           !context.permissions.contains(Permission.TaskComplete)

@@ -85,11 +85,11 @@ object InboundRoutes:
                     )
                     onSuccess(
                       inboundDeliveryService.createDelivery(
-                        skuId,
-                        packagingLevel,
-                        lotAttributes,
-                        request.expectedQuantity,
-                        Instant.now()
+                        skuId = skuId,
+                        packagingLevel = packagingLevel,
+                        lotAttributes = lotAttributes,
+                        expectedQuantity = request.expectedQuantity,
+                        at = Instant.now()
                       )
                     ):
                       case Right(result) =>
@@ -110,10 +110,10 @@ object InboundRoutes:
                     )
                     onSuccess(
                       inboundDeliveryService.receiveQuantity(
-                        id,
-                        request.quantity,
-                        request.rejectedQuantity,
-                        Instant.now()
+                        id = id,
+                        quantity = request.quantity,
+                        rejectedQuantity = request.rejectedQuantity,
+                        at = Instant.now()
                       )
                     ):
                       case Right(result) =>

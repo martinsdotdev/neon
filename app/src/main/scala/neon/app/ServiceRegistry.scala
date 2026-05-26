@@ -79,11 +79,11 @@ class ServiceRegistry(
   )
 
   val taskCompletionService = AsyncTaskCompletionService(
-    taskRepository,
-    waveRepository,
-    consolidationGroupRepository,
-    transportOrderRepository,
-    VerificationProfile.disabled
+    taskRepository = taskRepository,
+    waveRepository = waveRepository,
+    consolidationGroupRepository = consolidationGroupRepository,
+    transportOrderRepository = transportOrderRepository,
+    verificationProfile = VerificationProfile.disabled
   )
 
   val waveCancellationService = AsyncWaveCancellationService(
@@ -113,11 +113,11 @@ class ServiceRegistry(
   )
 
   val wavePlanningService = AsyncWavePlanningService(
-    carrierRepository,
-    locationRepository,
-    waveDispatchAssignmentRepository,
-    DefaultWaveDispatchRulesProvider(),
-    waveReleaseService
+    carrierRepository = carrierRepository,
+    locationRepository = locationRepository,
+    waveDispatchAssignmentRepository = waveDispatchAssignmentRepository,
+    waveDispatchRulesProvider = DefaultWaveDispatchRulesProvider(),
+    waveReleaseService = waveReleaseService
   )
 
   val taskLifecycleService = AsyncTaskLifecycleService(

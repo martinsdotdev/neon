@@ -32,9 +32,9 @@ class HandlingUnitProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              event,
-              s"HandlingUnit|${handlingUnitId.value}",
-              "HandlingUnit"
+              event = event,
+              persistenceId = s"HandlingUnit|${handlingUnitId.value}",
+              entityType = "HandlingUnit"
             )
           )
           .futureValue
@@ -76,9 +76,9 @@ class HandlingUnitProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              initialized,
-              s"HandlingUnit|${handlingUnitId.value}",
-              "HandlingUnit"
+              event = initialized,
+              persistenceId = s"HandlingUnit|${handlingUnitId.value}",
+              entityType = "HandlingUnit"
             )
           )
           .futureValue
@@ -86,9 +86,9 @@ class HandlingUnitProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              movedToBuffer,
-              s"HandlingUnit|${handlingUnitId.value}",
-              "HandlingUnit"
+              event = movedToBuffer,
+              persistenceId = s"HandlingUnit|${handlingUnitId.value}",
+              entityType = "HandlingUnit"
             )
           )
           .futureValue
@@ -126,9 +126,9 @@ class HandlingUnitProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              initialized,
-              s"HandlingUnit|${handlingUnitId.value}",
-              "HandlingUnit"
+              event = initialized,
+              persistenceId = s"HandlingUnit|${handlingUnitId.value}",
+              entityType = "HandlingUnit"
             )
           )
           .futureValue
@@ -136,9 +136,9 @@ class HandlingUnitProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              emptied,
-              s"HandlingUnit|${handlingUnitId.value}",
-              "HandlingUnit"
+              event = emptied,
+              persistenceId = s"HandlingUnit|${handlingUnitId.value}",
+              entityType = "HandlingUnit"
             )
           )
           .futureValue

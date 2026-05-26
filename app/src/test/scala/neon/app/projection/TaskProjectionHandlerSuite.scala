@@ -38,7 +38,7 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
         handler
           .process(
             session,
-            envelope(event, s"Task|${taskId.value}", "Task")
+            envelope(event = event, persistenceId = s"Task|${taskId.value}", entityType = "Task")
           )
           .futureValue
       }
@@ -72,7 +72,7 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
         handler
           .process(
             session,
-            envelope(event, s"Task|${taskId.value}", "Task")
+            envelope(event = event, persistenceId = s"Task|${taskId.value}", entityType = "Task")
           )
           .futureValue
       }
@@ -114,9 +114,9 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              created,
-              s"Task|${taskId.value}",
-              "Task"
+              event = created,
+              persistenceId = s"Task|${taskId.value}",
+              entityType = "Task"
             )
           )
           .futureValue
@@ -124,9 +124,9 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              allocated,
-              s"Task|${taskId.value}",
-              "Task"
+              event = allocated,
+              persistenceId = s"Task|${taskId.value}",
+              entityType = "Task"
             )
           )
           .futureValue
@@ -178,9 +178,9 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              created,
-              s"Task|${taskId.value}",
-              "Task"
+              event = created,
+              persistenceId = s"Task|${taskId.value}",
+              entityType = "Task"
             )
           )
           .futureValue
@@ -188,9 +188,9 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
           .process(
             session,
             envelope(
-              completed,
-              s"Task|${taskId.value}",
-              "Task"
+              event = completed,
+              persistenceId = s"Task|${taskId.value}",
+              entityType = "Task"
             )
           )
           .futureValue

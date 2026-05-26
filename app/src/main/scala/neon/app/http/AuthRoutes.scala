@@ -84,16 +84,17 @@ object AuthRoutes:
                 optionalHeaderValueByName("User-Agent"): userAgent =>
                   onSuccess(
                     authService.login(
-                      request.login,
-                      request.password,
-                      Some(clientIp.toOption.map(_.getHostAddress).getOrElse("unknown")),
-                      userAgent
+                      login = request.login,
+                      password = request.password,
+                      ipAddress =
+                        Some(clientIp.toOption.map(_.getHostAddress).getOrElse("unknown")),
+                      userAgent = userAgent
                     )
                   ):
                     case Right((token, context)) =>
                       setCookie(sessionCookie(token, secureCookies)):
                         complete(
-                          AuthResponse.fromContext(context, Some(token))
+                          AuthResponse.fromContext(context = context, token = Some(token))
                         )
                     case Left(
                           AuthError.InvalidCredentials

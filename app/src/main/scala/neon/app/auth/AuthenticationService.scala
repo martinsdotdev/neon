@@ -45,7 +45,7 @@ class AuthenticationService(
             Future.successful(
               Left(AuthError.InvalidCredentials)
             )
-          case Some(hash) if !passwordHasher.verify(password, hash) =>
+          case Some(hash) if !passwordHasher.verify(password = password, hash = hash) =>
             logger.warn(
               "Login failed: invalid credentials {}",
               kv("userId", user.id.value)
