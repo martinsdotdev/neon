@@ -32,7 +32,14 @@ case class Inventory private[inventory] (
     require(quantity > 0, s"quantity must be positive, got $quantity")
     require(quantity <= available, s"quantity $quantity exceeds available $available")
     val updated = copy(reserved = reserved + quantity)
-    val event = InventoryEvent.InventoryReserved(id, locationId, skuId, lot, quantity, at)
+    val event = InventoryEvent.InventoryReserved(
+      inventoryId = id,
+      locationId = locationId,
+      skuId = skuId,
+      lot = lot,
+      quantityReserved = quantity,
+      occurredAt = at
+    )
     (updated, event)
 
   /** Releases a previously reserved quantity back to available stock.
@@ -48,7 +55,14 @@ case class Inventory private[inventory] (
     require(quantity > 0, s"quantity must be positive, got $quantity")
     require(quantity <= reserved, s"quantity $quantity exceeds reserved $reserved")
     val updated = copy(reserved = reserved - quantity)
-    val event = InventoryEvent.InventoryReleased(id, locationId, skuId, lot, quantity, at)
+    val event = InventoryEvent.InventoryReleased(
+      inventoryId = id,
+      locationId = locationId,
+      skuId = skuId,
+      lot = lot,
+      quantityReleased = quantity,
+      occurredAt = at
+    )
     (updated, event)
 
   /** Consumes a reserved quantity, reducing both on-hand and reserved.
@@ -64,7 +78,14 @@ case class Inventory private[inventory] (
     require(quantity > 0, s"quantity must be positive, got $quantity")
     require(quantity <= reserved, s"quantity $quantity exceeds reserved $reserved")
     val updated = copy(onHand = onHand - quantity, reserved = reserved - quantity)
-    val event = InventoryEvent.InventoryConsumed(id, locationId, skuId, lot, quantity, at)
+    val event = InventoryEvent.InventoryConsumed(
+      inventoryId = id,
+      locationId = locationId,
+      skuId = skuId,
+      lot = lot,
+      quantityConsumed = quantity,
+      occurredAt = at
+    )
     (updated, event)
 
   /** Corrects the lot identifier for this inventory position. Only allowed when no units are
@@ -80,7 +101,14 @@ case class Inventory private[inventory] (
   def correctLot(newLot: Option[Lot], at: Instant): (Inventory, InventoryEvent.LotCorrected) =
     require(reserved == 0, s"cannot correct lot while $reserved units are reserved")
     val updated = copy(lot = newLot)
-    val event = InventoryEvent.LotCorrected(id, locationId, skuId, lot, newLot, at)
+    val event = InventoryEvent.LotCorrected(
+      inventoryId = id,
+      locationId = locationId,
+      skuId = skuId,
+      previousLot = lot,
+      newLot = newLot,
+      occurredAt = at
+    )
     (updated, event)
 
 /** Factory for [[Inventory]]. */
@@ -112,7 +140,23 @@ object Inventory:
   ): (Inventory, InventoryEvent.InventoryCreated) =
     require(onHand >= 0, s"onHand must be non-negative, got $onHand")
     val id = InventoryId()
-    val inventory = Inventory(id, locationId, skuId, packagingLevel, lot, onHand, reserved = 0)
+    val inventory = Inventory(
+      id = id,
+      locationId = locationId,
+      skuId = skuId,
+      packagingLevel = packagingLevel,
+      lot = lot,
+      onHand = onHand,
+      reserved = 0
+    )
     val event =
-      InventoryEvent.InventoryCreated(id, locationId, skuId, packagingLevel, lot, onHand, at)
+      InventoryEvent.InventoryCreated(
+        inventoryId = id,
+        locationId = locationId,
+        skuId = skuId,
+        packagingLevel = packagingLevel,
+        lot = lot,
+        onHand = onHand,
+        occurredAt = at
+      )
     (inventory, event)

@@ -50,12 +50,12 @@ class PekkoInventoryRepositorySuite
     describe("save and findById"):
       it("persists inventory via create and retrieves it"):
         val (inventory, event) = Inventory.create(
-          LocationId(),
-          SkuId(),
-          PackagingLevel.Each,
-          Some(Lot("LOT-001")),
-          100,
-          at
+          locationId = LocationId(),
+          skuId = SkuId(),
+          packagingLevel = PackagingLevel.Each,
+          lot = Some(Lot("LOT-001")),
+          onHand = 100,
+          at = at
         )
         repository.save(inventory, event).futureValue
 
@@ -72,16 +72,16 @@ class PekkoInventoryRepositorySuite
     describe("save with reserve"):
       it("updates reserved quantity"):
         val (inventory, createEvent) = Inventory.create(
-          LocationId(),
-          SkuId(),
-          PackagingLevel.Each,
-          None,
-          50,
-          at
+          locationId = LocationId(),
+          skuId = SkuId(),
+          packagingLevel = PackagingLevel.Each,
+          lot = None,
+          onHand = 50,
+          at = at
         )
         repository.save(inventory, createEvent).futureValue
 
-        val (updated, reserveEvent) = inventory.reserve(20, at)
+        val (updated, reserveEvent) = inventory.reserve(quantity = 20, at = at)
         repository.save(updated, reserveEvent).futureValue
 
         val found = repository.findById(inventory.id).futureValue

@@ -168,12 +168,12 @@ object InventoryActor:
         case e: InventoryEvent.InventoryCreated =>
           ActiveState(
             Inventory(
-              e.inventoryId,
-              e.locationId,
-              e.skuId,
-              e.packagingLevel,
-              e.lot,
-              e.onHand,
+              id = e.inventoryId,
+              locationId = e.locationId,
+              skuId = e.skuId,
+              packagingLevel = e.packagingLevel,
+              lot = e.lot,
+              onHand = e.onHand,
               reserved = 0
             )
           )

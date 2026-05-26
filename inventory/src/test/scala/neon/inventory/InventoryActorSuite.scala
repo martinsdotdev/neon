@@ -54,12 +54,12 @@ class InventoryActorSuite
 
   private def createInventory(onHand: Int = 100): Unit =
     val (inventory, event) = Inventory.create(
-      locationId,
-      skuId,
-      PackagingLevel.Each,
-      Some(Lot("LOT-001")),
-      onHand,
-      at
+      locationId = locationId,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      lot = Some(Lot("LOT-001")),
+      onHand = onHand,
+      at = at
     )
     esTestKit.runCommand[StatusReply[Done]](
       InventoryActor.Create(inventory, event, _)
