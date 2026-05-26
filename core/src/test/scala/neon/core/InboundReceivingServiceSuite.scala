@@ -30,7 +30,13 @@ class InboundReceivingServiceSuite extends AnyFunSpec with EitherValues:
 
   def confirmedReceipt(
       lines: List[ReceivedLine] = List(
-        ReceivedLine(skuId, 10, PackagingLevel.Each, LotAttributes(), None)
+        ReceivedLine(
+          skuId = skuId,
+          quantity = 10,
+          packagingLevel = PackagingLevel.Each,
+          lotAttributes = LotAttributes(),
+          targetContainerId = None
+        )
       )
   ): GoodsReceipt.Confirmed =
     GoodsReceipt.Confirmed(goodsReceiptId, inboundDeliveryId, lines)
@@ -40,7 +46,13 @@ class InboundReceivingServiceSuite extends AnyFunSpec with EitherValues:
       onHand: Int = 50
   ): StockPosition =
     val (sp, _) =
-      StockPosition.create(skuId, warehouseAreaId, LotAttributes(), onHand, at)
+      StockPosition.create(
+        skuId = skuId,
+        warehouseAreaId = warehouseAreaId,
+        lotAttributes = LotAttributes(),
+        onHandQuantity = onHand,
+        at = at
+      )
     sp
 
   class InMemoryGoodsReceiptRepository extends GoodsReceiptRepository:
@@ -101,8 +113,20 @@ class InboundReceivingServiceSuite extends AnyFunSpec with EitherValues:
         val taskRepository = InMemoryTaskRepository()
         val skuId2 = SkuId()
         val lines = List(
-          ReceivedLine(skuId, 10, PackagingLevel.Each, LotAttributes(), None),
-          ReceivedLine(skuId2, 5, PackagingLevel.Case, LotAttributes(), None)
+          ReceivedLine(
+            skuId = skuId,
+            quantity = 10,
+            packagingLevel = PackagingLevel.Each,
+            lotAttributes = LotAttributes(),
+            targetContainerId = None
+          ),
+          ReceivedLine(
+            skuId = skuId2,
+            quantity = 5,
+            packagingLevel = PackagingLevel.Case,
+            lotAttributes = LotAttributes(),
+            targetContainerId = None
+          )
         )
         val service = buildService(taskRepository = taskRepository)
         val result = service.processConfirmedReceipt(confirmedReceipt(lines), orderId, at)

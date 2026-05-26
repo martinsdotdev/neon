@@ -46,7 +46,11 @@ class AsyncTaskLifecycleService(
       .flatMap:
         case None => Future.successful(Left(TaskLifecycleError.TaskNotFound(taskId)))
         case Some(planned: Task.Planned) =>
-          val (allocated, event) = planned.allocate(sourceLocationId, destinationLocationId, at)
+          val (allocated, event) = planned.allocate(
+            sourceLocationId = sourceLocationId,
+            destinationLocationId = destinationLocationId,
+            at = at
+          )
           taskRepository
             .save(allocated, event)
             .map(_ => Right(TaskAllocateResult(allocated, event)))

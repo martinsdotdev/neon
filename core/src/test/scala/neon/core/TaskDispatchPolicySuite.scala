@@ -31,48 +31,52 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
       packagingLevel: PackagingLevel = PackagingLevel.Each
   ): Task.Allocated =
     Task.Allocated(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      packagingLevel,
-      1,
-      orderId,
-      waveId,
-      None,
-      None,
-      None,
-      sourceLocationId,
-      destinationLocationId
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = packagingLevel,
+      requestedQuantity = 1,
+      orderId = orderId,
+      waveId = waveId,
+      parentTaskId = None,
+      handlingUnitId = None,
+      stockPositionId = None,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId
     )
 
   def completedTask(orderId: OrderId, waveId: Option[WaveId] = None): Task.Completed =
     Task.Completed(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      1,
-      1,
-      orderId,
-      waveId,
-      None,
-      None,
-      None,
-      sourceLocationId,
-      destinationLocationId,
-      userId
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 1,
+      actualQuantity = 1,
+      orderId = orderId,
+      waveId = waveId,
+      parentTaskId = None,
+      handlingUnitId = None,
+      stockPositionId = None,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId,
+      assignedTo = userId
     )
 
   def singleLineOrder(orderId: OrderId, priority: Priority = Priority.Normal): Order =
-    Order(orderId, priority, List(OrderLine(skuId, PackagingLevel.Each, 1)))
+    Order(
+      orderId,
+      priority,
+      List(OrderLine(skuId = skuId, packagingLevel = PackagingLevel.Each, quantity = 1))
+    )
 
   def multiLineOrder(orderId: OrderId, priority: Priority = Priority.Normal): Order =
     Order(
       orderId,
       priority,
       List(
-        OrderLine(skuId, PackagingLevel.Each, 1),
-        OrderLine(SkuId(), PackagingLevel.Case, 1)
+        OrderLine(skuId = skuId, packagingLevel = PackagingLevel.Each, quantity = 1),
+        OrderLine(skuId = SkuId(), packagingLevel = PackagingLevel.Case, quantity = 1)
       )
     )
 
@@ -83,7 +87,13 @@ class TaskDispatchPolicySuite extends AnyFunSpec:
       consolidationGroups: List[ConsolidationGroup] = List.empty,
       criteria: List[DispatchCriterion] = List.empty
   ): List[Task.Allocated] =
-    TaskDispatchPolicy(candidates, allTasks, orders, consolidationGroups, DispatchProfile(criteria))
+    TaskDispatchPolicy(
+      candidates = candidates,
+      allTasks = allTasks,
+      orders = orders,
+      consolidationGroups = consolidationGroups,
+      profile = DispatchProfile(criteria)
+    )
 
   describe("TaskDispatchPolicy"):
     describe("with empty candidates"):

@@ -21,82 +21,82 @@ class WaveCompletionPolicySuite extends AnyFunSpec with OptionValues:
 
   def completedTask() =
     Task.Completed(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      10,
-      orderId,
-      Some(waveId),
-      None,
-      None,
-      None,
-      sourceLocationId,
-      destinationLocationId,
-      UserId()
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      actualQuantity = 10,
+      orderId = orderId,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = None,
+      stockPositionId = None,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId,
+      assignedTo = UserId()
     )
 
   def cancelledTask() =
     Task.Cancelled(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      orderId,
-      Some(waveId),
-      None,
-      None,
-      None,
-      Some(sourceLocationId),
-      Some(destinationLocationId),
-      None
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      orderId = orderId,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = None,
+      stockPositionId = None,
+      sourceLocationId = Some(sourceLocationId),
+      destinationLocationId = Some(destinationLocationId),
+      assignedTo = None
     )
 
   def assignedTask() =
     Task.Assigned(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      orderId,
-      Some(waveId),
-      None,
-      None,
-      None,
-      sourceLocationId,
-      destinationLocationId,
-      UserId()
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      orderId = orderId,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = None,
+      stockPositionId = None,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId,
+      assignedTo = UserId()
     )
 
   def allocatedTask() =
     Task.Allocated(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      orderId,
-      Some(waveId),
-      None,
-      None,
-      None,
-      sourceLocationId,
-      destinationLocationId
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      orderId = orderId,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = None,
+      stockPositionId = None,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId
     )
 
   def plannedTask() =
     Task.Planned(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      orderId,
-      Some(waveId),
-      None,
-      None
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      orderId = orderId,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = None
     )
 
   describe("WaveCompletionPolicy"):

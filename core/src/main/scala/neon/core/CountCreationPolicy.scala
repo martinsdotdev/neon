@@ -35,14 +35,20 @@ object CountCreationPolicy:
       .map { case ((skuId, locationId), expectedQuantity) =>
         val id = CountTaskId()
         val pending =
-          CountTask.Pending(id, cycleCount.id, skuId, locationId, expectedQuantity)
+          CountTask.Pending(
+            id = id,
+            cycleCountId = cycleCount.id,
+            skuId = skuId,
+            locationId = locationId,
+            expectedQuantity = expectedQuantity
+          )
         val event = CountTaskEvent.CountTaskCreated(
-          id,
-          cycleCount.id,
-          skuId,
-          locationId,
-          expectedQuantity,
-          at
+          countTaskId = id,
+          cycleCountId = cycleCount.id,
+          skuId = skuId,
+          locationId = locationId,
+          expectedQuantity = expectedQuantity,
+          occurredAt = at
         )
         (pending, event)
       }

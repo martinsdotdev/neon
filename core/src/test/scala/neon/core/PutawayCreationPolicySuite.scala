@@ -18,7 +18,13 @@ class PutawayCreationPolicySuite extends AnyFunSpec:
       packagingLevel: PackagingLevel = PackagingLevel.Each,
       targetContainerId: Option[ContainerId] = None
   ): ReceivedLine =
-    ReceivedLine(skuId, quantity, packagingLevel, LotAttributes(), targetContainerId)
+    ReceivedLine(
+      skuId = skuId,
+      quantity = quantity,
+      packagingLevel = packagingLevel,
+      lotAttributes = LotAttributes(),
+      targetContainerId = targetContainerId
+    )
 
   describe("PutawayCreationPolicy"):
     describe("with an empty list"):

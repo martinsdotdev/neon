@@ -29,7 +29,13 @@ class CountCreationPolicySuite extends AnyFunSpec:
       countType: CountType = CountType.Planned,
       countMethod: CountMethod = CountMethod.Blind
   ): CycleCount.InProgress =
-    CycleCount.InProgress(cycleCountId, warehouseAreaId, skuIds, countType, countMethod)
+    CycleCount.InProgress(
+      id = cycleCountId,
+      warehouseAreaId = warehouseAreaId,
+      skuIds = skuIds,
+      countType = countType,
+      countMethod = countMethod
+    )
 
   describe("CountCreationPolicy"):
     describe("when stock positions exist for all SKUs"):

@@ -23,11 +23,11 @@ class WorkstationReleasePolicySuite extends AnyFunSpec:
 
   def activeWorkstation(workstationType: WorkstationType = WorkstationType.PutWall) =
     Workstation.Active(
-      workstationId,
-      workstationType,
-      8,
-      WorkstationMode.Picking,
-      consolidationGroupId.value
+      id = workstationId,
+      workstationType = workstationType,
+      slotCount = 8,
+      mode = WorkstationMode.Picking,
+      assignmentId = consolidationGroupId.value
     )
 
   describe("WorkstationReleasePolicy"):

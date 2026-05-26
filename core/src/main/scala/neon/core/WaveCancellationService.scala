@@ -101,7 +101,15 @@ class WaveCancellationService(
   ): Either[WaveCancellationError, WaveCancellationResult] =
     val (cancelled, cancelledEvent) = planned.cancel(at)
     waveRepository.save(cancelled, cancelledEvent)
-    Right(WaveCancellationResult(cancelled, cancelledEvent, Nil, Nil, Nil))
+    Right(
+      WaveCancellationResult(
+        cancelled = cancelled,
+        cancelledEvent = cancelledEvent,
+        cancelledTasks = Nil,
+        cancelledTransportOrders = Nil,
+        cancelledConsolidationGroups = Nil
+      )
+    )
 
   /** Cancels a released wave and cascades to tasks, transport orders, and consolidation groups.
     */

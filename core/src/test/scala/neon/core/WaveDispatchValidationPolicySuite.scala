@@ -9,13 +9,19 @@ import org.scalatest.funspec.AnyFunSpec
 class WaveDispatchValidationPolicySuite extends AnyFunSpec:
   private val skuId = SkuId()
 
-  private val carrierA = Carrier(CarrierId(), "CARRIER-A", "Carrier A", active = true)
-  private val carrierB = Carrier(CarrierId(), "CARRIER-B", "Carrier B", active = true)
-  private val inactiveCarrier = Carrier(CarrierId(), "CARRIER-X", "Carrier X", active = false)
+  private val carrierA =
+    Carrier(id = CarrierId(), code = "CARRIER-A", name = "Carrier A", active = true)
+  private val carrierB =
+    Carrier(id = CarrierId(), code = "CARRIER-B", name = "Carrier B", active = true)
+  private val inactiveCarrier =
+    Carrier(id = CarrierId(), code = "CARRIER-X", name = "Carrier X", active = false)
 
-  private val dockA = Location(LocationId(), "DOCK-A", None, LocationType.Dock)
-  private val dockB = Location(LocationId(), "DOCK-B", None, LocationType.Dock)
-  private val pickFace = Location(LocationId(), "PICK-01", None, LocationType.Pick)
+  private val dockA =
+    Location(id = LocationId(), code = "DOCK-A", zoneId = None, locationType = LocationType.Dock)
+  private val dockB =
+    Location(id = LocationId(), code = "DOCK-B", zoneId = None, locationType = LocationType.Dock)
+  private val pickFace =
+    Location(id = LocationId(), code = "PICK-01", zoneId = None, locationType = LocationType.Pick)
 
   private def orderWithCarrier(
       carrierId: CarrierId,
@@ -24,7 +30,7 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
     Order(
       id = id,
       priority = Priority.Normal,
-      lines = List(OrderLine(skuId, PackagingLevel.Each, 1)),
+      lines = List(OrderLine(skuId = skuId, packagingLevel = PackagingLevel.Each, quantity = 1)),
       carrierId = Some(carrierId)
     )
 
@@ -32,7 +38,7 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
     Order(
       id = id,
       priority = Priority.Normal,
-      lines = List(OrderLine(skuId, PackagingLevel.Each, 1)),
+      lines = List(OrderLine(skuId = skuId, packagingLevel = PackagingLevel.Each, quantity = 1)),
       carrierId = None
     )
 
@@ -43,9 +49,9 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
       val orders = List(orderWithCarrier(carrierA.id))
       val assignments = List(DockCarrierAssignment(dockA.id, carrierA.id))
       val result = WaveDispatchValidationPolicy(
-        orders,
-        assignments,
-        defaultRules,
+        orders = orders,
+        dockAssignments = assignments,
+        rules = defaultRules,
         carriersById = Map(carrierA.id -> carrierA),
         docksById = Map(dockA.id -> dockA),
         activeAssignmentsByDock = Map.empty
@@ -69,9 +75,9 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
       val orders = List(orderWithCarrier(inactiveCarrier.id))
       val assignments = List(DockCarrierAssignment(dockA.id, inactiveCarrier.id))
       val result = WaveDispatchValidationPolicy(
-        orders,
-        assignments,
-        defaultRules,
+        orders = orders,
+        dockAssignments = assignments,
+        rules = defaultRules,
         carriersById = Map(inactiveCarrier.id -> inactiveCarrier),
         docksById = Map(dockA.id -> dockA),
         activeAssignmentsByDock = Map.empty
@@ -82,9 +88,9 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
       val orders = List(orderWithCarrier(carrierA.id))
       val assignments = List(DockCarrierAssignment(pickFace.id, carrierA.id))
       val result = WaveDispatchValidationPolicy(
-        orders,
-        assignments,
-        defaultRules,
+        orders = orders,
+        dockAssignments = assignments,
+        rules = defaultRules,
         carriersById = Map(carrierA.id -> carrierA),
         docksById = Map(pickFace.id -> pickFace),
         activeAssignmentsByDock = Map.empty
@@ -99,9 +105,9 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
           DockCarrierAssignment(dockB.id, carrierA.id)
         )
       val result = WaveDispatchValidationPolicy(
-        orders,
-        assignments,
-        defaultRules,
+        orders = orders,
+        dockAssignments = assignments,
+        rules = defaultRules,
         carriersById = Map(carrierA.id -> carrierA),
         docksById = Map(dockA.id -> dockA, dockB.id -> dockB),
         activeAssignmentsByDock = Map.empty
@@ -116,9 +122,9 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
           DockCarrierAssignment(dockA.id, carrierB.id)
         )
       val result = WaveDispatchValidationPolicy(
-        orders,
-        assignments,
-        defaultRules,
+        orders = orders,
+        dockAssignments = assignments,
+        rules = defaultRules,
         carriersById = Map(carrierA.id -> carrierA, carrierB.id -> carrierB),
         docksById = Map(dockA.id -> dockA),
         activeAssignmentsByDock = Map.empty
@@ -129,9 +135,9 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
       val orders = List(orderWithCarrier(carrierA.id), orderWithCarrier(carrierB.id))
       val assignments = List(DockCarrierAssignment(dockA.id, carrierA.id))
       val result = WaveDispatchValidationPolicy(
-        orders,
-        assignments,
-        defaultRules,
+        orders = orders,
+        dockAssignments = assignments,
+        rules = defaultRules,
         carriersById = Map(carrierA.id -> carrierA, carrierB.id -> carrierB),
         docksById = Map(dockA.id -> dockA),
         activeAssignmentsByDock = Map.empty
@@ -145,9 +151,9 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
       val orders = List(orderWithCarrier(carrierA.id))
       val assignments = List(DockCarrierAssignment(dockA.id, carrierA.id))
       val result = WaveDispatchValidationPolicy(
-        orders,
-        assignments,
-        defaultRules,
+        orders = orders,
+        dockAssignments = assignments,
+        rules = defaultRules,
         carriersById = Map(carrierA.id -> carrierA, carrierB.id -> carrierB),
         docksById = Map(dockA.id -> dockA),
         activeAssignmentsByDock =
@@ -168,9 +174,9 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
       val orders = List(orderWithCarrier(carrierA.id))
       val assignments = List(DockCarrierAssignment(dockA.id, carrierA.id))
       val result = WaveDispatchValidationPolicy(
-        orders,
-        assignments,
-        defaultRules,
+        orders = orders,
+        dockAssignments = assignments,
+        rules = defaultRules,
         carriersById = Map(carrierA.id -> carrierA),
         docksById = Map(dockA.id -> dockA),
         activeAssignmentsByDock =
@@ -183,9 +189,9 @@ class WaveDispatchValidationPolicySuite extends AnyFunSpec:
       val assignments = List(DockCarrierAssignment(dockA.id, carrierA.id))
       val relaxedRules = defaultRules.copy(enforceDockCarrierExclusivityAcrossActiveWaves = false)
       val result = WaveDispatchValidationPolicy(
-        orders,
-        assignments,
-        relaxedRules,
+        orders = orders,
+        dockAssignments = assignments,
+        rules = relaxedRules,
         carriersById = Map(carrierA.id -> carrierA, carrierB.id -> carrierB),
         docksById = Map(dockA.id -> dockA),
         activeAssignmentsByDock =

@@ -45,7 +45,14 @@ class AsyncInventoryService(
       onHand: Int,
       at: Instant
   ): Future[Either[InventoryError, InventoryCreateResult]] =
-    val (inventory, event) = Inventory.create(locationId, skuId, packagingLevel, lot, onHand, at)
+    val (inventory, event) = Inventory.create(
+      locationId = locationId,
+      skuId = skuId,
+      packagingLevel = packagingLevel,
+      lot = lot,
+      onHand = onHand,
+      at = at
+    )
     inventoryRepository
       .save(inventory, event)
       .map(_ => Right(InventoryCreateResult(inventory, event)))
@@ -63,7 +70,13 @@ class AsyncInventoryService(
           if quantity <= 0 then Future.successful(Left(InventoryError.InvalidQuantity(id)))
           else if quantity > inv.available then
             Future.successful(
-              Left(InventoryError.InsufficientAvailable(id, quantity, inv.available))
+              Left(
+                InventoryError.InsufficientAvailable(
+                  id = id,
+                  requested = quantity,
+                  available = inv.available
+                )
+              )
             )
           else
             val (updated, event) = inv.reserve(quantity, at)
@@ -83,7 +96,15 @@ class AsyncInventoryService(
         case Some(inv) =>
           if quantity <= 0 then Future.successful(Left(InventoryError.InvalidQuantity(id)))
           else if quantity > inv.reserved then
-            Future.successful(Left(InventoryError.InsufficientReserved(id, quantity, inv.reserved)))
+            Future.successful(
+              Left(
+                InventoryError.InsufficientReserved(
+                  id = id,
+                  requested = quantity,
+                  reserved = inv.reserved
+                )
+              )
+            )
           else
             val (updated, event) = inv.release(quantity, at)
             inventoryRepository
@@ -102,7 +123,15 @@ class AsyncInventoryService(
         case Some(inv) =>
           if quantity <= 0 then Future.successful(Left(InventoryError.InvalidQuantity(id)))
           else if quantity > inv.reserved then
-            Future.successful(Left(InventoryError.InsufficientReserved(id, quantity, inv.reserved)))
+            Future.successful(
+              Left(
+                InventoryError.InsufficientReserved(
+                  id = id,
+                  requested = quantity,
+                  reserved = inv.reserved
+                )
+              )
+            )
           else
             val (updated, event) = inv.consume(quantity, at)
             inventoryRepository

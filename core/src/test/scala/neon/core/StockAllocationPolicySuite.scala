@@ -34,7 +34,15 @@ class StockAllocationPolicySuite extends AnyFunSpec with EitherValues:
       expirationDate = expirationDate,
       productionDate = productionDate
     )
-    StockPosition.create(skuId, warehouseAreaId, lotAttrs, available, at)._1
+    StockPosition
+      .create(
+        skuId = skuId,
+        warehouseAreaId = warehouseAreaId,
+        lotAttributes = lotAttrs,
+        onHandQuantity = available,
+        at = at
+      )
+      ._1
 
   def request(skuId: SkuId = skuId, quantity: Int = 10): AllocationRequest =
     AllocationRequest(skuId, quantity)
@@ -168,10 +176,10 @@ class StockAllocationPolicySuite extends AnyFunSpec with EitherValues:
         )
         val stock = Map(skuId -> List(expiringSoon, expiringLater))
         val result = StockAllocationPolicy(
-          List(request(quantity = 10)),
-          stock,
-          AllocationStrategy.Fefo,
-          referenceDate,
+          requests = List(request(quantity = 10)),
+          availableStock = stock,
+          strategy = AllocationStrategy.Fefo,
+          referenceDate = referenceDate,
           minimumShelfLifeDays = 30
         ).value
         assert(result.head.allocations.head.stockPositionId == expiringLater.id)
@@ -183,10 +191,10 @@ class StockAllocationPolicySuite extends AnyFunSpec with EitherValues:
         )
         val stock = Map(skuId -> List(expiringSoon))
         val result = StockAllocationPolicy(
-          List(request(quantity = 10)),
-          stock,
-          AllocationStrategy.Fefo,
-          referenceDate,
+          requests = List(request(quantity = 10)),
+          availableStock = stock,
+          strategy = AllocationStrategy.Fefo,
+          referenceDate = referenceDate,
           minimumShelfLifeDays = 30
         )
         assert(result.left.value.isInstanceOf[StockAllocationError.InsufficientShelfLife])

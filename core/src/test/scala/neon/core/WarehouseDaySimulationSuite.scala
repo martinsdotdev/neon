@@ -112,24 +112,42 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
 
       // Create stock positions for the received goods
       val (aspirinEarly, aspirinEarlyEvent) =
-        StockPosition.create(aspirinSkuId, warehouseAreaId, aspirinLotEarlyExpiry, 200, at(0))
+        StockPosition.create(
+          skuId = aspirinSkuId,
+          warehouseAreaId = warehouseAreaId,
+          lotAttributes = aspirinLotEarlyExpiry,
+          onHandQuantity = 200,
+          at = at(0)
+        )
       stockRepo.save(aspirinEarly, aspirinEarlyEvent)
 
       val (aspirinLate, aspirinLateEvent) =
-        StockPosition.create(aspirinSkuId, warehouseAreaId, aspirinLotLateExpiry, 150, at(0))
+        StockPosition.create(
+          skuId = aspirinSkuId,
+          warehouseAreaId = warehouseAreaId,
+          lotAttributes = aspirinLotLateExpiry,
+          onHandQuantity = 150,
+          at = at(0)
+        )
       stockRepo.save(aspirinLate, aspirinLateEvent)
 
       val (bandageStock, bandageEvent) =
-        StockPosition.create(bandageSkuId, warehouseAreaId, bandageLot, 500, at(0))
+        StockPosition.create(
+          skuId = bandageSkuId,
+          warehouseAreaId = warehouseAreaId,
+          lotAttributes = bandageLot,
+          onHandQuantity = 500,
+          at = at(0)
+        )
       stockRepo.save(bandageStock, bandageEvent)
 
       // Create an inbound delivery
       val delivery = InboundDelivery.New(
-        InboundDeliveryId(),
-        aspirinSkuId,
-        PackagingLevel.Each,
-        aspirinLotEarlyExpiry,
-        200
+        id = InboundDeliveryId(),
+        skuId = aspirinSkuId,
+        packagingLevel = PackagingLevel.Each,
+        lotAttributes = aspirinLotEarlyExpiry,
+        expectedQuantity = 200
       )
 
       it("creates inbound delivery in New state"):
@@ -143,7 +161,7 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
         assert(receiving.isInstanceOf[InboundDelivery.Receiving])
 
       // Record received quantities
-      val (afterReceive, receiveEvent) = receiving.receive(200, 0, at(0))
+      val (afterReceive, receiveEvent) = receiving.receive(quantity = 200, rejected = 0, at = at(0))
 
       it("records received quantity"):
         assert(afterReceive.receivedQuantity == 200)
@@ -163,11 +181,11 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
 
       // Record a line
       val receivedLine = ReceivedLine(
-        aspirinSkuId,
-        200,
-        PackagingLevel.Each,
-        aspirinLotEarlyExpiry,
-        Some(inboundPallet)
+        skuId = aspirinSkuId,
+        quantity = 200,
+        packagingLevel = PackagingLevel.Each,
+        lotAttributes = aspirinLotEarlyExpiry,
+        targetContainerId = Some(inboundPallet)
       )
       val (withLine, lineEvent) = receipt.recordLine(receivedLine, at(0))
 
@@ -208,20 +226,20 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
       val order1 = Order(
         OrderId(),
         Priority.High,
-        List(OrderLine(aspirinSkuId, PackagingLevel.Each, 50))
+        List(OrderLine(skuId = aspirinSkuId, packagingLevel = PackagingLevel.Each, quantity = 50))
       )
       val order2 = Order(
         OrderId(),
         Priority.Normal,
-        List(OrderLine(aspirinSkuId, PackagingLevel.Each, 30))
+        List(OrderLine(skuId = aspirinSkuId, packagingLevel = PackagingLevel.Each, quantity = 30))
       )
 
       val wavePlan = WavePlanner.plan(List(order1, order2), OrderGrouping.Single, at(2))
 
       val waveReleaseService = WaveReleaseService(
-        waveRepo,
-        taskRepo,
-        cgRepo,
+        waveRepository = waveRepo,
+        taskRepository = taskRepo,
+        consolidationGroupRepository = cgRepo,
         stockPositionRepository = Some(stockRepo),
         allocationStrategy = AllocationStrategy.Fefo,
         referenceDate = LocalDate.of(2027, 1, 15)
@@ -265,11 +283,11 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
     describe("10:00 picking with shortpick"):
 
       val taskCompletionService = TaskCompletionService(
-        taskRepo,
-        waveRepo,
-        cgRepo,
-        toRepo,
-        VerificationProfile.disabled,
+        taskRepository = taskRepo,
+        waveRepository = waveRepo,
+        consolidationGroupRepository = cgRepo,
+        transportOrderRepository = toRepo,
+        verificationProfile = VerificationProfile.disabled,
         stockPositionRepository = Some(stockRepo)
       )
 
@@ -278,12 +296,18 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
         val task1 = taskRepo.store.values.collectFirst {
           case t: Task.Planned if t.requestedQuantity == 50 => t
         }.value
-        val (allocated, _) = task1.allocate(pickLocationA, bufferZone, at(4))
+        val (allocated, _) = task1.allocate(
+          sourceLocationId = pickLocationA,
+          destinationLocationId = bufferZone,
+          at = at(4)
+        )
         taskRepo.store(allocated.id) = allocated
         val (assigned, _) = allocated.assign(picker, at(4))
         taskRepo.store(assigned.id) = assigned
 
-        val result = taskCompletionService.complete(assigned.id, 50, true, at(4)).value
+        val result = taskCompletionService
+          .complete(taskId = assigned.id, actualQuantity = 50, verified = true, at = at(4))
+          .value
         assert(result.completed.actualQuantity == 50)
         assert(result.shortpick.isEmpty)
 
@@ -291,12 +315,18 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
         val task2 = taskRepo.store.values.collectFirst {
           case t: Task.Planned if t.requestedQuantity == 30 => t
         }.value
-        val (allocated, _) = task2.allocate(pickLocationA, bufferZone, at(4))
+        val (allocated, _) = task2.allocate(
+          sourceLocationId = pickLocationA,
+          destinationLocationId = bufferZone,
+          at = at(4)
+        )
         taskRepo.store(allocated.id) = allocated
         val (assigned, _) = allocated.assign(picker, at(4))
         taskRepo.store(assigned.id) = assigned
 
-        val result = taskCompletionService.complete(assigned.id, 25, true, at(4)).value
+        val result = taskCompletionService
+          .complete(taskId = assigned.id, actualQuantity = 25, verified = true, at = at(4))
+          .value
         assert(result.completed.actualQuantity == 25)
         assert(result.shortpick.isDefined)
         val (replacement, _) = result.shortpick.value
@@ -321,11 +351,11 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
 
       // Create a cycle count for bandages
       val cycleCount = CycleCount.New(
-        CycleCountId(),
-        warehouseAreaId,
-        List(bandageSkuId),
-        CountType.Planned,
-        CountMethod.Blind
+        id = CycleCountId(),
+        warehouseAreaId = warehouseAreaId,
+        skuIds = List(bandageSkuId),
+        countType = CountType.Planned,
+        countMethod = CountMethod.Blind
       )
 
       // Start the cycle count
@@ -355,7 +385,7 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
       ctRepo.save(assigned, assignedEvent)
 
       // Operator counts 497 (3 missing: shrinkage)
-      val (recorded, recordedEvent) = assigned.record(497, at(8))
+      val (recorded, recordedEvent) = assigned.record(actualQuantity = 497, at = at(8))
       ctRepo.save(recorded, recordedEvent)
 
       it("records actual count with variance"):
@@ -415,7 +445,11 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
           .find(_.skuId == bandageSkuId)
           .value
         val (adjusted, adjustEvent) =
-          bandagePosition.adjust(-3, AdjustmentReasonCode.Shrinkage, at(10))
+          bandagePosition.adjust(
+            delta = -3,
+            reasonCode = AdjustmentReasonCode.Shrinkage,
+            at = at(10)
+          )
         stockRepo.save(adjusted, adjustEvent)
         assert(adjusted.onHandQuantity == 497)
         assert(adjusted.availableQuantity == 497)
@@ -427,12 +461,20 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
     describe("17:00 workstation mode switching"):
 
       it("starts in Picking mode when enabled"):
-        val disabled = Workstation.Disabled(WorkstationId(), WorkstationType.PutWall, 8)
+        val disabled = Workstation.Disabled(
+          id = WorkstationId(),
+          workstationType = WorkstationType.PutWall,
+          slotCount = 8
+        )
         val (idle, enabledEvent) = disabled.enable(at(11))
         assert(idle.mode == WorkstationMode.Picking)
 
       it("switches from Picking to Receiving mode"):
-        val disabled = Workstation.Disabled(WorkstationId(), WorkstationType.PutWall, 8)
+        val disabled = Workstation.Disabled(
+          id = WorkstationId(),
+          workstationType = WorkstationType.PutWall,
+          slotCount = 8
+        )
         val (idle, _) = disabled.enable(at(11))
         val (receivingMode, switchEvent) = idle.switchMode(WorkstationMode.Receiving, at(11))
         assert(receivingMode.mode == WorkstationMode.Receiving)
@@ -440,13 +482,21 @@ class WarehouseDaySimulationSuite extends AnyFunSpec with OptionValues with Eith
         assert(switchEvent.newMode == WorkstationMode.Receiving)
 
       it("switches to Counting mode for cycle count"):
-        val disabled = Workstation.Disabled(WorkstationId(), WorkstationType.PutWall, 8)
+        val disabled = Workstation.Disabled(
+          id = WorkstationId(),
+          workstationType = WorkstationType.PutWall,
+          slotCount = 8
+        )
         val (idle, _) = disabled.enable(at(11))
         val (countingMode, _) = idle.switchMode(WorkstationMode.Counting, at(11))
         assert(countingMode.mode == WorkstationMode.Counting)
 
       it("cannot switch mode while Active (processing work)"):
-        val disabled = Workstation.Disabled(WorkstationId(), WorkstationType.PutWall, 8)
+        val disabled = Workstation.Disabled(
+          id = WorkstationId(),
+          workstationType = WorkstationType.PutWall,
+          slotCount = 8
+        )
         val (idle, _) = disabled.enable(at(11))
         val (active, _) = idle.assign(java.util.UUID.randomUUID(), at(11))
         // Active state does not expose switchMode: compile-time enforcement

@@ -75,20 +75,20 @@ class TransportOrderConfirmationServiceSuite extends AnyFunSpec with OptionValue
       orderId: OrderId = orderId
   ): Task.Completed =
     Task.Completed(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      10,
-      orderId,
-      waveId,
-      None,
-      Some(handlingUnitId),
-      None,
-      sourceLocationId,
-      destinationLocationId,
-      userId
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      actualQuantity = 10,
+      orderId = orderId,
+      waveId = waveId,
+      parentTaskId = None,
+      handlingUnitId = Some(handlingUnitId),
+      stockPositionId = None,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId,
+      assignedTo = userId
     )
 
   def pickedConsolidationGroup(

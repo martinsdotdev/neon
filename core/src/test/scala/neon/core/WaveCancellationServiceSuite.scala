@@ -53,15 +53,15 @@ class WaveCancellationServiceSuite extends AnyFunSpec with OptionValues with Eit
       handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId)
   ): Task.Planned =
     Task.Planned(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      orderId,
-      Some(waveId),
-      None,
-      handlingUnitId
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      orderId = orderId,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = handlingUnitId
     )
 
   def allocatedTask(
@@ -69,18 +69,18 @@ class WaveCancellationServiceSuite extends AnyFunSpec with OptionValues with Eit
       handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId)
   ): Task.Allocated =
     Task.Allocated(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      orderId,
-      Some(waveId),
-      None,
-      handlingUnitId,
-      None,
-      sourceLocationId,
-      destinationLocationId
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      orderId = orderId,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = handlingUnitId,
+      stockPositionId = None,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId
     )
 
   def assignedTask(
@@ -88,19 +88,19 @@ class WaveCancellationServiceSuite extends AnyFunSpec with OptionValues with Eit
       handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId)
   ): Task.Assigned =
     Task.Assigned(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      orderId,
-      Some(waveId),
-      None,
-      handlingUnitId,
-      None,
-      sourceLocationId,
-      destinationLocationId,
-      userId
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      orderId = orderId,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = handlingUnitId,
+      stockPositionId = None,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId,
+      assignedTo = userId
     )
 
   def completedTask(
@@ -108,36 +108,36 @@ class WaveCancellationServiceSuite extends AnyFunSpec with OptionValues with Eit
       handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId)
   ): Task.Completed =
     Task.Completed(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      10,
-      orderId,
-      Some(waveId),
-      None,
-      handlingUnitId,
-      None,
-      sourceLocationId,
-      destinationLocationId,
-      userId
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      actualQuantity = 10,
+      orderId = orderId,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = handlingUnitId,
+      stockPositionId = None,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId,
+      assignedTo = userId
     )
 
   def cancelledTask(waveId: WaveId = waveId): Task.Cancelled =
     Task.Cancelled(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      orderId,
-      Some(waveId),
-      None,
-      None,
-      None,
-      None,
-      None,
-      None
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      orderId = orderId,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = None,
+      stockPositionId = None,
+      sourceLocationId = None,
+      destinationLocationId = None,
+      assignedTo = None
     )
 
   def pendingTransportOrder(

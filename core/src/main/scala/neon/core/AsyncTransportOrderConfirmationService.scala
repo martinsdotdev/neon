@@ -136,11 +136,11 @@ class AsyncTransportOrderConfirmationService(
               case None              => Future.successful(None)
               case Some(pickedGroup) =>
                 checkBufferAndComplete(
-                  pickedGroup,
-                  waveId,
-                  handlingUnitId,
-                  arrivedHandlingUnit,
-                  at
+                  pickedGroup = pickedGroup,
+                  waveId = waveId,
+                  handlingUnitId = handlingUnitId,
+                  arrivedHandlingUnit = arrivedHandlingUnit,
+                  at = at
                 )
           }
     }

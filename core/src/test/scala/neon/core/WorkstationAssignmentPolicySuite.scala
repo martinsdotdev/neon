@@ -69,7 +69,12 @@ class WorkstationAssignmentPolicySuite extends AnyFunSpec with OptionValues:
 
       it("preserves workstation type after assignment"):
         val workstation =
-          Workstation.Idle(WorkstationId(), WorkstationType.PackStation, 8, WorkstationMode.Picking)
+          Workstation.Idle(
+            id = WorkstationId(),
+            workstationType = WorkstationType.PackStation,
+            slotCount = 8,
+            mode = WorkstationMode.Picking
+          )
         val (_, (active, event)) =
           WorkstationAssignmentPolicy(readyConsolidationGroup(), workstation, at).value
         assert(active.workstationType == WorkstationType.PackStation)

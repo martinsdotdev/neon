@@ -21,19 +21,19 @@ class RoutingPolicySuite extends AnyFunSpec with OptionValues:
       handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId)
   ) =
     TaskEvent.TaskCompleted(
-      taskId,
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      Some(waveId),
-      None,
-      handlingUnitId,
-      sourceLocationId,
-      destinationLocationId,
-      10,
-      10,
-      userId,
-      at
+      taskId = taskId,
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = handlingUnitId,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId,
+      requestedQuantity = 10,
+      actualQuantity = 10,
+      assignedTo = userId,
+      occurredAt = at
     )
 
   describe("RoutingPolicy"):

@@ -55,5 +55,10 @@ object AdjustmentService:
       at: Instant
   ): Either[AdjustmentError, AdjustmentResult] =
     if adjustedBy == variance.countedBy then
-      Left(AdjustmentError.SegregationOfDutiesViolation(variance.countedBy, adjustedBy))
+      Left(
+        AdjustmentError.SegregationOfDutiesViolation(
+          countedBy = variance.countedBy,
+          adjustedBy = adjustedBy
+        )
+      )
     else Right(AdjustmentResult(variance, adjustedBy, reasonCode))

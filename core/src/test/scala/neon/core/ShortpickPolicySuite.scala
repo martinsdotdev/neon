@@ -34,38 +34,38 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
       packagingLevel: PackagingLevel = PackagingLevel.Each
   ) =
     Task.Completed(
-      TaskId(),
-      TaskType.Pick,
-      skuId,
-      packagingLevel,
-      requested,
-      actual,
-      orderId,
-      waveId,
-      None,
-      handlingUnitId,
-      None,
-      sourceLocationId,
-      destinationLocationId,
-      userId
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = packagingLevel,
+      requestedQuantity = requested,
+      actualQuantity = actual,
+      orderId = orderId,
+      waveId = waveId,
+      parentTaskId = None,
+      handlingUnitId = handlingUnitId,
+      stockPositionId = None,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId,
+      assignedTo = userId
     )
 
   describe("ShortpickPolicy"):
     describe("when actual meets requested"):
       it("does not create a replacement task"):
-        assert(ShortpickPolicy(completed(10, 10), at).isEmpty)
+        assert(ShortpickPolicy(completed(requested = 10, actual = 10), at).isEmpty)
 
     describe("when actual exceeds requested"):
       it("does not create a replacement task"):
-        assert(ShortpickPolicy(completed(10, 12), at).isEmpty)
+        assert(ShortpickPolicy(completed(requested = 10, actual = 12), at).isEmpty)
 
     describe("when actual is zero"):
       it("returns replacement task with full requested quantity"):
-        val (replacement, _) = ShortpickPolicy(completed(10, 0), at).value
+        val (replacement, _) = ShortpickPolicy(completed(requested = 10, actual = 0), at).value
         assert(replacement.requestedQuantity == 10)
 
     describe("when actual is less than requested"):
-      val task = completed(10, 7)
+      val task = completed(requested = 10, actual = 7)
       val (replacement, event) = ShortpickPolicy(task, at).value
 
       it("returns replacement task for the unfulfilled quantity"):
@@ -99,14 +99,14 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
 
     describe("when task has no wave"):
       it("copies None for both waveId and handlingUnitId"):
-        val task = completed(10, 7, waveId = None, handlingUnitId = None)
+        val task = completed(requested = 10, actual = 7, waveId = None, handlingUnitId = None)
         val (replacement, _) = ShortpickPolicy(task, at).value
         assert(replacement.waveId == None)
         assert(replacement.handlingUnitId == None)
 
     describe("packagingLevel propagation"):
       it("copies Case packaging level to replacement task and event"):
-        val task = completed(3, 1, packagingLevel = PackagingLevel.Case)
+        val task = completed(requested = 3, actual = 1, packagingLevel = PackagingLevel.Case)
         val (replacement, event) = ShortpickPolicy(task, at).value
         assert(replacement.packagingLevel == PackagingLevel.Case)
         assert(event.packagingLevel == PackagingLevel.Case)

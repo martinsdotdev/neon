@@ -30,11 +30,11 @@ class CountCompletionServiceSuite extends AnyFunSpec with OptionValues with Eith
       id: CycleCountId = cycleCountId
   ): CycleCount.InProgress =
     CycleCount.InProgress(
-      id,
-      warehouseAreaId,
-      List(skuId),
-      CountType.Planned,
-      CountMethod.Blind
+      id = id,
+      warehouseAreaId = warehouseAreaId,
+      skuIds = List(skuId),
+      countType = CountType.Planned,
+      countMethod = CountMethod.Blind
     )
 
   def recordedCountTask(
@@ -44,25 +44,38 @@ class CountCompletionServiceSuite extends AnyFunSpec with OptionValues with Eith
       countedBy: UserId = userId
   ): CountTask.Recorded =
     CountTask.Recorded(
-      CountTaskId(),
-      cycleCountId,
-      skuId,
-      locationId,
-      expectedQuantity,
-      countedBy,
-      actualQuantity,
-      actualQuantity - expectedQuantity
+      id = CountTaskId(),
+      cycleCountId = cycleCountId,
+      skuId = skuId,
+      locationId = locationId,
+      expectedQuantity = expectedQuantity,
+      assignedTo = countedBy,
+      actualQuantity = actualQuantity,
+      variance = actualQuantity - expectedQuantity
     )
 
   def assignedCountTask(
       cycleCountId: CycleCountId = cycleCountId
   ): CountTask.Assigned =
-    CountTask.Assigned(CountTaskId(), cycleCountId, skuId, locationId, 50, userId)
+    CountTask.Assigned(
+      id = CountTaskId(),
+      cycleCountId = cycleCountId,
+      skuId = skuId,
+      locationId = locationId,
+      expectedQuantity = 50,
+      assignedTo = userId
+    )
 
   def pendingCountTask(
       cycleCountId: CycleCountId = cycleCountId
   ): CountTask.Pending =
-    CountTask.Pending(CountTaskId(), cycleCountId, skuId, locationId, 50)
+    CountTask.Pending(
+      id = CountTaskId(),
+      cycleCountId = cycleCountId,
+      skuId = skuId,
+      locationId = locationId,
+      expectedQuantity = 50
+    )
 
   class InMemoryCycleCountRepository extends CycleCountRepository:
     val store: mutable.Map[CycleCountId, CycleCount] = mutable.Map.empty
@@ -101,11 +114,11 @@ class CountCompletionServiceSuite extends AnyFunSpec with OptionValues with Eith
       it("rejects Completed cycle count"):
         val cycleCountRepository = InMemoryCycleCountRepository()
         val completed = CycleCount.Completed(
-          cycleCountId,
-          warehouseAreaId,
-          List(skuId),
-          CountType.Planned,
-          CountMethod.Blind
+          id = cycleCountId,
+          warehouseAreaId = warehouseAreaId,
+          skuIds = List(skuId),
+          countType = CountType.Planned,
+          countMethod = CountMethod.Blind
         )
         cycleCountRepository.store(cycleCountId) = completed
         val service = buildService(cycleCountRepository = cycleCountRepository)
@@ -115,11 +128,11 @@ class CountCompletionServiceSuite extends AnyFunSpec with OptionValues with Eith
       it("rejects New cycle count"):
         val cycleCountRepository = InMemoryCycleCountRepository()
         val newCount = CycleCount.New(
-          cycleCountId,
-          warehouseAreaId,
-          List(skuId),
-          CountType.Planned,
-          CountMethod.Blind
+          id = cycleCountId,
+          warehouseAreaId = warehouseAreaId,
+          skuIds = List(skuId),
+          countType = CountType.Planned,
+          countMethod = CountMethod.Blind
         )
         cycleCountRepository.store(cycleCountId) = newCount
         val service = buildService(cycleCountRepository = cycleCountRepository)
@@ -222,7 +235,14 @@ class CountCompletionServiceSuite extends AnyFunSpec with OptionValues with Eith
         cycleCountRepository.store(cycleCountId) = cycleCount
         val recorded = recordedCountTask()
         val cancelled =
-          CountTask.Cancelled(CountTaskId(), cycleCountId, skuId, locationId, 50, None)
+          CountTask.Cancelled(
+            id = CountTaskId(),
+            cycleCountId = cycleCountId,
+            skuId = skuId,
+            locationId = locationId,
+            expectedQuantity = 50,
+            assignedTo = None
+          )
         countTaskRepository.store(recorded.id) = recorded
         countTaskRepository.store(cancelled.id) = cancelled
         val service =
@@ -240,7 +260,14 @@ class CountCompletionServiceSuite extends AnyFunSpec with OptionValues with Eith
         cycleCountRepository.store(cycleCountId) = cycleCount
         val recorded = recordedCountTask(expectedQuantity = 50, actualQuantity = 45)
         val cancelled =
-          CountTask.Cancelled(CountTaskId(), cycleCountId, skuId, locationId, 50, None)
+          CountTask.Cancelled(
+            id = CountTaskId(),
+            cycleCountId = cycleCountId,
+            skuId = skuId,
+            locationId = locationId,
+            expectedQuantity = 50,
+            assignedTo = None
+          )
         countTaskRepository.store(recorded.id) = recorded
         countTaskRepository.store(cancelled.id) = cancelled
         val service =

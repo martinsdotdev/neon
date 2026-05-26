@@ -32,9 +32,12 @@ class WavePlanningServiceSuite extends AnyFunSpec:
   private val at = Instant.now()
   private val skuId = SkuId()
 
-  private val carrierA = Carrier(CarrierId(), "CARRIER-A", "Carrier A", active = true)
-  private val carrierB = Carrier(CarrierId(), "CARRIER-B", "Carrier B", active = true)
-  private val dockA = Location(LocationId(), "DOCK-A", None, LocationType.Dock)
+  private val carrierA =
+    Carrier(id = CarrierId(), code = "CARRIER-A", name = "Carrier A", active = true)
+  private val carrierB =
+    Carrier(id = CarrierId(), code = "CARRIER-B", name = "Carrier B", active = true)
+  private val dockA =
+    Location(id = LocationId(), code = "DOCK-A", zoneId = None, locationType = LocationType.Dock)
 
   private def order(
       carrierId: Option[CarrierId],
@@ -226,6 +229,10 @@ class WavePlanningServiceSuite extends AnyFunSpec:
 
     it("keeps Order compatibility outside WavePlanningService when carrierId is absent"):
       val compatibleOrder =
-        Order(OrderId(), Priority.Normal, List(OrderLine(skuId, PackagingLevel.Each, 3)))
+        Order(
+          OrderId(),
+          Priority.Normal,
+          List(OrderLine(skuId = skuId, packagingLevel = PackagingLevel.Each, quantity = 3))
+        )
       val wavePlan = WavePlanner.plan(List(compatibleOrder), OrderGrouping.Single, at)
       assert(wavePlan.taskRequests.nonEmpty)

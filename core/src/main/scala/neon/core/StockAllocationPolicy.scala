@@ -76,11 +76,11 @@ object StockAllocationPolicy:
     val iterator = requests.iterator
     while iterator.hasNext do
       allocateOne(
-        iterator.next(),
-        availableStock,
-        strategy,
-        referenceDate,
-        minimumShelfLifeDays
+        request = iterator.next(),
+        availableStock = availableStock,
+        strategy = strategy,
+        referenceDate = referenceDate,
+        minimumShelfLifeDays = minimumShelfLifeDays
       ) match
         case Left(error)   => return Left(error)
         case Right(result) => resultsBuilder += result
@@ -100,7 +100,13 @@ object StockAllocationPolicy:
       .filter(_.availableQuantity > 0)
 
     if eligible.isEmpty then
-      return Left(StockAllocationError.InsufficientStock(request.skuId, request.quantity, 0))
+      return Left(
+        StockAllocationError.InsufficientStock(
+          skuId = request.skuId,
+          requested = request.quantity,
+          available = 0
+        )
+      )
 
     val withShelfLife =
       if minimumShelfLifeDays > 0 then
@@ -113,7 +119,11 @@ object StockAllocationPolicy:
       val maxShelfLife = eligible.map(_.lotAttributes.remainingShelfLifeDays(referenceDate)).max
       return Left(
         StockAllocationError
-          .InsufficientShelfLife(request.skuId, minimumShelfLifeDays, maxShelfLife)
+          .InsufficientShelfLife(
+            skuId = request.skuId,
+            requiredDays = minimumShelfLifeDays,
+            availableDays = maxShelfLife
+          )
       )
 
     val sorted = sortByStrategy(withShelfLife, strategy, referenceDate)

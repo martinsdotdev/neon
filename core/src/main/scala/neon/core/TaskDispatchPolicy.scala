@@ -44,7 +44,9 @@ object TaskDispatchPolicy:
         else Map.empty
       candidates.sortWith: (a, b) =>
         profile.criteria.iterator
-          .map(criterion => compare(a, b, criterion, orderMap, ratioMap))
+          .map(criterion =>
+            compare(a = a, b = b, criterion = criterion, orderMap = orderMap, ratioMap = ratioMap)
+          )
           .find(_ != 0)
           .getOrElse(0) < 0
 

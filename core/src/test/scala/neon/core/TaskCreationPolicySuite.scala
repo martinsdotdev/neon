@@ -17,7 +17,13 @@ class TaskCreationPolicySuite extends AnyFunSpec:
       packagingLevel: PackagingLevel = PackagingLevel.Each,
       quantity: Int = 5
   ) =
-    TaskRequest(waveId, orderId, skuId, packagingLevel, quantity)
+    TaskRequest(
+      waveId = waveId,
+      orderId = orderId,
+      skuId = skuId,
+      packagingLevel = packagingLevel,
+      quantity = quantity
+    )
 
   describe("TaskCreationPolicy"):
     describe("with an empty list"):
@@ -65,8 +71,8 @@ class TaskCreationPolicySuite extends AnyFunSpec:
         assert(event.occurredAt == at)
 
     describe("with multiple requests"):
-      val req1 = request(PackagingLevel.Case, 3)
-      val req2 = request(PackagingLevel.Each, 10)
+      val req1 = request(packagingLevel = PackagingLevel.Case, quantity = 3)
+      val req2 = request(packagingLevel = PackagingLevel.Each, quantity = 10)
       val results = TaskCreationPolicy(List(req1, req2), at)
 
       it("produces one Planned task per TaskRequest"):

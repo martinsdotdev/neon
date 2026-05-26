@@ -44,7 +44,13 @@ class AsyncStockPositionService(
       at: Instant
   ): Future[Either[StockPositionError, StockPositionCreateResult]] =
     val (sp, event) =
-      StockPosition.create(skuId, warehouseAreaId, lotAttributes, onHandQuantity, at)
+      StockPosition.create(
+        skuId = skuId,
+        warehouseAreaId = warehouseAreaId,
+        lotAttributes = lotAttributes,
+        onHandQuantity = onHandQuantity,
+        at = at
+      )
     stockPositionRepository
       .save(sp, event)
       .map(_ => Right(StockPositionCreateResult(sp, event)))
@@ -65,7 +71,11 @@ class AsyncStockPositionService(
             Future.successful(
               Left(
                 StockPositionError
-                  .InsufficientAvailable(id, quantity, sp.availableQuantity)
+                  .InsufficientAvailable(
+                    id = id,
+                    requested = quantity,
+                    available = sp.availableQuantity
+                  )
               )
             )
           else
@@ -90,7 +100,11 @@ class AsyncStockPositionService(
             Future.successful(
               Left(
                 StockPositionError
-                  .InsufficientBlocked(id, quantity, sp.blockedQuantity)
+                  .InsufficientBlocked(
+                    id = id,
+                    requested = quantity,
+                    blocked = sp.blockedQuantity
+                  )
               )
             )
           else

@@ -59,15 +59,20 @@ class ConsolidationGroupCompletionServiceSuite
       consolidationGroupId: ConsolidationGroupId = consolidationGroupId
   ): Workstation.Active =
     Workstation.Active(
-      id,
-      WorkstationType.PutWall,
-      5,
-      WorkstationMode.Picking,
-      consolidationGroupId.value
+      id = id,
+      workstationType = WorkstationType.PutWall,
+      slotCount = 5,
+      mode = WorkstationMode.Picking,
+      assignmentId = consolidationGroupId.value
     )
 
   def idleWorkstation(id: WorkstationId = workstationId): Workstation.Idle =
-    Workstation.Idle(id, WorkstationType.PutWall, 5, WorkstationMode.Picking)
+    Workstation.Idle(
+      id = id,
+      workstationType = WorkstationType.PutWall,
+      slotCount = 5,
+      mode = WorkstationMode.Picking
+    )
 
   class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
     val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty

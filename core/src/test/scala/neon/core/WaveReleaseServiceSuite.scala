@@ -46,8 +46,8 @@ class WaveReleaseServiceSuite extends AnyFunSpec with OptionValues:
       id,
       neon.common.Priority.Normal,
       List(
-        OrderLine(SkuId(), PackagingLevel.Each, 5),
-        OrderLine(SkuId(), PackagingLevel.Case, 3)
+        OrderLine(skuId = SkuId(), packagingLevel = PackagingLevel.Each, quantity = 5),
+        OrderLine(skuId = SkuId(), packagingLevel = PackagingLevel.Case, quantity = 3)
       )
     )
 
@@ -105,7 +105,13 @@ class WaveReleaseServiceSuite extends AnyFunSpec with OptionValues:
       availableQuantity: Int = 100
   ): StockPosition =
     val (sp, _) =
-      StockPosition.create(skuId, warehouseAreaId, LotAttributes(), availableQuantity, at)
+      StockPosition.create(
+        skuId = skuId,
+        warehouseAreaId = warehouseAreaId,
+        lotAttributes = LotAttributes(),
+        onHandQuantity = availableQuantity,
+        at = at
+      )
     sp
 
   def buildService(
@@ -118,12 +124,12 @@ class WaveReleaseServiceSuite extends AnyFunSpec with OptionValues:
       referenceDate: LocalDate = LocalDate.now()
   ): WaveReleaseService =
     WaveReleaseService(
-      waveRepository,
-      taskRepository,
-      consolidationGroupRepository,
-      stockPositionRepository,
-      allocationStrategy,
-      referenceDate
+      waveRepository = waveRepository,
+      taskRepository = taskRepository,
+      consolidationGroupRepository = consolidationGroupRepository,
+      stockPositionRepository = stockPositionRepository,
+      allocationStrategy = allocationStrategy,
+      referenceDate = referenceDate
     )
 
   describe("WaveReleaseService"):

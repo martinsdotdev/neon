@@ -56,14 +56,20 @@ class AsyncInboundDeliveryService(
   ): Future[Either[InboundDeliveryError, InboundDeliveryCreateResult]] =
     val id = InboundDeliveryId()
     val delivery =
-      InboundDelivery.New(id, skuId, packagingLevel, lotAttributes, expectedQuantity)
+      InboundDelivery.New(
+        id = id,
+        skuId = skuId,
+        packagingLevel = packagingLevel,
+        lotAttributes = lotAttributes,
+        expectedQuantity = expectedQuantity
+      )
     val event = InboundDeliveryEvent.InboundDeliveryCreated(
-      id,
-      skuId,
-      packagingLevel,
-      lotAttributes,
-      expectedQuantity,
-      at
+      inboundDeliveryId = id,
+      skuId = skuId,
+      packagingLevel = packagingLevel,
+      lotAttributes = lotAttributes,
+      expectedQuantity = expectedQuantity,
+      occurredAt = at
     )
     inboundDeliveryRepository
       .save(delivery, event)
@@ -81,7 +87,8 @@ class AsyncInboundDeliveryService(
         case None =>
           Future.successful(Left(InboundDeliveryError.DeliveryNotFound(id)))
         case Some(receiving: InboundDelivery.Receiving) =>
-          val (updated, event) = receiving.receive(quantity, rejectedQuantity, at)
+          val (updated, event) =
+            receiving.receive(quantity = quantity, rejected = rejectedQuantity, at = at)
           inboundDeliveryRepository
             .save(updated, event)
             .map(_ => Right(InboundDeliveryReceiveResult(updated, event)))
@@ -91,7 +98,7 @@ class AsyncInboundDeliveryService(
             .save(receiving, startEvent)
             .flatMap { _ =>
               val (updated, recvEvent) =
-                receiving.receive(quantity, rejectedQuantity, at)
+                receiving.receive(quantity = quantity, rejected = rejectedQuantity, at = at)
               inboundDeliveryRepository
                 .save(updated, recvEvent)
                 .map(_ => Right(InboundDeliveryReceiveResult(updated, recvEvent)))

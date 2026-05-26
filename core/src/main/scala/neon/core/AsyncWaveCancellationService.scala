@@ -47,7 +47,17 @@ class AsyncWaveCancellationService(
     val (cancelled, cancelledEvent) = planned.cancel(at)
     waveRepository
       .save(cancelled, cancelledEvent)
-      .map(_ => Right(WaveCancellationResult(cancelled, cancelledEvent, Nil, Nil, Nil)))
+      .map(_ =>
+        Right(
+          WaveCancellationResult(
+            cancelled = cancelled,
+            cancelledEvent = cancelledEvent,
+            cancelledTasks = Nil,
+            cancelledTransportOrders = Nil,
+            cancelledConsolidationGroups = Nil
+          )
+        )
+      )
 
   private def cancelReleased(
       released: Wave.Released,

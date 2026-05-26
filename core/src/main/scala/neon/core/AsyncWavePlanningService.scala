@@ -28,11 +28,11 @@ class AsyncWavePlanningService(
       lineResolution: (WaveId, OrderId, OrderLine) => List[TaskRequest] = (waveId, orderId, line) =>
         List(
           TaskRequest(
-            waveId,
-            orderId,
-            line.skuId,
-            line.packagingLevel,
-            line.quantity
+            waveId = waveId,
+            orderId = orderId,
+            skuId = line.skuId,
+            packagingLevel = line.packagingLevel,
+            quantity = line.quantity
           )
         )
   ): Future[Either[WavePlanningError, WavePlanningResult]] =

@@ -55,14 +55,20 @@ class AsyncCycleCountService(
   ): Future[Either[CycleCountError, CycleCountCreateResult]] =
     val id = CycleCountId()
     val cycleCount =
-      CycleCount.New(id, warehouseAreaId, skuIds, countType, countMethod)
+      CycleCount.New(
+        id = id,
+        warehouseAreaId = warehouseAreaId,
+        skuIds = skuIds,
+        countType = countType,
+        countMethod = countMethod
+      )
     val event = CycleCountEvent.CycleCountCreated(
-      id,
-      warehouseAreaId,
-      skuIds,
-      countType,
-      countMethod,
-      at
+      cycleCountId = id,
+      warehouseAreaId = warehouseAreaId,
+      skuIds = skuIds,
+      countType = countType,
+      countMethod = countMethod,
+      occurredAt = at
     )
     cycleCountRepository
       .save(cycleCount, event)
