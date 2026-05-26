@@ -47,19 +47,19 @@ class PekkoTaskRepositorySuite
   }
 
   private lazy val repository =
-    PekkoTaskRepository(system, connectionFactory = null)
+    PekkoTaskRepository(actorSystem = system, connectionFactory = null)
 
   private def createTask(): (Task.Planned, TaskEvent.TaskCreated) =
     Task.create(
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      orderId,
-      Some(waveId),
-      None,
-      None,
-      at
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      orderId = orderId,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = None,
+      at = at
     )
 
   describe("PekkoTaskRepository"):

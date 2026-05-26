@@ -30,15 +30,15 @@ class TaskSuite extends AnyFunSpec:
       handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId)
   ) =
     Task.Planned(
-      taskId,
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      orderId,
-      waveId,
-      None,
-      handlingUnitId
+      id = taskId,
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      orderId = orderId,
+      waveId = waveId,
+      parentTaskId = None,
+      handlingUnitId = handlingUnitId
     )
 
   def allocated(
@@ -46,18 +46,18 @@ class TaskSuite extends AnyFunSpec:
       handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId)
   ) =
     Task.Allocated(
-      taskId,
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      orderId,
-      waveId,
-      None,
-      handlingUnitId,
-      None,
-      sourceLocationId,
-      destinationLocationId
+      id = taskId,
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      orderId = orderId,
+      waveId = waveId,
+      parentTaskId = None,
+      handlingUnitId = handlingUnitId,
+      stockPositionId = None,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId
     )
 
   describe("Task"):
@@ -65,15 +65,15 @@ class TaskSuite extends AnyFunSpec:
       it("returns Planned state and emits TaskCreated event"):
         val (planned, event) =
           Task.create(
-            TaskType.Pick,
-            skuId,
-            PackagingLevel.Each,
-            10,
-            orderId,
-            Some(waveId),
-            None,
-            Some(handlingUnitId),
-            at
+            taskType = TaskType.Pick,
+            skuId = skuId,
+            packagingLevel = PackagingLevel.Each,
+            requestedQuantity = 10,
+            orderId = orderId,
+            waveId = Some(waveId),
+            parentTaskId = None,
+            handlingUnitId = Some(handlingUnitId),
+            at = at
           )
         assert(planned.id == event.taskId)
         assert(planned.taskType == TaskType.Pick)
@@ -83,15 +83,15 @@ class TaskSuite extends AnyFunSpec:
         val parentId = TaskId()
         val (_, event) =
           Task.create(
-            TaskType.Replenish,
-            skuId,
-            PackagingLevel.Case,
-            5,
-            orderId,
-            None,
-            Some(parentId),
-            None,
-            at
+            taskType = TaskType.Replenish,
+            skuId = skuId,
+            packagingLevel = PackagingLevel.Case,
+            requestedQuantity = 5,
+            orderId = orderId,
+            waveId = None,
+            parentTaskId = Some(parentId),
+            handlingUnitId = None,
+            at = at
           )
         assert(event.taskType == TaskType.Replenish)
         assert(event.skuId == skuId)
@@ -104,20 +104,48 @@ class TaskSuite extends AnyFunSpec:
 
       it("rejects zero requested quantity"):
         assertThrows[IllegalArgumentException]:
-          Task.create(TaskType.Pick, skuId, PackagingLevel.Each, 0, orderId, None, None, None, at)
+          Task.create(
+            taskType = TaskType.Pick,
+            skuId = skuId,
+            packagingLevel = PackagingLevel.Each,
+            requestedQuantity = 0,
+            orderId = orderId,
+            waveId = None,
+            parentTaskId = None,
+            handlingUnitId = None,
+            at = at
+          )
 
       it("rejects negative requested quantity"):
         assertThrows[IllegalArgumentException]:
-          Task.create(TaskType.Pick, skuId, PackagingLevel.Each, -1, orderId, None, None, None, at)
+          Task.create(
+            taskType = TaskType.Pick,
+            skuId = skuId,
+            packagingLevel = PackagingLevel.Each,
+            requestedQuantity = -1,
+            orderId = orderId,
+            waveId = None,
+            parentTaskId = None,
+            handlingUnitId = None,
+            at = at
+          )
 
     describe("allocating"):
       it("stores source and destination locations"):
-        val (alloc, _) = planned().allocate(sourceLocationId, destinationLocationId, at)
+        val (alloc, _) = planned().allocate(
+          sourceLocationId = sourceLocationId,
+          destinationLocationId = destinationLocationId,
+          at = at
+        )
         assert(alloc.sourceLocationId == sourceLocationId)
         assert(alloc.destinationLocationId == destinationLocationId)
 
       it("TaskAllocated event carries task identity, locations, and timestamp"):
-        val (_, event) = planned().allocate(sourceLocationId, destinationLocationId, at)
+        val (_, event) = planned().allocate(
+          sourceLocationId = sourceLocationId,
+          destinationLocationId = destinationLocationId,
+          at = at
+        )
         assert(event.taskId == taskId)
         assert(event.taskType == TaskType.Pick)
         assert(event.sourceLocationId == sourceLocationId)
@@ -125,7 +153,11 @@ class TaskSuite extends AnyFunSpec:
         assert(event.occurredAt == at)
 
       it("preserves all Planned fields"):
-        val (alloc, _) = planned().allocate(sourceLocationId, destinationLocationId, at)
+        val (alloc, _) = planned().allocate(
+          sourceLocationId = sourceLocationId,
+          destinationLocationId = destinationLocationId,
+          at = at
+        )
         assert(alloc.id == taskId)
         assert(alloc.taskType == TaskType.Pick)
         assert(alloc.skuId == skuId)
@@ -154,13 +186,13 @@ class TaskSuite extends AnyFunSpec:
     describe("completing"):
       it("records both requested and actual quantities"):
         val (assigned, _) = allocated().assign(userId, at)
-        val (completed, _) = assigned.complete(8, at)
+        val (completed, _) = assigned.complete(actualQuantity = 8, at = at)
         assert(completed.actualQuantity == 8)
         assert(completed.requestedQuantity == 10)
 
       it("TaskCompleted event carries all fields for downstream policies"):
         val (assigned, _) = allocated().assign(userId, at)
-        val (_, event) = assigned.complete(8, at)
+        val (_, event) = assigned.complete(actualQuantity = 8, at = at)
         assert(event.taskType == TaskType.Pick)
         assert(event.skuId == skuId)
         assert(event.packagingLevel == PackagingLevel.Each)
@@ -175,7 +207,7 @@ class TaskSuite extends AnyFunSpec:
 
       it("preserves operator, packaging level, and locations"):
         val (assigned, _) = allocated().assign(userId, at)
-        val (completed, _) = assigned.complete(8, at)
+        val (completed, _) = assigned.complete(actualQuantity = 8, at = at)
         assert(completed.assignedTo == userId)
         assert(completed.packagingLevel == PackagingLevel.Each)
         assert(completed.sourceLocationId == sourceLocationId)
@@ -183,19 +215,19 @@ class TaskSuite extends AnyFunSpec:
 
       it("allows zero actual quantity for full shortpick"):
         val (assigned, _) = allocated().assign(userId, at)
-        val (completed, _) = assigned.complete(0, at)
+        val (completed, _) = assigned.complete(actualQuantity = 0, at = at)
         assert(completed.actualQuantity == 0)
 
       it("allows actual quantity greater than requested for over-pick"):
         val (assigned, _) = allocated().assign(userId, at)
-        val (completed, _) = assigned.complete(12, at)
+        val (completed, _) = assigned.complete(actualQuantity = 12, at = at)
         assert(completed.actualQuantity == 12)
         assert(completed.requestedQuantity == 10)
 
       it("rejects negative actual quantity"):
         val (assigned, _) = allocated().assign(userId, at)
         assertThrows[IllegalArgumentException]:
-          assigned.complete(-1, at)
+          assigned.complete(actualQuantity = -1, at = at)
 
     describe("cancelling"):
       describe("from Planned"):
@@ -248,41 +280,41 @@ class TaskSuite extends AnyFunSpec:
 
       def withParent() =
         Task.Planned(
-          taskId,
-          TaskType.Pick,
-          skuId,
-          PackagingLevel.Each,
-          10,
-          orderId,
-          Some(waveId),
-          Some(parentId),
-          Some(handlingUnitId)
+          id = taskId,
+          taskType = TaskType.Pick,
+          skuId = skuId,
+          packagingLevel = PackagingLevel.Each,
+          requestedQuantity = 10,
+          orderId = orderId,
+          waveId = Some(waveId),
+          parentTaskId = Some(parentId),
+          handlingUnitId = Some(handlingUnitId)
         )
 
       def withParentAllocated() =
         Task.Allocated(
-          taskId,
-          TaskType.Pick,
-          skuId,
-          PackagingLevel.Each,
-          10,
-          orderId,
-          Some(waveId),
-          Some(parentId),
-          Some(handlingUnitId),
-          None,
-          sourceLocationId,
-          destinationLocationId
+          id = taskId,
+          taskType = TaskType.Pick,
+          skuId = skuId,
+          packagingLevel = PackagingLevel.Each,
+          requestedQuantity = 10,
+          orderId = orderId,
+          waveId = Some(waveId),
+          parentTaskId = Some(parentId),
+          handlingUnitId = Some(handlingUnitId),
+          stockPositionId = None,
+          sourceLocationId = sourceLocationId,
+          destinationLocationId = destinationLocationId
         )
 
       it("Completed state preserves parent task reference"):
         val (assigned, _) = withParentAllocated().assign(userId, at)
-        val (completed, _) = assigned.complete(8, at)
+        val (completed, _) = assigned.complete(actualQuantity = 8, at = at)
         assert(completed.parentTaskId == Some(parentId))
 
       it("TaskCompleted event includes parent task reference"):
         val (assigned, _) = withParentAllocated().assign(userId, at)
-        val (_, event) = assigned.complete(8, at)
+        val (_, event) = assigned.complete(actualQuantity = 8, at = at)
         assert(event.parentTaskId == Some(parentId))
 
       it("Cancelled state preserves parent task reference"):
@@ -295,26 +327,30 @@ class TaskSuite extends AnyFunSpec:
 
       it("omits parent task reference for non-replacement tasks"):
         val (assigned, _) = allocated().assign(userId, at)
-        val (completed, event) = assigned.complete(10, at)
+        val (completed, event) = assigned.complete(actualQuantity = 10, at = at)
         assert(completed.parentTaskId == None)
         assert(event.parentTaskId == None)
 
     describe("full lifecycle"):
       it("preserves identity across Planned → Allocated → Assigned → Completed"):
         val (p, created) = Task.create(
-          TaskType.Pick,
-          skuId,
-          PackagingLevel.Each,
-          10,
-          orderId,
-          Some(waveId),
-          None,
-          Some(handlingUnitId),
-          at
+          taskType = TaskType.Pick,
+          skuId = skuId,
+          packagingLevel = PackagingLevel.Each,
+          requestedQuantity = 10,
+          orderId = orderId,
+          waveId = Some(waveId),
+          parentTaskId = None,
+          handlingUnitId = Some(handlingUnitId),
+          at = at
         )
-        val (a, allocated) = p.allocate(sourceLocationId, destinationLocationId, at)
+        val (a, allocated) = p.allocate(
+          sourceLocationId = sourceLocationId,
+          destinationLocationId = destinationLocationId,
+          at = at
+        )
         val (s, assigned) = a.assign(userId, at)
-        val (c, completed) = s.complete(10, at)
+        val (c, completed) = s.complete(actualQuantity = 10, at = at)
         assert(c.id == p.id)
         assert(c.taskType == TaskType.Pick)
         assert(c.skuId == skuId)

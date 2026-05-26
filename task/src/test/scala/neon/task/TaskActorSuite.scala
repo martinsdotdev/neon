@@ -58,15 +58,15 @@ class TaskActorSuite
 
   private def plannedTask(): (Task.Planned, TaskEvent.TaskCreated) =
     Task.create(
-      TaskType.Pick,
-      skuId,
-      PackagingLevel.Each,
-      10,
-      orderId,
-      Some(waveId),
-      None,
-      None,
-      at
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = 10,
+      orderId = orderId,
+      waveId = Some(waveId),
+      parentTaskId = None,
+      handlingUnitId = None,
+      at = at
     )
 
   private def createPlanned(): Unit =

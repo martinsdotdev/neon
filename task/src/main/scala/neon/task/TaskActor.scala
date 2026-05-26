@@ -126,7 +126,11 @@ object TaskActor:
               ActiveState(planned: Task.Planned),
               Allocate(sourceLocationId, destinationLocationId, at, replyTo)
             ) =>
-          val (allocated, event) = planned.allocate(sourceLocationId, destinationLocationId, at)
+          val (allocated, event) = planned.allocate(
+            sourceLocationId = sourceLocationId,
+            destinationLocationId = destinationLocationId,
+            at = at
+          )
           Effect
             .persist(event)
             .thenReply(replyTo)(_ => StatusReply.success(AllocateResponse(allocated, event)))
@@ -207,16 +211,16 @@ object TaskActor:
         case e: TaskEvent.TaskCreated =>
           ActiveState(
             Task.Planned(
-              e.taskId,
-              e.taskType,
-              e.skuId,
-              e.packagingLevel,
-              e.requestedQuantity,
-              e.orderId,
-              e.waveId,
-              e.parentTaskId,
-              e.handlingUnitId,
-              e.stockPositionId
+              id = e.taskId,
+              taskType = e.taskType,
+              skuId = e.skuId,
+              packagingLevel = e.packagingLevel,
+              requestedQuantity = e.requestedQuantity,
+              orderId = e.orderId,
+              waveId = e.waveId,
+              parentTaskId = e.parentTaskId,
+              handlingUnitId = e.handlingUnitId,
+              stockPositionId = e.stockPositionId
             )
           )
 
@@ -225,18 +229,18 @@ object TaskActor:
             case ActiveState(planned: Task.Planned) =>
               ActiveState(
                 Task.Allocated(
-                  planned.id,
-                  planned.taskType,
-                  planned.skuId,
-                  planned.packagingLevel,
-                  planned.requestedQuantity,
-                  planned.orderId,
-                  planned.waveId,
-                  planned.parentTaskId,
-                  planned.handlingUnitId,
-                  planned.stockPositionId,
-                  e.sourceLocationId,
-                  e.destinationLocationId
+                  id = planned.id,
+                  taskType = planned.taskType,
+                  skuId = planned.skuId,
+                  packagingLevel = planned.packagingLevel,
+                  requestedQuantity = planned.requestedQuantity,
+                  orderId = planned.orderId,
+                  waveId = planned.waveId,
+                  parentTaskId = planned.parentTaskId,
+                  handlingUnitId = planned.handlingUnitId,
+                  stockPositionId = planned.stockPositionId,
+                  sourceLocationId = e.sourceLocationId,
+                  destinationLocationId = e.destinationLocationId
                 )
               )
             case _ => state
@@ -246,19 +250,19 @@ object TaskActor:
             case ActiveState(allocated: Task.Allocated) =>
               ActiveState(
                 Task.Assigned(
-                  allocated.id,
-                  allocated.taskType,
-                  allocated.skuId,
-                  allocated.packagingLevel,
-                  allocated.requestedQuantity,
-                  allocated.orderId,
-                  allocated.waveId,
-                  allocated.parentTaskId,
-                  allocated.handlingUnitId,
-                  allocated.stockPositionId,
-                  allocated.sourceLocationId,
-                  allocated.destinationLocationId,
-                  e.userId
+                  id = allocated.id,
+                  taskType = allocated.taskType,
+                  skuId = allocated.skuId,
+                  packagingLevel = allocated.packagingLevel,
+                  requestedQuantity = allocated.requestedQuantity,
+                  orderId = allocated.orderId,
+                  waveId = allocated.waveId,
+                  parentTaskId = allocated.parentTaskId,
+                  handlingUnitId = allocated.handlingUnitId,
+                  stockPositionId = allocated.stockPositionId,
+                  sourceLocationId = allocated.sourceLocationId,
+                  destinationLocationId = allocated.destinationLocationId,
+                  assignedTo = e.userId
                 )
               )
             case _ => state
@@ -268,20 +272,20 @@ object TaskActor:
             case ActiveState(assigned: Task.Assigned) =>
               ActiveState(
                 Task.Completed(
-                  assigned.id,
-                  assigned.taskType,
-                  assigned.skuId,
-                  assigned.packagingLevel,
-                  assigned.requestedQuantity,
-                  e.actualQuantity,
-                  assigned.orderId,
-                  assigned.waveId,
-                  assigned.parentTaskId,
-                  assigned.handlingUnitId,
-                  assigned.stockPositionId,
-                  assigned.sourceLocationId,
-                  assigned.destinationLocationId,
-                  assigned.assignedTo
+                  id = assigned.id,
+                  taskType = assigned.taskType,
+                  skuId = assigned.skuId,
+                  packagingLevel = assigned.packagingLevel,
+                  requestedQuantity = assigned.requestedQuantity,
+                  actualQuantity = e.actualQuantity,
+                  orderId = assigned.orderId,
+                  waveId = assigned.waveId,
+                  parentTaskId = assigned.parentTaskId,
+                  handlingUnitId = assigned.handlingUnitId,
+                  stockPositionId = assigned.stockPositionId,
+                  sourceLocationId = assigned.sourceLocationId,
+                  destinationLocationId = assigned.destinationLocationId,
+                  assignedTo = assigned.assignedTo
                 )
               )
             case _ => state
@@ -291,52 +295,52 @@ object TaskActor:
             case ActiveState(t: Task.Planned) =>
               ActiveState(
                 Task.Cancelled(
-                  t.id,
-                  t.taskType,
-                  t.skuId,
-                  t.packagingLevel,
-                  t.orderId,
-                  t.waveId,
-                  t.parentTaskId,
-                  t.handlingUnitId,
-                  t.stockPositionId,
-                  e.sourceLocationId,
-                  e.destinationLocationId,
-                  e.assignedTo
+                  id = t.id,
+                  taskType = t.taskType,
+                  skuId = t.skuId,
+                  packagingLevel = t.packagingLevel,
+                  orderId = t.orderId,
+                  waveId = t.waveId,
+                  parentTaskId = t.parentTaskId,
+                  handlingUnitId = t.handlingUnitId,
+                  stockPositionId = t.stockPositionId,
+                  sourceLocationId = e.sourceLocationId,
+                  destinationLocationId = e.destinationLocationId,
+                  assignedTo = e.assignedTo
                 )
               )
             case ActiveState(t: Task.Allocated) =>
               ActiveState(
                 Task.Cancelled(
-                  t.id,
-                  t.taskType,
-                  t.skuId,
-                  t.packagingLevel,
-                  t.orderId,
-                  t.waveId,
-                  t.parentTaskId,
-                  t.handlingUnitId,
-                  t.stockPositionId,
-                  e.sourceLocationId,
-                  e.destinationLocationId,
-                  e.assignedTo
+                  id = t.id,
+                  taskType = t.taskType,
+                  skuId = t.skuId,
+                  packagingLevel = t.packagingLevel,
+                  orderId = t.orderId,
+                  waveId = t.waveId,
+                  parentTaskId = t.parentTaskId,
+                  handlingUnitId = t.handlingUnitId,
+                  stockPositionId = t.stockPositionId,
+                  sourceLocationId = e.sourceLocationId,
+                  destinationLocationId = e.destinationLocationId,
+                  assignedTo = e.assignedTo
                 )
               )
             case ActiveState(t: Task.Assigned) =>
               ActiveState(
                 Task.Cancelled(
-                  t.id,
-                  t.taskType,
-                  t.skuId,
-                  t.packagingLevel,
-                  t.orderId,
-                  t.waveId,
-                  t.parentTaskId,
-                  t.handlingUnitId,
-                  t.stockPositionId,
-                  e.sourceLocationId,
-                  e.destinationLocationId,
-                  e.assignedTo
+                  id = t.id,
+                  taskType = t.taskType,
+                  skuId = t.skuId,
+                  packagingLevel = t.packagingLevel,
+                  orderId = t.orderId,
+                  waveId = t.waveId,
+                  parentTaskId = t.parentTaskId,
+                  handlingUnitId = t.handlingUnitId,
+                  stockPositionId = t.stockPositionId,
+                  sourceLocationId = e.sourceLocationId,
+                  destinationLocationId = e.destinationLocationId,
+                  assignedTo = e.assignedTo
                 )
               )
             case _ => state

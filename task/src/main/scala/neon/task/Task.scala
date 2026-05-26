@@ -88,30 +88,30 @@ object Task:
     val id = TaskId()
     val planned =
       Planned(
-        id,
-        taskType,
-        skuId,
-        packagingLevel,
-        requestedQuantity,
-        orderId,
-        waveId,
-        parentTaskId,
-        handlingUnitId,
-        stockPositionId
+        id = id,
+        taskType = taskType,
+        skuId = skuId,
+        packagingLevel = packagingLevel,
+        requestedQuantity = requestedQuantity,
+        orderId = orderId,
+        waveId = waveId,
+        parentTaskId = parentTaskId,
+        handlingUnitId = handlingUnitId,
+        stockPositionId = stockPositionId
       )
     val event =
       TaskEvent.TaskCreated(
-        id,
-        taskType,
-        skuId,
-        packagingLevel,
-        orderId,
-        waveId,
-        parentTaskId,
-        handlingUnitId,
-        requestedQuantity,
-        at,
-        stockPositionId
+        taskId = id,
+        taskType = taskType,
+        skuId = skuId,
+        packagingLevel = packagingLevel,
+        orderId = orderId,
+        waveId = waveId,
+        parentTaskId = parentTaskId,
+        handlingUnitId = handlingUnitId,
+        requestedQuantity = requestedQuantity,
+        occurredAt = at,
+        stockPositionId = stockPositionId
       )
     (planned, event)
 
@@ -150,20 +150,26 @@ object Task:
     ): (Allocated, TaskEvent.TaskAllocated) =
       val allocated =
         Allocated(
-          id,
-          taskType,
-          skuId,
-          packagingLevel,
-          requestedQuantity,
-          orderId,
-          waveId,
-          parentTaskId,
-          handlingUnitId,
-          stockPositionId,
-          sourceLocationId,
-          destinationLocationId
+          id = id,
+          taskType = taskType,
+          skuId = skuId,
+          packagingLevel = packagingLevel,
+          requestedQuantity = requestedQuantity,
+          orderId = orderId,
+          waveId = waveId,
+          parentTaskId = parentTaskId,
+          handlingUnitId = handlingUnitId,
+          stockPositionId = stockPositionId,
+          sourceLocationId = sourceLocationId,
+          destinationLocationId = destinationLocationId
         )
-      val event = TaskEvent.TaskAllocated(id, taskType, sourceLocationId, destinationLocationId, at)
+      val event = TaskEvent.TaskAllocated(
+        taskId = id,
+        taskType = taskType,
+        sourceLocationId = sourceLocationId,
+        destinationLocationId = destinationLocationId,
+        occurredAt = at
+      )
       (allocated, event)
 
     /** Cancels this planned task before locations are assigned.
@@ -176,30 +182,30 @@ object Task:
     def cancel(at: Instant): (Cancelled, TaskEvent.TaskCancelled) =
       val cancelled =
         Cancelled(
-          id,
-          taskType,
-          skuId,
-          packagingLevel,
-          orderId,
-          waveId,
-          parentTaskId,
-          handlingUnitId,
-          stockPositionId,
-          None,
-          None,
-          None
+          id = id,
+          taskType = taskType,
+          skuId = skuId,
+          packagingLevel = packagingLevel,
+          orderId = orderId,
+          waveId = waveId,
+          parentTaskId = parentTaskId,
+          handlingUnitId = handlingUnitId,
+          stockPositionId = stockPositionId,
+          sourceLocationId = None,
+          destinationLocationId = None,
+          assignedTo = None
         )
       val event =
         TaskEvent.TaskCancelled(
-          id,
-          taskType,
-          waveId,
-          parentTaskId,
-          handlingUnitId,
-          None,
-          None,
-          None,
-          at
+          taskId = id,
+          taskType = taskType,
+          waveId = waveId,
+          parentTaskId = parentTaskId,
+          handlingUnitId = handlingUnitId,
+          sourceLocationId = None,
+          destinationLocationId = None,
+          assignedTo = None,
+          occurredAt = at
         )
       (cancelled, event)
 
@@ -234,19 +240,19 @@ object Task:
     def assign(userId: UserId, at: Instant): (Assigned, TaskEvent.TaskAssigned) =
       val assigned =
         Assigned(
-          id,
-          taskType,
-          skuId,
-          packagingLevel,
-          requestedQuantity,
-          orderId,
-          waveId,
-          parentTaskId,
-          handlingUnitId,
-          stockPositionId,
-          sourceLocationId,
-          destinationLocationId,
-          userId
+          id = id,
+          taskType = taskType,
+          skuId = skuId,
+          packagingLevel = packagingLevel,
+          requestedQuantity = requestedQuantity,
+          orderId = orderId,
+          waveId = waveId,
+          parentTaskId = parentTaskId,
+          handlingUnitId = handlingUnitId,
+          stockPositionId = stockPositionId,
+          sourceLocationId = sourceLocationId,
+          destinationLocationId = destinationLocationId,
+          assignedTo = userId
         )
       val event = TaskEvent.TaskAssigned(id, taskType, userId, at)
       (assigned, event)
@@ -261,29 +267,29 @@ object Task:
     def cancel(at: Instant): (Cancelled, TaskEvent.TaskCancelled) =
       val cancelled =
         Cancelled(
-          id,
-          taskType,
-          skuId,
-          packagingLevel,
-          orderId,
-          waveId,
-          parentTaskId,
-          handlingUnitId,
-          stockPositionId,
-          Some(sourceLocationId),
-          Some(destinationLocationId),
-          None
+          id = id,
+          taskType = taskType,
+          skuId = skuId,
+          packagingLevel = packagingLevel,
+          orderId = orderId,
+          waveId = waveId,
+          parentTaskId = parentTaskId,
+          handlingUnitId = handlingUnitId,
+          stockPositionId = stockPositionId,
+          sourceLocationId = Some(sourceLocationId),
+          destinationLocationId = Some(destinationLocationId),
+          assignedTo = None
         )
       val event = TaskEvent.TaskCancelled(
-        id,
-        taskType,
-        waveId,
-        parentTaskId,
-        handlingUnitId,
-        Some(sourceLocationId),
-        Some(destinationLocationId),
-        None,
-        at
+        taskId = id,
+        taskType = taskType,
+        waveId = waveId,
+        parentTaskId = parentTaskId,
+        handlingUnitId = handlingUnitId,
+        sourceLocationId = Some(sourceLocationId),
+        destinationLocationId = Some(destinationLocationId),
+        assignedTo = None,
+        occurredAt = at
       )
       (cancelled, event)
 
@@ -324,36 +330,36 @@ object Task:
       require(actualQuantity >= 0, s"actualQuantity must be non-negative, got $actualQuantity")
       val completed =
         Completed(
-          id,
-          taskType,
-          skuId,
-          packagingLevel,
-          requestedQuantity,
-          actualQuantity,
-          orderId,
-          waveId,
-          parentTaskId,
-          handlingUnitId,
-          stockPositionId,
-          sourceLocationId,
-          destinationLocationId,
-          assignedTo
+          id = id,
+          taskType = taskType,
+          skuId = skuId,
+          packagingLevel = packagingLevel,
+          requestedQuantity = requestedQuantity,
+          actualQuantity = actualQuantity,
+          orderId = orderId,
+          waveId = waveId,
+          parentTaskId = parentTaskId,
+          handlingUnitId = handlingUnitId,
+          stockPositionId = stockPositionId,
+          sourceLocationId = sourceLocationId,
+          destinationLocationId = destinationLocationId,
+          assignedTo = assignedTo
         )
       val event =
         TaskEvent.TaskCompleted(
-          id,
-          taskType,
-          skuId,
-          packagingLevel,
-          waveId,
-          parentTaskId,
-          handlingUnitId,
-          sourceLocationId,
-          destinationLocationId,
-          requestedQuantity,
-          actualQuantity,
-          assignedTo,
-          at
+          taskId = id,
+          taskType = taskType,
+          skuId = skuId,
+          packagingLevel = packagingLevel,
+          waveId = waveId,
+          parentTaskId = parentTaskId,
+          handlingUnitId = handlingUnitId,
+          sourceLocationId = sourceLocationId,
+          destinationLocationId = destinationLocationId,
+          requestedQuantity = requestedQuantity,
+          actualQuantity = actualQuantity,
+          assignedTo = assignedTo,
+          occurredAt = at
         )
       (completed, event)
 
@@ -367,29 +373,29 @@ object Task:
     def cancel(at: Instant): (Cancelled, TaskEvent.TaskCancelled) =
       val cancelled =
         Cancelled(
-          id,
-          taskType,
-          skuId,
-          packagingLevel,
-          orderId,
-          waveId,
-          parentTaskId,
-          handlingUnitId,
-          stockPositionId,
-          Some(sourceLocationId),
-          Some(destinationLocationId),
-          Some(assignedTo)
+          id = id,
+          taskType = taskType,
+          skuId = skuId,
+          packagingLevel = packagingLevel,
+          orderId = orderId,
+          waveId = waveId,
+          parentTaskId = parentTaskId,
+          handlingUnitId = handlingUnitId,
+          stockPositionId = stockPositionId,
+          sourceLocationId = Some(sourceLocationId),
+          destinationLocationId = Some(destinationLocationId),
+          assignedTo = Some(assignedTo)
         )
       val event = TaskEvent.TaskCancelled(
-        id,
-        taskType,
-        waveId,
-        parentTaskId,
-        handlingUnitId,
-        Some(sourceLocationId),
-        Some(destinationLocationId),
-        Some(assignedTo),
-        at
+        taskId = id,
+        taskType = taskType,
+        waveId = waveId,
+        parentTaskId = parentTaskId,
+        handlingUnitId = handlingUnitId,
+        sourceLocationId = Some(sourceLocationId),
+        destinationLocationId = Some(destinationLocationId),
+        assignedTo = Some(assignedTo),
+        occurredAt = at
       )
       (cancelled, event)
 
