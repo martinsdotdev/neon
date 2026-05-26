@@ -32,9 +32,9 @@ class PekkoSlotRepository(
       workstationId: WorkstationId
   ): Future[List[Slot]] =
     queryProjectionIds(
-      "SELECT slot_id FROM slot_by_workstation WHERE workstation_id = $1",
-      workstationId.value,
-      "slot_id"
+      sql = "SELECT slot_id FROM slot_by_workstation WHERE workstation_id = $1",
+      param = workstationId.value,
+      idColumn = "slot_id"
     ).flatMap(ids => Future.sequence(ids.map(id => findById(SlotId(id)))).map(_.flatten))
 
   def save(slot: Slot, event: SlotEvent): Future[Unit] =

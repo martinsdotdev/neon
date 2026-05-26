@@ -43,7 +43,13 @@ object Slot:
     ): (Reserved, SlotEvent.SlotReserved) =
       val reserved = Reserved(id, workstationId, orderId, handlingUnitId)
       val event =
-        SlotEvent.SlotReserved(id, workstationId, orderId, handlingUnitId, at)
+        SlotEvent.SlotReserved(
+          slotId = id,
+          workstationId = workstationId,
+          orderId = orderId,
+          handlingUnitId = handlingUnitId,
+          occurredAt = at
+        )
       (reserved, event)
 
   /** A slot reserved for a specific order, holding a ship handling unit. */
@@ -63,7 +69,13 @@ object Slot:
     def complete(at: Instant): (Completed, SlotEvent.SlotCompleted) =
       val completed = Completed(id, workstationId, orderId, handlingUnitId)
       val event =
-        SlotEvent.SlotCompleted(id, workstationId, orderId, handlingUnitId, at)
+        SlotEvent.SlotCompleted(
+          slotId = id,
+          workstationId = workstationId,
+          orderId = orderId,
+          handlingUnitId = handlingUnitId,
+          occurredAt = at
+        )
       (completed, event)
 
     /** Releases this slot back to [[Available]], dissolving the order binding.
