@@ -15,11 +15,10 @@ import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
 
-/** Mobile-oriented read endpoints for the Task aggregate. Companion to
-  * [[TaskRoutes]] (writes); kept separate because the read shape is
-  * stable across both the supervisor dashboard and the picker app, while
-  * writes have per-action request types. Lives under `/tasks` and is
-  * registered alongside [[TaskRoutes]] in [[HttpServer.routes]].
+/** Mobile-oriented read endpoints for the Task aggregate. Companion to [[TaskRoutes]] (writes);
+  * kept separate because the read shape is stable across both the supervisor dashboard and the
+  * picker app, while writes have per-action request types. Lives under `/tasks` and is registered
+  * alongside [[TaskRoutes]] in [[HttpServer.routes]].
   */
 object MobileTaskRoutes:
 
@@ -38,8 +37,7 @@ object MobileTaskRoutes:
       assignedTo: Option[String]
   ) derives Encoder.AsObject
 
-  private case class TaskListResponse(tasks: List[TaskView])
-      derives Encoder.AsObject
+  private case class TaskListResponse(tasks: List[TaskView]) derives Encoder.AsObject
 
   private case class ClaimTaskResponse(
       status: String,

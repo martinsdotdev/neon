@@ -10,14 +10,12 @@ import java.time.ZoneOffset
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
-/** Projection handler that populates the `task_by_assignee` read-side table.
-  * Mobile operators read their assigned tasks through this index — see
-  * `AsyncTaskRepository.findAssignedTo`.
+/** Projection handler that populates the `task_by_assignee` read-side table. Mobile operators read
+  * their assigned tasks through this index — see `AsyncTaskRepository.findAssignedTo`.
   *
-  * Only TaskAssigned / TaskCompleted / TaskCancelled are consumed; Created
-  * and Allocated events carry no assignee. On TaskAssigned the row is
-  * upserted (assignee may have changed via a later reassign); on the
-  * terminal events only the state is updated.
+  * Only TaskAssigned / TaskCompleted / TaskCancelled are consumed; Created and Allocated events
+  * carry no assignee. On TaskAssigned the row is upserted (assignee may have changed via a later
+  * reassign); on the terminal events only the state is updated.
   */
 class TaskByAssigneeProjectionHandler(using ExecutionContext)
     extends LoggingProjectionHandler[TaskEvent]:

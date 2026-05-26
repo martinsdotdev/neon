@@ -56,9 +56,7 @@ class PekkoTaskRepository(
           userId.value,
           "task_id"
         )
-    ids.flatMap(taskIds =>
-      Future.sequence(taskIds.map(id => findById(TaskId(id)))).map(_.flatten)
-    )
+    ids.flatMap(taskIds => Future.sequence(taskIds.map(id => findById(TaskId(id)))).map(_.flatten))
 
   def save(task: Task, event: TaskEvent): Future[Unit] =
     val entityRef = sharding.entityRefFor(TaskActor.EntityKey, task.id.value.toString)

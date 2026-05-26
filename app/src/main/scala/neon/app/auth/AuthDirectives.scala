@@ -4,10 +4,7 @@ import com.typesafe.scalalogging.LazyLogging
 import neon.common.Permission
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.{
-  AuthorizationFailedRejection,
-  Directive1
-}
+import org.apache.pekko.http.scaladsl.server.{AuthorizationFailedRejection, Directive1}
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.slf4j.MDC
 
@@ -17,19 +14,18 @@ object AuthDirectives extends LazyLogging:
 
   private val bearerPrefix = "Bearer "
 
-  /** Validates the session and provides an AuthContext. Tries the
-    * `Authorization: Bearer <token>` header first (used by mobile and other
-    * non-browser clients), then falls back to the `session` cookie (used by
-    * the web app). Sets MDC "userId" for downstream logging; cleanup is
-    * handled by RequestLoggingDirective.withRequestLogging which restores the
-    * previous MDC state after each request.
+  /** Validates the session and provides an AuthContext. Tries the `Authorization: Bearer <token>`
+    * header first (used by mobile and other non-browser clients), then falls back to the `session`
+    * cookie (used by the web app). Sets MDC "userId" for downstream logging; cleanup is handled by
+    * RequestLoggingDirective.withRequestLogging which restores the previous MDC state after each
+    * request.
     */
   def authenticated(authService: AuthenticationService)(using
       ExecutionContext
   ): Directive1[AuthContext] =
     bearerToken.flatMap {
       case Some(token) => validateToken(authService, token)
-      case None =>
+      case None        =>
         optionalCookie("session").flatMap {
           case Some(cookie) => validateToken(authService, cookie.value)
           case None         => complete(StatusCodes.Unauthorized)

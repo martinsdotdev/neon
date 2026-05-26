@@ -16,22 +16,19 @@ import org.apache.pekko.stream.typed.scaladsl.ActorSource
 
 import scala.concurrent.ExecutionContext
 
-/** WebSocket endpoint that streams operator-scoped notifications to the
-  * mobile client. The handshake validates a Bearer token supplied as the
-  * `token` query parameter (RN WebSocket cannot reliably set
-  * `Authorization` headers); thereafter the connection receives only
-  * events targeting the authenticated user.
+/** WebSocket endpoint that streams operator-scoped notifications to the mobile client. The
+  * handshake validates a Bearer token supplied as the `token` query parameter (RN WebSocket cannot
+  * reliably set `Authorization` headers); thereafter the connection receives only events targeting
+  * the authenticated user.
   *
-  * Events are produced by CQRS projection handlers via the typed event
-  * stream (`system.eventStream`). Each WS connection materializes its own
-  * `Source.actorRef`, subscribes that ref to the event stream, filters by
-  * the authenticated user, and tears down the subscription when the
-  * stream terminates.
+  * Events are produced by CQRS projection handlers via the typed event stream
+  * (`system.eventStream`). Each WS connection materializes its own `Source.actorRef`, subscribes
+  * that ref to the event stream, filters by the authenticated user, and tears down the subscription
+  * when the stream terminates.
   *
-  * Security note: tokens in query strings are visible in access logs and
-  * shouldn't be reflected back to clients or stored beyond the lifetime
-  * of the request. In production, configure log redaction for the
-  * `token` parameter.
+  * Security note: tokens in query strings are visible in access logs and shouldn't be reflected
+  * back to clients or stored beyond the lifetime of the request. In production, configure log
+  * redaction for the `token` parameter.
   */
 object NotificationRoutes:
 

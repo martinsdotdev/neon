@@ -1,21 +1,13 @@
 package neon.app.http
 
 import io.circe.{Encoder, Json, Printer}
-import org.apache.pekko.http.scaladsl.marshalling.{
-  Marshaller,
-  ToEntityMarshaller
-}
-import org.apache.pekko.http.scaladsl.model.{
-  ContentType,
-  HttpEntity,
-  MediaType,
-  StatusCode
-}
+import org.apache.pekko.http.scaladsl.marshalling.{Marshaller, ToEntityMarshaller}
+import org.apache.pekko.http.scaladsl.model.{ContentType, HttpEntity, MediaType, StatusCode}
 import org.apache.pekko.util.ByteString
 
-/** RFC 9457 Problem Details for HTTP APIs. The `type` field is a URI
-  * identifying the error kind; we use `urn:neon:error:<slug>` for our own
-  * errors and `about:blank` for fully generic responses. See ADR 0011.
+/** RFC 9457 Problem Details for HTTP APIs. The `type` field is a URI identifying the error kind; we
+  * use `urn:neon:error:<slug>` for our own errors and `about:blank` for fully generic responses.
+  * See ADR 0011.
   */
 final case class ProblemDetails(
     status: Int,
@@ -64,8 +56,8 @@ object ProblemDetails:
       )
     }
 
-  /** Convenience for routes that want to emit a problem response without
-    * the boilerplate. Pair with `complete(...)` inside a route.
+  /** Convenience for routes that want to emit a problem response without the boilerplate. Pair with
+    * `complete(...)` inside a route.
     */
   def of(
       status: StatusCode,

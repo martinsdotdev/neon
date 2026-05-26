@@ -15,11 +15,10 @@ import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
 
-/** Read-only lookup endpoints for reference + aggregate data the mobile
-  * client needs alongside a task view: SKU descriptions (for scan
-  * verification), location codes (for navigation prompts), and handling
-  * units (for HU label confirmation). Gated by Permission.TaskComplete
-  * since these are read by anyone doing operator work.
+/** Read-only lookup endpoints for reference + aggregate data the mobile client needs alongside a
+  * task view: SKU descriptions (for scan verification), location codes (for navigation prompts),
+  * and handling units (for HU label confirmation). Gated by Permission.TaskComplete since these are
+  * read by anyone doing operator work.
   */
 object MobileLookupRoutes:
 
@@ -46,13 +45,13 @@ object MobileLookupRoutes:
 
   private def stateOf(hu: HandlingUnit): String =
     hu match
-      case _: HandlingUnit.PickCreated  => "PickCreated"
-      case _: HandlingUnit.InBuffer     => "InBuffer"
-      case _: HandlingUnit.Empty        => "Empty"
-      case _: HandlingUnit.ShipCreated  => "ShipCreated"
-      case _: HandlingUnit.Packed       => "Packed"
-      case _: HandlingUnit.ReadyToShip  => "ReadyToShip"
-      case _: HandlingUnit.Shipped      => "Shipped"
+      case _: HandlingUnit.PickCreated => "PickCreated"
+      case _: HandlingUnit.InBuffer    => "InBuffer"
+      case _: HandlingUnit.Empty       => "Empty"
+      case _: HandlingUnit.ShipCreated => "ShipCreated"
+      case _: HandlingUnit.Packed      => "Packed"
+      case _: HandlingUnit.ReadyToShip => "ReadyToShip"
+      case _: HandlingUnit.Shipped     => "Shipped"
 
   def apply(
       skuRepository: AsyncSkuRepository,

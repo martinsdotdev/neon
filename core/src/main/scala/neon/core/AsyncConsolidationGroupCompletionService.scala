@@ -15,9 +15,8 @@ class AsyncConsolidationGroupCompletionService(
 )(using ExecutionContext)
     extends LazyLogging:
 
-  /** Advances a [[ConsolidationGroup.Picked]] to [[ConsolidationGroup.ReadyForWorkstation]].
-    * Closes the previously HTTP-unreachable gap between picking completion and
-    * workstation assignment.
+  /** Advances a [[ConsolidationGroup.Picked]] to [[ConsolidationGroup.ReadyForWorkstation]]. Closes
+    * the previously HTTP-unreachable gap between picking completion and workstation assignment.
     */
   def markReadyForWorkstation(
       consolidationGroupId: ConsolidationGroupId,
