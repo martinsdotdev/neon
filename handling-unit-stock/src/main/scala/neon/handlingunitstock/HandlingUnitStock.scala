@@ -209,7 +209,12 @@ case class HandlingUnitStock private[handlingunitstock] (
   ): (HandlingUnitStock, HandlingUnitStockEvent.StatusChanged) =
     val previousStatus = status
     val updated = copy(status = newStatus)
-    val event = HandlingUnitStockEvent.StatusChanged(id, previousStatus, newStatus, at)
+    val event = HandlingUnitStockEvent.StatusChanged(
+      handlingUnitStockId = id,
+      previousStatus = previousStatus,
+      newStatus = newStatus,
+      occurredAt = at
+    )
     (updated, event)
 
 /** Factory for [[HandlingUnitStock]]. */
@@ -242,13 +247,13 @@ object HandlingUnitStock:
       blockedQuantity = 0
     )
     val event = HandlingUnitStockEvent.Created(
-      id,
-      skuId,
-      containerId,
-      slotCode,
-      stockPositionId,
-      physicalContainer,
-      onHandQuantity,
-      at
+      handlingUnitStockId = id,
+      skuId = skuId,
+      containerId = containerId,
+      slotCode = slotCode,
+      stockPositionId = stockPositionId,
+      physicalContainer = physicalContainer,
+      onHandQuantity = onHandQuantity,
+      occurredAt = at
     )
     (hus, event)

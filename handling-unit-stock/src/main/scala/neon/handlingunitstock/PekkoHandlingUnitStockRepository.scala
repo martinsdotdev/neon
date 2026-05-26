@@ -32,9 +32,10 @@ class PekkoHandlingUnitStockRepository(
       containerId: ContainerId
   ): Future[List[HandlingUnitStock]] =
     queryProjectionIds(
-      "SELECT handling_unit_stock_id FROM handling_unit_stock_by_container WHERE container_id = $1",
-      containerId.value,
-      "handling_unit_stock_id"
+      sql =
+        "SELECT handling_unit_stock_id FROM handling_unit_stock_by_container WHERE container_id = $1",
+      param = containerId.value,
+      idColumn = "handling_unit_stock_id"
     ).flatMap { ids =>
       Future.sequence(ids.map(id => findById(HandlingUnitStockId(id))))
     }.map(_.flatten)

@@ -65,7 +65,15 @@ class HandlingUnitStockActorSuite
 
   private def createHandlingUnitStock(onHand: Int = 100): Unit =
     val (hus, event) =
-      HandlingUnitStock.create(skuId, containerId, slotCode, stockPositionId, true, onHand, at)
+      HandlingUnitStock.create(
+        skuId = skuId,
+        containerId = containerId,
+        slotCode = slotCode,
+        stockPositionId = stockPositionId,
+        physicalContainer = true,
+        onHandQuantity = onHand,
+        at = at
+      )
     esTestKit.runCommand[StatusReply[Done]](
       HandlingUnitStockActor.Create(hus, event, _)
     )
@@ -76,7 +84,15 @@ class HandlingUnitStockActorSuite
 
       it("accepts Create command and transitions to ActiveState"):
         val (hus, event) =
-          HandlingUnitStock.create(skuId, containerId, slotCode, stockPositionId, true, 100, at)
+          HandlingUnitStock.create(
+            skuId = skuId,
+            containerId = containerId,
+            slotCode = slotCode,
+            stockPositionId = stockPositionId,
+            physicalContainer = true,
+            onHandQuantity = 100,
+            at = at
+          )
         val result = esTestKit.runCommand[StatusReply[Done]](
           HandlingUnitStockActor.Create(hus, event, _)
         )
@@ -88,7 +104,15 @@ class HandlingUnitStockActorSuite
       it("rejects Create when already active"):
         createHandlingUnitStock()
         val (hus, event) =
-          HandlingUnitStock.create(skuId, containerId, slotCode, stockPositionId, true, 50, at)
+          HandlingUnitStock.create(
+            skuId = skuId,
+            containerId = containerId,
+            slotCode = slotCode,
+            stockPositionId = stockPositionId,
+            physicalContainer = true,
+            onHandQuantity = 50,
+            at = at
+          )
         val result = esTestKit.runCommand[StatusReply[Done]](
           HandlingUnitStockActor.Create(hus, event, _)
         )
