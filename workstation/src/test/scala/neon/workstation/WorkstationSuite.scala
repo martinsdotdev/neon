@@ -11,9 +11,15 @@ class WorkstationSuite extends AnyFunSpec:
   val consolidationGroupId = ConsolidationGroupId()
   val at = Instant.now()
 
-  def disabled() = Workstation.Disabled(id, WorkstationType.PutWall, 8)
+  def disabled() =
+    Workstation.Disabled(id = id, workstationType = WorkstationType.PutWall, slotCount = 8)
   def idle(mode: WorkstationMode = WorkstationMode.Picking) =
-    Workstation.Idle(id, WorkstationType.PutWall, 8, mode)
+    Workstation.Idle(
+      id = id,
+      workstationType = WorkstationType.PutWall,
+      slotCount = 8,
+      mode = mode
+    )
 
   describe("Workstation"):
     describe("enabling"):

@@ -234,11 +234,11 @@ object WorkstationActor:
             case (ActiveState(i: Workstation.Idle), e: WorkstationEvent.WorkstationAssigned) =>
               ActiveState(
                 Workstation.Active(
-                  i.id,
-                  i.workstationType,
-                  i.slotCount,
-                  e.mode,
-                  e.assignmentId
+                  id = i.id,
+                  workstationType = i.workstationType,
+                  slotCount = i.slotCount,
+                  mode = e.mode,
+                  assignmentId = e.assignmentId
                 )
               )
             case (ActiveState(a: Workstation.Active), _: WorkstationEvent.WorkstationReleased) =>

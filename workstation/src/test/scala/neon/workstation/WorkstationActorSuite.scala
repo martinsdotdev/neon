@@ -53,7 +53,11 @@ class WorkstationActorSuite
 
   private def createDisabled(): Unit =
     val workstation =
-      Workstation.Disabled(workstationId, WorkstationType.PutWall, 8)
+      Workstation.Disabled(
+        id = workstationId,
+        workstationType = WorkstationType.PutWall,
+        slotCount = 8
+      )
     esTestKit.runCommand[StatusReply[Done]](
       WorkstationActor.Create(workstation, _)
     )
@@ -186,7 +190,11 @@ class WorkstationActorSuite
       it("acks on second Create without error"):
         createDisabled()
         val workstation =
-          Workstation.Disabled(workstationId, WorkstationType.PutWall, 8)
+          Workstation.Disabled(
+            id = workstationId,
+            workstationType = WorkstationType.PutWall,
+            slotCount = 8
+          )
         val result = esTestKit.runCommand[StatusReply[Done]](
           WorkstationActor.Create(workstation, _)
         )

@@ -51,7 +51,11 @@ class PekkoWorkstationRepositorySuite
       it("persists a Disabled workstation via create and retrieves it"):
         val workstationId = WorkstationId()
         val disabled =
-          Workstation.Disabled(workstationId, WorkstationType.PutWall, 8)
+          Workstation.Disabled(
+            id = workstationId,
+            workstationType = WorkstationType.PutWall,
+            slotCount = 8
+          )
         repository.create(disabled).futureValue
 
         val found = repository.findById(workstationId).futureValue
@@ -68,7 +72,11 @@ class PekkoWorkstationRepositorySuite
       it("transitions Disabled to Idle"):
         val workstationId = WorkstationId()
         val disabled =
-          Workstation.Disabled(workstationId, WorkstationType.PutWall, 8)
+          Workstation.Disabled(
+            id = workstationId,
+            workstationType = WorkstationType.PutWall,
+            slotCount = 8
+          )
         repository.create(disabled).futureValue
 
         val (idle, event) = disabled.enable(at)

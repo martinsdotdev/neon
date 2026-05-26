@@ -32,9 +32,10 @@ class PekkoWorkstationRepository(
       workstationType: WorkstationType
   ): Future[Option[Workstation.Idle]] =
     queryProjectionIds(
-      "SELECT workstation_id FROM workstation_by_type_and_state WHERE workstation_type = $1 AND state = 'Idle' LIMIT 1",
-      workstationType.toString,
-      "workstation_id"
+      sql =
+        "SELECT workstation_id FROM workstation_by_type_and_state WHERE workstation_type = $1 AND state = 'Idle' LIMIT 1",
+      param = workstationType.toString,
+      idColumn = "workstation_id"
     ).flatMap(ids =>
       ids.headOption match
         case None     => Future.successful(None)

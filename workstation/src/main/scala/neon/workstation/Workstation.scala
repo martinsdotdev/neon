@@ -42,7 +42,13 @@ object Workstation:
       val mode = WorkstationMode.Picking
       val idle = Idle(id, workstationType, slotCount, mode)
       val event =
-        WorkstationEvent.WorkstationEnabled(id, workstationType, slotCount, mode, at)
+        WorkstationEvent.WorkstationEnabled(
+          workstationId = id,
+          workstationType = workstationType,
+          slotCount = slotCount,
+          mode = mode,
+          occurredAt = at
+        )
       (idle, event)
 
   /** A workstation that is enabled and ready to receive an assignment. */
@@ -67,7 +73,13 @@ object Workstation:
     ): (Idle, WorkstationEvent.ModeSwitched) =
       val switched = copy(mode = newMode)
       val event =
-        WorkstationEvent.ModeSwitched(id, workstationType, mode, newMode, at)
+        WorkstationEvent.ModeSwitched(
+          workstationId = id,
+          workstationType = workstationType,
+          previousMode = mode,
+          newMode = newMode,
+          occurredAt = at
+        )
       (switched, event)
 
     /** Assigns work to this workstation, transitioning from [[Idle]] to [[Active]].
@@ -83,9 +95,21 @@ object Workstation:
         assignmentId: UUID,
         at: Instant
     ): (Active, WorkstationEvent.WorkstationAssigned) =
-      val active = Active(id, workstationType, slotCount, mode, assignmentId)
+      val active = Active(
+        id = id,
+        workstationType = workstationType,
+        slotCount = slotCount,
+        mode = mode,
+        assignmentId = assignmentId
+      )
       val event =
-        WorkstationEvent.WorkstationAssigned(id, workstationType, mode, assignmentId, at)
+        WorkstationEvent.WorkstationAssigned(
+          workstationId = id,
+          workstationType = workstationType,
+          mode = mode,
+          assignmentId = assignmentId,
+          occurredAt = at
+        )
       (active, event)
 
     /** Disables this workstation, transitioning from [[Idle]] to [[Disabled]].
