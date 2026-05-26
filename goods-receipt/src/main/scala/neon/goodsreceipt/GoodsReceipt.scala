@@ -1,6 +1,6 @@
 package neon.goodsreceipt
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import neon.common.{GoodsReceiptId, InboundDeliveryId}
 
 import java.time.Instant
@@ -12,7 +12,14 @@ import java.time.Instant
   * [[GoodsReceipt.Cancelled]]. Transitions are only available on valid source states, enforced at
   * compile time.
   */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[GoodsReceipt.Open], name = "Open"),
+    new JsonSubTypes.Type(value = classOf[GoodsReceipt.Confirmed], name = "Confirmed"),
+    new JsonSubTypes.Type(value = classOf[GoodsReceipt.Cancelled], name = "Cancelled")
+  )
+)
 sealed trait GoodsReceipt:
   /** The unique identifier of this goods receipt. */
   def id: GoodsReceiptId

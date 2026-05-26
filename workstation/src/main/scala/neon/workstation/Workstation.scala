@@ -1,6 +1,6 @@
 package neon.workstation
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import neon.common.{WorkstationId, WorkstationMode}
 
 import java.time.Instant
@@ -12,7 +12,14 @@ import java.util.UUID
   * Lifecycle: [[Disabled]] -> [[Idle]] -> [[Active]] -> [[Idle]], with [[Disabled]] reachable from
   * both [[Idle]] and [[Active]]. One consolidation group at a time.
   */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[Workstation.Disabled], name = "Disabled"),
+    new JsonSubTypes.Type(value = classOf[Workstation.Idle], name = "Idle"),
+    new JsonSubTypes.Type(value = classOf[Workstation.Active], name = "Active")
+  )
+)
 sealed trait Workstation:
   /** The workstation identifier. */
   def id: WorkstationId

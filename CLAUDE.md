@@ -106,7 +106,7 @@ app/
 
 ### Serialization
 
-Jackson CBOR via `pekko-serialization-jackson`. All commands, responses, state wrappers, and event envelopes extend `CborSerializable` (marker trait in `common`). Aggregate sealed traits (e.g., `Wave`, `Task`) require `@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)` for polymorphic snapshot deserialization. Java serialization is disabled.
+Jackson CBOR via `pekko-serialization-jackson`. All commands, responses, state wrappers, and event envelopes extend `CborSerializable` (marker trait in `common`). Aggregate sealed traits (e.g., `Wave`, `Task`) carry `@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")` + `@JsonSubTypes` registering each state by name, for polymorphic snapshot deserialization. Only the aggregate root needs this — it is the one nested polymorphic field (inside the snapshotted `ActiveState`); commands, events, and state wrappers are top-level payloads disambiguated by the Pekko serialization manifest. Avoid `Id.CLASS`: it bakes fully-qualified class names into persisted snapshots (refactor-fragile, and a deserialization-gadget risk). Java serialization is disabled.
 
 ### Error Handling
 

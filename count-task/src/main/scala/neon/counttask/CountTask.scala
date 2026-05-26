@@ -1,6 +1,6 @@
 package neon.counttask
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import neon.common.{CountTaskId, CycleCountId, LocationId, SkuId, UserId}
 
 import java.time.Instant
@@ -12,7 +12,15 @@ import java.time.Instant
   * [[CountTask.Cancelled]] reachable from any non-terminal state. Transitions are only available on
   * valid source states, enforced at compile time.
   */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[CountTask.Pending], name = "Pending"),
+    new JsonSubTypes.Type(value = classOf[CountTask.Assigned], name = "Assigned"),
+    new JsonSubTypes.Type(value = classOf[CountTask.Recorded], name = "Recorded"),
+    new JsonSubTypes.Type(value = classOf[CountTask.Cancelled], name = "Cancelled")
+  )
+)
 sealed trait CountTask:
   /** The unique identifier of this count task. */
   def id: CountTaskId

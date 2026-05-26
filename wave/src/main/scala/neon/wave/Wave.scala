@@ -1,6 +1,6 @@
 package neon.wave
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import neon.common.{OrderId, WaveId}
 
 import java.time.Instant
@@ -12,7 +12,15 @@ import java.time.Instant
   * from any non-terminal state. Transitions are only available on valid source states, enforced at
   * compile time.
   */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[Wave.Planned], name = "Planned"),
+    new JsonSubTypes.Type(value = classOf[Wave.Released], name = "Released"),
+    new JsonSubTypes.Type(value = classOf[Wave.Completed], name = "Completed"),
+    new JsonSubTypes.Type(value = classOf[Wave.Cancelled], name = "Cancelled")
+  )
+)
 sealed trait Wave:
   /** The unique identifier of this wave. */
   def id: WaveId

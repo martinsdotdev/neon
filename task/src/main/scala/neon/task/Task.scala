@@ -1,6 +1,6 @@
 package neon.task
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import neon.common.{
   HandlingUnitId,
   LocationId,
@@ -22,7 +22,16 @@ import java.time.Instant
   * with [[Cancelled]] reachable from any non-terminal state. Transitions are enforced at compile
   * time — only valid source states expose the corresponding method.
   */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[Task.Planned], name = "Planned"),
+    new JsonSubTypes.Type(value = classOf[Task.Allocated], name = "Allocated"),
+    new JsonSubTypes.Type(value = classOf[Task.Assigned], name = "Assigned"),
+    new JsonSubTypes.Type(value = classOf[Task.Completed], name = "Completed"),
+    new JsonSubTypes.Type(value = classOf[Task.Cancelled], name = "Cancelled")
+  )
+)
 sealed trait Task:
 
   /** The unique identifier of this task. */

@@ -1,6 +1,6 @@
 package neon.inbounddelivery
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import neon.common.{InboundDeliveryId, LotAttributes, PackagingLevel, SkuId}
 
 import java.time.Instant
@@ -13,7 +13,16 @@ import java.time.Instant
   * reachable only from [[InboundDelivery.New]]. Transitions are only available on valid source
   * states, enforced at compile time.
   */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[InboundDelivery.New], name = "New"),
+    new JsonSubTypes.Type(value = classOf[InboundDelivery.Receiving], name = "Receiving"),
+    new JsonSubTypes.Type(value = classOf[InboundDelivery.Received], name = "Received"),
+    new JsonSubTypes.Type(value = classOf[InboundDelivery.Closed], name = "Closed"),
+    new JsonSubTypes.Type(value = classOf[InboundDelivery.Cancelled], name = "Cancelled")
+  )
+)
 sealed trait InboundDelivery:
   /** The unique identifier of this inbound delivery. */
   def id: InboundDeliveryId

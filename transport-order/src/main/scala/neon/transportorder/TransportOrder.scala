@@ -1,6 +1,6 @@
 package neon.transportorder
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import neon.common.{HandlingUnitId, LocationId, TransportOrderId}
 
 import java.time.Instant
@@ -11,7 +11,14 @@ import java.time.Instant
   * completes, representing the temporal gap between task completion and operator confirmation at
   * the destination.
   */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[TransportOrder.Pending], name = "Pending"),
+    new JsonSubTypes.Type(value = classOf[TransportOrder.Confirmed], name = "Confirmed"),
+    new JsonSubTypes.Type(value = classOf[TransportOrder.Cancelled], name = "Cancelled")
+  )
+)
 sealed trait TransportOrder:
   /** The transport order identifier. */
   def id: TransportOrderId

@@ -1,6 +1,6 @@
 package neon.cyclecount
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import neon.common.{CountMethod, CountType, CycleCountId, SkuId, WarehouseAreaId}
 
 import java.time.Instant
@@ -12,7 +12,15 @@ import java.time.Instant
   * [[CycleCount.Completed]], with [[CycleCount.Cancelled]] reachable from any non-terminal state.
   * Transitions are only available on valid source states, enforced at compile time.
   */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[CycleCount.New], name = "New"),
+    new JsonSubTypes.Type(value = classOf[CycleCount.InProgress], name = "InProgress"),
+    new JsonSubTypes.Type(value = classOf[CycleCount.Completed], name = "Completed"),
+    new JsonSubTypes.Type(value = classOf[CycleCount.Cancelled], name = "Cancelled")
+  )
+)
 sealed trait CycleCount:
   /** The unique identifier of this cycle count. */
   def id: CycleCountId

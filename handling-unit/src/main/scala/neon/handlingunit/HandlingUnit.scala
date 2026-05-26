@@ -1,6 +1,6 @@
 package neon.handlingunit
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import neon.common.{HandlingUnitId, LocationId, OrderId, PackagingLevel}
 
 import java.time.Instant
@@ -17,7 +17,18 @@ import java.time.Instant
   *
   * Transitions are only available on valid source states, enforced at compile time.
   */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[HandlingUnit.PickCreated], name = "PickCreated"),
+    new JsonSubTypes.Type(value = classOf[HandlingUnit.InBuffer], name = "InBuffer"),
+    new JsonSubTypes.Type(value = classOf[HandlingUnit.Empty], name = "Empty"),
+    new JsonSubTypes.Type(value = classOf[HandlingUnit.ShipCreated], name = "ShipCreated"),
+    new JsonSubTypes.Type(value = classOf[HandlingUnit.Packed], name = "Packed"),
+    new JsonSubTypes.Type(value = classOf[HandlingUnit.ReadyToShip], name = "ReadyToShip"),
+    new JsonSubTypes.Type(value = classOf[HandlingUnit.Shipped], name = "Shipped")
+  )
+)
 sealed trait HandlingUnit:
   /** The unique identifier of this handling unit. */
   def id: HandlingUnitId
