@@ -1,8 +1,12 @@
-# Use RBAC with Per-User Permission Overrides for Authorization
+---
+status: "proposed"
+date: 2026-04-10
+decision-makers: project owner
+consulted:
+informed: future contributors
+---
 
-## Status
-
-Proposed
+# Use RBAC with per-user permission overrides for authorization
 
 ## Context and Problem Statement
 
@@ -34,24 +38,19 @@ provides the right balance between simplicity and flexibility for WES operations
 
 ### Consequences
 
-#### Positive
-
-- Roles provide sensible defaults; overrides handle exceptions without creating
-  new roles
-- Deny-wins semantics prevent accidental privilege escalation
-- Two small tables (`role_permissions`, `user_permission_overrides`) with no
-  external dependencies
-- Effective permissions computed at session validation: no per-request overhead
-  beyond the session lookup
-- Custom Pekko HTTP directive (`requirePermission`) integrates cleanly with
-  existing route structure
-
-#### Negative
-
-- Per-user overrides add complexity vs plain RBAC (mitigated: the override table
-  is typically sparse)
-- No per-resource ACLs (acceptable: WES authorization is on resource types, not
-  individual entities)
+- **Good**, because roles provide sensible defaults while overrides handle
+  exceptions without creating new roles.
+- **Good**, because deny-wins semantics prevent accidental privilege escalation.
+- **Good**, because it needs only two small tables (`role_permissions`,
+  `user_permission_overrides`) and no external dependencies.
+- **Good**, because effective permissions are computed at session validation,
+  adding no per-request overhead beyond the session lookup.
+- **Good**, because a custom Pekko HTTP directive (`requirePermission`) integrates
+  cleanly with the existing route structure.
+- **Neutral**, because per-user overrides add complexity over plain RBAC — but the
+  override table is typically sparse.
+- **Neutral**, because there are no per-resource ACLs — acceptable, since WES
+  authorization is on resource types, not individual entities.
 
 ### Confirmation
 
@@ -70,37 +69,37 @@ Roles define default permission sets. Per-user overrides add (allow) or remove
 (deny) individual permissions. Effective permissions = role defaults +/- user
 overrides, deny always wins.
 
-- Good, because handles the common case (role-based) and exceptions (per-user)
+- **Good**, because handles the common case (role-based) and exceptions (per-user)
   in one model
-- Good, because deny-wins is security-conservative
-- Good, because no external service; two PostgreSQL tables
-- Good, because inspired by production credential/power model
-- Neutral, because override table adds a join; mitigated by computing at session
+- **Good**, because deny-wins is security-conservative
+- **Good**, because no external service; two PostgreSQL tables
+- **Good**, because inspired by production credential/power model
+- **Neutral**, because override table adds a join; mitigated by computing at session
   validation
-- Bad, because more complex than plain RBAC
+- **Bad**, because more complex than plain RBAC
 
 ### Plain RBAC (Roles Only)
 
 Each role has a fixed set of permissions. No per-user exceptions.
 
-- Good, because simplest model
-- Good, because no override table or deny-wins logic
-- Bad, because any exception requires creating a new role
-- Bad, because role proliferation for edge cases (e.g., "OperatorWithWavePlan")
+- **Good**, because simplest model
+- **Good**, because no override table or deny-wins logic
+- **Bad**, because any exception requires creating a new role
+- **Bad**, because role proliferation for edge cases (e.g., "OperatorWithWavePlan")
 
 ### Zanzibar/ReBAC (SpiceDB or OpenFGA)
 
 External authorization service queried via gRPC or HTTP. Relationship tuples
 model permissions as a graph.
 
-- Good, because scales to fine-grained per-resource ACLs
-- Good, because clean separation of authorization logic from application
-- Bad, because requires deploying and maintaining a separate service
-- Bad, because adds gRPC dependency (grpc-java or ScalaPB)
-- Bad, because must keep authorization tuples in sync with domain state
-- Bad, because Neon WES has no per-resource sharing; authorization is role-based
+- **Good**, because scales to fine-grained per-resource ACLs
+- **Good**, because clean separation of authorization logic from application
+- **Bad**, because requires deploying and maintaining a separate service
+- **Bad**, because adds gRPC dependency (grpc-java or ScalaPB)
+- **Bad**, because must keep authorization tuples in sync with domain state
+- **Bad**, because Neon WES has no per-resource sharing; authorization is role-based
   on resource types
-- Bad, because massive infrastructure overhead for current requirements
+- **Bad**, because massive infrastructure overhead for current requirements
 
 ## More Information
 
@@ -150,3 +149,4 @@ CREATE TABLE user_permission_overrides (
 
 - Production role/power model with credential overrides and deny-wins
   semantics
+- Authentication that this builds on — see [ADR-0008](0008-use-session-based-authentication.md).

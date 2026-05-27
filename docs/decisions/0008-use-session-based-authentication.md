@@ -1,8 +1,12 @@
-# Use Server-Side Sessions for Authentication
+---
+status: "proposed"
+date: 2026-04-10
+decision-makers: project owner
+consulted:
+informed: future contributors
+---
 
-## Status
-
-Proposed
+# Use server-side sessions for authentication
 
 ## Context and Problem Statement
 
@@ -35,23 +39,19 @@ PostgreSQL.
 
 ### Consequences
 
-#### Positive
-
-- Sessions are stored server-side, enabling immediate revocation on logout or
-  security incident
-- Only one new dependency (argon2-jvm for password hashing); session tokens use
-  built-in JVM crypto (SecureRandom, SHA-256)
-- Follows The Copenhagen Book recommendations exactly: HttpOnly/Secure/SameSite
-  cookies, SHA-256 hashed tokens, 30-day sliding expiry
-- Fits naturally into existing patterns: R2dbcHelper for DB access, custom Pekko
-  HTTP directives, error ADTs mapped to 401/403
-
-#### Negative
-
-- Requires a DB lookup per authenticated request (mitigated: PostgreSQL is
-  already on the hot path for every operation)
-- More custom code than using pekko-http-session library (mitigated: full
-  control, no library quirks)
+- **Good**, because sessions are stored server-side, enabling immediate
+  revocation on logout or after a security incident.
+- **Good**, because it adds only one new dependency (argon2-jvm for password
+  hashing); session tokens use built-in JVM crypto (SecureRandom, SHA-256).
+- **Good**, because it follows The Copenhagen Book recommendations exactly:
+  HttpOnly/Secure/SameSite cookies, SHA-256 hashed tokens, 30-day sliding expiry.
+- **Good**, because it fits naturally into existing patterns: R2dbcHelper for DB
+  access, custom Pekko HTTP directives, error ADTs mapped to 401/403.
+- **Neutral**, because it requires a DB lookup per authenticated request — but
+  PostgreSQL is already on the hot path for every operation, so the marginal cost
+  is negligible.
+- **Bad**, because it is more custom code than adopting the pekko-http-session
+  library (the trade-off being full control and no library quirks).
 
 ### Confirmation
 
@@ -73,44 +73,44 @@ before PostgreSQL storage. HttpOnly/Secure/SameSite=Lax cookies. 30-day expiry
 with 15-day sliding renewal. Argon2id for password hashing (19 MB memory, 2
 iterations, 1 parallelism).
 
-- Good, because Copenhagen Book is a well-regarded, security-reviewed reference
-- Good, because Argon2id is the top recommendation (Copenhagen Book, OWASP);
+- **Good**, because Copenhagen Book is a well-regarded, security-reviewed reference
+- **Good**, because Argon2id is the top recommendation (Copenhagen Book, OWASP);
   validated in production Scala by SoftwareMill's Bootzooka
-- Good, because session-based auth is the standard for Scala web apps (Lichess
+- **Good**, because session-based auth is the standard for Scala web apps (Lichess
   uses sessions+MongoDB, TabNews uses sessions+PostgreSQL)
-- Good, because immediate session revocation is trivial (DELETE from sessions)
-- Good, because minimal dependencies: only argon2-jvm (2.12, Java library)
-- Neutral, because DB lookup per request, but PostgreSQL is already the hot path
-- Bad, because more custom code than a library solution
+- **Good**, because immediate session revocation is trivial (DELETE from sessions)
+- **Good**, because minimal dependencies: only argon2-jvm (2.12, Java library)
+- **Neutral**, because DB lookup per request, but PostgreSQL is already the hot path
+- **Bad**, because more custom code than a library solution
 
 ### Stateless JWT Tokens
 
 jwt-circe (11.0.3) for token encoding/decoding. Bearer token in Authorization
 header. Short-lived access tokens (15min) with longer-lived refresh tokens in DB.
 
-- Good, because no DB lookup per request (signature validation only)
-- Good, because jwt-circe integrates with existing Circe stack
-- Good, because stateless design scales across services
-- Bad, because The Copenhagen Book explicitly advises against JWT for web apps
-- Bad, because revocation requires a blocklist (negating stateless benefit) or
+- **Good**, because no DB lookup per request (signature validation only)
+- **Good**, because jwt-circe integrates with existing Circe stack
+- **Good**, because stateless design scales across services
+- **Bad**, because The Copenhagen Book explicitly advises against JWT for web apps
+- **Bad**, because revocation requires a blocklist (negating stateless benefit) or
   short expiry windows
-- Bad, because more complex: two token types, refresh flow, token rotation
-- Bad, because Neon WES is a single cluster; statelessness provides no benefit
+- **Bad**, because more complex: two token types, refresh flow, token rotation
+- **Bad**, because Neon WES is a single cluster; statelessness provides no benefit
 
 ### pekko-http-session (SoftwareMill Library)
 
 com.softwaremill.pekko-http-session 0.7.1. Client-side sessions: signed data
 stored in cookies. Built-in directives, CSRF, refresh tokens.
 
-- Good, because battle-tested library with Scala 3 support
-- Good, because built-in directives reduce custom code
-- Good, because CSRF protection included
-- Bad, because client-side sessions (data in cookie) differ from Copenhagen
+- **Good**, because battle-tested library with Scala 3 support
+- **Good**, because built-in directives reduce custom code
+- **Good**, because CSRF protection included
+- **Bad**, because client-side sessions (data in cookie) differ from Copenhagen
   Book's server-side model
-- Bad, because the pjfanning fork was archived; SoftwareMill's maintained
+- **Bad**, because the pjfanning fork was archived; SoftwareMill's maintained
   version is less active
-- Bad, because still need custom code for login, passwords, roles, permissions
-- Bad, because adds a dependency without removing most of the implementation work
+- **Bad**, because still need custom code for login, passwords, roles, permissions
+- **Bad**, because adds a dependency without removing most of the implementation work
 
 ## More Information
 
@@ -147,3 +147,4 @@ CREATE TABLE sessions (
   Argon2id password hashing
 - [TabNews](https://github.com/filipedeschamps/tabnews.com.br): session-based
   auth with feature-flag authorization
+- Authorization builds on this decision — see [ADR-0009](0009-use-rbac-with-per-user-permission-overrides.md).

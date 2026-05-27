@@ -1,8 +1,12 @@
-# Use Structured Logging with Wide Events and MDC Propagation
+---
+status: "proposed"
+date: 2026-04-10
+decision-makers: project owner
+consulted:
+informed: future contributors
+---
 
-## Status
-
-Proposed
+# Use structured logging with wide events and MDC propagation
 
 ## Context and Problem Statement
 
@@ -39,28 +43,26 @@ logging, and avoids exotic dependencies.
 
 ### Consequences
 
-#### Positive
-
-- One canonical log line per HTTP request with trace ID, method, path, status,
-  duration, user ID, and query string (wide event pattern)
-- Trace IDs (UUID v7) propagate from HTTP through services via
-  MdcExecutionContext, enabling cross-layer request tracing
-- Actor logging via Behaviors.withMdc provides entity context (entityType,
-  entityId) on every actor log line
-- Dual logback configuration: colored console for development, structured JSON
-  for production, quiet WARN-only for tests
-- LoggingProjectionHandler base class eliminates boilerplate across all
-  projection handlers
-- Structured auth event logging (login success/failure, permission denied)
-  without leaking sensitive data
-
-#### Negative
-
-- MdcExecutionContext adds per-task overhead (MDC snapshot/restore); negligible
-  at WES throughput but present on every Future submission
-- MDC does not propagate into actor message processing (actors use
-  Behaviors.withMdc separately); HTTP trace IDs are not visible in actor logs
-- scala-logging 4.0.0-RC1 is a release candidate; no final 4.0.0 release exists
+- **Good**, because there is one canonical log line per HTTP request with trace
+  ID, method, path, status, duration, user ID, and query string (the wide-event
+  pattern).
+- **Good**, because trace IDs (UUID v7) propagate from HTTP through services via
+  MdcExecutionContext, enabling cross-layer request tracing.
+- **Good**, because actor logging via Behaviors.withMdc provides entity context
+  (entityType, entityId) on every actor log line.
+- **Good**, because dual logback configuration gives colored console for
+  development, structured JSON for production, and quiet WARN-only output for tests.
+- **Good**, because a LoggingProjectionHandler base class eliminates boilerplate
+  across all projection handlers.
+- **Good**, because structured auth-event logging (login success/failure,
+  permission denied) records events without leaking sensitive data.
+- **Neutral**, because MdcExecutionContext adds per-task overhead (MDC
+  snapshot/restore) — negligible at WES throughput, but present on every Future
+  submission.
+- **Bad**, because MDC does not propagate into actor message processing (actors
+  use Behaviors.withMdc separately), so HTTP trace IDs are not visible in actor logs.
+- **Bad**, because scala-logging 4.0.0-RC1 is a release candidate; no final 4.0.0
+  release exists yet.
 
 ### Confirmation
 
@@ -80,15 +82,15 @@ for structured JSON output and StructuredArguments API. scala-logging 4.0.0-RC1
 for LazyLogging trait with macro-generated level guards. Pekko's context.log for
 actor logging.
 
-- Good, because this is the standard stack used by Lichess, Play Framework, and
+- **Good**, because this is the standard stack used by Lichess, Play Framework, and
   virtually every production Pekko deployment
-- Good, because logstash-logback-encoder's StructuredArguments produce top-level
+- **Good**, because logstash-logback-encoder's StructuredArguments produce top-level
   JSON fields queryable by any log aggregator (Loki, Elasticsearch, Datadog)
-- Good, because Logback 1.5.18 and SLF4J 2.0.17 are already present via Pekko
-- Good, because scala-logging's LazyLogging eliminates LoggerFactory boilerplate
-- Neutral, because logstash-logback-encoder 8.1, not 9.0 (v9 requires Jackson
+- **Good**, because Logback 1.5.18 and SLF4J 2.0.17 are already present via Pekko
+- **Good**, because scala-logging's LazyLogging eliminates LoggerFactory boilerplate
+- **Neutral**, because logstash-logback-encoder 8.1, not 9.0 (v9 requires Jackson
   3.0 which conflicts with Pekko's Jackson 2.x serialization)
-- Bad, because MdcExecutionContext is a DIY ~20-line wrapper (no maintained
+- **Bad**, because MdcExecutionContext is a DIY ~20-line wrapper (no maintained
   library exists for Pekko + Scala 3)
 
 ### Scribe (Scala-Native Logging)
@@ -96,11 +98,11 @@ actor logging.
 outr/scribe 3.19.0. Programmatic configuration (no XML). Cross-platform
 (JVM, JS, Native). Built-in JSON output via scribe-json module.
 
-- Good, because Scala-native with no XML configuration
-- Good, because cross-platform support
-- Bad, because SLF4J MDC bridge does not propagate MDC values into JSON output
+- **Good**, because Scala-native with no XML configuration
+- **Good**, because cross-platform support
+- **Bad**, because SLF4J MDC bridge does not propagate MDC values into JSON output
   (GitHub issue #304), losing Pekko's automatic pekkoSource context
-- Bad, because smaller community (549 stars vs logstash-logback-encoder's
+- **Bad**, because smaller community (549 stars vs logstash-logback-encoder's
   industry-standard status)
 
 ### OpenTelemetry Java Agent
@@ -108,14 +110,14 @@ outr/scribe 3.19.0. Programmatic configuration (no XML). Cross-platform
 Auto-instrumentation via -javaagent. Automatic HTTP spans, context propagation
 across async boundaries, trace/span IDs in MDC via OTEL Logback bridge.
 
-- Good, because zero-code-change instrumentation for HTTP and async context
-- Good, because industry-standard observability protocol
-- Good, because automatic trace/span IDs in log events
-- Bad, because Pekko support has known issues (context propagation with `after`
+- **Good**, because zero-code-change instrumentation for HTTP and async context
+- **Good**, because industry-standard observability protocol
+- **Good**, because automatic trace/span IDs in log events
+- **Bad**, because Pekko support has known issues (context propagation with `after`
   pattern, issue #11755)
-- Bad, because premature for a single-service app with no logging at all;
+- **Bad**, because premature for a single-service app with no logging at all;
   structured logging should come first
-- Bad, because agent-based approach is opaque and harder to debug
+- **Bad**, because agent-based approach is opaque and harder to debug
 
 ## More Information
 
@@ -200,3 +202,4 @@ Production (JSON via logstash-logback-encoder):
   wrapper with macro-based level guards
 - [Pekko Typed Logging](https://pekko.apache.org/docs/pekko/current/typed/logging.html):
   Behaviors.withMdc, context.log
+- Observability is covered end to end in [Chapter 19 — Observability](../book/04-system-concerns/ch19-observability.md).

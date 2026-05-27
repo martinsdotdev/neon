@@ -1,14 +1,32 @@
-# Use GitHub Flow Workflow
+---
+status: "accepted"
+date: 2026-04-14
+decision-makers: project owner
+consulted:
+informed: future contributors
+---
 
-## Status
-
-Accepted
+# Use GitHub Flow workflow
 
 ## Context and Problem Statement
 
 The team needs a branching strategy that supports continuous delivery while
 remaining simple enough for a small team. The workflow must integrate with our
-Conventional Commits and branch naming conventions.
+Conventional Commits and branch naming conventions. Which branching model do we
+adopt?
+
+## Decision Drivers
+
+- Simple enough for a small team to follow without ceremony.
+- Supports continuous delivery from a single production-ready branch.
+- Requires code review via pull requests before merge.
+- Integrates with the Conventional Commits and branch-naming conventions ([ADR-0012](0012-use-conventional-commits-and-branches.md)).
+
+## Considered Options
+
+- GitHub Flow (one long-lived branch, short-lived feature branches, PRs)
+- Git Flow (develop / release / hotfix branch model)
+- Trunk-based development (commit to main behind feature flags)
 
 ## Decision Outcome
 
@@ -23,7 +41,47 @@ requiring code review via pull requests.
 - All merges to master go through pull requests
 - **Linear history required** (no merge commits)
 
-## Workflow
+### Consequences
+
+- **Good**, because a single long-lived branch (master) keeps the mental model simple.
+- **Good**, because every change lands through a reviewed PR.
+- **Good**, because linear history (no merge commits) keeps the log readable and bisectable.
+- **Good**, because it pairs naturally with continuous deployment from master.
+- **Neutral**, because keeping branches current means rebasing onto master rather
+  than merging — a habit to maintain.
+- **Bad**, because it has less ceremony than Git Flow for coordinating long-lived
+  release branches, which larger release-train teams may need.
+
+### Confirmation
+
+Confirmed by the protected-branch rules on master (PR required, CI required,
+linear history enforced) and by the absence of merge commits in the history.
+
+## Pros and Cons of the Options
+
+### GitHub Flow
+
+- **Good**, because minimal branches and rules; fast to learn and apply.
+- **Good**, because PR-per-change enforces review and CI gating.
+- **Bad**, because it has no built-in story for parallel maintenance releases.
+
+### Git Flow
+
+- **Good**, because it formalizes release and hotfix branches for versioned releases.
+- **Bad**, because the develop/release/hotfix machinery is heavy for a small team
+  doing continuous delivery.
+
+### Trunk-based development
+
+- **Good**, because it minimizes branch divergence and merge pain.
+- **Bad**, because committing to main behind feature flags adds flag infrastructure
+  this project does not yet need.
+- **Bad**, because it weakens the PR-review gate unless paired with strict
+  pre-merge checks.
+
+## More Information
+
+### Workflow
 
 ```
 master (production-ready)
@@ -90,3 +148,7 @@ git push --force-with-lease
 - [x] Require conversation resolution
 - [x] Require linear history (no merge commits)
 - [x] Do not allow bypassing the above settings
+
+### Related
+
+- The commit and branch naming conventions this workflow assumes — see [ADR-0012](0012-use-conventional-commits-and-branches.md).
