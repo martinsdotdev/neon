@@ -1,5 +1,5 @@
-# Lefthook is NOT installed automatically by `bun install` at the root.
-# To opt in locally, run `bun x lefthook install` from the repo root.
+# Lefthook is NOT installed automatically by `pnpm install` at the root.
+# To opt in locally, run `pnpm exec lefthook install` from the repo root.
 #
 # The `ultracite-web` job runs Ultracite (oxlint + oxfmt) over apps/web/ on
 # pre-commit. There are pre-existing lint errors in apps/web (see #TODO) that
@@ -10,5 +10,5 @@ pre-commit:
       glob:
         - "apps/web/**/*.{js,jsx,ts,tsx,json,jsonc,css}"
       root: apps/web/
-      run: bun x ultracite fix
+      run: pnpm exec ultracite fix
       stage_fixed: true

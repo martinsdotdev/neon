@@ -1,0 +1,16 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+nodeLinker: hoisted
+
+# PNPM 11 hard-errors on un-allowlisted dependency build scripts (supply-chain safety).
+# esbuild / msw / unrs-resolver ship native binaries or a worker that their build step
+# installs. lefthook is intentionally NOT built: its postinstall runs `lefthook install`,
+# but this repo keeps git hooks opt-in (see lefthook.yml) because of known pre-existing
+# apps/web lint errors. Opt in manually with `pnpm exec lefthook install`.
+allowBuilds:
+  esbuild: true
+  lefthook: false
+  msw: true
+  unrs-resolver: true

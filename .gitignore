@@ -31,9 +31,8 @@ metals.sbt
 .idea_modules
 /.worksheet/
 
-# Node / Bun
+# Node
 node_modules/
-.bun/
 *.tsbuildinfo
 
 # Expo (mobile)

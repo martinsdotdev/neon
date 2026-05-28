@@ -4,7 +4,8 @@
 
 - **JDK 21+** (for Scala/sbt)
 - **sbt 1.12+** (Scala build tool)
-- **Bun** (frontend package manager and runtime)
+- **Node.js 20+** (frontend runtime)
+- **pnpm 11+** (frontend package manager) — `corepack enable pnpm` or see https://pnpm.io/installation
 
 ## Quick Start
 
@@ -13,10 +14,9 @@
 sbt compile                # Compile all Scala modules
 sbt test                   # Run all tests
 
-# Frontend
-cd web
-bun install                # Install dependencies
-bun run dev                # Dev server on port 3000
+# Frontend (from repo root)
+pnpm install               # Install dependencies
+pnpm dev:web               # Dev server on port 3000
 ```
 
 ## Backend (Scala / sbt)
@@ -63,28 +63,28 @@ sbt wave/test              # Run wave tests only
 
 ## Frontend workspace (`apps/`, `packages/`)
 
-Bun workspaces: `apps/web/` (existing web app), `apps/mobile/` (Expo mobile),
+pnpm workspaces: `apps/web/` (existing web app), `apps/mobile/` (Expo mobile),
 and shared packages under `packages/{domain,client,tokens}`.
 
 ### Build & Test
 
 ```bash
-bun install                       # Install workspace deps (run at repo root)
-bun dev:web                       # Web dev server on port 3000
-bun dev:mobile                    # Expo Metro on port 8081
-bun --cwd apps/web run build      # Production build (web)
-bun --cwd apps/web run test       # Run Vitest tests (web)
-bun --cwd apps/mobile run android # Open mobile in Android emulator
+pnpm install                      # Install workspace deps (run at repo root)
+pnpm dev:web                      # Web dev server on port 3000
+pnpm dev:mobile                   # Expo Metro on port 8081
+pnpm --filter web build           # Production build (web)
+pnpm --filter web test            # Run Vitest tests (web)
+pnpm --filter mobile android      # Open mobile in Android emulator
 ```
 
 ### Code Quality
 
 ```bash
-bun --cwd apps/web run lint       # ESLint (web)
-bun --cwd apps/web run format     # Prettier (no semicolons, double quotes, trailing commas)
-bun --cwd apps/web run check      # Ultracite check (oxlint + oxfmt)
-bun --cwd apps/web run fix        # Ultracite auto-fix
-bun typecheck                     # Type-check every workspace package
+pnpm --filter web lint            # ESLint (web)
+pnpm --filter web format          # Prettier (no semicolons, double quotes, trailing commas)
+pnpm --filter web check           # Ultracite check (oxlint + oxfmt)
+pnpm --filter web fix             # Ultracite auto-fix
+pnpm typecheck                    # Type-check every workspace package
 ```
 
 ### Pre-commit Hooks
@@ -93,7 +93,7 @@ Root `lefthook.yml` runs `ultracite fix` on staged JS/TS/JSON/CSS files across
 all workspaces. Install hooks with:
 
 ```bash
-bun run prepare                   # Installs lefthook hooks
+pnpm exec lefthook install        # Installs lefthook hooks
 ```
 
 ## Commit Convention

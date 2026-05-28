@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Neon WES is a Warehouse Execution System with a Scala 3 backend, a React/TanStack Start web frontend (`apps/web/`), and a React Native + Expo mobile client (`apps/mobile/`). The JS/TS workspace is managed via Bun workspaces; shared types, API client, and design tokens live under `packages/`.
+Neon WES is a Warehouse Execution System with a Scala 3 backend, a React/TanStack Start web frontend (`apps/web/`), and a React Native + Expo mobile client (`apps/mobile/`). The JS/TS workspace is managed via pnpm workspaces; shared types, API client, and design tokens live under `packages/`.
 
 ## Build & Test Commands
 
@@ -23,20 +23,20 @@ sbt scalafixAll          # Run scalafix (import organization)
 ### Web Frontend
 
 ```bash
-bun install              # Install workspace dependencies (run at repo root)
-bun dev:web              # Dev server on port 3000
-bun --cwd apps/web run build    # Production build
-bun --cwd apps/web run test     # Run Vitest tests
-bun --cwd apps/web run lint     # ESLint
-bun --cwd apps/web run format   # Prettier (no semicolons, double quotes, trailing commas)
+pnpm install              # Install workspace dependencies (run at repo root)
+pnpm dev:web              # Dev server on port 3000
+pnpm --filter web build   # Production build
+pnpm --filter web test    # Run Vitest tests
+pnpm --filter web lint    # ESLint
+pnpm --filter web format  # Prettier (no semicolons, double quotes, trailing commas)
 ```
 
 ### Mobile (Expo)
 
 ```bash
-bun dev:mobile           # Metro on port 8081 (Expo dev server)
-bun --cwd apps/mobile run android   # Open in Android emulator (camera scanning)
-bun --cwd apps/mobile run ios       # Open in iOS simulator
+pnpm dev:mobile          # Metro on port 8081 (Expo dev server)
+pnpm --filter mobile android   # Open in Android emulator (camera scanning)
+pnpm --filter mobile ios       # Open in iOS simulator
 # Custom Dev Client (required for DataWedge): see apps/mobile/AGENTS.md
 ```
 
@@ -118,7 +118,7 @@ Provides opaque type ID wrappers (UUID v7 via uuid-creator) for all entities, sh
 
 ### Frontend workspace (`apps/`, `packages/`)
 
-Bun workspaces. Two apps:
+pnpm workspaces. Two apps:
 - **`apps/web/`** — TanStack Start + React 19 + TypeScript. UI with shadcn/ui (Base UI primitives + CVA variants + Tailwind CSS v4). File-based routing in `src/routes/`. Path alias `@/*` maps to `apps/web/src/*`.
 - **`apps/mobile/`** — Expo SDK 53+ with Expo Router v4. React Native + TypeScript. Theming via `react-native-unistyles`. Auth via Bearer token in `expo-secure-store`. Scanner abstraction supports DataWedge (rugged Android) + `expo-camera` (consumer phones).
 

@@ -41,7 +41,7 @@ Chosen option: **"TanStack Start with React 19"**, because it gives type-safe fi
 
 ### Confirmation
 
-Verified in practice: the app builds and runs via `bun dev:web`, the route tree generates and type-checks, and TanStack Query drives data fetching against the backend API.
+Verified in practice: the app builds and runs via `pnpm dev:web`, the route tree generates and type-checks, and TanStack Query drives data fetching against the backend API.
 
 ## Pros and Cons of the Options
 
