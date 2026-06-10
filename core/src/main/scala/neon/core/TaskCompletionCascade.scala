@@ -1,12 +1,59 @@
 package neon.core
 
 import neon.common.TaskId
-import neon.consolidationgroup.ConsolidationGroup
+import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupEvent}
 import neon.stockposition.{StockPosition, StockPositionEvent}
-import neon.task.Task
-import neon.wave.Wave
+import neon.task.{Task, TaskEvent}
+import neon.transportorder.{TransportOrder, TransportOrderEvent}
+import neon.wave.{Wave, WaveEvent}
 
 import java.time.Instant
+
+/** Errors that can occur during task completion. */
+sealed trait TaskCompletionError
+
+object TaskCompletionError:
+  /** The task was not found in the repository. */
+  case class TaskNotFound(taskId: TaskId) extends TaskCompletionError
+
+  /** The task is not in the [[Task.Assigned]] state required for completion. */
+  case class TaskNotAssigned(taskId: TaskId) extends TaskCompletionError
+
+  /** The actual quantity is negative. */
+  case class InvalidActualQuantity(taskId: TaskId, actualQuantity: Int) extends TaskCompletionError
+
+  /** The task's packaging level requires verification and none was provided. */
+  case class VerificationRequired(taskId: TaskId) extends TaskCompletionError
+
+/** The result of a successful task completion, containing all state transitions and events produced
+  * by the cascade.
+  *
+  * @param completed
+  *   the completed task
+  * @param completedEvent
+  *   the task completion event
+  * @param shortpick
+  *   replacement task if shortpicked, [[None]] otherwise
+  * @param transportOrder
+  *   routing transport order if the task has a handling unit
+  * @param waveCompletion
+  *   wave completion if all wave tasks are terminal
+  * @param pickingCompletion
+  *   consolidation group picking completion if all group tasks are terminal
+  * @param stockConsumption
+  *   stock position update from consuming or deallocating allocated stock
+  */
+case class TaskCompletionResult(
+    completed: Task.Completed,
+    completedEvent: TaskEvent.TaskCompleted,
+    shortpick: Option[(Task.Planned, TaskEvent.TaskCreated)],
+    transportOrder: Option[(TransportOrder.Pending, TransportOrderEvent.TransportOrderCreated)],
+    waveCompletion: Option[(Wave.Completed, WaveEvent.WaveCompleted)],
+    pickingCompletion: Option[
+      (ConsolidationGroup.Picked, ConsolidationGroupEvent.ConsolidationGroupPicked)
+    ],
+    stockConsumption: Option[(StockPosition, StockPositionEvent)] = None
+)
 
 /** Pure decision module for the task completion cascade: complete the task, consume or deallocate
   * allocated stock, create a shortpick replacement, route the handling unit, and detect wave and
