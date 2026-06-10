@@ -98,6 +98,7 @@ class TaskRoutesSuite extends AnyFunSpec with ScalatestRouteTest with RouteSuite
       waveRepository = null,
       consolidationGroupRepository = null,
       transportOrderRepository = null,
+      stockPositionRepository = null,
       verificationProfile = VerificationProfile.disabled
     ):
       override def complete(

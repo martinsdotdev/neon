@@ -83,6 +83,7 @@ class ServiceRegistry(
     waveRepository = waveRepository,
     consolidationGroupRepository = consolidationGroupRepository,
     transportOrderRepository = transportOrderRepository,
+    stockPositionRepository = stockPositionRepository,
     verificationProfile = VerificationProfile.disabled
   )
 

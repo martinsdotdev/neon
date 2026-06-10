@@ -2,26 +2,30 @@ package neon.core
 
 import com.typesafe.scalalogging.LazyLogging
 import neon.common.TaskId
-import neon.consolidationgroup.{
-  AsyncConsolidationGroupRepository,
-  ConsolidationGroup,
-  ConsolidationGroupEvent
-}
-import neon.task.{AsyncTaskRepository, Task, TaskEvent}
-import neon.transportorder.{AsyncTransportOrderRepository, TransportOrder, TransportOrderEvent}
-import neon.wave.{AsyncWaveRepository, Wave, WaveEvent}
+import neon.consolidationgroup.{AsyncConsolidationGroupRepository, ConsolidationGroup}
+import neon.core.TaskCompletionCascade.CascadeState
+import neon.stockposition.AsyncStockPositionRepository
+import neon.task.{AsyncTaskRepository, Task}
+import neon.transportorder.AsyncTransportOrderRepository
+import neon.wave.{AsyncWaveRepository, Wave}
 
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
-/** Async counterpart of [[TaskCompletionService]]. Orchestrates the 5-step post-completion cascade:
-  * complete task, shortpick, routing, wave completion, picking completion.
+/** Async counterpart of [[TaskCompletionService]]: loads the cascade state, delegates every
+  * decision to [[TaskCompletionCascade]], and persists the outcome.
+  *
+  * Persistence fans out to individual entity actors and is not transactional: a failure
+  * mid-cascade leaves earlier saves in place. Stock writes persist sequentially because the
+  * second command of a partial pick (deallocate) requires the first (consume) to have been
+  * applied to the actor.
   */
 class AsyncTaskCompletionService(
     taskRepository: AsyncTaskRepository,
     waveRepository: AsyncWaveRepository,
     consolidationGroupRepository: AsyncConsolidationGroupRepository,
     transportOrderRepository: AsyncTransportOrderRepository,
+    stockPositionRepository: AsyncStockPositionRepository,
     verificationProfile: VerificationProfile
 )(using ExecutionContext)
     extends LazyLogging:
@@ -32,163 +36,82 @@ class AsyncTaskCompletionService(
       verified: Boolean,
       at: Instant
   ): Future[Either[TaskCompletionError, TaskCompletionResult]] =
-    if actualQuantity < 0 then
-      return Future.successful(
-        Left(TaskCompletionError.InvalidActualQuantity(taskId, actualQuantity))
-      )
-
     logger.debug("Starting task completion for {}", taskId.value)
-    taskRepository
-      .findById(taskId)
-      .flatMap:
-        case None =>
-          Future.successful(Left(TaskCompletionError.TaskNotFound(taskId)))
-        case Some(assigned: Task.Assigned) =>
-          if verificationProfile.requiresVerification(
-              assigned.packagingLevel
-            ) && !verified
-          then
-            Future.successful(
-              Left(TaskCompletionError.VerificationRequired(taskId))
+    taskRepository.findById(taskId).flatMap { task =>
+      TaskCompletionCascade.validate(
+        taskId = taskId,
+        task = task,
+        actualQuantity = actualQuantity,
+        verified = verified,
+        verificationProfile = verificationProfile
+      ) match
+        case Left(error)     => Future.successful(Left(error))
+        case Right(assigned) =>
+          for
+            state <- loadCascadeState(assigned)
+            outcome = TaskCompletionCascade.decide(
+              assigned = assigned,
+              actualQuantity = actualQuantity,
+              at = at,
+              state = state
             )
-          else completeAssigned(assigned, actualQuantity, at)
-        case Some(_) =>
-          Future.successful(Left(TaskCompletionError.TaskNotAssigned(taskId)))
+            _ <- persist(outcome)
+          yield
+            logCompletion(outcome)
+            Right(outcome.result)
+    }
 
-  private def completeAssigned(
-      assigned: Task.Assigned,
-      actualQuantity: Int,
-      at: Instant
-  ): Future[Either[TaskCompletionError, TaskCompletionResult]] =
-    val (completed, completedEvent) = assigned.complete(actualQuantity, at)
-    for
-      _ <- taskRepository.save(completed, completedEvent)
-      shortpick <- persistShortpick(completed, at)
-      routing <- persistRouting(completedEvent, at)
-      (waveCompletion, pickingCompletion) <- detectWaveAndPickingCompletion(
-        completed,
-        at
-      )
-    yield
-      logger.info(
-        "Task completed {} shortpick={} " +
-          "transportOrder={} waveCompleted={} " +
-          "pickingCompleted={}",
-        completed.id.value,
-        shortpick.isDefined: java.lang.Boolean,
-        routing.isDefined: java.lang.Boolean,
-        waveCompletion.isDefined: java.lang.Boolean,
-        pickingCompletion.isDefined: java.lang.Boolean
-      )
-      Right(
-        TaskCompletionResult(
-          completed = completed,
-          completedEvent = completedEvent,
-          shortpick = shortpick,
-          transportOrder = routing,
-          waveCompletion = waveCompletion,
-          pickingCompletion = pickingCompletion
-        )
-      )
-
-  private def persistShortpick(
-      completed: Task.Completed,
-      at: Instant
-  ): Future[Option[(Task.Planned, TaskEvent.TaskCreated)]] =
-    ShortpickPolicy(completed, at) match
-      case None                       => Future.successful(None)
-      case Some((replacement, event)) =>
-        taskRepository.save(replacement, event).map(_ => Some(replacement, event))
-
-  private def persistRouting(
-      completedEvent: TaskEvent.TaskCompleted,
-      at: Instant
-  ): Future[
-    Option[(TransportOrder.Pending, TransportOrderEvent.TransportOrderCreated)]
-  ] =
-    RoutingPolicy(completedEvent, at) match
-      case None                   => Future.successful(None)
-      case Some((pending, event)) =>
-        transportOrderRepository
-          .save(pending, event)
-          .map(_ => Some(pending, event))
-
-  private def detectWaveAndPickingCompletion(
-      completed: Task.Completed,
-      at: Instant
-  ): Future[
-    (
-        Option[(Wave.Completed, WaveEvent.WaveCompleted)],
-        Option[
-          (
-              ConsolidationGroup.Picked,
-              ConsolidationGroupEvent.ConsolidationGroupPicked
-          )
-        ]
-    )
-  ] =
-    completed.waveId match
-      case None         => Future.successful((None, None))
+  /** Loads everything the cascade needs. All loads happen before the decision. */
+  private def loadCascadeState(assigned: Task.Assigned): Future[CascadeState] =
+    val stockPositionLoad = assigned.stockPositionId match
+      case None                  => Future.successful(None)
+      case Some(stockPositionId) => stockPositionRepository.findById(stockPositionId)
+    val waveLoad = assigned.waveId match
+      case None =>
+        Future.successful((Option.empty[Wave], List.empty[Task], List.empty[ConsolidationGroup]))
       case Some(waveId) =>
         for
+          wave <- waveRepository.findById(waveId)
           waveTasks <- taskRepository.findByWaveId(waveId)
-          waveCompletion <- detectWaveCompletion(
-            waveId,
-            waveTasks,
-            at
-          )
-          pickingCompletion <- detectPickingCompletion(
-            waveId,
-            waveTasks,
-            completed,
-            at
-          )
-        yield (waveCompletion, pickingCompletion)
+          consolidationGroups <- consolidationGroupRepository.findByWaveId(waveId)
+        yield (wave, waveTasks, consolidationGroups)
+    for
+      stockPosition <- stockPositionLoad
+      (wave, waveTasks, consolidationGroups) <- waveLoad
+    yield CascadeState(
+      stockPosition = stockPosition,
+      wave = wave,
+      waveTasks = waveTasks,
+      consolidationGroups = consolidationGroups
+    )
 
-  private def detectWaveCompletion(
-      waveId: neon.common.WaveId,
-      waveTasks: List[Task],
-      at: Instant
-  ): Future[Option[(Wave.Completed, WaveEvent.WaveCompleted)]] =
-    waveRepository
-      .findById(waveId)
-      .flatMap:
-        case Some(released: Wave.Released) =>
-          WaveCompletionPolicy(waveTasks, released, at) match
-            case None                         => Future.successful(None)
-            case Some((completedWave, event)) =>
-              waveRepository
-                .save(completedWave, event)
-                .map(_ => Some(completedWave, event))
-        case _ => Future.successful(None)
+  /** Persists the outcome in cascade order: task, stock writes, shortpick replacement, transport
+    * order, wave completion, picking completion.
+    */
+  private def persist(outcome: TaskCompletionCascade.Outcome): Future[Unit] =
+    def saveOption[A, E](entry: Option[(A, E)])(save: (A, E) => Future[Unit]): Future[Unit] =
+      entry.fold(Future.unit) { (value, event) => save(value, event) }
+    for
+      _ <- taskRepository.save(outcome.result.completed, outcome.result.completedEvent)
+      _ <- outcome.stockWrites.foldLeft(Future.unit) { (previous, write) =>
+        val (position, event) = write
+        previous.flatMap(_ => stockPositionRepository.save(position, event))
+      }
+      _ <- saveOption(outcome.result.shortpick)(taskRepository.save)
+      _ <- saveOption(outcome.result.transportOrder)(transportOrderRepository.save)
+      _ <- saveOption(outcome.result.waveCompletion)(waveRepository.save)
+      _ <- saveOption(outcome.result.pickingCompletion)(consolidationGroupRepository.save)
+    yield ()
 
-  private def detectPickingCompletion(
-      waveId: neon.common.WaveId,
-      waveTasks: List[Task],
-      completed: Task.Completed,
-      at: Instant
-  ): Future[
-    Option[
-      (
-          ConsolidationGroup.Picked,
-          ConsolidationGroupEvent.ConsolidationGroupPicked
-      )
-    ]
-  ] =
-    consolidationGroupRepository.findByWaveId(waveId).flatMap { groups =>
-      groups.collectFirst {
-        case cg: ConsolidationGroup.Created if cg.orderIds.contains(completed.orderId) =>
-          cg
-      } match
-        case None     => Future.successful(None)
-        case Some(cg) =>
-          val groupOrderIds = cg.orderIds.toSet
-          val groupTasks =
-            waveTasks.filter(t => groupOrderIds.contains(t.orderId))
-          PickingCompletionPolicy(groupTasks, cg, at) match
-            case None                  => Future.successful(None)
-            case Some((picked, event)) =>
-              consolidationGroupRepository
-                .save(picked, event)
-                .map(_ => Some(picked, event))
-    }
+  private def logCompletion(outcome: TaskCompletionCascade.Outcome): Unit =
+    logger.info(
+      "Task completed {} shortpick={} " +
+        "transportOrder={} waveCompleted={} " +
+        "pickingCompleted={} stockWrites={}",
+      outcome.result.completed.id.value,
+      outcome.result.shortpick.isDefined: java.lang.Boolean,
+      outcome.result.transportOrder.isDefined: java.lang.Boolean,
+      outcome.result.waveCompletion.isDefined: java.lang.Boolean,
+      outcome.result.pickingCompletion.isDefined: java.lang.Boolean,
+      outcome.stockWrites.size: java.lang.Integer
+    )
