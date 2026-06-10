@@ -57,31 +57,6 @@ class WorkstationAssignmentServiceSuite extends AnyFunSpec with OptionValues wit
   ): Workstation.Idle =
     Workstation.Idle(id, WorkstationType.PutWall, slotCount, WorkstationMode.Picking)
 
-  class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
-    val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty
-    val events: mutable.ListBuffer[ConsolidationGroupEvent] = mutable.ListBuffer.empty
-    def findById(id: ConsolidationGroupId): Option[ConsolidationGroup] = store.get(id)
-    def findByWaveId(waveId: WaveId): List[ConsolidationGroup] =
-      store.values.filter(_.waveId == waveId).toList
-    def save(consolidationGroup: ConsolidationGroup, event: ConsolidationGroupEvent): Unit =
-      store(consolidationGroup.id) = consolidationGroup
-      events += event
-    def saveAll(entries: List[(ConsolidationGroup, ConsolidationGroupEvent)]): Unit =
-      entries.foreach { (consolidationGroup, event) => save(consolidationGroup, event) }
-
-  class InMemoryWorkstationRepository extends WorkstationRepository:
-    val store: mutable.Map[WorkstationId, Workstation] = mutable.Map.empty
-    val events: mutable.ListBuffer[WorkstationEvent] = mutable.ListBuffer.empty
-    def findById(id: WorkstationId): Option[Workstation] = store.get(id)
-    def findIdleByType(workstationType: WorkstationType): Option[Workstation.Idle] =
-      store.values.collectFirst {
-        case idle: Workstation.Idle if idle.workstationType == workstationType =>
-          idle
-      }
-    def save(workstation: Workstation, event: WorkstationEvent): Unit =
-      store(workstation.id) = workstation
-      events += event
-
   def buildService(
       consolidationGroupRepository: ConsolidationGroupRepository =
         InMemoryConsolidationGroupRepository(),

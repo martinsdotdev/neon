@@ -97,54 +97,6 @@ class TransportOrderConfirmationServiceSuite extends AnyFunSpec with OptionValue
   ): ConsolidationGroup.Picked =
     ConsolidationGroup.Picked(ConsolidationGroupId(), waveId, orderIds)
 
-  class InMemoryTransportOrderRepository extends TransportOrderRepository:
-    val store: mutable.Map[TransportOrderId, TransportOrder] = mutable.Map.empty
-    val events: mutable.ListBuffer[TransportOrderEvent] = mutable.ListBuffer.empty
-    def findById(id: TransportOrderId): Option[TransportOrder] = store.get(id)
-    def findByHandlingUnitId(handlingUnitId: HandlingUnitId): List[TransportOrder] =
-      store.values.filter(_.handlingUnitId == handlingUnitId).toList
-    def save(transportOrder: TransportOrder, event: TransportOrderEvent): Unit =
-      store(transportOrder.id) = transportOrder
-      events += event
-    def saveAll(entries: List[(TransportOrder, TransportOrderEvent)]): Unit =
-      entries.foreach { (transportOrder, event) => save(transportOrder, event) }
-
-  class InMemoryHandlingUnitRepository extends HandlingUnitRepository:
-    val store: mutable.Map[HandlingUnitId, HandlingUnit] = mutable.Map.empty
-    val events: mutable.ListBuffer[HandlingUnitEvent] = mutable.ListBuffer.empty
-    def findById(id: HandlingUnitId): Option[HandlingUnit] = store.get(id)
-    def findByIds(ids: List[HandlingUnitId]): List[HandlingUnit] =
-      ids.flatMap(store.get)
-    def save(handlingUnit: HandlingUnit, event: HandlingUnitEvent): Unit =
-      store(handlingUnit.id) = handlingUnit
-      events += event
-
-  class InMemoryTaskRepository extends TaskRepository:
-    val store: mutable.Map[TaskId, Task] = mutable.Map.empty
-    val events: mutable.ListBuffer[TaskEvent] = mutable.ListBuffer.empty
-    def findById(id: TaskId): Option[Task] = store.get(id)
-    def findByWaveId(waveId: WaveId): List[Task] =
-      store.values.filter(_.waveId.contains(waveId)).toList
-    def findByHandlingUnitId(handlingUnitId: HandlingUnitId): List[Task] =
-      store.values.filter(_.handlingUnitId.contains(handlingUnitId)).toList
-    def save(task: Task, event: TaskEvent): Unit =
-      store(task.id) = task
-      events += event
-    def saveAll(entries: List[(Task, TaskEvent)]): Unit =
-      entries.foreach { (task, event) => save(task, event) }
-
-  class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
-    val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty
-    val events: mutable.ListBuffer[ConsolidationGroupEvent] = mutable.ListBuffer.empty
-    def findById(id: ConsolidationGroupId): Option[ConsolidationGroup] = store.get(id)
-    def findByWaveId(waveId: WaveId): List[ConsolidationGroup] =
-      store.values.filter(_.waveId == waveId).toList
-    def save(consolidationGroup: ConsolidationGroup, event: ConsolidationGroupEvent): Unit =
-      store(consolidationGroup.id) = consolidationGroup
-      events += event
-    def saveAll(entries: List[(ConsolidationGroup, ConsolidationGroupEvent)]): Unit =
-      entries.foreach { (consolidationGroup, event) => save(consolidationGroup, event) }
-
   def buildService(
       transportOrderRepository: TransportOrderRepository = InMemoryTransportOrderRepository(),
       handlingUnitRepository: HandlingUnitRepository = InMemoryHandlingUnitRepository(),

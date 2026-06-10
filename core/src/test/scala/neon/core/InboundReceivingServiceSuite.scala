@@ -55,41 +55,6 @@ class InboundReceivingServiceSuite extends AnyFunSpec with EitherValues:
       )
     sp
 
-  class InMemoryGoodsReceiptRepository extends GoodsReceiptRepository:
-    val store: mutable.Map[GoodsReceiptId, GoodsReceipt] = mutable.Map.empty
-    val events: mutable.ListBuffer[GoodsReceiptEvent] = mutable.ListBuffer.empty
-    def findById(id: GoodsReceiptId): Option[GoodsReceipt] = store.get(id)
-    def save(receipt: GoodsReceipt, event: GoodsReceiptEvent): Unit =
-      store(receipt.id) = receipt
-      events += event
-
-  class InMemoryTaskRepository extends TaskRepository:
-    val store: mutable.Map[TaskId, Task] = mutable.Map.empty
-    val events: mutable.ListBuffer[TaskEvent] = mutable.ListBuffer.empty
-    def findById(id: TaskId): Option[Task] = store.get(id)
-    def findByWaveId(waveId: neon.common.WaveId): List[Task] = List.empty
-    def findByHandlingUnitId(
-        handlingUnitId: neon.common.HandlingUnitId
-    ): List[Task] = List.empty
-    def save(task: Task, event: TaskEvent): Unit =
-      store(task.id) = task
-      events += event
-    def saveAll(entries: List[(Task, TaskEvent)]): Unit =
-      entries.foreach { (task, event) => save(task, event) }
-
-  class InMemoryStockPositionRepository extends StockPositionRepository:
-    val store: mutable.Map[StockPositionId, StockPosition] = mutable.Map.empty
-    val events: mutable.ListBuffer[StockPositionEvent] = mutable.ListBuffer.empty
-    def findById(id: StockPositionId): Option[StockPosition] = store.get(id)
-    def findBySkuAndArea(
-        skuId: SkuId,
-        warehouseAreaId: WarehouseAreaId
-    ): List[StockPosition] =
-      store.values.filter(sp => sp.skuId == skuId && sp.warehouseAreaId == warehouseAreaId).toList
-    def save(sp: StockPosition, event: StockPositionEvent): Unit =
-      store(sp.id) = sp
-      events += event
-
   def buildService(
       taskRepository: TaskRepository = InMemoryTaskRepository(),
       stockPositionRepository: StockPositionRepository = InMemoryStockPositionRepository()

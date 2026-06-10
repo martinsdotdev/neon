@@ -1,153 +1,19 @@
 package neon.core
 
-import neon.common.{
-  ConsolidationGroupId,
-  HandlingUnitId,
-  LocationId,
-  LotAttributes,
-  OrderId,
-  PackagingLevel,
-  SkuId,
-  StockPositionId,
-  TaskId,
-  TransportOrderId,
-  UserId,
-  WarehouseAreaId,
-  WaveId
-}
-import neon.consolidationgroup.{
-  ConsolidationGroup,
-  ConsolidationGroupEvent,
-  ConsolidationGroupRepository
-}
-import neon.stockposition.{StockPosition, StockPositionEvent, StockPositionRepository}
-import neon.task.{Task, TaskEvent, TaskRepository, TaskType}
-import neon.transportorder.{TransportOrder, TransportOrderEvent, TransportOrderRepository}
-import neon.wave.{OrderGrouping, Wave, WaveEvent, WaveRepository}
+import neon.common.{OrderId, PackagingLevel, TaskId}
+import neon.consolidationgroup.{ConsolidationGroup, ConsolidationGroupRepository}
+import neon.stockposition.StockPositionRepository
+import neon.task.{Task, TaskRepository, TaskType}
+import neon.transportorder.TransportOrderRepository
+import neon.wave.{OrderGrouping, Wave, WaveRepository}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.{EitherValues, OptionValues}
 
-import java.time.Instant
-import scala.collection.mutable
-
-class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues with EitherValues:
-  val skuId = SkuId()
-  val userId = UserId()
-  val orderId = OrderId()
-  val waveId = WaveId()
-  val handlingUnitId = HandlingUnitId()
-  val sourceLocationId = LocationId()
-  val destinationLocationId = LocationId()
-  val warehouseAreaId = WarehouseAreaId()
-  val at = Instant.now()
-
-  def assignedTask(
-      id: TaskId = TaskId(),
-      requestedQuantity: Int = 10,
-      orderId: OrderId = orderId,
-      waveId: Option[WaveId] = Some(waveId),
-      handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId),
-      stockPositionId: Option[StockPositionId] = None
-  ): Task.Assigned =
-    Task.Assigned(
-      id = id,
-      taskType = TaskType.Pick,
-      skuId = skuId,
-      packagingLevel = PackagingLevel.Each,
-      requestedQuantity = requestedQuantity,
-      orderId = orderId,
-      waveId = waveId,
-      parentTaskId = None,
-      handlingUnitId = handlingUnitId,
-      stockPositionId = stockPositionId,
-      sourceLocationId = sourceLocationId,
-      destinationLocationId = destinationLocationId,
-      assignedTo = userId
-    )
-
-  def releasedWave(id: WaveId = waveId): Wave.Released =
-    Wave.Released(id, OrderGrouping.Single, List(orderId))
-
-  def createdConsolidationGroup(
-      waveId: WaveId = waveId,
-      orderIds: List[OrderId] = List(orderId)
-  ): ConsolidationGroup.Created =
-    ConsolidationGroup.Created(ConsolidationGroupId(), waveId, orderIds)
-
-  class InMemoryTaskRepository extends TaskRepository:
-    val store: mutable.Map[TaskId, Task] = mutable.Map.empty
-    val events: mutable.ListBuffer[TaskEvent] = mutable.ListBuffer.empty
-    def findById(id: TaskId): Option[Task] = store.get(id)
-    def findByWaveId(waveId: WaveId): List[Task] =
-      store.values.filter(_.waveId.contains(waveId)).toList
-    def findByHandlingUnitId(handlingUnitId: HandlingUnitId): List[Task] =
-      store.values.filter(_.handlingUnitId.contains(handlingUnitId)).toList
-    def save(task: Task, event: TaskEvent): Unit =
-      store(task.id) = task
-      events += event
-    def saveAll(entries: List[(Task, TaskEvent)]): Unit =
-      entries.foreach { (task, event) => save(task, event) }
-
-  class InMemoryWaveRepository extends WaveRepository:
-    val store: mutable.Map[WaveId, Wave] = mutable.Map.empty
-    val events: mutable.ListBuffer[WaveEvent] = mutable.ListBuffer.empty
-    def findById(id: WaveId): Option[Wave] = store.get(id)
-    def save(wave: Wave, event: WaveEvent): Unit =
-      store(wave.id) = wave
-      events += event
-
-  class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
-    val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty
-    val events: mutable.ListBuffer[ConsolidationGroupEvent] = mutable.ListBuffer.empty
-    def findById(id: ConsolidationGroupId): Option[ConsolidationGroup] = store.get(id)
-    def findByWaveId(waveId: WaveId): List[ConsolidationGroup] =
-      store.values.filter(_.waveId == waveId).toList
-    def save(consolidationGroup: ConsolidationGroup, event: ConsolidationGroupEvent): Unit =
-      store(consolidationGroup.id) = consolidationGroup
-      events += event
-    def saveAll(entries: List[(ConsolidationGroup, ConsolidationGroupEvent)]): Unit =
-      entries.foreach { (consolidationGroup, event) => save(consolidationGroup, event) }
-
-  class InMemoryTransportOrderRepository extends TransportOrderRepository:
-    val store: mutable.Map[TransportOrderId, TransportOrder] = mutable.Map.empty
-    val events: mutable.ListBuffer[TransportOrderEvent] = mutable.ListBuffer.empty
-    def findById(id: TransportOrderId): Option[TransportOrder] = store.get(id)
-    def findByHandlingUnitId(handlingUnitId: HandlingUnitId): List[TransportOrder] =
-      store.values.filter(_.handlingUnitId == handlingUnitId).toList
-    def save(transportOrder: TransportOrder, event: TransportOrderEvent): Unit =
-      store(transportOrder.id) = transportOrder
-      events += event
-    def saveAll(entries: List[(TransportOrder, TransportOrderEvent)]): Unit =
-      entries.foreach { (order, event) => save(order, event) }
-
-  class InMemoryStockPositionRepository extends StockPositionRepository:
-    val store: mutable.Map[StockPositionId, StockPosition] = mutable.Map.empty
-    val events: mutable.ListBuffer[StockPositionEvent] = mutable.ListBuffer.empty
-    def findById(id: StockPositionId): Option[StockPosition] = store.get(id)
-    def findBySkuAndArea(
-        skuId: SkuId,
-        warehouseAreaId: WarehouseAreaId
-    ): List[StockPosition] =
-      store.values
-        .filter(sp => sp.skuId == skuId && sp.warehouseAreaId == warehouseAreaId)
-        .toList
-    def save(stockPosition: StockPosition, event: StockPositionEvent): Unit =
-      store(stockPosition.id) = stockPosition
-      events += event
-
-  def allocatedStockPosition(
-      allocatedQuantity: Int = 10,
-      availableQuantity: Int = 90
-  ): StockPosition =
-    val (sp, _) = StockPosition.create(
-      skuId = skuId,
-      warehouseAreaId = warehouseAreaId,
-      lotAttributes = LotAttributes(),
-      onHandQuantity = allocatedQuantity + availableQuantity,
-      at = at
-    )
-    val (allocated, _) = sp.allocate(allocatedQuantity, at)
-    allocated
+class TaskCompletionServiceSuite
+    extends AnyFunSpec
+    with OptionValues
+    with EitherValues
+    with DomainFactories:
 
   def buildService(
       taskRepository: TaskRepository = InMemoryTaskRepository(),

@@ -52,12 +52,6 @@ class WavePlanningServiceSuite extends AnyFunSpec:
       carrierId = carrierId
     )
 
-  class InMemoryCarrierRepository(initial: Map[CarrierId, Carrier]) extends CarrierRepository:
-    def findById(id: CarrierId): Option[Carrier] = initial.get(id)
-
-  class InMemoryLocationRepository(initial: Map[LocationId, Location]) extends LocationRepository:
-    def findById(id: LocationId): Option[Location] = initial.get(id)
-
   class RecordingWaveDispatchAssignmentRepository extends WaveDispatchAssignmentRepository:
     var activeAssignmentsByDock: Map[LocationId, List[ActiveDockCarrierAssignment]] = Map.empty
     var reserveResult: Either[WavePlanningError.DockConflict, Unit] = Right(())
@@ -77,38 +71,6 @@ class WavePlanningServiceSuite extends AnyFunSpec:
 
   class FixedWaveDispatchRulesProvider(rules: WaveDispatchRules) extends WaveDispatchRulesProvider:
     def current(): WaveDispatchRules = rules
-
-  class InMemoryWaveRepository extends WaveRepository:
-    val store: mutable.Map[WaveId, Wave] = mutable.Map.empty
-    val events: mutable.ListBuffer[WaveEvent] = mutable.ListBuffer.empty
-    def findById(id: WaveId): Option[Wave] = store.get(id)
-    def save(wave: Wave, event: WaveEvent): Unit =
-      store(wave.id) = wave
-      events += event
-
-  class InMemoryTaskRepository extends TaskRepository:
-    val store: mutable.Map[TaskId, Task] = mutable.Map.empty
-    val events: mutable.ListBuffer[TaskEvent] = mutable.ListBuffer.empty
-    def findById(id: TaskId): Option[Task] = store.get(id)
-    def findByWaveId(waveId: WaveId): List[Task] =
-      store.values.filter(_.waveId.contains(waveId)).toList
-    def findByHandlingUnitId(handlingUnitId: HandlingUnitId): List[Task] =
-      store.values.filter(_.handlingUnitId.contains(handlingUnitId)).toList
-    def save(task: Task, event: TaskEvent): Unit =
-      store(task.id) = task
-      events += event
-    def saveAll(entries: List[(Task, TaskEvent)]): Unit =
-      entries.foreach((task, event) => save(task, event))
-
-  class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
-    val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty
-    def findById(id: ConsolidationGroupId): Option[ConsolidationGroup] = store.get(id)
-    def findByWaveId(waveId: WaveId): List[ConsolidationGroup] =
-      store.values.filter(_.waveId == waveId).toList
-    def save(consolidationGroup: ConsolidationGroup, event: ConsolidationGroupEvent): Unit =
-      store(consolidationGroup.id) = consolidationGroup
-    def saveAll(entries: List[(ConsolidationGroup, ConsolidationGroupEvent)]): Unit =
-      entries.foreach((consolidationGroup, event) => save(consolidationGroup, event))
 
   private def buildServices(
       carrierStore: Map[CarrierId, Carrier],

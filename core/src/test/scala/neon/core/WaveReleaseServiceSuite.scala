@@ -2,31 +2,21 @@ package neon.core
 
 import neon.common.{
   AllocationStrategy,
-  ConsolidationGroupId,
-  HandlingUnitId,
   LotAttributes,
   OrderId,
   PackagingLevel,
   SkuId,
-  StockPositionId,
-  TaskId,
-  WarehouseAreaId,
-  WaveId
+  WarehouseAreaId
 }
-import neon.consolidationgroup.{
-  ConsolidationGroup,
-  ConsolidationGroupEvent,
-  ConsolidationGroupRepository
-}
+import neon.consolidationgroup.ConsolidationGroupRepository
 import neon.order.{Order, OrderLine}
-import neon.stockposition.{StockPosition, StockPositionEvent, StockPositionRepository}
-import neon.task.{Task, TaskEvent, TaskRepository}
-import neon.wave.{OrderGrouping, Wave, WaveEvent, WavePlanner, WaveRepository}
+import neon.stockposition.{StockPosition, StockPositionRepository}
+import neon.task.TaskRepository
+import neon.wave.{OrderGrouping, Wave, WavePlanner, WaveRepository}
 import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
 
 import java.time.{Instant, LocalDate}
-import scala.collection.mutable
 
 class WaveReleaseServiceSuite extends AnyFunSpec with OptionValues:
   val skuId = SkuId()
@@ -50,55 +40,6 @@ class WaveReleaseServiceSuite extends AnyFunSpec with OptionValues:
         OrderLine(skuId = SkuId(), packagingLevel = PackagingLevel.Case, quantity = 3)
       )
     )
-
-  class InMemoryWaveRepository extends WaveRepository:
-    val store: mutable.Map[WaveId, Wave] = mutable.Map.empty
-    val events: mutable.ListBuffer[WaveEvent] = mutable.ListBuffer.empty
-    def findById(id: WaveId): Option[Wave] = store.get(id)
-    def save(wave: Wave, event: WaveEvent): Unit =
-      store(wave.id) = wave
-      events += event
-
-  class InMemoryTaskRepository extends TaskRepository:
-    val store: mutable.Map[TaskId, Task] = mutable.Map.empty
-    val events: mutable.ListBuffer[TaskEvent] = mutable.ListBuffer.empty
-    def findById(id: TaskId): Option[Task] = store.get(id)
-    def findByWaveId(waveId: WaveId): List[Task] =
-      store.values.filter(_.waveId.contains(waveId)).toList
-    def findByHandlingUnitId(handlingUnitId: HandlingUnitId): List[Task] =
-      store.values.filter(_.handlingUnitId.contains(handlingUnitId)).toList
-    def save(task: Task, event: TaskEvent): Unit =
-      store(task.id) = task
-      events += event
-    def saveAll(entries: List[(Task, TaskEvent)]): Unit =
-      entries.foreach { (task, event) => save(task, event) }
-
-  class InMemoryConsolidationGroupRepository extends ConsolidationGroupRepository:
-    val store: mutable.Map[ConsolidationGroupId, ConsolidationGroup] = mutable.Map.empty
-    val events: mutable.ListBuffer[ConsolidationGroupEvent] = mutable.ListBuffer.empty
-    def findById(id: ConsolidationGroupId): Option[ConsolidationGroup] = store.get(id)
-    def findByWaveId(waveId: WaveId): List[ConsolidationGroup] =
-      store.values.filter(_.waveId == waveId).toList
-    def save(consolidationGroup: ConsolidationGroup, event: ConsolidationGroupEvent): Unit =
-      store(consolidationGroup.id) = consolidationGroup
-      events += event
-    def saveAll(entries: List[(ConsolidationGroup, ConsolidationGroupEvent)]): Unit =
-      entries.foreach { (consolidationGroup, event) => save(consolidationGroup, event) }
-
-  class InMemoryStockPositionRepository extends StockPositionRepository:
-    val store: mutable.Map[StockPositionId, StockPosition] = mutable.Map.empty
-    val events: mutable.ListBuffer[StockPositionEvent] = mutable.ListBuffer.empty
-    def findById(id: StockPositionId): Option[StockPosition] = store.get(id)
-    def findBySkuAndArea(
-        skuId: SkuId,
-        warehouseAreaId: WarehouseAreaId
-    ): List[StockPosition] =
-      store.values
-        .filter(sp => sp.skuId == skuId && sp.warehouseAreaId == warehouseAreaId)
-        .toList
-    def save(stockPosition: StockPosition, event: StockPositionEvent): Unit =
-      store(stockPosition.id) = stockPosition
-      events += event
 
   def stockPosition(
       skuId: SkuId = skuId,
