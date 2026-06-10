@@ -25,40 +25,11 @@ import java.time.Instant
 import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
-class WaveRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
+class WaveRoutesSuite extends AnyFunSpec with ScalatestRouteTest with RouteSuiteBase:
 
   private val waveId = WaveId()
   private val userId = UserId()
   private val at = Instant.now()
-
-  private val hasher = PasswordHasher()
-  private val testUser = User(
-    id = userId,
-    login = "operator",
-    name = "Test Operator",
-    role = Role.Admin,
-    passwordHash = Some(hasher.hash("password")),
-    active = true
-  )
-
-  private val authService = AuthenticationService(
-    InMemoryAsyncUserRepository(testUser),
-    InMemorySessionRepository(),
-    InMemoryPermissionRepository(
-      Map(Role.Admin -> Permission.values.toSet)
-    ),
-    hasher
-  )
-
-  private val sessionToken: String = Await
-    .result(
-      authService
-        .login(login = "operator", password = "password", ipAddress = None, userAgent = None),
-      5.seconds
-    )
-    .toOption
-    .get
-    ._1
 
   private val stubOrderRepo = new AsyncOrderRepository:
     def findById(id: OrderId) = Future.successful(None)
