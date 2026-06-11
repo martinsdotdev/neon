@@ -1,6 +1,7 @@
 package neon.app.projection
 
 import neon.consolidationgroup.ConsolidationGroupEvent
+import neon.consolidationgroup.ConsolidationGroupProjectionSchema.ConsolidationGroupByWave
 import org.apache.pekko.Done
 import org.apache.pekko.persistence.query.typed.EventEnvelope
 import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
@@ -20,12 +21,7 @@ class ConsolidationGroupProjectionHandler(using ExecutionContext)
     envelope.event match
       case e: ConsolidationGroupEvent.ConsolidationGroupCreated =>
         val stmt = session
-          .createStatement(
-            """INSERT INTO consolidation_group_by_wave
-              |  (consolidation_group_id, wave_id, order_ids, state)
-              |VALUES ($1, $2, $3, $4)
-              |ON CONFLICT (consolidation_group_id) DO UPDATE SET state = $4""".stripMargin
-          )
+          .createStatement(ConsolidationGroupByWave.Upsert)
           .bind(0, e.consolidationGroupId.value)
           .bind(1, e.waveId.value)
           .bind(2, e.orderIds.map(_.value).toArray)
@@ -42,9 +38,7 @@ class ConsolidationGroupProjectionHandler(using ExecutionContext)
           case _: ConsolidationGroupEvent.ConsolidationGroupCancelled => "Cancelled"
           case _: ConsolidationGroupEvent.ConsolidationGroupCreated   => "Created"
         val stmt = session
-          .createStatement(
-            "UPDATE consolidation_group_by_wave SET state = $1 WHERE consolidation_group_id = $2"
-          )
+          .createStatement(ConsolidationGroupByWave.UpdateState)
           .bind(0, state)
           .bind(1, e.consolidationGroupId.value)
         session.updateOne(stmt).map(_ => Done)

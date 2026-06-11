@@ -2,6 +2,7 @@ package neon.consolidationgroup
 
 import io.r2dbc.spi.ConnectionFactory
 import neon.common.{ConsolidationGroupId, R2dbcProjectionQueries, WaveId}
+import neon.consolidationgroup.ConsolidationGroupProjectionSchema.ConsolidationGroupByWave
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
@@ -30,9 +31,9 @@ class PekkoConsolidationGroupRepository(
 
   def findByWaveId(waveId: WaveId): Future[List[ConsolidationGroup]] =
     queryProjectionIds(
-      "SELECT consolidation_group_id FROM consolidation_group_by_wave WHERE wave_id = $1",
-      waveId.value,
-      "consolidation_group_id"
+      sql = ConsolidationGroupByWave.SelectConsolidationGroupIdsByWaveId,
+      param = waveId.value,
+      idColumn = ConsolidationGroupByWave.ConsolidationGroupId
     ).flatMap(ids =>
       Future
         .sequence(ids.map(id => findById(ConsolidationGroupId(id))))

@@ -2,6 +2,7 @@ package neon.app.projection
 
 import neon.app.notification.NotificationEvent
 import neon.task.TaskEvent
+import neon.task.TaskProjectionSchema.{TaskByHandlingUnit, TaskByWave}
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.persistence.query.typed.EventEnvelope
@@ -25,11 +26,7 @@ class TaskProjectionHandler(using ExecutionContext, ActorSystem[?])
   ): Future[Done] =
     envelope.event match
       case e: TaskEvent.TaskCreated =>
-        val stmt = session.createStatement(
-          """INSERT INTO task_by_wave (task_id, wave_id, order_id, handling_unit_id, state)
-            |VALUES ($1, $2, $3, $4, $5)
-            |ON CONFLICT (task_id) DO UPDATE SET state = $5""".stripMargin
-        )
+        val stmt = session.createStatement(TaskByWave.Upsert)
         stmt.bind(0, e.taskId.value)
         bindOptionalUuid(stmt = stmt, index = 1, value = e.waveId.map(_.value))
         stmt.bind(2, e.orderId.value)
@@ -37,11 +34,7 @@ class TaskProjectionHandler(using ExecutionContext, ActorSystem[?])
         stmt.bind(4, "Planned")
 
         val insertHandlingUnit = e.handlingUnitId.map { handlingUnitId =>
-          val stmt2 = session.createStatement(
-            """INSERT INTO task_by_handling_unit (task_id, handling_unit_id, wave_id, order_id, state)
-              |VALUES ($1, $2, $3, $4, $5)
-              |ON CONFLICT (task_id) DO UPDATE SET state = $5""".stripMargin
-          )
+          val stmt2 = session.createStatement(TaskByHandlingUnit.Upsert)
           stmt2.bind(0, e.taskId.value)
           stmt2.bind(1, handlingUnitId.value)
           bindOptionalUuid(stmt = stmt2, index = 2, value = e.waveId.map(_.value))
@@ -89,13 +82,11 @@ class TaskProjectionHandler(using ExecutionContext, ActorSystem[?])
       state: String
   ): Future[Done] =
     val stmt1 = session
-      .createStatement("UPDATE task_by_wave SET state = $1 WHERE task_id = $2")
+      .createStatement(TaskByWave.UpdateState)
       .bind(0, state)
       .bind(1, taskId)
     val stmt2 = session
-      .createStatement(
-        "UPDATE task_by_handling_unit SET state = $1 WHERE task_id = $2"
-      )
+      .createStatement(TaskByHandlingUnit.UpdateState)
       .bind(0, state)
       .bind(1, taskId)
     session

@@ -1,6 +1,7 @@
 package neon.app.projection
 
 import neon.cyclecount.CycleCountEvent
+import neon.cyclecount.CycleCountProjectionSchema.CycleCountByState
 import org.apache.pekko.Done
 import org.apache.pekko.persistence.query.typed.EventEnvelope
 import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
@@ -19,12 +20,7 @@ class CycleCountProjectionHandler(using ExecutionContext)
     envelope.event match
       case e: CycleCountEvent.CycleCountCreated =>
         val stmt = session
-          .createStatement(
-            """INSERT INTO cycle_count_by_state
-              |  (cycle_count_id, warehouse_area_id, count_type, count_method, state)
-              |VALUES ($1, $2, $3, $4, $5)
-              |ON CONFLICT (cycle_count_id) DO UPDATE SET state = $5""".stripMargin
-          )
+          .createStatement(CycleCountByState.Upsert)
           .bind(0, e.cycleCountId.value)
           .bind(1, e.warehouseAreaId.value)
           .bind(2, e.countType.toString)
@@ -47,9 +43,7 @@ class CycleCountProjectionHandler(using ExecutionContext)
       state: String
   ): Future[Done] =
     val stmt = session
-      .createStatement(
-        "UPDATE cycle_count_by_state SET state = $1 WHERE cycle_count_id = $2"
-      )
+      .createStatement(CycleCountByState.UpdateState)
       .bind(0, state)
       .bind(1, cycleCountId)
     session.updateOne(stmt).map(_ => Done)

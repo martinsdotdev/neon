@@ -1,6 +1,7 @@
 package neon.app.projection
 
 import neon.handlingunitstock.HandlingUnitStockEvent
+import neon.handlingunitstock.HandlingUnitStockProjectionSchema.HandlingUnitStockByContainer
 import org.apache.pekko.Done
 import org.apache.pekko.persistence.query.typed.EventEnvelope
 import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
@@ -19,15 +20,7 @@ class HandlingUnitStockProjectionHandler(using ExecutionContext)
     envelope.event match
       case e: HandlingUnitStockEvent.Created =>
         val stmt = session
-          .createStatement(
-            """INSERT INTO handling_unit_stock_by_container
-              |  (handling_unit_stock_id, sku_id, stock_position_id, container_id,
-              |   slot_code, on_hand_quantity, available_quantity,
-              |   allocated_quantity, reserved_quantity, blocked_quantity)
-              |VALUES ($1, $2, $3, $4, $5, $6, $6, 0, 0, 0)
-              |ON CONFLICT (handling_unit_stock_id) DO UPDATE SET
-              |  on_hand_quantity = $6, available_quantity = $6""".stripMargin
-          )
+          .createStatement(HandlingUnitStockByContainer.Upsert)
           .bind(0, e.handlingUnitStockId.value)
           .bind(1, e.skuId.value)
           .bind(2, e.stockPositionId.value)
@@ -40,7 +33,7 @@ class HandlingUnitStockProjectionHandler(using ExecutionContext)
         updateQuantities(
           session,
           e.handlingUnitStockId.value,
-          "available_quantity = available_quantity - $1, allocated_quantity = allocated_quantity + $1",
+          HandlingUnitStockByContainer.AllocateSetClause,
           e.quantity
         )
 
@@ -48,7 +41,7 @@ class HandlingUnitStockProjectionHandler(using ExecutionContext)
         updateQuantities(
           session,
           e.handlingUnitStockId.value,
-          "available_quantity = available_quantity + $1, allocated_quantity = allocated_quantity - $1",
+          HandlingUnitStockByContainer.DeallocateSetClause,
           e.quantity
         )
 
@@ -56,7 +49,7 @@ class HandlingUnitStockProjectionHandler(using ExecutionContext)
         updateQuantities(
           session,
           e.handlingUnitStockId.value,
-          "on_hand_quantity = on_hand_quantity + $1, available_quantity = available_quantity + $1",
+          HandlingUnitStockByContainer.AddQuantitySetClause,
           e.quantity
         )
 
@@ -64,7 +57,7 @@ class HandlingUnitStockProjectionHandler(using ExecutionContext)
         updateQuantities(
           session,
           e.handlingUnitStockId.value,
-          "on_hand_quantity = on_hand_quantity - $1, allocated_quantity = allocated_quantity - $1",
+          HandlingUnitStockByContainer.ConsumeAllocatedSetClause,
           e.quantity
         )
 
@@ -72,7 +65,7 @@ class HandlingUnitStockProjectionHandler(using ExecutionContext)
         updateQuantities(
           session,
           e.handlingUnitStockId.value,
-          "available_quantity = available_quantity - $1, reserved_quantity = reserved_quantity + $1",
+          HandlingUnitStockByContainer.ReserveSetClause,
           e.quantity
         )
 
@@ -80,7 +73,7 @@ class HandlingUnitStockProjectionHandler(using ExecutionContext)
         updateQuantities(
           session,
           e.handlingUnitStockId.value,
-          "available_quantity = available_quantity + $1, reserved_quantity = reserved_quantity - $1",
+          HandlingUnitStockByContainer.ReleaseReservationSetClause,
           e.quantity
         )
 
@@ -88,7 +81,7 @@ class HandlingUnitStockProjectionHandler(using ExecutionContext)
         updateQuantities(
           session,
           e.handlingUnitStockId.value,
-          "available_quantity = available_quantity - $1, blocked_quantity = blocked_quantity + $1",
+          HandlingUnitStockByContainer.BlockSetClause,
           e.quantity
         )
 
@@ -96,18 +89,13 @@ class HandlingUnitStockProjectionHandler(using ExecutionContext)
         updateQuantities(
           session,
           e.handlingUnitStockId.value,
-          "available_quantity = available_quantity + $1, blocked_quantity = blocked_quantity - $1",
+          HandlingUnitStockByContainer.UnblockSetClause,
           e.quantity
         )
 
       case e: HandlingUnitStockEvent.Adjusted =>
         val stmt = session
-          .createStatement(
-            """UPDATE handling_unit_stock_by_container
-              |SET on_hand_quantity = on_hand_quantity + $1,
-              |    available_quantity = available_quantity + $1
-              |WHERE handling_unit_stock_id = $2""".stripMargin
-          )
+          .createStatement(HandlingUnitStockByContainer.AdjustQuantities)
           .bind(0, e.delta)
           .bind(1, e.handlingUnitStockId.value)
         session.updateOne(stmt).map(_ => Done)
@@ -122,9 +110,7 @@ class HandlingUnitStockProjectionHandler(using ExecutionContext)
       quantity: Int
   ): Future[Done] =
     val stmt = session
-      .createStatement(
-        s"UPDATE handling_unit_stock_by_container SET $setClause WHERE handling_unit_stock_id = $$2"
-      )
+      .createStatement(HandlingUnitStockByContainer.updateQuantitiesStatement(setClause))
       .bind(0, quantity)
       .bind(1, handlingUnitStockId)
     session.updateOne(stmt).map(_ => Done)

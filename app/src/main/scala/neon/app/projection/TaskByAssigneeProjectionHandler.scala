@@ -1,6 +1,7 @@
 package neon.app.projection
 
 import neon.task.TaskEvent
+import neon.task.TaskProjectionSchema.TaskByAssignee
 import org.apache.pekko.Done
 import org.apache.pekko.persistence.query.typed.EventEnvelope
 import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
@@ -26,12 +27,7 @@ class TaskByAssigneeProjectionHandler(using ExecutionContext)
   ): Future[Done] =
     envelope.event match
       case e: TaskEvent.TaskAssigned =>
-        val stmt = session.createStatement(
-          """INSERT INTO task_by_assignee (task_id, user_id, state, assigned_at)
-            |VALUES ($1, $2, $3, $4)
-            |ON CONFLICT (task_id) DO UPDATE
-            |  SET user_id = $2, state = $3, assigned_at = $4""".stripMargin
-        )
+        val stmt = session.createStatement(TaskByAssignee.Upsert)
         stmt.bind(0, e.taskId.value)
         stmt.bind(1, e.userId.value)
         stmt.bind(2, "Assigned")
@@ -53,9 +49,7 @@ class TaskByAssigneeProjectionHandler(using ExecutionContext)
       state: String
   ): Future[Done] =
     val stmt = session
-      .createStatement(
-        "UPDATE task_by_assignee SET state = $1 WHERE task_id = $2"
-      )
+      .createStatement(TaskByAssignee.UpdateState)
       .bind(0, state)
       .bind(1, taskId)
     session.updateOne(stmt).map(_ => Done)

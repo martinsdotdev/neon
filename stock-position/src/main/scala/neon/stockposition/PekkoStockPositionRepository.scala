@@ -2,6 +2,7 @@ package neon.stockposition
 
 import io.r2dbc.spi.ConnectionFactory
 import neon.common.{R2dbcProjectionQueries, SkuId, StockPositionId, WarehouseAreaId}
+import neon.stockposition.StockPositionProjectionSchema.StockPositionBySkuArea
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
@@ -33,9 +34,9 @@ class PekkoStockPositionRepository(
       warehouseAreaId: WarehouseAreaId
   ): Future[List[StockPosition]] =
     queryProjectionIds(
-      "SELECT stock_position_id FROM stock_position_by_sku_area WHERE sku_id = $1 AND warehouse_area_id = $2",
-      List(skuId.value, warehouseAreaId.value),
-      "stock_position_id"
+      sql = StockPositionBySkuArea.SelectStockPositionIdsBySkuAndArea,
+      params = List(skuId.value, warehouseAreaId.value),
+      idColumn = StockPositionBySkuArea.StockPositionId
     ).flatMap { ids =>
       Future.sequence(ids.map(id => findById(StockPositionId(id))))
     }.map(_.flatten)

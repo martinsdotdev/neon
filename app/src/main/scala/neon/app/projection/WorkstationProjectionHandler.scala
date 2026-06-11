@@ -1,5 +1,6 @@
 package neon.app.projection
 
+import neon.workstation.WorkstationProjectionSchema.WorkstationByTypeAndState
 import neon.workstation.{WorkstationActor, WorkstationEvent}
 import org.apache.pekko.Done
 import org.apache.pekko.persistence.query.typed.EventEnvelope
@@ -20,12 +21,7 @@ class WorkstationProjectionHandler(using ExecutionContext)
     envelope.event match
       case WorkstationActor.Initialized(workstation) =>
         val stmt = session
-          .createStatement(
-            """INSERT INTO workstation_by_type_and_state
-              |  (workstation_id, workstation_type, slot_count, state)
-              |VALUES ($1, $2, $3, $4)
-              |ON CONFLICT (workstation_id) DO UPDATE SET state = $4""".stripMargin
-          )
+          .createStatement(WorkstationByTypeAndState.Upsert)
           .bind(0, workstation.id.value)
           .bind(1, workstation.workstationType.toString)
           .bind(2, workstation.slotCount)
@@ -40,9 +36,7 @@ class WorkstationProjectionHandler(using ExecutionContext)
           case _: WorkstationEvent.WorkstationReleased => "Idle"
           case _: WorkstationEvent.WorkstationDisabled => "Disabled"
         val stmt = session
-          .createStatement(
-            "UPDATE workstation_by_type_and_state SET state = $1 WHERE workstation_id = $2"
-          )
+          .createStatement(WorkstationByTypeAndState.UpdateState)
           .bind(0, state)
           .bind(1, e.workstationId.value)
         session.updateOne(stmt).map(_ => Done)

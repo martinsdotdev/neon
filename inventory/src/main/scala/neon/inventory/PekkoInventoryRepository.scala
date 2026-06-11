@@ -2,6 +2,7 @@ package neon.inventory
 
 import io.r2dbc.spi.ConnectionFactory
 import neon.common.{InventoryId, LocationId, Lot, R2dbcProjectionQueries, SkuId}
+import neon.inventory.InventoryProjectionSchema.InventoryByLocationSkuLot
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.stream.scaladsl.{Sink, Source}
@@ -42,7 +43,7 @@ class PekkoInventoryRepository(
       .flatMap { connection =>
         val stmt = connection
           .createStatement(
-            "SELECT inventory_id FROM inventory_by_location_sku_lot WHERE location_id = $1 AND sku_id = $2 AND lot IS NOT DISTINCT FROM $3"
+            InventoryByLocationSkuLot.SelectInventoryIdByLocationSkuLot
           )
           .bind(0, locationId.value)
           .bind(1, skuId.value)
@@ -52,7 +53,7 @@ class PekkoInventoryRepository(
           .fromPublisher(stmt.execute())
           .flatMapConcat(result =>
             Source.fromPublisher(
-              result.map((row, _) => row.get("inventory_id", classOf[UUID]))
+              result.map((row, _) => row.get(InventoryByLocationSkuLot.InventoryId, classOf[UUID]))
             )
           )
           .runWith(Sink.headOption)

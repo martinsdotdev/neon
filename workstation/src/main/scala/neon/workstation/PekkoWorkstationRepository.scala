@@ -2,6 +2,7 @@ package neon.workstation
 
 import io.r2dbc.spi.ConnectionFactory
 import neon.common.{R2dbcProjectionQueries, WorkstationId}
+import neon.workstation.WorkstationProjectionSchema.WorkstationByTypeAndState
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
@@ -32,10 +33,9 @@ class PekkoWorkstationRepository(
       workstationType: WorkstationType
   ): Future[Option[Workstation.Idle]] =
     queryProjectionIds(
-      sql =
-        "SELECT workstation_id FROM workstation_by_type_and_state WHERE workstation_type = $1 AND state = 'Idle' LIMIT 1",
+      sql = WorkstationByTypeAndState.SelectIdleWorkstationIdByType,
       param = workstationType.toString,
-      idColumn = "workstation_id"
+      idColumn = WorkstationByTypeAndState.WorkstationId
     ).flatMap(ids =>
       ids.headOption match
         case None     => Future.successful(None)

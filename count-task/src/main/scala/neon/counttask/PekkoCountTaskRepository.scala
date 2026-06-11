@@ -2,6 +2,7 @@ package neon.counttask
 
 import io.r2dbc.spi.ConnectionFactory
 import neon.common.{CountTaskId, CycleCountId, R2dbcProjectionQueries}
+import neon.counttask.CountTaskProjectionSchema.CountTaskByCycleCount
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
@@ -32,9 +33,9 @@ class PekkoCountTaskRepository(
 
   def findByCycleCountId(cycleCountId: CycleCountId): Future[List[CountTask]] =
     queryProjectionIds(
-      "SELECT count_task_id FROM count_task_by_cycle_count WHERE cycle_count_id = $1",
-      cycleCountId.value,
-      "count_task_id"
+      sql = CountTaskByCycleCount.SelectCountTaskIdsByCycleCountId,
+      param = cycleCountId.value,
+      idColumn = CountTaskByCycleCount.CountTaskId
     ).flatMap(ids => Future.sequence(ids.map(id => findById(CountTaskId(id)))).map(_.flatten))
 
   def save(countTask: CountTask, event: CountTaskEvent): Future[Unit] =

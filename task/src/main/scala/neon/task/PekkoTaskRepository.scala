@@ -2,6 +2,7 @@ package neon.task
 
 import io.r2dbc.spi.ConnectionFactory
 import neon.common.{HandlingUnitId, R2dbcProjectionQueries, TaskId, UserId, WaveId}
+import neon.task.TaskProjectionSchema.{TaskByAssignee, TaskByHandlingUnit, TaskByWave}
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
@@ -26,17 +27,17 @@ class PekkoTaskRepository(
 
   def findByWaveId(waveId: WaveId): Future[List[Task]] =
     queryProjectionIds(
-      "SELECT task_id FROM task_by_wave WHERE wave_id = $1",
-      waveId.value,
-      "task_id"
+      sql = TaskByWave.SelectTaskIdsByWaveId,
+      param = waveId.value,
+      idColumn = TaskByWave.TaskId
     )
       .flatMap(ids => Future.sequence(ids.map(id => findById(TaskId(id)))).map(_.flatten))
 
   def findByHandlingUnitId(handlingUnitId: HandlingUnitId): Future[List[Task]] =
     queryProjectionIds(
-      "SELECT task_id FROM task_by_handling_unit WHERE handling_unit_id = $1",
-      handlingUnitId.value,
-      "task_id"
+      sql = TaskByHandlingUnit.SelectTaskIdsByHandlingUnitId,
+      param = handlingUnitId.value,
+      idColumn = TaskByHandlingUnit.TaskId
     ).flatMap(ids => Future.sequence(ids.map(id => findById(TaskId(id)))).map(_.flatten))
 
   def findAssignedTo(
@@ -46,15 +47,15 @@ class PekkoTaskRepository(
     val ids = state match
       case Some(s) =>
         queryProjectionIds(
-          "SELECT task_id FROM task_by_assignee WHERE user_id = $1 AND state = $2",
-          List(userId.value, s),
-          "task_id"
+          sql = TaskByAssignee.SelectTaskIdsByUserIdAndState,
+          params = List(userId.value, s),
+          idColumn = TaskByAssignee.TaskId
         )
       case None =>
         queryProjectionIds(
-          "SELECT task_id FROM task_by_assignee WHERE user_id = $1",
-          userId.value,
-          "task_id"
+          sql = TaskByAssignee.SelectTaskIdsByUserId,
+          param = userId.value,
+          idColumn = TaskByAssignee.TaskId
         )
     ids.flatMap(taskIds => Future.sequence(taskIds.map(id => findById(TaskId(id)))).map(_.flatten))
 

@@ -1,5 +1,6 @@
 package neon.app.projection
 
+import neon.handlingunit.HandlingUnitProjectionSchema.HandlingUnitLookup
 import neon.handlingunit.{HandlingUnitActor, HandlingUnitEvent}
 import org.apache.pekko.Done
 import org.apache.pekko.persistence.query.typed.EventEnvelope
@@ -20,13 +21,7 @@ class HandlingUnitProjectionHandler(using ExecutionContext)
     envelope.event match
       case HandlingUnitActor.Initialized(handlingUnit) =>
         val stmt = session
-          .createStatement(
-            """INSERT INTO handling_unit_lookup
-              |  (handling_unit_id, packaging_level, current_location, state)
-              |VALUES ($1, $2, $3, $4)
-              |ON CONFLICT (handling_unit_id) DO UPDATE
-              |  SET state = $4, current_location = $3""".stripMargin
-          )
+          .createStatement(HandlingUnitLookup.Upsert)
           .bind(0, handlingUnit.id.value)
           .bind(1, handlingUnit.packagingLevel.toString)
           .bindNull(2, classOf[java.util.UUID])
@@ -46,9 +41,7 @@ class HandlingUnitProjectionHandler(using ExecutionContext)
           case _: HandlingUnitEvent.HandlingUnitShipped =>
             ("Shipped", None)
         val stmt = session
-          .createStatement(
-            "UPDATE handling_unit_lookup SET state = $1, current_location = $2 WHERE handling_unit_id = $3"
-          )
+          .createStatement(HandlingUnitLookup.UpdateStateAndCurrentLocation)
           .bind(0, state)
         location match
           case Some(loc) => stmt.bind(1, loc)

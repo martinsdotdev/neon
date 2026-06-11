@@ -2,6 +2,7 @@ package neon.transportorder
 
 import io.r2dbc.spi.ConnectionFactory
 import neon.common.{HandlingUnitId, R2dbcProjectionQueries, TransportOrderId}
+import neon.transportorder.TransportOrderProjectionSchema.TransportOrderByHandlingUnit
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
@@ -32,9 +33,9 @@ class PekkoTransportOrderRepository(
       handlingUnitId: HandlingUnitId
   ): Future[List[TransportOrder]] =
     queryProjectionIds(
-      "SELECT transport_order_id FROM transport_order_by_handling_unit WHERE handling_unit_id = $1",
-      handlingUnitId.value,
-      "transport_order_id"
+      sql = TransportOrderByHandlingUnit.SelectTransportOrderIdsByHandlingUnitId,
+      param = handlingUnitId.value,
+      idColumn = TransportOrderByHandlingUnit.TransportOrderId
     ).flatMap(ids =>
       Future
         .sequence(ids.map(id => findById(TransportOrderId(id))))

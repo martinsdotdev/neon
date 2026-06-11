@@ -2,6 +2,7 @@ package neon.slot
 
 import io.r2dbc.spi.ConnectionFactory
 import neon.common.{R2dbcProjectionQueries, SlotId, WorkstationId}
+import neon.slot.SlotProjectionSchema.SlotByWorkstation
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
@@ -32,9 +33,9 @@ class PekkoSlotRepository(
       workstationId: WorkstationId
   ): Future[List[Slot]] =
     queryProjectionIds(
-      sql = "SELECT slot_id FROM slot_by_workstation WHERE workstation_id = $1",
+      sql = SlotByWorkstation.SelectSlotIdsByWorkstationId,
       param = workstationId.value,
-      idColumn = "slot_id"
+      idColumn = SlotByWorkstation.SlotId
     ).flatMap(ids => Future.sequence(ids.map(id => findById(SlotId(id)))).map(_.flatten))
 
   def save(slot: Slot, event: SlotEvent): Future[Unit] =

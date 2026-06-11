@@ -2,6 +2,7 @@ package neon.handlingunitstock
 
 import io.r2dbc.spi.ConnectionFactory
 import neon.common.{ContainerId, HandlingUnitStockId, R2dbcProjectionQueries}
+import neon.handlingunitstock.HandlingUnitStockProjectionSchema.HandlingUnitStockByContainer
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
@@ -32,10 +33,9 @@ class PekkoHandlingUnitStockRepository(
       containerId: ContainerId
   ): Future[List[HandlingUnitStock]] =
     queryProjectionIds(
-      sql =
-        "SELECT handling_unit_stock_id FROM handling_unit_stock_by_container WHERE container_id = $1",
+      sql = HandlingUnitStockByContainer.SelectHandlingUnitStockIdsByContainerId,
       param = containerId.value,
-      idColumn = "handling_unit_stock_id"
+      idColumn = HandlingUnitStockByContainer.HandlingUnitStockId
     ).flatMap { ids =>
       Future.sequence(ids.map(id => findById(HandlingUnitStockId(id))))
     }.map(_.flatten)
