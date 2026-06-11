@@ -1,27 +1,24 @@
 package neon.handlingunit
 
 import neon.common.HandlingUnitId
+import neon.common.entity.PekkoEntityRepository
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /** Actor-backed implementation of [[AsyncHandlingUnitRepository]]. */
 class PekkoHandlingUnitRepository(system: ActorSystem[?])(using Timeout)
-    extends AsyncHandlingUnitRepository:
-
-  private given ExecutionContext = system.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(
-    Entity(HandlingUnitActor.EntityKey)(ctx => HandlingUnitActor(ctx.entityId))
-  )
+    extends PekkoEntityRepository[HandlingUnitActor.Command, HandlingUnit](
+      actorSystem = system,
+      entityKey = HandlingUnitActor.EntityKey,
+      behaviorFactory = HandlingUnitActor.apply,
+      getState = HandlingUnitActor.GetState.apply
+    )
+    with AsyncHandlingUnitRepository:
 
   def findById(id: HandlingUnitId): Future[Option[HandlingUnit]] =
-    sharding
-      .entityRefFor(HandlingUnitActor.EntityKey, id.value.toString)
-      .ask(HandlingUnitActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def findByIds(ids: List[HandlingUnitId]): Future[List[HandlingUnit]] =
     Future
@@ -32,40 +29,37 @@ class PekkoHandlingUnitRepository(system: ActorSystem[?])(using Timeout)
       handlingUnit: HandlingUnit,
       event: HandlingUnitEvent
   ): Future[Unit] =
-    val entityRef = sharding.entityRefFor(
-      HandlingUnitActor.EntityKey,
-      handlingUnit.id.value.toString
-    )
+    val ref = entityRef(handlingUnit.id.value.toString)
     val ensureInitialized =
-      entityRef.askWithStatus(HandlingUnitActor.Create(handlingUnit, _))
+      ref.askWithStatus(HandlingUnitActor.Create(handlingUnit, _))
     ensureInitialized.flatMap { _ =>
       event match
         case e: HandlingUnitEvent.HandlingUnitMovedToBuffer =>
-          entityRef
+          ref
             .askWithStatus[HandlingUnitActor.MoveToBufferResponse](
               HandlingUnitActor.MoveToBuffer(e.locationId, e.occurredAt, _)
             )
             .map(_ => ())
         case e: HandlingUnitEvent.HandlingUnitEmptied =>
-          entityRef
+          ref
             .askWithStatus[HandlingUnitActor.EmptyResponse](
               HandlingUnitActor.Empty(e.occurredAt, _)
             )
             .map(_ => ())
         case e: HandlingUnitEvent.HandlingUnitPacked =>
-          entityRef
+          ref
             .askWithStatus[HandlingUnitActor.PackResponse](
               HandlingUnitActor.Pack(e.occurredAt, _)
             )
             .map(_ => ())
         case e: HandlingUnitEvent.HandlingUnitReadyToShip =>
-          entityRef
+          ref
             .askWithStatus[HandlingUnitActor.ReadyToShipResponse](
               HandlingUnitActor.ReadyToShip(e.occurredAt, _)
             )
             .map(_ => ())
         case e: HandlingUnitEvent.HandlingUnitShipped =>
-          entityRef
+          ref
             .askWithStatus[HandlingUnitActor.ShipResponse](
               HandlingUnitActor.Ship(e.occurredAt, _)
             )
