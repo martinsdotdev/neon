@@ -1,38 +1,32 @@
 package neon.goodsreceipt
 
 import neon.common.GoodsReceiptId
+import neon.common.entity.PekkoEntityRepository
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /** Actor-backed implementation of [[AsyncGoodsReceiptRepository]]. Single-entity operations route
   * to the GoodsReceiptActor via Cluster Sharding ask pattern.
   */
 class PekkoGoodsReceiptRepository(system: ActorSystem[?])(using Timeout)
-    extends AsyncGoodsReceiptRepository:
-
-  private given ExecutionContext = system.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(
-    Entity(GoodsReceiptActor.EntityKey)(ctx => GoodsReceiptActor(ctx.entityId))
-  )
+    extends PekkoEntityRepository[GoodsReceiptActor.Command, GoodsReceipt](
+      actorSystem = system,
+      entityKey = GoodsReceiptActor.EntityKey,
+      behaviorFactory = GoodsReceiptActor.apply,
+      getState = GoodsReceiptActor.GetState.apply
+    )
+    with AsyncGoodsReceiptRepository:
 
   def findById(id: GoodsReceiptId): Future[Option[GoodsReceipt]] =
-    sharding
-      .entityRefFor(GoodsReceiptActor.EntityKey, id.value.toString)
-      .ask(GoodsReceiptActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def save(receipt: GoodsReceipt, event: GoodsReceiptEvent): Future[Unit] =
-    val entityRef = sharding.entityRefFor(
-      GoodsReceiptActor.EntityKey,
-      receipt.id.value.toString
-    )
+    val ref = entityRef(receipt.id.value.toString)
     event match
       case e: GoodsReceiptEvent.GoodsReceiptCreated =>
-        entityRef
+        ref
           .askWithStatus(
             GoodsReceiptActor.Create(
               GoodsReceipt.Open(e.goodsReceiptId, e.inboundDeliveryId, List.empty),
@@ -42,19 +36,19 @@ class PekkoGoodsReceiptRepository(system: ActorSystem[?])(using Timeout)
           )
           .map(_ => ())
       case e: GoodsReceiptEvent.LineRecorded =>
-        entityRef
+        ref
           .askWithStatus[GoodsReceiptActor.RecordLineResponse](
             GoodsReceiptActor.RecordLine(e.line, e.occurredAt, _)
           )
           .map(_ => ())
       case e: GoodsReceiptEvent.GoodsReceiptConfirmed =>
-        entityRef
+        ref
           .askWithStatus[GoodsReceiptActor.ConfirmResponse](
             GoodsReceiptActor.Confirm(e.occurredAt, _)
           )
           .map(_ => ())
       case e: GoodsReceiptEvent.GoodsReceiptCancelled =>
-        entityRef
+        ref
           .askWithStatus[GoodsReceiptActor.CancelResponse](
             GoodsReceiptActor.Cancel(e.occurredAt, _)
           )
