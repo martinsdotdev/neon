@@ -1,33 +1,29 @@
 package neon.workstation
 
 import io.r2dbc.spi.ConnectionFactory
+import neon.common.entity.PekkoEntityRepository
 import neon.common.{R2dbcProjectionQueries, WorkstationId}
 import neon.workstation.WorkstationProjectionSchema.WorkstationByTypeAndState
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class PekkoWorkstationRepository(
     actorSystem: ActorSystem[?],
     val connectionFactory: ConnectionFactory
 )(using Timeout)
-    extends AsyncWorkstationRepository
+    extends PekkoEntityRepository[WorkstationActor.Command, Workstation](
+      actorSystem = actorSystem,
+      entityKey = WorkstationActor.EntityKey,
+      behaviorFactory = WorkstationActor.apply,
+      getState = WorkstationActor.GetState.apply
+    )
+    with AsyncWorkstationRepository
     with R2dbcProjectionQueries:
 
-  protected given system: ActorSystem[?] = actorSystem
-  protected given ec: ExecutionContext = actorSystem.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(
-    Entity(WorkstationActor.EntityKey)(ctx => WorkstationActor(ctx.entityId))
-  )
-
   def findById(id: WorkstationId): Future[Option[Workstation]] =
-    sharding
-      .entityRefFor(WorkstationActor.EntityKey, id.value.toString)
-      .ask(WorkstationActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def findIdleByType(
       workstationType: WorkstationType
@@ -46,11 +42,7 @@ class PekkoWorkstationRepository(
     )
 
   def create(workstation: Workstation.Disabled): Future[Unit] =
-    sharding
-      .entityRefFor(
-        WorkstationActor.EntityKey,
-        workstation.id.value.toString
-      )
+    entityRef(workstation.id.value.toString)
       .askWithStatus(WorkstationActor.Create(workstation, _))
       .map(_ => ())
 
@@ -58,40 +50,37 @@ class PekkoWorkstationRepository(
       workstation: Workstation,
       event: WorkstationEvent
   ): Future[Unit] =
-    val entityRef = sharding.entityRefFor(
-      WorkstationActor.EntityKey,
-      workstation.id.value.toString
-    )
+    val ref = entityRef(workstation.id.value.toString)
     val ensureInitialized =
-      entityRef.askWithStatus(WorkstationActor.Create(workstation, _))
+      ref.askWithStatus(WorkstationActor.Create(workstation, _))
     ensureInitialized.flatMap { _ =>
       event match
         case e: WorkstationEvent.WorkstationEnabled =>
-          entityRef
+          ref
             .askWithStatus[WorkstationActor.EnableResponse](
               WorkstationActor.Enable(e.occurredAt, _)
             )
             .map(_ => ())
         case e: WorkstationEvent.WorkstationAssigned =>
-          entityRef
+          ref
             .askWithStatus[WorkstationActor.AssignResponse](
               WorkstationActor.Assign(e.assignmentId, e.occurredAt, _)
             )
             .map(_ => ())
         case e: WorkstationEvent.ModeSwitched =>
-          entityRef
+          ref
             .askWithStatus[WorkstationActor.SwitchModeResponse](
               WorkstationActor.SwitchMode(e.newMode, e.occurredAt, _)
             )
             .map(_ => ())
         case e: WorkstationEvent.WorkstationReleased =>
-          entityRef
+          ref
             .askWithStatus[WorkstationActor.ReleaseResponse](
               WorkstationActor.Release(e.occurredAt, _)
             )
             .map(_ => ())
         case e: WorkstationEvent.WorkstationDisabled =>
-          entityRef
+          ref
             .askWithStatus[WorkstationActor.DisableResponse](
               WorkstationActor.Disable(e.occurredAt, _)
             )
