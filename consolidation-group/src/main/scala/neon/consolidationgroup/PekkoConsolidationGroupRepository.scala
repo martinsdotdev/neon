@@ -1,33 +1,29 @@
 package neon.consolidationgroup
 
 import io.r2dbc.spi.ConnectionFactory
+import neon.common.entity.PekkoEntityRepository
 import neon.common.{ConsolidationGroupId, R2dbcProjectionQueries, WaveId}
 import neon.consolidationgroup.ConsolidationGroupProjectionSchema.ConsolidationGroupByWave
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class PekkoConsolidationGroupRepository(
     actorSystem: ActorSystem[?],
     val connectionFactory: ConnectionFactory
 )(using Timeout)
-    extends AsyncConsolidationGroupRepository
+    extends PekkoEntityRepository[ConsolidationGroupActor.Command, ConsolidationGroup](
+      actorSystem = actorSystem,
+      entityKey = ConsolidationGroupActor.EntityKey,
+      behaviorFactory = ConsolidationGroupActor.apply,
+      getState = ConsolidationGroupActor.GetState.apply
+    )
+    with AsyncConsolidationGroupRepository
     with R2dbcProjectionQueries:
 
-  protected given system: ActorSystem[?] = actorSystem
-  protected given ec: ExecutionContext = actorSystem.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(
-    Entity(ConsolidationGroupActor.EntityKey)(ctx => ConsolidationGroupActor(ctx.entityId))
-  )
-
   def findById(id: ConsolidationGroupId): Future[Option[ConsolidationGroup]] =
-    sharding
-      .entityRefFor(ConsolidationGroupActor.EntityKey, id.value.toString)
-      .ask(ConsolidationGroupActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def findByWaveId(waveId: WaveId): Future[List[ConsolidationGroup]] =
     queryProjectionIds(
@@ -44,13 +40,10 @@ class PekkoConsolidationGroupRepository(
       consolidationGroup: ConsolidationGroup,
       event: ConsolidationGroupEvent
   ): Future[Unit] =
-    val entityRef = sharding.entityRefFor(
-      ConsolidationGroupActor.EntityKey,
-      consolidationGroup.id.value.toString
-    )
+    val ref = entityRef(consolidationGroup.id.value.toString)
     event match
       case e: ConsolidationGroupEvent.ConsolidationGroupCreated =>
-        entityRef
+        ref
           .askWithStatus(
             ConsolidationGroupActor.Create(
               consolidationGroup.asInstanceOf[ConsolidationGroup.Created],
@@ -60,31 +53,31 @@ class PekkoConsolidationGroupRepository(
           )
           .map(_ => ())
       case e: ConsolidationGroupEvent.ConsolidationGroupPicked =>
-        entityRef
+        ref
           .askWithStatus[ConsolidationGroupActor.PickResponse](
             ConsolidationGroupActor.Pick(e.occurredAt, _)
           )
           .map(_ => ())
       case e: ConsolidationGroupEvent.ConsolidationGroupReadyForWorkstation =>
-        entityRef
+        ref
           .askWithStatus[ConsolidationGroupActor.ReadyForWorkstationResponse](
             ConsolidationGroupActor.ReadyForWorkstation(e.occurredAt, _)
           )
           .map(_ => ())
       case e: ConsolidationGroupEvent.ConsolidationGroupAssigned =>
-        entityRef
+        ref
           .askWithStatus[ConsolidationGroupActor.AssignResponse](
             ConsolidationGroupActor.Assign(e.workstationId, e.occurredAt, _)
           )
           .map(_ => ())
       case e: ConsolidationGroupEvent.ConsolidationGroupCompleted =>
-        entityRef
+        ref
           .askWithStatus[ConsolidationGroupActor.CompleteResponse](
             ConsolidationGroupActor.Complete(e.occurredAt, _)
           )
           .map(_ => ())
       case e: ConsolidationGroupEvent.ConsolidationGroupCancelled =>
-        entityRef
+        ref
           .askWithStatus[ConsolidationGroupActor.CancelResponse](
             ConsolidationGroupActor.Cancel(e.occurredAt, _)
           )
@@ -93,6 +86,4 @@ class PekkoConsolidationGroupRepository(
   def saveAll(
       entries: List[(ConsolidationGroup, ConsolidationGroupEvent)]
   ): Future[Unit] =
-    Future
-      .sequence(entries.map((cg, event) => save(cg, event)))
-      .map(_ => ())
+    sequenceSaves(entries)(save)
