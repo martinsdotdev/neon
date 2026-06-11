@@ -1,19 +1,14 @@
 package neon.inventory
 
 import neon.common.Lot
+import neon.common.entity.EventSourcedEntity
 import neon.common.serialization.CborSerializable
 import org.apache.pekko.Done
-import org.apache.pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
+import org.apache.pekko.actor.typed.scaladsl.ActorContext
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.cluster.sharding.typed.scaladsl.EntityTypeKey
 import org.apache.pekko.pattern.StatusReply
-import org.apache.pekko.persistence.typed.PersistenceId
-import org.apache.pekko.persistence.typed.scaladsl.{
-  Effect,
-  EventSourcedBehavior,
-  ReplyEffect,
-  RetentionCriteria
-}
+import org.apache.pekko.persistence.typed.scaladsl.{Effect, ReplyEffect}
 
 import java.time.Instant
 
@@ -75,27 +70,13 @@ object InventoryActor:
   // --- Behavior ---
 
   def apply(entityId: String): Behavior[Command] =
-    Behaviors.withMdc[Command](
-      Map(
-        "entityType" -> "Inventory",
-        "entityId" -> entityId
-      )
-    ):
-      Behaviors.setup: context =>
-        EventSourcedBehavior
-          .withEnforcedReplies[
-            Command,
-            InventoryEvent,
-            State
-          ](
-            persistenceId = PersistenceId(EntityKey.name, entityId),
-            emptyState = EmptyState,
-            commandHandler = commandHandler(context),
-            eventHandler = eventHandler
-          )
-          .withRetention(
-            RetentionCriteria.snapshotEvery(100, 2)
-          )
+    EventSourcedEntity.behavior[Command, InventoryEvent, State](
+      entityKey = EntityKey,
+      entityId = entityId,
+      emptyState = EmptyState,
+      commandHandler = commandHandler,
+      eventHandler = eventHandler
+    )
 
   // --- Command handler ---
 
@@ -106,11 +87,6 @@ object InventoryActor:
     State
   ] =
     (state, command) =>
-      context.log.debug(
-        "Received {} in state {}",
-        command.getClass.getSimpleName,
-        state.getClass.getSimpleName
-      )
       (state, command) match
 
         case (EmptyState, Create(_, event, replyTo)) =>
@@ -147,10 +123,7 @@ object InventoryActor:
           Effect.reply(replyTo)(inventory)
 
         case (_, cmd) =>
-          val msg =
-            s"Invalid command " +
-              s"${cmd.getClass.getSimpleName} " +
-              s"in state ${state.getClass.getSimpleName}"
+          val msg = EventSourcedEntity.invalidCommandMessage(state, cmd)
           context.log.warn(msg)
           cmd match
             case c: Create     => Effect.reply(c.replyTo)(StatusReply.error(msg))

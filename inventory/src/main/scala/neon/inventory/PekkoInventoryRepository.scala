@@ -1,35 +1,31 @@
 package neon.inventory
 
 import io.r2dbc.spi.ConnectionFactory
+import neon.common.entity.PekkoEntityRepository
 import neon.common.{InventoryId, LocationId, Lot, R2dbcProjectionQueries, SkuId}
 import neon.inventory.InventoryProjectionSchema.InventoryByLocationSkuLot
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.stream.scaladsl.{Sink, Source}
 import org.apache.pekko.util.Timeout
 
 import java.util.UUID
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class PekkoInventoryRepository(
     actorSystem: ActorSystem[?],
     val connectionFactory: ConnectionFactory
 )(using Timeout)
-    extends AsyncInventoryRepository
+    extends PekkoEntityRepository[InventoryActor.Command, Inventory](
+      actorSystem = actorSystem,
+      entityKey = InventoryActor.EntityKey,
+      behaviorFactory = InventoryActor.apply,
+      getState = InventoryActor.GetState.apply
+    )
+    with AsyncInventoryRepository
     with R2dbcProjectionQueries:
 
-  protected given system: ActorSystem[?] = actorSystem
-  protected given ec: ExecutionContext = actorSystem.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(
-    Entity(InventoryActor.EntityKey)(ctx => InventoryActor(ctx.entityId))
-  )
-
   def findById(id: InventoryId): Future[Option[Inventory]] =
-    sharding
-      .entityRefFor(InventoryActor.EntityKey, id.value.toString)
-      .ask(InventoryActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def findByLocationSkuLot(
       locationId: LocationId,
@@ -67,37 +63,34 @@ class PekkoInventoryRepository(
       }
 
   def save(inventory: Inventory, event: InventoryEvent): Future[Unit] =
-    val entityRef = sharding.entityRefFor(
-      InventoryActor.EntityKey,
-      inventory.id.value.toString
-    )
+    val ref = entityRef(inventory.id.value.toString)
     event match
       case e: InventoryEvent.InventoryCreated =>
-        entityRef
+        ref
           .askWithStatus(
             InventoryActor.Create(inventory, e, _)
           )
           .map(_ => ())
       case e: InventoryEvent.InventoryReserved =>
-        entityRef
+        ref
           .askWithStatus[InventoryActor.MutationResponse](
             InventoryActor.Reserve(e.quantityReserved, e.occurredAt, _)
           )
           .map(_ => ())
       case e: InventoryEvent.InventoryReleased =>
-        entityRef
+        ref
           .askWithStatus[InventoryActor.MutationResponse](
             InventoryActor.Release(e.quantityReleased, e.occurredAt, _)
           )
           .map(_ => ())
       case e: InventoryEvent.InventoryConsumed =>
-        entityRef
+        ref
           .askWithStatus[InventoryActor.MutationResponse](
             InventoryActor.Consume(e.quantityConsumed, e.occurredAt, _)
           )
           .map(_ => ())
       case e: InventoryEvent.LotCorrected =>
-        entityRef
+        ref
           .askWithStatus[InventoryActor.MutationResponse](
             InventoryActor.CorrectLot(e.newLot, e.occurredAt, _)
           )
