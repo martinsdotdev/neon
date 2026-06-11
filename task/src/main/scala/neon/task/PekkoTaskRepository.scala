@@ -1,29 +1,29 @@
 package neon.task
 
 import io.r2dbc.spi.ConnectionFactory
+import neon.common.entity.PekkoEntityRepository
 import neon.common.{HandlingUnitId, R2dbcProjectionQueries, TaskId, UserId, WaveId}
 import neon.task.TaskProjectionSchema.{TaskByAssignee, TaskByHandlingUnit, TaskByWave}
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class PekkoTaskRepository(
     actorSystem: ActorSystem[?],
     val connectionFactory: ConnectionFactory
 )(using Timeout)
-    extends AsyncTaskRepository
+    extends PekkoEntityRepository[TaskActor.Command, Task](
+      actorSystem = actorSystem,
+      entityKey = TaskActor.EntityKey,
+      behaviorFactory = TaskActor.apply,
+      getState = TaskActor.GetState.apply
+    )
+    with AsyncTaskRepository
     with R2dbcProjectionQueries:
 
-  protected given system: ActorSystem[?] = actorSystem
-  protected given ec: ExecutionContext = actorSystem.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(Entity(TaskActor.EntityKey)(ctx => TaskActor(ctx.entityId)))
-
   def findById(id: TaskId): Future[Option[Task]] =
-    sharding.entityRefFor(TaskActor.EntityKey, id.value.toString).ask(TaskActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def findByWaveId(waveId: WaveId): Future[List[Task]] =
     queryProjectionIds(
@@ -60,32 +60,32 @@ class PekkoTaskRepository(
     ids.flatMap(taskIds => Future.sequence(taskIds.map(id => findById(TaskId(id)))).map(_.flatten))
 
   def save(task: Task, event: TaskEvent): Future[Unit] =
-    val entityRef = sharding.entityRefFor(TaskActor.EntityKey, task.id.value.toString)
+    val ref = entityRef(task.id.value.toString)
     event match
       case e: TaskEvent.TaskCreated =>
-        entityRef
+        ref
           .askWithStatus(TaskActor.Create(task.asInstanceOf[Task.Planned], e, _))
           .map(_ => ())
       case e: TaskEvent.TaskAllocated =>
-        entityRef
+        ref
           .askWithStatus[TaskActor.AllocateResponse](
             TaskActor.Allocate(e.sourceLocationId, e.destinationLocationId, e.occurredAt, _)
           )
           .map(_ => ())
       case e: TaskEvent.TaskAssigned =>
-        entityRef
+        ref
           .askWithStatus[TaskActor.AssignResponse](TaskActor.Assign(e.userId, e.occurredAt, _))
           .map(_ => ())
       case e: TaskEvent.TaskCompleted =>
-        entityRef
+        ref
           .askWithStatus[TaskActor.CompleteResponse](
             TaskActor.Complete(e.actualQuantity, e.occurredAt, _)
           )
           .map(_ => ())
       case e: TaskEvent.TaskCancelled =>
-        entityRef
+        ref
           .askWithStatus[TaskActor.CancelResponse](TaskActor.Cancel(e.occurredAt, _))
           .map(_ => ())
 
   def saveAll(entries: List[(Task, TaskEvent)]): Future[Unit] =
-    Future.sequence(entries.map((task, event) => save(task, event))).map(_ => ())
+    sequenceSaves(entries)(save)
