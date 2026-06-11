@@ -1,33 +1,29 @@
 package neon.stockposition
 
 import io.r2dbc.spi.ConnectionFactory
+import neon.common.entity.PekkoEntityRepository
 import neon.common.{R2dbcProjectionQueries, SkuId, StockPositionId, WarehouseAreaId}
 import neon.stockposition.StockPositionProjectionSchema.StockPositionBySkuArea
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class PekkoStockPositionRepository(
     actorSystem: ActorSystem[?],
     val connectionFactory: ConnectionFactory
 )(using Timeout)
-    extends AsyncStockPositionRepository
+    extends PekkoEntityRepository[StockPositionActor.Command, StockPosition](
+      actorSystem = actorSystem,
+      entityKey = StockPositionActor.EntityKey,
+      behaviorFactory = StockPositionActor.apply,
+      getState = StockPositionActor.GetState.apply
+    )
+    with AsyncStockPositionRepository
     with R2dbcProjectionQueries:
 
-  protected given system: ActorSystem[?] = actorSystem
-  protected given ec: ExecutionContext = actorSystem.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(
-    Entity(StockPositionActor.EntityKey)(ctx => StockPositionActor(ctx.entityId))
-  )
-
   def findById(id: StockPositionId): Future[Option[StockPosition]] =
-    sharding
-      .entityRefFor(StockPositionActor.EntityKey, id.value.toString)
-      .ask(StockPositionActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def findBySkuAndArea(
       skuId: SkuId,
@@ -42,71 +38,68 @@ class PekkoStockPositionRepository(
     }.map(_.flatten)
 
   def save(stockPosition: StockPosition, event: StockPositionEvent): Future[Unit] =
-    val entityRef = sharding.entityRefFor(
-      StockPositionActor.EntityKey,
-      stockPosition.id.value.toString
-    )
+    val ref = entityRef(stockPosition.id.value.toString)
     event match
       case e: StockPositionEvent.Created =>
-        entityRef
+        ref
           .askWithStatus(StockPositionActor.Create(stockPosition, e, _))
           .map(_ => ())
       case e: StockPositionEvent.Allocated =>
-        entityRef
+        ref
           .askWithStatus[StockPositionActor.MutationResponse](
             StockPositionActor.Allocate(e.quantity, e.occurredAt, _)
           )
           .map(_ => ())
       case e: StockPositionEvent.Deallocated =>
-        entityRef
+        ref
           .askWithStatus[StockPositionActor.MutationResponse](
             StockPositionActor.Deallocate(e.quantity, e.occurredAt, _)
           )
           .map(_ => ())
       case e: StockPositionEvent.QuantityAdded =>
-        entityRef
+        ref
           .askWithStatus[StockPositionActor.MutationResponse](
             StockPositionActor.AddQuantity(e.quantity, e.occurredAt, _)
           )
           .map(_ => ())
       case e: StockPositionEvent.AllocatedConsumed =>
-        entityRef
+        ref
           .askWithStatus[StockPositionActor.MutationResponse](
             StockPositionActor.ConsumeAllocated(e.quantity, e.occurredAt, _)
           )
           .map(_ => ())
       case e: StockPositionEvent.Reserved =>
-        entityRef
+        ref
           .askWithStatus[StockPositionActor.MutationResponse](
             StockPositionActor.Reserve(e.quantity, e.lockType, e.occurredAt, _)
           )
           .map(_ => ())
       case e: StockPositionEvent.ReservationReleased =>
-        entityRef
+        ref
           .askWithStatus[StockPositionActor.MutationResponse](
             StockPositionActor.ReleaseReservation(e.quantity, e.lockType, e.occurredAt, _)
           )
           .map(_ => ())
       case e: StockPositionEvent.Blocked =>
-        entityRef
+        ref
           .askWithStatus[StockPositionActor.MutationResponse](
             StockPositionActor.Block(e.quantity, e.occurredAt, _)
           )
           .map(_ => ())
       case e: StockPositionEvent.Unblocked =>
-        entityRef
+        ref
           .askWithStatus[StockPositionActor.MutationResponse](
             StockPositionActor.Unblock(e.quantity, e.occurredAt, _)
           )
           .map(_ => ())
       case e: StockPositionEvent.Adjusted =>
-        entityRef
+        ref
           .askWithStatus[StockPositionActor.MutationResponse](
             StockPositionActor.Adjust(e.delta, e.reasonCode, e.occurredAt, _)
           )
           .map(_ => ())
       case e: StockPositionEvent.StatusChanged =>
-        entityRef
+        ref
           .askWithStatus[StockPositionActor.MutationResponse](
             StockPositionActor.ChangeStatus(e.newStatus, e.occurredAt, _)
           )
