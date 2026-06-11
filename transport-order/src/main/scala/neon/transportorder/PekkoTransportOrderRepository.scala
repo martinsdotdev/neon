@@ -1,33 +1,29 @@
 package neon.transportorder
 
 import io.r2dbc.spi.ConnectionFactory
+import neon.common.entity.PekkoEntityRepository
 import neon.common.{HandlingUnitId, R2dbcProjectionQueries, TransportOrderId}
 import neon.transportorder.TransportOrderProjectionSchema.TransportOrderByHandlingUnit
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class PekkoTransportOrderRepository(
     actorSystem: ActorSystem[?],
     val connectionFactory: ConnectionFactory
 )(using Timeout)
-    extends AsyncTransportOrderRepository
+    extends PekkoEntityRepository[TransportOrderActor.Command, TransportOrder](
+      actorSystem = actorSystem,
+      entityKey = TransportOrderActor.EntityKey,
+      behaviorFactory = TransportOrderActor.apply,
+      getState = TransportOrderActor.GetState.apply
+    )
+    with AsyncTransportOrderRepository
     with R2dbcProjectionQueries:
 
-  protected given system: ActorSystem[?] = actorSystem
-  protected given ec: ExecutionContext = actorSystem.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(
-    Entity(TransportOrderActor.EntityKey)(ctx => TransportOrderActor(ctx.entityId))
-  )
-
   def findById(id: TransportOrderId): Future[Option[TransportOrder]] =
-    sharding
-      .entityRefFor(TransportOrderActor.EntityKey, id.value.toString)
-      .ask(TransportOrderActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def findByHandlingUnitId(
       handlingUnitId: HandlingUnitId
@@ -46,13 +42,10 @@ class PekkoTransportOrderRepository(
       transportOrder: TransportOrder,
       event: TransportOrderEvent
   ): Future[Unit] =
-    val entityRef = sharding.entityRefFor(
-      TransportOrderActor.EntityKey,
-      transportOrder.id.value.toString
-    )
+    val ref = entityRef(transportOrder.id.value.toString)
     event match
       case e: TransportOrderEvent.TransportOrderCreated =>
-        entityRef
+        ref
           .askWithStatus(
             TransportOrderActor.Create(
               transportOrder.asInstanceOf[TransportOrder.Pending],
@@ -62,13 +55,13 @@ class PekkoTransportOrderRepository(
           )
           .map(_ => ())
       case e: TransportOrderEvent.TransportOrderConfirmed =>
-        entityRef
+        ref
           .askWithStatus[TransportOrderActor.ConfirmResponse](
             TransportOrderActor.Confirm(e.occurredAt, _)
           )
           .map(_ => ())
       case e: TransportOrderEvent.TransportOrderCancelled =>
-        entityRef
+        ref
           .askWithStatus[TransportOrderActor.CancelResponse](
             TransportOrderActor.Cancel(e.occurredAt, _)
           )
@@ -77,4 +70,4 @@ class PekkoTransportOrderRepository(
   def saveAll(
       entries: List[(TransportOrder, TransportOrderEvent)]
   ): Future[Unit] =
-    Future.sequence(entries.map((to, event) => save(to, event))).map(_ => ())
+    sequenceSaves(entries)(save)
