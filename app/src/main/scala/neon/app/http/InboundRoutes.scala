@@ -12,9 +12,8 @@ import neon.common.{
   Permission,
   SkuId
 }
-import neon.core.{AsyncInboundDeliveryService, InboundDeliveryError}
+import neon.core.AsyncInboundDeliveryService
 import neon.goodsreceipt.ReceivedLine
-import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -23,6 +22,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
+import ProblemMapper.completeProblem
 
 object InboundRoutes:
 
@@ -100,7 +100,7 @@ object InboundRoutes:
                           )
                         )
                       case Left(error) =>
-                        mapError(error)
+                        completeProblem(error)
               ,
               path(Segment / "receive"): idStr =>
                 post:
@@ -124,7 +124,7 @@ object InboundRoutes:
                           )
                         )
                       case Left(error) =>
-                        mapError(error)
+                        completeProblem(error)
             )
           ,
           pathPrefix("receipts"):
@@ -149,7 +149,7 @@ object InboundRoutes:
                           )
                         )
                       case Left(error) =>
-                        mapError(error)
+                        completeProblem(error)
               ,
               path(Segment / "record-line"): idStr =>
                 post:
@@ -184,7 +184,7 @@ object InboundRoutes:
                           )
                         )
                       case Left(error) =>
-                        mapError(error)
+                        completeProblem(error)
               ,
               path(Segment / "confirm"): idStr =>
                 post:
@@ -205,17 +205,6 @@ object InboundRoutes:
                         )
                       )
                     case Left(error) =>
-                      mapError(error)
+                      completeProblem(error)
             )
         )
-
-  private def mapError(error: InboundDeliveryError): Route =
-    error match
-      case _: InboundDeliveryError.DeliveryNotFound =>
-        complete(StatusCodes.NotFound)
-      case _: InboundDeliveryError.DeliveryInWrongState =>
-        complete(StatusCodes.Conflict)
-      case _: InboundDeliveryError.ReceiptNotFound =>
-        complete(StatusCodes.NotFound)
-      case _: InboundDeliveryError.ReceiptInWrongState =>
-        complete(StatusCodes.Conflict)

@@ -155,6 +155,14 @@ class ConsolidationGroupRoutesSuite
         ).addHeader(Cookie("session", sessionToken))
         request ~> routes ~> check {
           assert(status == StatusCodes.NotFound)
+          assert(contentType.mediaType.toString == "application/problem+json")
+          val json =
+            parse(responseAs[String]).getOrElse(Json.Null)
+          assert(
+            json.hcursor
+              .get[String]("type")
+              .exists(_.startsWith("urn:neon:error:"))
+          )
         }
 
       it(

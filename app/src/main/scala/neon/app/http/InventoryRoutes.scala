@@ -3,8 +3,7 @@ package neon.app.http
 import io.circe.{Decoder, Encoder}
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{InventoryId, LocationId, Lot, PackagingLevel, Permission, SkuId}
-import neon.core.{AsyncInventoryService, InventoryError}
-import org.apache.pekko.http.scaladsl.model.StatusCodes
+import neon.core.AsyncInventoryService
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -13,6 +12,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
+import ProblemMapper.completeProblem
 
 object InventoryRoutes:
 
@@ -75,7 +75,7 @@ object InventoryRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
           ,
           path(Segment / "reserve"): idStr =>
             post:
@@ -98,7 +98,7 @@ object InventoryRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
           ,
           path(Segment / "release"): idStr =>
             post:
@@ -121,7 +121,7 @@ object InventoryRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
           ,
           path(Segment / "consume"): idStr =>
             post:
@@ -144,7 +144,7 @@ object InventoryRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
           ,
           path(Segment / "correct-lot"): idStr =>
             post:
@@ -168,18 +168,5 @@ object InventoryRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
         )
-
-  private def mapError(error: InventoryError): Route =
-    error match
-      case _: InventoryError.InventoryNotFound =>
-        complete(StatusCodes.NotFound)
-      case _: InventoryError.InsufficientAvailable =>
-        complete(StatusCodes.Conflict)
-      case _: InventoryError.InsufficientReserved =>
-        complete(StatusCodes.Conflict)
-      case _: InventoryError.InvalidQuantity =>
-        complete(StatusCodes.UnprocessableEntity)
-      case _: InventoryError.ReservedNotZero =>
-        complete(StatusCodes.Conflict)

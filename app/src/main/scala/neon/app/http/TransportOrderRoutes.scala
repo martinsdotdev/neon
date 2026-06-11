@@ -3,13 +3,7 @@ package neon.app.http
 import io.circe.Encoder
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{Permission, TransportOrderId}
-import neon.core.{
-  AsyncTransportOrderCancellationService,
-  AsyncTransportOrderConfirmationService,
-  TransportOrderCancellationError,
-  TransportOrderConfirmationError
-}
-import org.apache.pekko.http.scaladsl.model.StatusCodes
+import neon.core.{AsyncTransportOrderCancellationService, AsyncTransportOrderConfirmationService}
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -18,6 +12,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
+import ProblemMapper.completeProblem
 
 object TransportOrderRoutes:
 
@@ -63,17 +58,7 @@ object TransportOrderRoutes:
                     )
                   )
                 case Left(error) =>
-                  error match
-                    case _: TransportOrderConfirmationError.TransportOrderNotFound =>
-                      complete(StatusCodes.NotFound)
-                    case _: TransportOrderConfirmationError.TransportOrderNotPending =>
-                      complete(StatusCodes.Conflict)
-                    case _: TransportOrderConfirmationError.HandlingUnitNotFound =>
-                      complete(
-                        StatusCodes.UnprocessableEntity
-                      )
-                    case _: TransportOrderConfirmationError.HandlingUnitNotPickCreated =>
-                      complete(StatusCodes.Conflict)
+                  completeProblem(error)
         ,
         AuthDirectives.requirePermission(
           Permission.TransportOrderCancel,
@@ -96,9 +81,5 @@ object TransportOrderRoutes:
                     )
                   )
                 case Left(error) =>
-                  error match
-                    case _: TransportOrderCancellationError.TransportOrderNotFound =>
-                      complete(StatusCodes.NotFound)
-                    case _: TransportOrderCancellationError.TransportOrderAlreadyTerminal =>
-                      complete(StatusCodes.Conflict)
+                  completeProblem(error)
       )

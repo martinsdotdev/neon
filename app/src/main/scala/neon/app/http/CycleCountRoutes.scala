@@ -12,8 +12,7 @@ import neon.common.{
   UserId,
   WarehouseAreaId
 }
-import neon.core.{AsyncCycleCountService, CycleCountError}
-import org.apache.pekko.http.scaladsl.model.StatusCodes
+import neon.core.AsyncCycleCountService
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -22,6 +21,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
+import ProblemMapper.completeProblem
 
 object CycleCountRoutes:
 
@@ -88,7 +88,7 @@ object CycleCountRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
           ,
           path(Segment / "start"): idStr =>
             post:
@@ -109,7 +109,7 @@ object CycleCountRoutes:
                     )
                   )
                 case Left(error) =>
-                  mapError(error)
+                  completeProblem(error)
           ,
           path(Segment / "tasks" / Segment / "assign"): (_, taskIdStr) =>
             post:
@@ -135,7 +135,7 @@ object CycleCountRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
           ,
           path(Segment / "tasks" / Segment / "record"): (_, taskIdStr) =>
             post:
@@ -158,16 +158,5 @@ object CycleCountRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
         )
-
-  private def mapError(error: CycleCountError): Route =
-    error match
-      case _: CycleCountError.CycleCountNotFound =>
-        complete(StatusCodes.NotFound)
-      case _: CycleCountError.CycleCountInWrongState =>
-        complete(StatusCodes.Conflict)
-      case _: CycleCountError.CountTaskNotFound =>
-        complete(StatusCodes.NotFound)
-      case _: CycleCountError.CountTaskInWrongState =>
-        complete(StatusCodes.Conflict)

@@ -3,12 +3,7 @@ package neon.app.http
 import io.circe.{Decoder, Encoder}
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{ConsolidationGroupId, Permission, WorkstationId}
-import neon.core.{
-  AsyncWorkstationAssignmentService,
-  AsyncWorkstationLifecycleService,
-  WorkstationAssignmentError,
-  WorkstationLifecycleError
-}
+import neon.core.{AsyncWorkstationAssignmentService, AsyncWorkstationLifecycleService}
 import neon.workstation.WorkstationType
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
@@ -19,6 +14,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
+import ProblemMapper.completeProblem
 
 object WorkstationRoutes:
 
@@ -84,15 +80,7 @@ object WorkstationRoutes:
                       )
                     )
                   case Left(error) =>
-                    error match
-                      case _: WorkstationAssignmentError.ConsolidationGroupNotFound =>
-                        complete(StatusCodes.NotFound)
-                      case _: WorkstationAssignmentError.ConsolidationGroupNotReady =>
-                        complete(StatusCodes.Conflict)
-                      case _: WorkstationAssignmentError.NoWorkstationAvailable =>
-                        complete(
-                          StatusCodes.ServiceUnavailable
-                        )
+                    completeProblem(error)
         ,
         AuthDirectives.requirePermission(
           Permission.WorkstationManage,
@@ -143,7 +131,7 @@ object WorkstationRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapLifecycleError(error)
+                    completeProblem(error)
             ,
             path(Segment / "disable"): workstationIdStr =>
               post:
@@ -162,15 +150,6 @@ object WorkstationRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapLifecycleError(error)
+                    completeProblem(error)
           )
       )
-
-  private def mapLifecycleError(
-      error: WorkstationLifecycleError
-  ): Route =
-    error match
-      case _: WorkstationLifecycleError.WorkstationNotFound =>
-        complete(StatusCodes.NotFound)
-      case _: WorkstationLifecycleError.WorkstationInWrongState =>
-        complete(StatusCodes.Conflict)

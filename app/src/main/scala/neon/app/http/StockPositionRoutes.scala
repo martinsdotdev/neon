@@ -11,8 +11,7 @@ import neon.common.{
   StockPositionId,
   WarehouseAreaId
 }
-import neon.core.{AsyncStockPositionService, StockPositionError}
-import org.apache.pekko.http.scaladsl.model.StatusCodes
+import neon.core.AsyncStockPositionService
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -21,6 +20,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
+import ProblemMapper.completeProblem
 
 object StockPositionRoutes:
 
@@ -81,7 +81,7 @@ object StockPositionRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
           ,
           path(Segment / "block"): idStr =>
             post:
@@ -104,7 +104,7 @@ object StockPositionRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
           ,
           path(Segment / "unblock"): idStr =>
             post:
@@ -127,7 +127,7 @@ object StockPositionRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
           ,
           path(Segment / "adjust"): idStr =>
             post:
@@ -154,16 +154,5 @@ object StockPositionRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
         )
-
-  private def mapError(error: StockPositionError): Route =
-    error match
-      case _: StockPositionError.StockPositionNotFound =>
-        complete(StatusCodes.NotFound)
-      case _: StockPositionError.InvalidQuantity =>
-        complete(StatusCodes.UnprocessableEntity)
-      case _: StockPositionError.InsufficientAvailable =>
-        complete(StatusCodes.Conflict)
-      case _: StockPositionError.InsufficientBlocked =>
-        complete(StatusCodes.Conflict)

@@ -5,12 +5,8 @@ import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{ConsolidationGroupId, Permission}
 import neon.core.{
   AsyncConsolidationGroupCancellationService,
-  AsyncConsolidationGroupCompletionService,
-  ConsolidationGroupAdvanceError,
-  ConsolidationGroupCancellationError,
-  ConsolidationGroupCompletionError
+  AsyncConsolidationGroupCompletionService
 }
-import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -19,6 +15,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
+import ProblemMapper.completeProblem
 
 object ConsolidationGroupRoutes:
 
@@ -67,17 +64,7 @@ object ConsolidationGroupRoutes:
                     )
                   )
                 case Left(error) =>
-                  error match
-                    case _: ConsolidationGroupCompletionError.ConsolidationGroupNotFound =>
-                      complete(StatusCodes.NotFound)
-                    case _: ConsolidationGroupCompletionError.ConsolidationGroupNotAssigned =>
-                      complete(StatusCodes.Conflict)
-                    case _: ConsolidationGroupCompletionError.WorkstationNotFound =>
-                      complete(
-                        StatusCodes.UnprocessableEntity
-                      )
-                    case _: ConsolidationGroupCompletionError.WorkstationNotActive =>
-                      complete(StatusCodes.Conflict)
+                  completeProblem(error)
         ,
         AuthDirectives.requirePermission(
           Permission.ConsolidationGroupAdvance,
@@ -100,11 +87,7 @@ object ConsolidationGroupRoutes:
                     )
                   )
                 case Left(error) =>
-                  error match
-                    case _: ConsolidationGroupAdvanceError.ConsolidationGroupNotFound =>
-                      complete(StatusCodes.NotFound)
-                    case _: ConsolidationGroupAdvanceError.ConsolidationGroupNotPicked =>
-                      complete(StatusCodes.Conflict)
+                  completeProblem(error)
         ,
         AuthDirectives.requirePermission(
           Permission.ConsolidationGroupCancel,
@@ -127,9 +110,5 @@ object ConsolidationGroupRoutes:
                     )
                   )
                 case Left(error) =>
-                  error match
-                    case _: ConsolidationGroupCancellationError.ConsolidationGroupNotFound =>
-                      complete(StatusCodes.NotFound)
-                    case _: ConsolidationGroupCancellationError.ConsolidationGroupAlreadyTerminal =>
-                      complete(StatusCodes.Conflict)
+                  completeProblem(error)
       )

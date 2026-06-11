@@ -3,8 +3,7 @@ package neon.app.http
 import io.circe.{Decoder, Encoder}
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{HandlingUnitId, OrderId, Permission, SlotId}
-import neon.core.{AsyncSlotService, SlotError}
-import org.apache.pekko.http.scaladsl.model.StatusCodes
+import neon.core.AsyncSlotService
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -13,6 +12,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
+import ProblemMapper.completeProblem
 
 object SlotRoutes:
 
@@ -63,7 +63,7 @@ object SlotRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapError(error)
+                    completeProblem(error)
           ,
           path(Segment / "complete"): slotIdStr =>
             post:
@@ -83,7 +83,7 @@ object SlotRoutes:
                     )
                   )
                 case Left(error) =>
-                  mapError(error)
+                  completeProblem(error)
           ,
           path(Segment / "release"): slotIdStr =>
             post:
@@ -103,12 +103,5 @@ object SlotRoutes:
                     )
                   )
                 case Left(error) =>
-                  mapError(error)
+                  completeProblem(error)
         )
-
-  private def mapError(error: SlotError): Route =
-    error match
-      case _: SlotError.SlotNotFound =>
-        complete(StatusCodes.NotFound)
-      case _: SlotError.SlotInWrongState =>
-        complete(StatusCodes.Conflict)

@@ -3,13 +3,7 @@ package neon.app.http
 import io.circe.{Decoder, Encoder}
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{LocationId, Permission, TaskId, UserId}
-import neon.core.{
-  AsyncTaskCompletionService,
-  AsyncTaskLifecycleService,
-  TaskCompletionError,
-  TaskLifecycleError
-}
-import org.apache.pekko.http.scaladsl.model.StatusCodes
+import neon.core.{AsyncTaskCompletionService, AsyncTaskLifecycleService}
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -18,6 +12,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
+import ProblemMapper.completeProblem
 
 object TaskRoutes:
 
@@ -96,19 +91,7 @@ object TaskRoutes:
                       )
                     )
                   case Left(error) =>
-                    error match
-                      case _: TaskCompletionError.TaskNotFound =>
-                        complete(StatusCodes.NotFound)
-                      case _: TaskCompletionError.TaskNotAssigned =>
-                        complete(StatusCodes.Conflict)
-                      case _: TaskCompletionError.InvalidActualQuantity =>
-                        complete(
-                          StatusCodes.UnprocessableEntity
-                        )
-                      case _: TaskCompletionError.VerificationRequired =>
-                        complete(
-                          StatusCodes.PreconditionRequired
-                        )
+                    completeProblem(error)
         ,
         AuthDirectives.requirePermission(
           Permission.TaskAllocate,
@@ -146,7 +129,7 @@ object TaskRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapLifecycleError(error)
+                    completeProblem(error)
         ,
         AuthDirectives.requirePermission(
           Permission.TaskAssign,
@@ -176,7 +159,7 @@ object TaskRoutes:
                       )
                     )
                   case Left(error) =>
-                    mapLifecycleError(error)
+                    completeProblem(error)
         ,
         AuthDirectives.requirePermission(
           Permission.TaskCancel,
@@ -198,20 +181,5 @@ object TaskRoutes:
                     )
                   )
                 case Left(error) =>
-                  mapLifecycleError(error)
+                  completeProblem(error)
       )
-
-  private def mapLifecycleError(
-      error: TaskLifecycleError
-  ): Route =
-    error match
-      case _: TaskLifecycleError.TaskNotFound =>
-        complete(StatusCodes.NotFound)
-      case _: TaskLifecycleError.TaskInWrongState =>
-        complete(StatusCodes.Conflict)
-      case _: TaskLifecycleError.TaskAlreadyTerminal =>
-        complete(StatusCodes.Conflict)
-      case _: TaskLifecycleError.UserNotFound =>
-        complete(StatusCodes.UnprocessableEntity)
-      case _: TaskLifecycleError.UserNotActive =>
-        complete(StatusCodes.UnprocessableEntity)

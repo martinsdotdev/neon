@@ -3,8 +3,7 @@ package neon.app.http
 import io.circe.Encoder
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{HandlingUnitId, Permission}
-import neon.core.{AsyncHandlingUnitLifecycleService, HandlingUnitLifecycleError}
-import org.apache.pekko.http.scaladsl.model.StatusCodes
+import neon.core.AsyncHandlingUnitLifecycleService
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -13,6 +12,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
+import ProblemMapper.completeProblem
 
 object HandlingUnitRoutes:
 
@@ -45,7 +45,7 @@ object HandlingUnitRoutes:
                     )
                   )
                 case Left(error) =>
-                  mapError(error)
+                  completeProblem(error)
           ,
           path(Segment / "ready-to-ship"): idStr =>
             post:
@@ -62,7 +62,7 @@ object HandlingUnitRoutes:
                     )
                   )
                 case Left(error) =>
-                  mapError(error)
+                  completeProblem(error)
           ,
           path(Segment / "ship"): idStr =>
             post:
@@ -78,7 +78,7 @@ object HandlingUnitRoutes:
                     )
                   )
                 case Left(error) =>
-                  mapError(error)
+                  completeProblem(error)
           ,
           path(Segment / "empty"): idStr =>
             post:
@@ -94,14 +94,5 @@ object HandlingUnitRoutes:
                     )
                   )
                 case Left(error) =>
-                  mapError(error)
+                  completeProblem(error)
         )
-
-  private def mapError(
-      error: HandlingUnitLifecycleError
-  ): Route =
-    error match
-      case _: HandlingUnitLifecycleError.HandlingUnitNotFound =>
-        complete(StatusCodes.NotFound)
-      case _: HandlingUnitLifecycleError.HandlingUnitInWrongState =>
-        complete(StatusCodes.Conflict)

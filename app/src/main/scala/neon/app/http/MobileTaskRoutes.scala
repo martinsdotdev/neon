@@ -3,7 +3,7 @@ package neon.app.http
 import io.circe.Encoder
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{Permission, TaskId}
-import neon.core.{AsyncTaskLifecycleService, TaskLifecycleError}
+import neon.core.AsyncTaskLifecycleService
 import neon.task.{AsyncTaskRepository, Task}
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
@@ -14,6 +14,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
+import ProblemMapper.completeProblem
 
 /** Mobile-oriented read endpoints for the Task aggregate. Companion to [[TaskRoutes]] (writes);
   * kept separate because the read shape is stable across both the supervisor dashboard and the
@@ -190,20 +191,5 @@ object MobileTaskRoutes:
                       userId = result.assigned.assignedTo.value.toString
                     )
                   )
-                case Left(error) => mapLifecycleError(error)
+                case Left(error) => completeProblem(error)
       )
-
-  private def mapLifecycleError(
-      error: TaskLifecycleError
-  ): Route =
-    error match
-      case _: TaskLifecycleError.TaskNotFound =>
-        complete(StatusCodes.NotFound)
-      case _: TaskLifecycleError.TaskInWrongState =>
-        complete(StatusCodes.Conflict)
-      case _: TaskLifecycleError.TaskAlreadyTerminal =>
-        complete(StatusCodes.Conflict)
-      case _: TaskLifecycleError.UserNotFound =>
-        complete(StatusCodes.UnprocessableEntity)
-      case _: TaskLifecycleError.UserNotActive =>
-        complete(StatusCodes.UnprocessableEntity)

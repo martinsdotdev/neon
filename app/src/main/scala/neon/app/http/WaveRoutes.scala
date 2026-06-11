@@ -3,16 +3,9 @@ package neon.app.http
 import io.circe.{Decoder, Encoder}
 import neon.app.auth.{AuthDirectives, AuthenticationService}
 import neon.common.{CarrierId, LocationId, OrderId, Permission, WaveId}
-import neon.core.{
-  AsyncWaveCancellationService,
-  AsyncWavePlanningService,
-  DockCarrierAssignment,
-  WaveCancellationError,
-  WavePlanningError
-}
+import neon.core.{AsyncWaveCancellationService, AsyncWavePlanningService, DockCarrierAssignment}
 import neon.order.AsyncOrderRepository
 import neon.wave.OrderGrouping
-import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -21,6 +14,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import CirceSupport.given
+import ProblemMapper.completeProblem
 
 object WaveRoutes:
 
@@ -101,14 +95,8 @@ object WaveRoutes:
                         consolidationGroupsCreated = result.release.consolidationGroups.size
                       )
                     )
-                  case Left(
-                        _: WavePlanningError.DockConflict
-                      ) =>
-                    complete(StatusCodes.Conflict)
-                  case Left(_) =>
-                    complete(
-                      StatusCodes.UnprocessableEntity
-                    )
+                  case Left(error) =>
+                    completeProblem(error)
         ,
         path(Segment): waveIdStr =>
           AuthDirectives.requirePermission(
@@ -132,12 +120,6 @@ object WaveRoutes:
                       cancelledConsolidationGroups = result.cancelledConsolidationGroups.size
                     )
                   )
-                case Left(
-                      _: WaveCancellationError.WaveNotFound
-                    ) =>
-                  complete(StatusCodes.NotFound)
-                case Left(
-                      _: WaveCancellationError.WaveAlreadyTerminal
-                    ) =>
-                  complete(StatusCodes.Conflict)
+                case Left(error) =>
+                  completeProblem(error)
       )
