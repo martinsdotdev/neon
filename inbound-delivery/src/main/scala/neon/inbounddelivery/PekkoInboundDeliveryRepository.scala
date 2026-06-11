@@ -1,38 +1,32 @@
 package neon.inbounddelivery
 
 import neon.common.InboundDeliveryId
+import neon.common.entity.PekkoEntityRepository
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /** Actor-backed implementation of [[AsyncInboundDeliveryRepository]]. Single-entity operations
   * route to the InboundDeliveryActor via Cluster Sharding ask pattern.
   */
 class PekkoInboundDeliveryRepository(system: ActorSystem[?])(using Timeout)
-    extends AsyncInboundDeliveryRepository:
-
-  private given ExecutionContext = system.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(
-    Entity(InboundDeliveryActor.EntityKey)(ctx => InboundDeliveryActor(ctx.entityId))
-  )
+    extends PekkoEntityRepository[InboundDeliveryActor.Command, InboundDelivery](
+      actorSystem = system,
+      entityKey = InboundDeliveryActor.EntityKey,
+      behaviorFactory = InboundDeliveryActor.apply,
+      getState = InboundDeliveryActor.GetState.apply
+    )
+    with AsyncInboundDeliveryRepository:
 
   def findById(id: InboundDeliveryId): Future[Option[InboundDelivery]] =
-    sharding
-      .entityRefFor(InboundDeliveryActor.EntityKey, id.value.toString)
-      .ask(InboundDeliveryActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def save(delivery: InboundDelivery, event: InboundDeliveryEvent): Future[Unit] =
-    val entityRef = sharding.entityRefFor(
-      InboundDeliveryActor.EntityKey,
-      delivery.id.value.toString
-    )
+    val ref = entityRef(delivery.id.value.toString)
     event match
       case e: InboundDeliveryEvent.InboundDeliveryCreated =>
-        entityRef
+        ref
           .askWithStatus(
             InboundDeliveryActor.Create(
               InboundDelivery.New(
@@ -48,31 +42,31 @@ class PekkoInboundDeliveryRepository(system: ActorSystem[?])(using Timeout)
           )
           .map(_ => ())
       case e: InboundDeliveryEvent.ReceivingStarted =>
-        entityRef
+        ref
           .askWithStatus[InboundDeliveryActor.StartReceivingResponse](
             InboundDeliveryActor.StartReceiving(e.occurredAt, _)
           )
           .map(_ => ())
       case e: InboundDeliveryEvent.QuantityReceived =>
-        entityRef
+        ref
           .askWithStatus[InboundDeliveryActor.ReceiveResponse](
             InboundDeliveryActor.Receive(e.quantity, e.rejectedQuantity, e.occurredAt, _)
           )
           .map(_ => ())
       case e: InboundDeliveryEvent.InboundDeliveryReceived =>
-        entityRef
+        ref
           .askWithStatus[InboundDeliveryActor.CompleteResponse](
             InboundDeliveryActor.Complete(e.occurredAt, _)
           )
           .map(_ => ())
       case e: InboundDeliveryEvent.InboundDeliveryClosed =>
-        entityRef
+        ref
           .askWithStatus[InboundDeliveryActor.CloseResponse](
             InboundDeliveryActor.Close(e.occurredAt, _)
           )
           .map(_ => ())
       case e: InboundDeliveryEvent.InboundDeliveryCancelled =>
-        entityRef
+        ref
           .askWithStatus[InboundDeliveryActor.CancelResponse](
             InboundDeliveryActor.Cancel(e.occurredAt, _)
           )
