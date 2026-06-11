@@ -1,47 +1,44 @@
 package neon.wave
 
 import neon.common.WaveId
+import neon.common.entity.PekkoEntityRepository
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /** Actor-backed implementation of [[AsyncWaveRepository]]. Single-entity operations route to the
   * WaveActor via Cluster Sharding ask pattern.
   */
-class PekkoWaveRepository(system: ActorSystem[?])(using Timeout) extends AsyncWaveRepository:
-
-  private given ExecutionContext = system.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(Entity(WaveActor.EntityKey)(ctx => WaveActor(ctx.entityId)))
+class PekkoWaveRepository(system: ActorSystem[?])(using Timeout)
+    extends PekkoEntityRepository[WaveActor.Command, Wave](
+      actorSystem = system,
+      entityKey = WaveActor.EntityKey,
+      behaviorFactory = WaveActor.apply,
+      getState = WaveActor.GetState.apply
+    )
+    with AsyncWaveRepository:
 
   def findById(id: WaveId): Future[Option[Wave]] =
-    sharding
-      .entityRefFor(WaveActor.EntityKey, id.value.toString)
-      .ask(WaveActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def save(wave: Wave, event: WaveEvent): Future[Unit] =
-    val entityRef = sharding.entityRefFor(
-      WaveActor.EntityKey,
-      wave.id.value.toString
-    )
+    val ref = entityRef(wave.id.value.toString)
     event match
       case e: WaveEvent.WaveReleased =>
-        entityRef
+        ref
           .askWithStatus(
             WaveActor.Create(Wave.Planned(wave.id, wave.orderGrouping, e.orderIds), e, _)
           )
           .map(_ => ())
       case e: WaveEvent.WaveCompleted =>
-        entityRef
+        ref
           .askWithStatus[WaveActor.CompleteResponse](
             WaveActor.Complete(e.occurredAt, _)
           )
           .map(_ => ())
       case e: WaveEvent.WaveCancelled =>
-        entityRef
+        ref
           .askWithStatus[WaveActor.CancelResponse](
             WaveActor.Cancel(e.occurredAt, _)
           )
