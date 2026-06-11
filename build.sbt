@@ -43,8 +43,10 @@ lazy val common = project
     libraryDependencies ++= Seq(
       "com.github.f4b6a3"  % "uuid-creator" % uuidCreatorVersion,
       "io.r2dbc"           % "r2dbc-spi"    % r2dbcSpiVersion,
-      "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
-      "org.apache.pekko" %% "pekko-stream"      % pekkoVersion
+      "org.apache.pekko" %% "pekko-actor-typed"            % pekkoVersion,
+      "org.apache.pekko" %% "pekko-cluster-sharding-typed" % pekkoVersion,
+      "org.apache.pekko" %% "pekko-persistence-typed"      % pekkoVersion,
+      "org.apache.pekko" %% "pekko-stream"                 % pekkoVersion
     )
   )
 
