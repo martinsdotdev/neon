@@ -103,8 +103,9 @@ Three things to note:
    those dependencies too.
 2. **Uses `pekkoActorDependencies`**. This shared sequence in `build.sbt`
    includes `pekko-actor-typed`, `pekko-cluster-sharding-typed`,
-   `pekko-persistence-typed`, `pekko-serialization-jackson`, and the
-   corresponding test dependencies. All eight event-sourced modules use it.
+   `pekko-persistence-typed`, `pekko-serialization-jackson`, the `r2dbc-spi`
+   dependency, and the corresponding test dependencies. All 14 event-sourced
+   modules use it.
 3. **Named with the `neon-` prefix**. All sbt project names follow this
    pattern: `neon-wave`, `neon-task`, `neon-consolidation-group`.
 
@@ -160,21 +161,31 @@ Create `PickStation.scala` in `pick-station/src/main/scala/neon/pickstation/`:
 ```scala
 package neon.pickstation
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import neon.common.PickStationId
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[PickStation.Idle], name = "Idle"),
+    new JsonSubTypes.Type(value = classOf[PickStation.Active], name = "Active")
+  )
+)
 sealed trait PickStation:
   def id: PickStationId
 ```
 
 Three requirements that every aggregate sealed trait must satisfy:
 
-1. **`@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)`** on the sealed trait. This
-   enables Jackson CBOR to deserialize polymorphic snapshots. Without it,
-   snapshot recovery will fail with a serialization error.
-2. **Extends nothing domain-specific.** The `@JsonTypeInfo` annotation handles
-   serialization; the sealed trait itself stays clean.
+1. **`@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")` plus
+   `@JsonSubTypes`** on the sealed trait. Together they enable Jackson CBOR to
+   deserialize polymorphic snapshots via a logical `"type"` discriminator,
+   registering each state under a stable name. Without them, snapshot recovery
+   fails with a serialization error. The project deliberately avoids
+   `Id.CLASS`: it would bake fully qualified class names into the journal
+   (refactor-fragile) and is a deserialization-gadget risk.
+2. **Register every state in `@JsonSubTypes`.** Each concrete case class needs
+   an entry; add one whenever you add a new state.
 3. **Declares the ID accessor.** Every state case class inherits this.
 
 ### State case classes in the companion object
@@ -348,14 +359,14 @@ Create `PickStationActor.scala`:
 ```scala
 package neon.pickstation
 
+import neon.common.entity.EventSourcedEntity
 import neon.common.serialization.CborSerializable
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
-import org.apache.pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
+import org.apache.pekko.actor.typed.scaladsl.ActorContext
 import org.apache.pekko.cluster.sharding.typed.scaladsl.EntityTypeKey
 import org.apache.pekko.pattern.StatusReply
-import org.apache.pekko.persistence.typed.PersistenceId
-import org.apache.pekko.persistence.typed.scaladsl.*
+import org.apache.pekko.persistence.typed.scaladsl.{Effect, ReplyEffect}
 
 object PickStationActor:
 
@@ -405,32 +416,34 @@ Five structural elements are required for every actor:
 
 ### The behavior
 
+Do not hand-write the `Behaviors.withMdc` / `withEnforcedReplies` /
+`withRetention` scaffolding. Every actor assembles its behavior through the
+shared `EventSourcedEntity.behavior` helper in `common`, passing only its
+command and event handlers:
+
 ```scala
   def apply(entityId: String): Behavior[Command] =
-    Behaviors.withMdc[Command](
-      Map("entityType" -> "PickStation", "entityId" -> entityId)
-    ):
-      Behaviors.setup: context =>
-        EventSourcedBehavior
-          .withEnforcedReplies[Command, PickStationEvent, State](
-            persistenceId = PersistenceId(EntityKey.name, entityId),
-            emptyState = EmptyState,
-            commandHandler = commandHandler(context),
-            eventHandler = eventHandler
-          )
-          .withRetention(
-            RetentionCriteria.snapshotEvery(100, 2)
-          )
+    EventSourcedEntity.behavior[Command, PickStationEvent, State](
+      entityKey = EntityKey,
+      entityId = entityId,
+      emptyState = EmptyState,
+      commandHandler = commandHandler,
+      eventHandler = eventHandler
+    )
 ```
 
 Three things to note:
 
-- **`withEnforcedReplies`** ensures every command handler returns a
-  `ReplyEffect`. If you forget to reply, the compiler catches it.
-- **`PersistenceId(EntityKey.name, entityId)`** combines the entity type name
-  with the entity ID. This is the journal key.
-- **`RetentionCriteria.snapshotEvery(100, 2)`** takes a snapshot every 100
-  events and keeps the 2 most recent snapshots. This is the project standard.
+- **The helper supplies the uniform behavior.** MDC tagging (`entityType` /
+  `entityId`), `withEnforcedReplies`, a `PersistenceId` derived from the
+  entity key, snapshot retention every 100 events keeping 2, and a
+  received-command debug log all live in one place. You never repeat them.
+- **Pass the type arguments explicitly** as `behavior[Command,
+  PickStationEvent, State](...)`. Letting `emptyState` drive inference would
+  narrow `State` to the `EmptyState` singleton type.
+- **`commandHandler` is `ActorContext[Command] => (State, Command) =>
+  ReplyEffect[...]`.** The helper threads the context in for you; your handler
+  closes over it exactly as shown next.
 
 ### Command handler
 
@@ -464,8 +477,7 @@ The command handler delegates to domain methods and pattern-matches on
 
         case (_, cmd) =>
           // Invalid command for current state
-          val msg = s"Invalid command ${cmd.getClass.getSimpleName} " +
-            s"in state ${state.getClass.getSimpleName}"
+          val msg = EventSourcedEntity.invalidCommandMessage(state, cmd)
           context.log.warn(msg)
           // Reply with error on the appropriate replyTo
           cmd match
@@ -475,8 +487,10 @@ The command handler delegates to domain methods and pattern-matches on
 ```
 
 The catch-all case at the bottom handles invalid state/command combinations by
-logging a warning and replying with an error. This is the standard pattern
-across all actors.
+logging a warning and replying with an error. The rejection message comes from
+`EventSourcedEntity.invalidCommandMessage`, so the wording stays uniform across
+every actor. The `GetState` handling and this unknown-command fallback are the
+only parts that stay per-actor; everything else is in the shared helper.
 
 ### Event handler
 
@@ -511,43 +525,45 @@ This is the "event must contain enough data" rule from Chapter 5.
 The Pekko repository implements the async port trait using cluster sharding.
 It is the bridge between the service layer and the actor layer.
 
+Do not call `ClusterSharding(system).init(...)` or build entity refs by hand.
+Extend `PekkoEntityRepository[Command, Aggregate]` from `common`: it
+initializes sharding for the entity, exposes `entityRef`, `findByEntityId`,
+and a `sequenceSaves` fan-out, and (via its `system`/`ec` givens) satisfies
+`R2dbcProjectionQueries` when you mix it in for read-side queries. Your
+subclass keeps only its per-event `save` mapping and any cross-entity queries.
+
 Create `PekkoPickStationRepository.scala`:
 
 ```scala
 package neon.pickstation
 
+import neon.common.entity.PekkoEntityRepository
 import neon.common.PickStationId
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import org.apache.pekko.util.Timeout
-import scala.concurrent.{ExecutionContext, Future}
 
-class PekkoPickStationRepository(system: ActorSystem[?])(using Timeout)
-    extends AsyncPickStationRepository:
+import scala.concurrent.Future
 
-  private given ExecutionContext = system.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(Entity(PickStationActor.EntityKey)(ctx =>
-    PickStationActor(ctx.entityId)
-  ))
+class PekkoPickStationRepository(actorSystem: ActorSystem[?])(using Timeout)
+    extends PekkoEntityRepository[PickStationActor.Command, PickStation](
+      actorSystem = actorSystem,
+      entityKey = PickStationActor.EntityKey,
+      behaviorFactory = PickStationActor.apply,
+      getState = PickStationActor.GetState.apply
+    )
+    with AsyncPickStationRepository:
 
   def findById(id: PickStationId): Future[Option[PickStation]] =
-    sharding
-      .entityRefFor(PickStationActor.EntityKey, id.value.toString)
-      .ask(PickStationActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def save(
       pickStation: PickStation,
       event: PickStationEvent
   ): Future[Unit] =
-    val entityRef = sharding.entityRefFor(
-      PickStationActor.EntityKey,
-      pickStation.id.value.toString
-    )
+    val ref = entityRef(pickStation.id.value.toString)
     event match
       case e: PickStationEvent.Created =>
-        entityRef
+        ref
           .askWithStatus(
             PickStationActor.Create(
               PickStation.Idle(pickStation.id, e.locationId),
@@ -559,14 +575,17 @@ class PekkoPickStationRepository(system: ActorSystem[?])(using Timeout)
       // ... additional event cases ...
 ```
 
-The constructor calls `sharding.init`, which registers the entity type with
-cluster sharding. This happens once when the repository is instantiated in
-`ServiceRegistry`.
+The base class calls `sharding.init` in its constructor, which registers the
+entity type with cluster sharding. This happens once when the repository is
+instantiated in `ServiceRegistry`. `findByEntityId` is the inherited
+single-entity `GetState` ask; you wrap it in a typed `findById`.
 
-For single-entity operations, we use `entityRefFor(...).ask(...)`. For
-cross-entity queries (like "find all active pick stations"), we query the
-CQRS projection table and then fan out to individual actors if needed. The
-`R2dbcProjectionQueries` trait from `common` provides this capability.
+For cross-entity queries (like "find all active pick stations"), mix in
+`R2dbcProjectionQueries` and query the CQRS projection table, then fan out to
+individual actors if needed. `PekkoSlotRepository` is the model: it extends
+`PekkoEntityRepository[SlotActor.Command, Slot]`, mixes in
+`R2dbcProjectionQueries`, and reads its read-side SQL from
+`SlotProjectionSchema`.
 
 ## Step 7: Policies and Services (in core)
 
@@ -681,14 +700,49 @@ CREATE INDEX idx_pick_station_location
     ON pick_station_by_location (location_id);
 ```
 
+### The projection schema object
+
+Do not scatter table and column names across the handler and the repository.
+Each module owns a `<X>ProjectionSchema` object: the single home for its
+read-side table name, column names, and SQL, consulted by both the projection
+handler and the module's Pekko repository queries. Create
+`PickStationProjectionSchema.scala` in the `pick-station` module, modeled on
+`SlotProjectionSchema`:
+
+```scala
+package neon.pickstation
+
+object PickStationProjectionSchema:
+
+  object PickStationByLocation:
+    val Table = "pick_station_by_location"
+    val PickStationId = "pick_station_id"
+    val LocationId = "location_id"
+    val State = "state"
+
+    val Upsert =
+      s"""INSERT INTO $Table
+         |  ($PickStationId, $LocationId, $State)
+         |VALUES ($$1, $$2, $$3)
+         |ON CONFLICT ($PickStationId) DO UPDATE SET $State = $$3""".stripMargin
+
+    val UpdateState =
+      s"UPDATE $Table SET $State = $$1 WHERE $PickStationId = $$2"
+
+    val SelectIdsByLocationId =
+      s"SELECT $PickStationId FROM $Table WHERE $LocationId = $$1"
+```
+
 ### The handler
 
-Create `PickStationProjectionHandler.scala` in `app/src/main/scala/neon/app/projection/`:
+Create `PickStationProjectionHandler.scala` in `app/src/main/scala/neon/app/projection/`.
+It consults `PickStationProjectionSchema` rather than inlining SQL:
 
 ```scala
 package neon.app.projection
 
 import neon.pickstation.PickStationEvent
+import neon.pickstation.PickStationProjectionSchema.PickStationByLocation
 import org.apache.pekko.Done
 import org.apache.pekko.persistence.query.typed.EventEnvelope
 import org.apache.pekko.projection.r2dbc.scaladsl.R2dbcSession
@@ -704,16 +758,11 @@ class PickStationProjectionHandler(using ExecutionContext)
   ): Future[Done] =
     envelope.event match
       case e: PickStationEvent.Created =>
-        val stmt = session.createStatement(
-          """INSERT INTO pick_station_by_location
-            |  (pick_station_id, location_id, state)
-            |VALUES ($1, $2, $3)
-            |ON CONFLICT (pick_station_id) DO UPDATE SET state = $3
-            |""".stripMargin
-        )
-        stmt.bind(0, e.pickStationId.value)
-        stmt.bind(1, e.locationId.value)
-        stmt.bind(2, "Idle")
+        val stmt = session
+          .createStatement(PickStationByLocation.Upsert)
+          .bind(0, e.pickStationId.value)
+          .bind(1, e.locationId.value)
+          .bind(2, "Idle")
         session.updateOne(stmt).map(_ => Done)
 
       case e: PickStationEvent.Activated =>
@@ -728,10 +777,7 @@ class PickStationProjectionHandler(using ExecutionContext)
       state: String
   ): Future[Done] =
     val stmt = session
-      .createStatement(
-        """UPDATE pick_station_by_location
-          |SET state = $1 WHERE pick_station_id = $2""".stripMargin
-      )
+      .createStatement(PickStationByLocation.UpdateState)
       .bind(0, state)
       .bind(1, id)
     session.updateOne(stmt).map(_ => Done)
@@ -739,12 +785,14 @@ class PickStationProjectionHandler(using ExecutionContext)
 
 The handler extends `LoggingProjectionHandler`, which adds structured DEBUG
 logging on event entry and ERROR logging with stack traces on failure.
-Subclasses only need to implement `processEvent`.
+Subclasses only need to implement `processEvent`. Because the SQL lives in
+`PickStationProjectionSchema`, the repository's `findByLocationId` query and
+this handler's upserts can never disagree about a column name.
 
 ## Step 9: HTTP Routes (in app)
 
 The routes expose the aggregate to the frontend. They handle JSON
-serialization, authentication, and error-to-status-code mapping.
+serialization, authentication, and error-to-problem mapping.
 
 ### Request and response DTOs
 
@@ -769,7 +817,36 @@ DTOs use `derives Decoder` and `derives Encoder.AsObject` for automatic circe
 codec derivation. Keep DTOs in the routes companion object to co-locate them
 with their usage.
 
+### The ProblemMapper given
+
+Routes do not select status codes. Add a `ProblemMapper[PickStationError]`
+given instance to `ProblemMapper.scala`, alongside the others, mapping each
+error case to an RFC 9457 `ProblemDetails` (Chapter 18). This is the single
+seam that knows the error-to-status mapping:
+
+```scala
+  given ProblemMapper[PickStationError] with
+    def toProblem(error: PickStationError): ProblemDetails = error match
+      case PickStationError.NotFound(id) =>
+        ProblemDetails.of(
+          status = StatusCodes.NotFound,
+          slug = "pick-station-not-found",
+          title = "Pick station not found",
+          detail = Some(s"Pick station ${id.value} was not found")
+        )
+      case PickStationError.InvalidState(id, state) =>
+        ProblemDetails.of(
+          status = StatusCodes.Conflict,
+          slug = "pick-station-invalid-state",
+          title = "Pick station in wrong state",
+          detail = Some(s"Pick station ${id.value} is in state $state")
+        )
+```
+
 ### Route definition
+
+On the `Left` branch a route just calls `completeProblem(error)`; given
+resolution finds the mapper above.
 
 ```scala
   def apply(
@@ -793,24 +870,20 @@ with their usage.
                 onSuccess(service.activate(pickStationId, Instant.now())):
                   case Right(active) =>
                     complete(StatusCodes.OK -> response)
-                  case Left(PickStationError.NotFound(_)) =>
-                    complete(StatusCodes.NotFound)
-                  case Left(PickStationError.InvalidState(_, _)) =>
-                    complete(StatusCodes.Conflict)
+                  case Left(error) =>
+                    completeProblem(error)
       )
 ```
 
-The error mapping follows the conventions from Chapter 18:
-
-- `NotFound` maps to `404 Not Found`
-- `InvalidState` maps to `409 Conflict`
-- Validation errors map to `400 Bad Request`
+The error mapping follows the conventions from Chapter 18; every `Left`
+becomes an `application/problem+json` body whose status comes from the given
+instance (`NotFound` to `404`, `InvalidState` to `409`).
 
 @:callout(info)
 
-Remember to import `CirceSupport.given` in the routes file. This
-brings the implicit marshallers that bridge circe codecs with Pekko HTTP's
-marshalling infrastructure.
+Remember the two imports at the top of the routes file: `CirceSupport.given`
+(the marshallers that bridge circe codecs with Pekko HTTP) and
+`ProblemMapper.completeProblem` (so the `Left` branch can render problems).
 
 @:@
 
@@ -841,9 +914,9 @@ Add the projection in `app/src/main/scala/neon/app/projection/ProjectionBootstra
 
 ```scala
 initProjection[PickStationEvent](
-  "pick-station-projection",
-  "PickStation",
-  () => PickStationProjectionHandler()
+  name = "pick-station-projection",
+  entityType = "PickStation",
+  handlerFactory = () => PickStationProjectionHandler()
 )
 ```
 
@@ -851,7 +924,9 @@ The three arguments are: a unique projection name, the entity type string
 (must match the `EntityTypeKey` name from the actor), and a handler factory.
 The entity type string `"PickStation"` must exactly match
 `PickStationActor.EntityKey`'s name. If these do not match, the projection
-will never receive events.
+will never receive events. `initProjection` registers the projection with
+`R2dbcProjection.atLeastOnce`, so your handler must upsert idempotently (the
+`ON CONFLICT` clause in the schema's `Upsert` handles this).
 
 ### HttpServer
 

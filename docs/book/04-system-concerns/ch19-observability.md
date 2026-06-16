@@ -30,8 +30,8 @@ The core references are loggingsucks.com for the philosophy and Stripe's
 
 Neon WES implements wide events through three cooperating pieces:
 `RequestLoggingDirective` at the HTTP boundary, `MdcExecutionContext` for
-async propagation, and `Behaviors.withMdc` for actor context. Let's examine
-each one.
+async propagation, and `Behaviors.withMdc` for actor context (applied once in
+the shared `EventSourcedEntity.behavior` helper). Let's examine each one.
 
 ## MDC Propagation Across Three Layers
 
@@ -134,27 +134,51 @@ context-passing approaches instead.
 The third layer provides context inside Pekko actors. Actors process messages
 on their own dispatcher threads, which are separate from the HTTP thread pool.
 The MDC propagated by `MdcExecutionContext` does not reach them. Instead,
-each actor sets its own MDC fields via `Behaviors.withMdc`:
+each actor installs its own MDC fields via `Behaviors.withMdc`. Rather than
+repeat that call in every actor, the shared `EventSourcedEntity.behavior`
+helper applies it once, deriving `entityType` from the entity key's name and
+`entityId` from the entity id:
+
+```scala
+def behavior[Command: ClassTag, Event, State](
+    entityKey: EntityTypeKey[Command],
+    entityId: String,
+    emptyState: State,
+    commandHandler: ActorContext[Command] => (State, Command) => ReplyEffect[Event, State],
+    eventHandler: (State, Event) => State
+): Behavior[Command] =
+  Behaviors.withMdc[Command](
+    Map("entityType" -> entityKey.name, "entityId" -> entityId)
+  ):
+    Behaviors.setup: context =>
+      // ... withEnforcedReplies, retention, received-command debug log ...
+```
+
+<small>_File: common/src/main/scala/neon/common/entity/EventSourcedEntity.scala_</small>
+
+Each actor's `apply` just calls this helper, so the `Behaviors.withMdc`
+wrapping is written once and shared. For example, `WaveActor`:
 
 ```scala
 def apply(entityId: String): Behavior[Command] =
-  Behaviors.withMdc[Command](
-    Map("entityType" -> "Wave", "entityId" -> entityId)
-  ):
-    Behaviors.setup: context =>
-      EventSourcedBehavior
-        .withEnforcedReplies[Command, WaveEvent, State](...)
+  EventSourcedEntity.behavior[Command, WaveEvent, State](
+    entityKey = EntityKey,
+    entityId = entityId,
+    emptyState = EmptyState,
+    commandHandler = commandHandler,
+    eventHandler = eventHandler
+  )
 ```
 
 <small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
 
-Every actor in the system follows this pattern. The `Behaviors.withMdc` call
-takes a static map of MDC fields that are installed before every message is
-processed and cleared afterward. Every log line emitted by the actor
-includes `entityType` (e.g., "Wave", "Task") and `entityId` (the specific
-entity's persistence ID).
+The `Behaviors.withMdc` call takes a static map of MDC fields that are
+installed before every message is processed and cleared afterward. Every log
+line emitted by the actor includes `entityType` (e.g., "Wave", "Task") and
+`entityId` (the specific entity's persistence ID).
 
-All 14 event-sourced actors in Neon WES use this pattern.
+All 14 event-sourced actors in Neon WES get this context for free through the
+shared helper.
 
 @:callout(info)
 
@@ -162,8 +186,8 @@ There is a gap between Layer 2 and Layer 3. The HTTP trace ID
 does not automatically flow into actor log lines, because actor messages
 do not carry MDC context. If you need end-to-end trace correlation from
 HTTP to actor, you would add the trace ID as a field on the actor command
-and include it in the `Behaviors.withMdc` map. Neon WES currently relies
-on correlating by timestamp and entity ID.
+and fold it into the MDC map built by `EventSourcedEntity.behavior`. Neon WES
+currently relies on correlating by timestamp and entity ID.
 
 @:@
 
@@ -289,8 +313,8 @@ projection handlers in Neon WES extend this base class.
 - **Wide events:** one canonical log line per HTTP request with trace ID,
   method, path, status, duration, and user ID.
 - **MDC propagation in three layers:** `RequestLoggingDirective` at the
-  HTTP boundary, `MdcExecutionContext` across `Future` chains,
-  `Behaviors.withMdc` in actors.
+  HTTP boundary, `MdcExecutionContext` across `Future` chains, and
+  `Behaviors.withMdc` in actors (applied once via `EventSourcedEntity.behavior`).
 - **Dual configuration:** colored console for dev, structured JSON for
   production, quiet WARN-only for tests.
 - **LoggingProjectionHandler:** base class providing DEBUG entry logging

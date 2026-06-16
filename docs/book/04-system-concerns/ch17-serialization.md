@@ -46,6 +46,11 @@ That is the entire file. The trait has no methods, no fields, no type
 parameters. It exists solely as a type tag that tells Pekko "serialize this
 with Jackson CBOR."
 
+(The doc comment mentions a `serialization.conf`; in the current tree the
+binding actually lives in `application.conf`, shown next. The exact file name
+is immaterial, what matters is that the `serialization-bindings` entry is on
+the Pekko classpath.)
+
 ### The Configuration Binding
 
 The binding between the marker trait and the serializer lives in
@@ -141,34 +146,55 @@ The problem: Jackson sees a field typed as `Wave` (the sealed trait) and does
 not know which concrete case class to instantiate. Is it a `Wave.Planned`
 with planning fields, or a `Wave.Released` with release fields?
 
-The solution is the `@JsonTypeInfo` annotation on the sealed trait:
+The solution is a pair of Jackson annotations on the sealed trait: a
+`@JsonTypeInfo` that names the discriminator field, and a `@JsonSubTypes`
+that registers each concrete state under a stable logical name:
 
 ```scala
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[Wave.Planned], name = "Planned"),
+    new JsonSubTypes.Type(value = classOf[Wave.Released], name = "Released"),
+    new JsonSubTypes.Type(value = classOf[Wave.Completed], name = "Completed"),
+    new JsonSubTypes.Type(value = classOf[Wave.Cancelled], name = "Cancelled")
+  )
+)
 sealed trait Wave:
   def id: WaveId
-
-object Wave:
-  case class Planned(...) extends Wave
-  case class Released(...) extends Wave
-  case class Completed(...) extends Wave
-  case class Cancelled(...) extends Wave
 ```
 
 <small>_File: wave/src/main/scala/neon/wave/Wave.scala_</small>
 
-The `@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)` annotation tells Jackson to
-include the fully qualified class name in the serialized form. When
-serializing a `Wave.Released` instance, Jackson writes something like:
+The `@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")` annotation
+tells Jackson to write a discriminator into a field literally named `type`,
+and to use a logical name (not a class name) as its value. The
+`@JsonSubTypes` array supplies the mapping from each logical name back to the
+concrete case class. When serializing a `Wave.Released` instance, Jackson
+writes something like:
 
 ```json
-{"@class": "neon.wave.Wave$Released", "id": "...", ...}
+{"type": "Released", "id": "...", "orderGrouping": "...", "orderIds": [...]}
 ```
 
-During deserialization, Jackson reads the `@class` field first, loads the
-class, and then deserializes the remaining fields into that specific type.
+During deserialization, Jackson reads the `type` field first, looks it up in
+the `@JsonSubTypes` table, and then deserializes the remaining fields into
+that specific case class.
 
-Every event-sourced aggregate in Neon WES carries this annotation:
+@:callout(info)
+
+Neon WES deliberately uses `Id.NAME` rather than `Id.CLASS`. With `Id.CLASS`,
+Jackson would bake the fully qualified class name (`neon.wave.Wave$Released`)
+into every persisted snapshot. That couples the journal to the exact package
+and class layout: renaming a class or moving it between packages would make
+old snapshots unreadable. It is also a deserialization-gadget risk, because a
+class name in the payload drives which class the deserializer loads. Logical
+names decouple the persisted form from the code structure and keep the set of
+instantiable types explicit in the `@JsonSubTypes` registry.
+
+@:@
+
+Every event-sourced aggregate in Neon WES carries this pair of annotations:
 
 - `Wave`, `Task`, `ConsolidationGroup`, `TransportOrder`
 - `HandlingUnit`, `Workstation`, `Slot`, `Inventory`
@@ -177,13 +203,14 @@ Every event-sourced aggregate in Neon WES carries this annotation:
 
 @:callout(info)
 
-Forgetting `@JsonTypeInfo` on a polymorphic snapshot type is a
-common source of production bugs. The actor will persist events and
-snapshots without error, but when it tries to recover from a snapshot,
-deserialization will fail because Jackson cannot determine which subtype
-to create. The failure appears only on recovery, which might be hours or
-days after the snapshot was written. Always add this annotation when
-creating a new aggregate sealed trait.
+Forgetting the `@JsonTypeInfo` / `@JsonSubTypes` pair on a polymorphic
+snapshot type is a common source of production bugs. The actor will persist
+events and snapshots without error, but when it tries to recover from a
+snapshot, deserialization will fail because Jackson cannot determine which
+subtype to create. The failure appears only on recovery, which might be hours
+or days after the snapshot was written. Always add both annotations when
+creating a new aggregate sealed trait, and register every state in the
+`@JsonSubTypes` array.
 
 @:@
 
@@ -386,7 +413,7 @@ transform them on read.
 | ---------------- | ---------------------------------- | ---------------------------- |
 | Format           | Binary (CBOR)                      | Text (JSON)                  |
 | Configuration    | `application.conf` binding         | `derives` on case classes    |
-| Polymorphism     | `@JsonTypeInfo` annotation         | Not needed (flat DTOs)       |
+| Polymorphism     | `@JsonTypeInfo(Id.NAME)` + `@JsonSubTypes` | Not needed (flat DTOs)       |
 | Null handling    | Preserved                          | `dropNullValues = true`      |
 | Schema evolution | Jackson defaults + event adapters  | Decoder defaults             |
 | Scope            | Commands, events, snapshots, state | HTTP request/response bodies |
@@ -401,9 +428,11 @@ transform them on read.
   startup, not silently at runtime.
 - **CBOR** provides compact binary encoding, reducing journal storage and
   improving recovery speed.
-- **`@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)`** on aggregate sealed traits
-  enables polymorphic snapshot deserialization. Without it, actors cannot
-  recover from snapshots.
+- **`@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)` plus `@JsonSubTypes`** on
+  aggregate sealed traits enables polymorphic snapshot deserialization via a
+  logical `"type"` discriminator. Without them, actors cannot recover from
+  snapshots. The project avoids `Id.CLASS` so persisted snapshots never bake
+  in fully qualified class names.
 - **Circe** handles HTTP JSON with compile-time `derives` codecs and
   `dropNullValues` for clean responses.
 - **Schema evolution** relies on Jackson's default handling for added and

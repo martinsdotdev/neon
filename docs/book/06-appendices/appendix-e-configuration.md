@@ -43,7 +43,7 @@ pekko.serialization.jackson {
 | `serialization-bindings`   | `CborSerializable` marker trait | All commands, responses, events, and state wrappers implement this trait |
 | `jackson-modules`          | `DefaultScalaModule`            | Required for Scala case class serialization                              |
 
-Aggregate sealed traits (e.g., `Wave`, `Task`) require `@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)` for polymorphic snapshot deserialization.
+Aggregate sealed traits (e.g., `Wave`, `Task`) carry `@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")` together with `@JsonSubTypes` registering each state by name, for polymorphic snapshot deserialization. `Id.NAME` is used deliberately rather than `Id.CLASS`: the latter would bake fully-qualified class names into persisted snapshots, which is refactor-fragile and a deserialization-gadget risk.
 
 ---
 

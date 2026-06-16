@@ -38,7 +38,7 @@ introductory Scala 3 resource, you will be well prepared.
 ## What You Will Learn
 
 This is not a toy example. Neon WES is a real system with over a dozen domain
-modules, eight event-sourced aggregates, cluster sharding, CQRS projections,
+modules, fourteen event-sourced aggregates, cluster sharding, CQRS projections,
 and a full HTTP API. Over the course of this book, we will cover:
 
 - **Domain modeling** with typestate-encoded aggregates, where the Scala

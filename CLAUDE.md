@@ -48,7 +48,7 @@ Each top-level directory is an sbt subproject representing a domain aggregate. A
 
 **Dependency graph:** `app` → `core` → `{wave, task, consolidation-group, handling-unit, transport-order, workstation, slot, location, carrier}` → `common`
 
-**Event-sourced modules** (8, with Pekko actors): `wave`, `task`, `consolidation-group`, `handling-unit`, `transport-order`, `workstation`, `slot`, `inventory`.
+**Event-sourced modules** (14, with Pekko actors): `wave`, `task`, `consolidation-group`, `handling-unit`, `transport-order`, `workstation`, `slot`, `inventory`, `stock-position`, `handling-unit-stock`, `inbound-delivery`, `goods-receipt`, `cycle-count`, `count-task`.
 
 **Reference data modules** (5, no Pekko): `order`, `sku`, `user`, `location`, `carrier`.
 
@@ -98,7 +98,7 @@ app/
 
 **Pekko Repositories** (`PekkoXxxRepository.scala`): extend `neon.common.entity.PekkoEntityRepository[Command, Aggregate]` for sharding init, `findByEntityId`, and `sequenceSaves`; each repo keeps only its per-event `save` mapping and any cross-entity queries. Cross-entity queries use the `R2dbcProjectionQueries` trait (from `common`) to query CQRS projection tables, then fan out to individual actors. `saveAll` is non-transactional: individual entity operations may succeed or fail independently.
 
-**CQRS Projections** (`app/projection/`): `ProjectionBootstrap` initializes all projections via `ShardedDaemonProcess` with `R2dbcProjection.exactlyOnce`. Each handler upserts into read-side PostgreSQL tables (e.g., `task_by_wave`, `workstation_by_type_and_state`). Each module owns a `<X>ProjectionSchema` object (the single home for its table/column names and SQL), consulted by both the projection handler and the module's Pekko repository queries.
+**CQRS Projections** (`app/projection/`): `ProjectionBootstrap` initializes all projections via `ShardedDaemonProcess` with `R2dbcProjection.atLeastOnce`. Each handler upserts into read-side PostgreSQL tables (e.g., `task_by_wave`, `workstation_by_type_and_state`). Each module owns a `<X>ProjectionSchema` object (the single home for its table/column names and SQL), consulted by both the projection handler and the module's Pekko repository queries.
 
 **HTTP Routes** (`app/http/`): Pekko HTTP directives with circe JSON marshalling (`derives Encoder.AsObject` / `derives Decoder`). `CirceSupport` provides implicit marshallers. Domain error ADTs map to RFC 9457 Problem Details via `ProblemMapper` given instances — routes call `completeProblem(error)` rather than hand-rolling status codes (ADR 0011).
 

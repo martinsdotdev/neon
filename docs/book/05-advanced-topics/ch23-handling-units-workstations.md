@@ -311,13 +311,14 @@ case class Idle(
 
 <small>_File: workstation/src/main/scala/neon/workstation/Workstation.scala_</small>
 
-The `WorkstationMode` enum defines three operational modes:
+The `WorkstationMode` enum defines four operational modes:
 
 ```scala
 enum WorkstationMode:
-  case Receiving   // Inbound goods receipt processing
-  case Picking     // Outbound order picking
-  case Counting    // Cycle count and physical inventory operations
+  case Receiving    // Inbound goods receipt processing
+  case Picking      // Outbound order picking
+  case Counting     // Cycle count and physical inventory operations
+  case Relocation   // Internal stock movement between locations
 ```
 
 <small>_File: common/src/main/scala/neon/common/WorkstationMode.scala_</small>

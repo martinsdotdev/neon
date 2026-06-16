@@ -412,34 +412,33 @@ val result1 = completionService.complete(
 )
 ```
 
-This triggers the `TaskCompletionService` cascade from Chapter 7. The service
-first runs three guard checks: the quantity must not be negative, the task
-must exist and be in the `Assigned` state, and verification must be satisfied
-(disabled in our setup). All three pass. Then the cascade begins:
+This triggers the task completion cascade from Chapter 7. The thin
+`TaskCompletionService` shell first runs `TaskCompletionCascade.validate`: the
+quantity must not be negative, the task must exist and be in the `Assigned`
+state, and verification must be satisfied (disabled in our setup). All three
+pass, so `validate` returns the `Task.Assigned`. The shell then loads the
+cascade state and hands it to `TaskCompletionCascade.decide`, which computes
+every transition as pure data:
 
 ```scala
 val (completed, completedEvent) = assigned.complete(actualQuantity, at)
-taskRepository.save(completed, completedEvent)
-
+val stockWrites = stockWritesFor(completed, state.stockPosition, at)
 val shortpick = ShortpickPolicy(completed, at)
-shortpick.foreach { (replacement, event) =>
-  taskRepository.save(replacement, event)
-}
-
 val routing = RoutingPolicy(completedEvent, at)
-routing.foreach { (pending, event) =>
-  transportOrderRepository.save(pending, event)
-}
-// ... wave completion follows
+// ... wave and picking completion follow, over state.wave / state.waveTasks
 ```
 
-<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala (simplified)_</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionCascade.scala (simplified)_</small>
+
+The shell then persists whatever `decide` produced. Walking the decision for
+task 1:
 
 **Cascade step 1: Complete the task.** `assigned.complete(10, at)` returns
 `(Task.Completed, TaskEvent.TaskCompleted)`. The typestate transition from
-Chapter 4. Persisted immediately.
+Chapter 4. The shell persists it after `decide` returns.
 
-**Cascade step 2: Stock consumption.** Skipped (no stock position repository).
+**Cascade step 2: Stock writes.** `stockWritesFor` returns `Nil` (no stock
+position was loaded), so there is nothing to persist.
 
 **Cascade step 3: ShortpickPolicy.** `remainder = 10 - 10 = 0`. Zero is not
 positive, so the policy returns `None`. Full pick, no shortage.
@@ -447,9 +446,9 @@ positive, so the policy returns `None`. Full pick, no shortage.
 **Cascade step 4: RoutingPolicy.** Our task has no handling unit
 (`handlingUnitId = None`), so `map` returns `None`. No transport order.
 
-**Cascade step 5: WaveCompletionPolicy.** The service fetches all wave tasks.
-Task 1 is now `Completed`, but task 2 is still `Assigned`.
-`waveTasks.forall(isTerminal)` returns `false`. The wave stays `Released`.
+**Cascade step 5: WaveCompletionPolicy.** `decide` builds the effective wave
+task set from `state.waveTasks`. Task 1 is now `Completed`, but task 2 is still
+`Assigned`, so `forall(isTerminal)` returns `false`. The wave stays `Released`.
 
 **Result of completing task 1:**
 
@@ -479,7 +478,8 @@ policy has work to do.
 **Cascade step 1: Complete the task.** `task2Assigned.complete(3, at)` returns
 a `Task.Completed` with `requestedQuantity = 5` and `actualQuantity = 3`.
 
-**Cascade step 2: Stock consumption.** Skipped.
+**Cascade step 2: Stock writes.** `stockWritesFor` returns `Nil` (no stock
+position loaded). Nothing to persist.
 
 **Cascade step 3: ShortpickPolicy.** `remainder = 5 - 3 = 2`. Two is
 positive, so the policy fires:
@@ -511,22 +511,27 @@ object ShortpickPolicy:
 It calls `Task.create` with `requestedQuantity = 2`, inheriting the SKU,
 packaging level, order, and wave from the original task. Critically, it sets
 `parentTaskId = Some(completed.id)`, linking the replacement to its parent for
-traceability. The service persists this new `Task.Planned` immediately.
+traceability. The shell will persist this new `Task.Planned` after `decide`
+returns, but the decision itself already accounts for it (see step 5).
 
 **Cascade step 4: RoutingPolicy.** No handling unit, returns `None`.
 
-**Cascade step 5: WaveCompletionPolicy.** The service fetches all wave tasks.
-There are now three: task 1 (`Completed`), task 2 (`Completed`), and the new
-replacement task (`Planned`). The replacement is not terminal.
-`waveTasks.forall(isTerminal)` returns `false`. The wave stays `Released`.
+**Cascade step 5: WaveCompletionPolicy.** `decide` evaluates completion over its
+_effective_ wave task set, which it builds in memory: it drops the completing
+task's stale entry, then adds the fresh `Task.Completed` plus the shortpick
+replacement. So the policy sees three tasks: task 1 (`Completed`), task 2
+(`Completed`), and the new replacement (`Planned`). The replacement is not
+terminal, so `forall(isTerminal)` returns `false`. The wave stays `Released`.
 
 @:callout(info)
 
-This is a subtle but important interaction. The shortpick
-replacement task is persisted _before_ the wave completion check runs. This
-means the policy sees the replacement in its task list. If the completion
-check ran first, it would see only two completed tasks and close the wave
-prematurely, leaving the remaining 2 units unfulfilled.
+This is a subtle but important interaction. The shortpick replacement is folded
+into the effective task set _inside the pure decision_, before
+`WaveCompletionPolicy` runs. The completion check therefore sees the open
+replacement and refuses to close the wave. Because the replacement lives in the
+decision's in-memory task list rather than depending on a database read landing
+first, the guarantee holds identically in the synchronous and asynchronous
+shells, even if their loaded view of the wave was stale.
 
 @:@
 
@@ -565,14 +570,14 @@ The cascade runs again. Steps 1 through 4 are uneventful: the task completes
 (2 of 2), shortpick remainder is zero, no routing needed. But step 5 is
 different this time.
 
-**WaveCompletionPolicy.** The service fetches all wave tasks. There are now
-three: task 1 (`Completed`), task 2 (`Completed`), and the replacement task
-(`Completed`). Every task is terminal. `waveTasks.forall(isTerminal)` returns
-`true`.
+**WaveCompletionPolicy.** The shell loads the wave's tasks and `decide` forms
+its effective set: task 1 (`Completed`), task 2 (`Completed`), and the
+replacement task, now substituted in as `Completed` with no further replacement
+to add. Every task is terminal, so `forall(isTerminal)` returns `true`.
 
 The policy calls `wave.complete(at)`, returning
 `(Wave.Completed, WaveEvent.WaveCompleted)`. The wave transitions from
-`Released` to `Completed`. The service persists both.
+`Released` to `Completed`. The shell persists both.
 
 **Result of completing the replacement task:**
 
@@ -670,33 +675,38 @@ describe("task creation"):
 
 <small>_File: core/src/test/scala/neon/core/WaveReleaseServiceSuite.scala_</small>
 
-And `TaskCompletionServiceSuite` tests the shortpick cascade:
+The completion side is split across two suites. `TaskCompletionCascadeSuite`
+tests the pure decisions by calling `TaskCompletionCascade.decide` directly over
+a hand-built `CascadeState`, with no repositories at all. Here is the shortpick
+decision:
 
 ```scala
 describe("when actual is less than requested"):
   it("creates Planned replacement for the unfulfilled remainder"):
-    val taskRepository = InMemoryTaskRepository()
     val task = assignedTask(requestedQuantity = 10)
-    taskRepository.store(task.id) = task
-    val service = buildService(taskRepository = taskRepository)
-    val result = service.complete(task.id, 7, true, at).value
-    val (replacement, event) = result.shortpick.value
+    val outcome = decideCascade(assigned = task, actualQuantity = 7)
+    val (replacement, event) = outcome.result.shortpick.value
     assert(replacement.requestedQuantity == 3)
     assert(replacement.parentTaskId.value == task.id)
     assert(event.requestedQuantity == 3)
 ```
 
-<small>_File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala_</small>
+<small>_File: core/src/test/scala/neon/core/TaskCompletionCascadeSuite.scala_</small>
 
-Notice the test style: factory methods (`singleOrder()`, `assignedTask()`)
-create test data with sensible defaults. In-memory repositories provide
-persistence. Assertions check both the return value and the repository state.
-No mocking frameworks, no test doubles beyond the in-memory adapters.
+Notice the test style: factory methods from the shared `DomainFactories` trait
+(`singleOrder()`, `assignedTask()`) create test data with sensible defaults. The
+cascade suite needs no repositories because `decide` is pure; the release suite
+uses in-memory repositories. Assertions check the return value (and, in the
+shell suite, the repository state). No mocking frameworks, no test doubles
+beyond the in-memory adapters.
 
-The suite also contains a test titled "when shortpick creates a replacement /
-prevents wave completion" that captures the ordering guarantee we traced in
-Step 5: the replacement is persisted before the wave completion check runs, so
-a partial pick cannot prematurely close the wave.
+The cascade suite also contains a test titled "when shortpick creates a
+replacement / prevents wave completion" that captures the guarantee we traced in
+Step 5: the open replacement is folded into the effective task set inside
+`decide`, so a partial pick cannot prematurely close the wave. The companion
+`TaskCompletionServiceSuite` is a thin shell suite: it verifies that the
+synchronous service loads, validates, and persists correctly (including the
+stock writes), leaving the decision logic to the cascade suite.
 
 ## What We Learned
 
@@ -725,10 +735,11 @@ their decisions would not have hidden side effects.
 
 **Services** (Chapter 7) orchestrated the cascade. `WaveReleaseService`
 called `TaskCreationPolicy` and `ConsolidationGroupFormationPolicy`, then
-persisted the results. `TaskCompletionService` ran five cascade steps in
-sequence, each feeding into the next. The service layer was the only place
-where repositories were read and written. The `Either[Error, Result]` return
-type let callers handle errors without catching exceptions.
+persisted the results. For completion, the pure `TaskCompletionCascade` decided
+all five cascade effects at once, and the thin `TaskCompletionService` shell
+loaded the state, called `decide`, and persisted the outcome. The shell was the
+only place where repositories were read and written. The `Either[Error, Result]`
+return type let callers handle errors without catching exceptions.
 
 **Repositories** (Chapter 8) abstracted persistence behind port traits. We
 ran the entire flow with in-memory maps and list buffers. Not a single line

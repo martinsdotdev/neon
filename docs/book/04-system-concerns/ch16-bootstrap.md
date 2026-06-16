@@ -256,11 +256,12 @@ val waveReleaseService = AsyncWaveReleaseService(
 )
 
 val taskCompletionService = AsyncTaskCompletionService(
-  taskRepository,
-  waveRepository,
-  consolidationGroupRepository,
-  transportOrderRepository,
-  VerificationProfile.disabled
+  taskRepository = taskRepository,
+  waveRepository = waveRepository,
+  consolidationGroupRepository = consolidationGroupRepository,
+  transportOrderRepository = transportOrderRepository,
+  stockPositionRepository = stockPositionRepository,
+  verificationProfile = VerificationProfile.disabled
 )
 
 val waveCancellationService = AsyncWaveCancellationService(
@@ -274,8 +275,8 @@ val waveCancellationService = AsyncWaveCancellationService(
 Each service receives exactly the repositories it needs. The dependency
 graph is explicit and visible: you can see at a glance that
 `taskCompletionService` talks to tasks, waves, consolidation groups,
-and transport orders. No service has access to repositories it does not
-use.
+transport orders, and stock positions. No service has access to repositories
+it does not use.
 
 The registry constructs 17 async services in total, covering wave
 planning and release, task lifecycle management, wave and task
@@ -314,8 +315,10 @@ projection.ProjectionBootstrap.start(context.system)
 
 With all actor types registered (via the repository constructors in
 `ServiceRegistry`), we can safely start the CQRS projections.
-`ProjectionBootstrap` initializes 13 projections, one for each event-sourced
-aggregate type:
+`ProjectionBootstrap` makes 15 `initProjection` calls. Most event-sourced
+aggregate types get a single projection; `Task` gets two (one keyed by wave,
+one by assignee), which is why there are more projections than aggregate
+types:
 
 ```scala
 object ProjectionBootstrap:
@@ -325,24 +328,35 @@ object ProjectionBootstrap:
     given ExecutionContext = system.executionContext
 
     initProjection[TaskEvent](
-      "task-projection", "Task",
-      () => TaskProjectionHandler()
+      name = "task-projection",
+      entityType = "Task",
+      handlerFactory = () => TaskProjectionHandler()
+    )
+
+    initProjection[TaskEvent](
+      name = "task-by-assignee-projection",
+      entityType = "Task",
+      handlerFactory = () => TaskByAssigneeProjectionHandler()
     )
 
     initProjection[ConsolidationGroupEvent](
-      "consolidation-group-projection", "ConsolidationGroup",
-      () => ConsolidationGroupProjectionHandler()
+      name = "consolidation-group-projection",
+      entityType = "ConsolidationGroup",
+      handlerFactory = () => ConsolidationGroupProjectionHandler()
     )
 
-    // ... 11 more projections
+    // ... 12 more projections
 ```
 
 <small>_File: app/src/main/scala/neon/app/projection/ProjectionBootstrap.scala_</small>
 
 Each projection is initialized through `ShardedDaemonProcess`, which
 creates a projection actor managed by the cluster. The `initProjection`
-helper wires the event source provider (reading from the R2DBC journal)
-to the projection handler (writing to read-side tables).
+helper wires the event source provider (reading from the R2DBC journal via
+`EventSourcedProvider.eventsBySlices`) to the projection handler (writing to
+read-side tables), and registers it with `R2dbcProjection.atLeastOnce`. At
+least once means a handler may observe the same event more than once after a
+restart, so every handler upserts idempotently.
 
 ## Step 6: Start the HTTP Server
 
@@ -359,29 +373,34 @@ object HttpServer:
   def routes(
       registry: ServiceRegistry,
       secureCookies: Boolean = true
-  )(using ExecutionContext): Route =
-    RequestLoggingDirective.withRequestLogging:
-      concat(
-        AuthRoutes(registry.authenticationService, secureCookies),
-        TaskRoutes(
-          registry.taskCompletionService,
-          registry.taskLifecycleService,
-          registry.authenticationService
-        ),
-        WaveRoutes(
-          registry.waveCancellationService,
-          registry.wavePlanningService,
-          registry.orderRepository,
-          registry.authenticationService
-        ),
-        // ... 10 more route handlers
-      )
+  )(using ExecutionContext, ActorSystem[?]): Route =
+    handleExceptions(ProblemRouteHandlers.exceptionHandler):
+      handleRejections(ProblemRouteHandlers.rejectionHandler):
+        RequestLoggingDirective.withRequestLogging:
+          concat(
+            AuthRoutes(registry.authenticationService, secureCookies),
+            TaskRoutes(
+              registry.taskCompletionService,
+              registry.taskLifecycleService,
+              registry.authenticationService
+            ),
+            WaveRoutes(
+              registry.waveCancellationService,
+              registry.wavePlanningService,
+              registry.orderRepository,
+              registry.authenticationService
+            ),
+            // ... more route handlers
+          )
 ```
 
 <small>_File: app/src/main/scala/neon/app/http/HttpServer.scala_</small>
 
-Every route is wrapped in `RequestLoggingDirective.withRequestLogging`, which
-emits the canonical log line we will discuss in Chapter 19.
+The whole tree is wrapped twice. The outer `handleExceptions` /
+`handleRejections` pair routes failures through `ProblemRouteHandlers`, which
+renders RFC 9457 `application/problem+json` bodies (Chapter 18). Inside that,
+`RequestLoggingDirective.withRequestLogging` emits the canonical log line we
+will discuss in Chapter 19.
 
 ## Step 7: Done
 
@@ -421,8 +440,8 @@ container setup.
 
 The cost is that adding a new service means adding a line to
 `ServiceRegistry` and passing it to the relevant route. In a system with
-14 repositories, 17 services, and 12 route handlers, this is a small price
-for the clarity it provides.
+14 actor-backed repositories, 17 services, and 15 route handlers, this is a
+small price for the clarity it provides.
 
 @:callout(info)
 
@@ -444,8 +463,8 @@ task via `POST /tasks/:id/complete`.
    session cookie and check the `TaskComplete` permission.
 3. `TaskRoutes` calls `taskCompletionService.complete(taskId, ...)`.
 4. `AsyncTaskCompletionService` was constructed with `taskRepository`,
-   `waveRepository`, `consolidationGroupRepository`, and
-   `transportOrderRepository`.
+   `waveRepository`, `consolidationGroupRepository`,
+   `transportOrderRepository`, and `stockPositionRepository`.
 5. Each repository call (like `taskRepository.findById`) sends an `ask`
    message to the corresponding actor via cluster sharding.
 6. The actor processes the command, persists events to the R2DBC journal,
@@ -469,8 +488,8 @@ The Neon WES bootstrap is remarkably simple:
   6 reference data repositories, 17 async services, and authentication.
 - Each `PekkoXxxRepository` constructor registers its actor type with
   cluster sharding.
-- `ProjectionBootstrap` starts 13 CQRS projections after all actors are
-  registered.
+- `ProjectionBootstrap` starts 15 CQRS projections (`atLeastOnce`) after all
+  actors are registered.
 - `HttpServer` constructs routes from the registry and binds the server.
 - Manual wiring provides compile-time safety, explicit dependencies, and
   easy navigation.

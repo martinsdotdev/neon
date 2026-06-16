@@ -142,28 +142,38 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
       packagingLevel: PackagingLevel = PackagingLevel.Each
   ) =
     Task.Completed(
-      TaskId(), TaskType.Pick, skuId, packagingLevel,
-      requested, actual, orderId, waveId, None,
-      handlingUnitId, None, sourceLocationId,
-      destinationLocationId, userId
+      id = TaskId(),
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = packagingLevel,
+      requestedQuantity = requested,
+      actualQuantity = actual,
+      orderId = orderId,
+      waveId = waveId,
+      parentTaskId = None,
+      handlingUnitId = handlingUnitId,
+      stockPositionId = None,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId,
+      assignedTo = userId
     )
 
   describe("ShortpickPolicy"):
     describe("when actual meets requested"):
       it("does not create a replacement task"):
-        assert(ShortpickPolicy(completed(10, 10), at).isEmpty)
+        assert(ShortpickPolicy(completed(requested = 10, actual = 10), at).isEmpty)
 
     describe("when actual exceeds requested"):
       it("does not create a replacement task"):
-        assert(ShortpickPolicy(completed(10, 12), at).isEmpty)
+        assert(ShortpickPolicy(completed(requested = 10, actual = 12), at).isEmpty)
 
     describe("when actual is zero"):
       it("returns replacement task with full requested quantity"):
-        val (replacement, _) = ShortpickPolicy(completed(10, 0), at).value
+        val (replacement, _) = ShortpickPolicy(completed(requested = 10, actual = 0), at).value
         assert(replacement.requestedQuantity == 10)
 
     describe("when actual is less than requested"):
-      val task = completed(10, 7)
+      val task = completed(requested = 10, actual = 7)
       val (replacement, event) = ShortpickPolicy(task, at).value
 
       it("returns replacement task for the unfulfilled quantity"):
@@ -518,7 +528,7 @@ private def sortByStrategy(
         )
       )
     case AllocationStrategy.NearestLocation =>
-      positions
+      positions // location-aware sorting deferred to future implementation
 ```
 
 <small>_File: core/src/main/scala/neon/core/StockAllocationPolicy.scala_</small>

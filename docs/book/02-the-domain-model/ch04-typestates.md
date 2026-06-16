@@ -90,7 +90,15 @@ stateDiagram-v2
 And here is the code:
 
 ```scala
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[Wave.Planned], name = "Planned"),
+    new JsonSubTypes.Type(value = classOf[Wave.Released], name = "Released"),
+    new JsonSubTypes.Type(value = classOf[Wave.Completed], name = "Completed"),
+    new JsonSubTypes.Type(value = classOf[Wave.Cancelled], name = "Cancelled")
+  )
+)
 sealed trait Wave:
   def id: WaveId
   def orderGrouping: OrderGrouping
@@ -150,12 +158,21 @@ exhaustive: if you forget to handle a state, the compiler warns you.
 
 ### The annotations
 
-The `@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)` annotation tells the
-serialization layer to include the concrete class name when serializing a
-`Wave` value. Without it, a snapshot containing a `Wave.Released` would be
-deserialized as a bare `Wave`, losing the state information. We will revisit
-serialization in Chapter 17; for now, just know that every typestate-encoded
-aggregate needs this annotation.
+The `@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")` annotation,
+paired with `@JsonSubTypes`, tells the serialization layer to tag each
+serialized `Wave` value with a short state name (`"Planned"`, `"Released"`, and
+so on) under a `type` field. Without it, a snapshot containing a `Wave.Released`
+would be deserialized as a bare `Wave`, losing the state information. The
+`@JsonSubTypes` array registers every concrete state by name, so the
+deserializer knows which case class each `type` tag maps back to.
+
+Notice that the annotation uses `Id.NAME`, not `Id.CLASS`. This is deliberate.
+`Id.CLASS` would bake fully-qualified class names into every persisted snapshot,
+making the journal fragile against refactoring (rename or move a state class and
+old snapshots no longer deserialize) and opening a deserialization-gadget risk.
+The stable state names are immune to both. We will revisit serialization in
+Chapter 17; for now, just know that every typestate-encoded aggregate needs this
+pair of annotations.
 
 In the actual source file, the sealed trait also extends `CborSerializable`,
 the marker trait from Chapter 3. We omit it from the listing to keep the
@@ -213,7 +230,16 @@ stateDiagram-v2
 ### The sealed trait and factory method
 
 ```scala
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[Task.Planned], name = "Planned"),
+    new JsonSubTypes.Type(value = classOf[Task.Allocated], name = "Allocated"),
+    new JsonSubTypes.Type(value = classOf[Task.Assigned], name = "Assigned"),
+    new JsonSubTypes.Type(value = classOf[Task.Completed], name = "Completed"),
+    new JsonSubTypes.Type(value = classOf[Task.Cancelled], name = "Cancelled")
+  )
+)
 sealed trait Task:
   def id: TaskId
   def taskType: TaskType
@@ -346,8 +372,9 @@ keeps the model simple without losing information.
 
 ## The Full Catalogue of State Machines
 
-Neon WES has eight event-sourced aggregates. We have already examined Wave and
-Task in detail. Let's survey the remaining six.
+Neon WES has fourteen event-sourced aggregates. We have already examined Wave
+and Task in detail. Let's survey five more that show the full range of
+lifecycle shapes; the rest follow the same patterns.
 
 ### ConsolidationGroup
 
@@ -510,7 +537,7 @@ forward-moving state machines.
 
 ## Patterns and Principles
 
-Having examined six aggregates, we can now identify the recurring patterns that
+Having examined seven aggregates, we can now identify the recurring patterns that
 make this approach consistent and maintainable.
 
 ### Terminal states have no methods
@@ -560,7 +587,7 @@ We will explore events in depth in the next chapter.
 ## Architecture Note: The Decider Pattern
 
 Readers familiar with functional event sourcing may recognize a resemblance to
-Jermaine Chassaing's _Decider pattern_. In the Decider, two functions drive the
+Jérémie Chassaing's _Decider pattern_. In the Decider, two functions drive the
 lifecycle:
 
 - `decide(command, state) -> List[Event]` produces events from commands

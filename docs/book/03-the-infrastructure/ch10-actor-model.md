@@ -70,15 +70,52 @@ The core of the actor is the `apply` method, which constructs the behavior:
 
 ```scala
 def apply(entityId: String): Behavior[Command] =
+  EventSourcedEntity.behavior[Command, WaveEvent, State](
+    entityKey = EntityKey,
+    entityId = entityId,
+    emptyState = EmptyState,
+    commandHandler = commandHandler,
+    eventHandler = eventHandler
+  )
+```
+
+<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
+
+The `apply` method is strikingly short. That is deliberate. Every
+event-sourced actor in Neon WES shares the same _scaffolding_, MDC tagging,
+enforced replies, the persistence ID derived from the entity key, snapshot
+retention, and a standard debug log, so that scaffolding lives once in a
+shared helper, `EventSourcedEntity.behavior`, in the `common` module. Each
+actor supplies only the two pieces that are genuinely its own: a command
+handler and an event handler.
+
+Here is the helper that `apply` delegates to:
+
+```scala
+def behavior[Command: ClassTag, Event, State](
+    entityKey: EntityTypeKey[Command],
+    entityId: String,
+    emptyState: State,
+    commandHandler: ActorContext[Command] => (State, Command) => ReplyEffect[Event, State],
+    eventHandler: (State, Event) => State
+): Behavior[Command] =
   Behaviors.withMdc[Command](
-    Map("entityType" -> "Wave", "entityId" -> entityId)
+    Map("entityType" -> entityKey.name, "entityId" -> entityId)
   ):
     Behaviors.setup: context =>
+      val handler = commandHandler(context)
       EventSourcedBehavior
-        .withEnforcedReplies[Command, WaveEvent, State](
-          persistenceId = PersistenceId(EntityKey.name, entityId),
-          emptyState = EmptyState,
-          commandHandler = commandHandler(context),
+        .withEnforcedReplies[Command, Event, State](
+          persistenceId = PersistenceId(entityKey.name, entityId),
+          emptyState = emptyState,
+          commandHandler = { (state, command) =>
+            context.log.debug(
+              "Received {} in state {}",
+              command.getClass.getSimpleName,
+              state.getClass.getSimpleName
+            )
+            handler(state, command)
+          },
           eventHandler = eventHandler
         )
         .withRetention(
@@ -86,7 +123,7 @@ def apply(entityId: String): Behavior[Command] =
         )
 ```
 
-<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
+<small>_File: common/src/main/scala/neon/common/entity/EventSourcedEntity.scala_</small>
 
 There is a lot happening in these few lines. Let's unpack it piece by piece.
 
@@ -94,8 +131,8 @@ There is a lot happening in these few lines. Let's unpack it piece by piece.
 
 1. **`Command`**: the message type the actor accepts. Every message sent to
    this actor must be a subtype of `Command`.
-2. **`WaveEvent`**: the event type the actor persists. These are the same
-   domain events from Chapter 5.
+2. **`Event`**: the event type the actor persists. For `WaveActor` this is
+   `WaveEvent`, the same domain events from Chapter 5.
 3. **`State`**: the actor's internal state, reconstructed from events on
    recovery.
 
@@ -108,12 +145,25 @@ The method also takes four value parameters:
 - **`emptyState`**: the state before any events have been applied. For a fresh
   entity that has never received a command, the state is `EmptyState`.
 - **`commandHandler`**: a function `(State, Command) => ReplyEffect` that
-  decides what to do with each incoming command.
+  decides what to do with each incoming command. The helper wraps it with a
+  debug log (`"Received {} in state {}"`) before delegating to the actor's
+  own handler.
 - **`eventHandler`**: a function `(State, WaveEvent) => State` that
   reconstructs state from persisted events during recovery.
 
 These two functions are the heart of the actor. Everything else is
-configuration.
+configuration the helper supplies uniformly.
+
+@:callout(info)
+
+The call site passes the type arguments explicitly,
+`behavior[Command, WaveEvent, State](...)`, rather than letting them be
+inferred. If `State` were inferred from `emptyState = EmptyState`, the
+compiler would narrow it to the `EmptyState` singleton type rather than the
+`State` sealed trait. Passing the arguments explicitly keeps the state type
+wide enough to hold `ActiveState` too.
+
+@:@
 
 ## Commands
 
@@ -209,11 +259,6 @@ private def commandHandler(
     context: ActorContext[Command]
 ): (State, Command) => ReplyEffect[WaveEvent, State] =
   (state, command) =>
-    context.log.debug(
-      "Received {} in state {}",
-      command.getClass.getSimpleName,
-      state.getClass.getSimpleName
-    )
     (state, command) match
 
       case (EmptyState, Create(planned, event, replyTo)) =>
@@ -230,6 +275,13 @@ private def commandHandler(
 ```
 
 <small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
+
+The handler still receives the `ActorContext` (it needs `context.log` for the
+warning in the catch-all), but it no longer logs the received command itself,
+that `"Received {} in state {}"` debug line now lives in
+`EventSourcedEntity.behavior`, which wraps every actor's handler uniformly.
+The handler's first responsibility is to pattern-match on the
+`(state, command)` pair.
 
 **The `Create` case.** When the actor is in `EmptyState` and receives a
 `Create` command, it persists the provided `WaveReleased` event and replies
@@ -292,9 +344,7 @@ The `GetState` query and the catch-all error case complete the handler:
         Effect.reply(replyTo)(wave)
 
       case (_, cmd) =>
-        val msg =
-          s"Invalid command ${cmd.getClass.getSimpleName} " +
-            s"in state ${state.getClass.getSimpleName}"
+        val msg = EventSourcedEntity.invalidCommandMessage(state, cmd)
         context.log.warn(msg)
         cmd match
           case c: Create   => Effect.reply(c.replyTo)(StatusReply.error(msg))
@@ -311,8 +361,11 @@ with the current aggregate wrapped in an `Option`. This is useful for the
 `PekkoWaveRepository` when it needs to fetch an entity's current state.
 
 The catch-all `(_, cmd)` matches any command that does not have a valid handler
-for the current state. It logs a warning and replies with an error. Because we
-used `withEnforcedReplies`, the compiler requires that every branch produces a
+for the current state. It logs a warning and replies with an error. The
+rejection message itself comes from `EventSourcedEntity.invalidCommandMessage`,
+the same helper object that assembles the behavior, so every actor phrases
+"Invalid command X in state Y" identically. Because we used
+`withEnforcedReplies`, the compiler requires that every branch produces a
 reply. The catch-all must extract `replyTo` from each possible command type to
 satisfy this requirement.
 
@@ -407,7 +460,9 @@ use `StatusReply.success(response)` to deliver the full response object.
 
 As events accumulate in the journal, recovery time grows. If a wave actor has
 processed 10,000 events, replaying all of them on restart would be slow. Pekko
-solves this with snapshots.
+solves this with snapshots. The shared `EventSourcedEntity.behavior` helper
+applies the retention policy uniformly to every actor, so no individual actor
+configures it:
 
 ```scala
 .withRetention(
@@ -415,7 +470,7 @@ solves this with snapshots.
 )
 ```
 
-<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
+<small>_File: common/src/main/scala/neon/common/entity/EventSourcedEntity.scala_</small>
 
 This configuration tells Pekko to save a snapshot of the actor's state every
 100 events and to keep the 2 most recent snapshots. On recovery, Pekko loads
@@ -424,11 +479,19 @@ of replaying 10,000 events, the actor might load a snapshot at event 9,900 and
 replay just 100 events.
 
 Snapshots are serialized using the same Jackson CBOR mechanism as events and
-commands. This is where the `@JsonTypeInfo` annotation on the `Wave` sealed
-trait becomes critical:
+commands. This is where the `@JsonTypeInfo` and `@JsonSubTypes` annotations on
+the `Wave` sealed trait become critical:
 
 ```scala
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[Wave.Planned], name = "Planned"),
+    new JsonSubTypes.Type(value = classOf[Wave.Released], name = "Released"),
+    new JsonSubTypes.Type(value = classOf[Wave.Completed], name = "Completed"),
+    new JsonSubTypes.Type(value = classOf[Wave.Cancelled], name = "Cancelled")
+  )
+)
 sealed trait Wave:
   def id: WaveId
   def orderGrouping: OrderGrouping
@@ -436,17 +499,32 @@ sealed trait Wave:
 
 <small>_File: wave/src/main/scala/neon/wave/Wave.scala_</small>
 
-Without this annotation, Jackson would not know how to deserialize a snapshot
+Without these annotations, Jackson would not know how to deserialize a snapshot
 containing a `Wave.Released` versus a `Wave.Planned`. The `ActiveState` wrapper
 holds a `Wave`, which is the sealed trait. When Jackson reads the snapshot
-bytes, it needs the class discriminator to determine which concrete subtype to
-instantiate. The `@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)` annotation tells
-Jackson to include the fully qualified class name in the serialized form, so
+bytes, it needs a discriminator to determine which concrete subtype to
+instantiate. `@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")`
+tells Jackson to write a logical `type` field, and `@JsonSubTypes` maps each
+short name (`"Planned"`, `"Released"`, ...) to its case class, so
 deserialization can reconstruct the correct type.
 
 @:callout(info)
 
-Forgetting `@JsonTypeInfo` on a polymorphic snapshot type is a
+We deliberately use `Id.NAME` with an explicit `@JsonSubTypes`
+registry rather than `Id.CLASS`. `Id.CLASS` would bake fully-qualified class
+names (`neon.wave.Wave$Released`) into every persisted snapshot, which is
+refactor-fragile, renaming or moving the class breaks recovery, and is a
+deserialization-gadget risk, because the payload names an arbitrary class to
+instantiate. The short logical names are stable across refactors and safe.
+Only the aggregate root needs this: it is the one nested polymorphic field,
+inside the snapshotted `ActiveState`. Commands, events, and state wrappers are
+top-level payloads disambiguated by the Pekko serialization manifest.
+
+@:@
+
+@:callout(info)
+
+Forgetting these annotations on a polymorphic snapshot type is a
 common source of production bugs. The actor will persist events and snapshots
 without error, but when it tries to recover from a snapshot, deserialization
 fails with a cryptic Jackson error. Always annotate sealed traits that appear
@@ -456,24 +534,25 @@ in actor state.
 
 ## Structured Logging with MDC
 
-The outermost wrapper in the `apply` method sets up MDC (Mapped Diagnostic
-Context) fields for structured logging:
+The outermost wrapper inside `EventSourcedEntity.behavior` sets up MDC (Mapped
+Diagnostic Context) fields for structured logging, so every actor gets them
+for free:
 
 ```scala
 Behaviors.withMdc[Command](
-  Map("entityType" -> "Wave", "entityId" -> entityId)
+  Map("entityType" -> entityKey.name, "entityId" -> entityId)
 ):
   Behaviors.setup: context =>
     // ...
 ```
 
-<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
+<small>_File: common/src/main/scala/neon/common/entity/EventSourcedEntity.scala_</small>
 
 MDC is a logging concept where key-value pairs are attached to every log
 statement within a scope. By wrapping the entire behavior in `withMdc`, every
 log message produced by this actor, whether from the command handler, event
-handler, or Pekko internals, will include `entityType=Wave` and
-`entityId=<the-id>`.
+handler, or Pekko internals, will include `entityType=Wave` (from the entity
+key's name) and `entityId=<the-id>`.
 
 In production, this is invaluable for debugging. When you see a log line like:
 
@@ -586,10 +665,16 @@ Each actor defines:
 2. A `Command` sealed trait with one case class per operation
 3. Response case classes bundling state and event
 4. A `State` sealed trait with `EmptyState` and `ActiveState`
-5. An `apply` method constructing `EventSourcedBehavior.withEnforcedReplies`
+5. An `apply` method that calls `EventSourcedEntity.behavior` with its
+   command and event handlers
 6. A command handler that delegates to domain methods
 7. An event handler that reconstructs state from events
-8. Retention configuration for snapshots
+
+Notice what is _not_ in this list: the MDC wrapping, the enforced-reply
+configuration, the persistence ID, the snapshot retention, and the
+received-command debug log. Those are the same for every actor, so they live
+once in `EventSourcedEntity.behavior` rather than being copied into each
+actor file. The shared helper is the eighth piece, factored out.
 
 The specifics vary (a `TaskActor` has more commands than a `WaveActor`), but
 the structure is identical. Once you understand one actor, you understand them
@@ -597,7 +682,8 @@ all.
 
 @:callout(info)
 
-This structural consistency is deliberate. Learn the pattern once
+This structural consistency is deliberate, and the shared
+`EventSourcedEntity.behavior` helper enforces it. Learn the pattern once
 and you can navigate any actor in the system. When adding a new
 aggregate module, the actor file is mostly mechanical: define commands, wire
 up domain transitions in the command handler, mirror them in the event
@@ -612,6 +698,9 @@ infrastructure. We learned that:
 
 - An event-sourced actor manages one entity instance, processing commands
   sequentially and persisting events to a journal.
+- The shared `EventSourcedEntity.behavior` helper assembles the uniform
+  scaffolding (MDC, enforced replies, persistence ID, retention, debug log);
+  each actor supplies only its command and event handlers.
 - `EventSourcedBehavior.withEnforcedReplies` takes three type parameters
   (`Command`, `Event`, `State`) and two core functions (`commandHandler`,
   `eventHandler`).
@@ -621,8 +710,9 @@ infrastructure. We learned that:
   duplicate business logic.
 - The event handler reconstructs state during recovery. It must be
   deterministic, side-effect-free, and infallible.
-- Snapshots reduce recovery time. `@JsonTypeInfo` on sealed traits enables
-  polymorphic deserialization of snapshots.
+- Snapshots reduce recovery time. `@JsonTypeInfo(Id.NAME)` plus `@JsonSubTypes`
+  on the aggregate sealed trait enables polymorphic deserialization of
+  snapshots without baking class names into the journal.
 - MDC fields on the actor behavior attach entity metadata to every log
   message.
 - The actor implements the Decider pattern: `decide` (command handler),

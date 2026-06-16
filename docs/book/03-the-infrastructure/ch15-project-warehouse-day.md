@@ -419,9 +419,9 @@ it("handles a shortpick: picker finds only 25 of 30 requested"):
 
 <small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
-The picker scans 25 units but the task requested 30. The
-`TaskCompletionService.consumeOrDeallocateStock` method handles this
-partial pick in two steps:
+The picker scans 25 units but the task requested 30. The pure
+`TaskCompletionCascade.stockWritesFor` decides this partial pick as two
+ordered stock writes (which the service shell then persists):
 
 1. **Consume 25**: `sp.consumeAllocated(25, at)` reduces on-hand by 25
    and allocated by 25.

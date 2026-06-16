@@ -144,11 +144,23 @@ trait AsyncTaskRepository:
   def findById(id: TaskId): Future[Option[Task]]
   def findByWaveId(waveId: WaveId): Future[List[Task]]
   def findByHandlingUnitId(handlingUnitId: HandlingUnitId): Future[List[Task]]
+  def findAssignedTo(
+      userId: UserId,
+      state: Option[String] = None
+  ): Future[List[Task]]
   def save(task: Task, event: TaskEvent): Future[Unit]
   def saveAll(entries: List[(Task, TaskEvent)]): Future[Unit]
 ```
 
 <small>_File: task/src/main/scala/neon/task/AsyncTaskRepository.scala_</small>
+
+The async trait carries one query the sync trait does not: `findAssignedTo`
+returns the tasks ever assigned to a given user, with an optional `state` filter
+that narrows to active work (`Some("Assigned")`) or full history. It exists only
+on the async side because it backs a production read path (the operator's task
+list, served from the `task_by_assignee` projection) that the sync in-memory
+tests never exercise. The two traits are usually mirror images, but the contract
+is driven by what each world actually needs.
 
 Note the Scaladoc on `saveAll` in the async trait: "Not transactional:
 individual entries may succeed or fail independently." This is a critical
@@ -177,14 +189,17 @@ implementation in Chapter 11.
 
 ## In-Memory Implementations for Testing
 
-Here is the in-memory implementation of `TaskRepository`, taken directly from
-the test suite:
+Each in-memory adapter lives in its own file under the `core` test sources (for
+example `InMemoryTaskRepository.scala`), not inside the suite that uses it. A
+suite mixes in the shared `DomainFactories` trait for test data and constructs
+whichever in-memory repositories it needs; the repositories themselves are
+shared across every suite. Here is the in-memory implementation of
+`TaskRepository` in full:
 
 ```scala
 class InMemoryTaskRepository extends TaskRepository:
   val store: mutable.Map[TaskId, Task] = mutable.Map.empty
   val events: mutable.ListBuffer[TaskEvent] = mutable.ListBuffer.empty
-
   def findById(id: TaskId): Option[Task] = store.get(id)
   def findByWaveId(waveId: WaveId): List[Task] =
     store.values.filter(_.waveId.contains(waveId)).toList
@@ -197,7 +212,7 @@ class InMemoryTaskRepository extends TaskRepository:
     entries.foreach((task, event) => save(task, event))
 ```
 
-<small>_File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala_</small>
+<small>_File: core/src/test/scala/neon/core/InMemoryTaskRepository.scala_</small>
 
 Every method is one to three lines. `findById` delegates to `Map.get`.
 `findByWaveId` filters the map values by a predicate. `save` puts the task in
@@ -261,11 +276,12 @@ class InMemoryWaveRepository extends WaveRepository:
     events += event
 ```
 
-<small>_File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala_</small>
+<small>_File: core/src/test/scala/neon/core/InMemoryWaveRepository.scala_</small>
 
 Four lines of implementation. The structural repetition is a feature. When you
-have seen one in-memory repository, you have seen them all. A new aggregate
-module can have a working test repository in under a minute.
+have seen one in-memory repository, you have seen them all. Because each adapter
+is its own file shared across suites, a new aggregate module can have a working
+test repository in under a minute.
 
 ## How Services Use Repositories
 
@@ -278,13 +294,15 @@ class TaskCompletionService(
     waveRepository: WaveRepository,
     consolidationGroupRepository: ConsolidationGroupRepository,
     transportOrderRepository: TransportOrderRepository,
-    verificationProfile: VerificationProfile
+    verificationProfile: VerificationProfile,
+    stockPositionRepository: Option[StockPositionRepository] = None
 ):
 ```
 
 <small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
 
-Four repository traits, injected through the constructor. The service does not
+Five repository traits (the fifth, `stockPositionRepository`, is optional) plus
+one configuration object, injected through the constructor. The service does not
 know whether it is talking to a mutable map or a Pekko actor cluster. It calls
 `taskRepository.findById(taskId)` and gets back an `Option[Task]`. It calls
 `waveRepository.save(wave, event)` and the wave is persisted somewhere.
@@ -296,7 +314,7 @@ val taskRepo = InMemoryTaskRepository()
 val waveRepo = InMemoryWaveRepository()
 val consolidationGroupRepo = InMemoryConsolidationGroupRepository()
 val transportOrderRepo = InMemoryTransportOrderRepository()
-val verificationProfile = VerificationProfile.default
+val verificationProfile = VerificationProfile.disabled
 
 val service = TaskCompletionService(
   taskRepo, waveRepo, consolidationGroupRepo,
@@ -325,6 +343,7 @@ class AsyncTaskCompletionService(
     waveRepository: AsyncWaveRepository,
     consolidationGroupRepository: AsyncConsolidationGroupRepository,
     transportOrderRepository: AsyncTransportOrderRepository,
+    stockPositionRepository: AsyncStockPositionRepository,
     verificationProfile: VerificationProfile
 )(using ExecutionContext) extends LazyLogging:
 ```
@@ -332,68 +351,55 @@ class AsyncTaskCompletionService(
 <small>_File: core/src/main/scala/neon/core/AsyncTaskCompletionService.scala_</small>
 
 The constructor mirrors the sync version, but every repository trait is the
-`Async` variant. The `(using ExecutionContext)` is a Scala 3 context parameter:
-`Future` needs an execution context to schedule its callbacks, and this
-parameter lets the caller provide one without explicit passing at every call
-site.
+`Async` variant. One difference is worth noting: the async service takes a
+required `AsyncStockPositionRepository`, where the sync service takes an
+`Option[StockPositionRepository]`. Both shells delegate their decisions to the
+same pure `TaskCompletionCascade.decide` (Chapter 7), so they cannot disagree
+about what a completion produces. The `(using ExecutionContext)` is a Scala 3
+context parameter: `Future` needs an execution context to schedule its
+callbacks, and this parameter lets the caller provide one without explicit
+passing at every call site.
 
-The business logic is the same as the sync version. The difference is in how
-operations are sequenced. Where the sync service uses sequential statements,
-the async service uses a `for`-comprehension over `Future`:
+The business logic is not in this class at all; it is in the cascade module. The
+async service is a shell whose only job is to sequence the I/O. Where the sync
+shell uses sequential statements, the async shell uses a `for`-comprehension
+over `Future` to load the cascade state, then persists the decided outcome:
 
 ```scala
-private def completeAssigned(
-    assigned: Task.Assigned,
-    actualQuantity: Int,
-    at: Instant
-): Future[Either[TaskCompletionError, TaskCompletionResult]] =
-  val (completed, completedEvent) = assigned.complete(actualQuantity, at)
+private def loadCascadeState(assigned: Task.Assigned): Future[CascadeState] =
+  val stockPositionLoad = assigned.stockPositionId match
+    case None                  => Future.successful(None)
+    case Some(stockPositionId) => stockPositionRepository.findById(stockPositionId)
+  val waveLoad = assigned.waveId match
+    case None => Future.successful((Option.empty[Wave], List.empty[Task], Nil))
+    case Some(waveId) =>
+      for
+        wave <- waveRepository.findById(waveId)
+        waveTasks <- taskRepository.findByWaveId(waveId)
+        consolidationGroups <- consolidationGroupRepository.findByWaveId(waveId)
+      yield (wave, waveTasks, consolidationGroups)
   for
-    _ <- taskRepository.save(completed, completedEvent)
-    shortpick <- persistShortpick(completed, at)
-    routing <- persistRouting(completedEvent, at)
-    (waveCompletion, pickingCompletion) <-
-      detectWaveAndPickingCompletion(completed, at)
-  yield Right(
-    TaskCompletionResult(
-      completed, completedEvent, shortpick, routing,
-      waveCompletion, pickingCompletion
-    )
-  )
+    stockPosition <- stockPositionLoad
+    (wave, waveTasks, consolidationGroups) <- waveLoad
+  yield CascadeState(stockPosition, wave, waveTasks, consolidationGroups)
 ```
 
 <small>_File: core/src/main/scala/neon/core/AsyncTaskCompletionService.scala_</small>
 
-Let's read this line by line.
+Every `<-` arrow loads one piece of the `CascadeState` the pure module needs:
+the stock position, the wave, the wave's tasks, and its consolidation groups.
+Each arrow is a `flatMap` under the hood, and if any load fails (the `Future`
+completes with an exception), the remaining loads are skipped. Once the state is
+loaded, the shell calls `TaskCompletionCascade.decide(assigned, actualQuantity,
+at, state)` — the same synchronous, pure function the in-memory shell calls —
+and then fans the resulting `Outcome` out to the async repositories.
 
-The first line is synchronous and pure: `assigned.complete(actualQuantity, at)`
-is a typestate transition method (Chapter 4) that returns a `(Completed, Event)`
-tuple. No `Future` here. The domain logic does not change just because we are
-in an async context.
-
-Then the `for`-comprehension sequences four async operations:
-
-1. **Save the completed task.** The `_ <-` discards the `Unit` result; we
-   only care that the save succeeds.
-2. **Persist the shortpick replacement** (if any). `persistShortpick` calls
-   `ShortpickPolicy`, and if the policy returns `Some`, saves the replacement
-   task through the async repository.
-3. **Persist the routing transport order** (if any). Same pattern: call
-   `RoutingPolicy`, save if there is a result.
-4. **Detect wave and picking completion.** This step calls
-   `taskRepository.findByWaveId` to load all wave tasks, then runs
-   `WaveCompletionPolicy` and `PickingCompletionPolicy`.
-
-Each `<-` arrow in the `for`-comprehension is a `flatMap` under the hood. If
-any step fails (the `Future` completes with an exception), the remaining steps
-are skipped. The `yield` at the end wraps the successful result in `Right`.
-
-The important insight is this: the policies themselves (`ShortpickPolicy`,
-`RoutingPolicy`, `WaveCompletionPolicy`) are still synchronous and pure. They
-are called inside async helper methods, but the policy invocation is a simple
-function call that returns immediately. Only the repository interactions are
-async. The domain logic sits at the center, untouched by the async machinery
-around it.
+The important insight is this: the cascade module and every policy it calls
+(`ShortpickPolicy`, `RoutingPolicy`, `WaveCompletionPolicy`) are synchronous and
+pure. They are invoked between the async load and the async persist, but each is
+a simple function call that returns immediately. Only the repository
+interactions are async. The domain logic sits at the center, untouched by the
+async machinery around it, and identical to what the sync shell runs.
 
 ## Architecture Note: Hexagonal Architecture
 
@@ -472,12 +478,17 @@ aggregate defines both a sync and an async port:
 | HandlingUnit       | `HandlingUnitRepository`       | `AsyncHandlingUnitRepository`         |
 | Workstation        | `WorkstationRepository`        | `AsyncWorkstationRepository`          |
 | Slot               | `SlotRepository`               | `AsyncSlotRepository`                 |
-| StockPosition      | `StockPositionRepository`      | (wired through sync in current scope) |
+| StockPosition      | `StockPositionRepository`      | `AsyncStockPositionRepository`        |
 
-Every sync port follows the same structure: `findById` for single-entity
-lookup, `save` for persisting a state-event pair, and optional query methods
-(`findByWaveId`, `findByHandlingUnitId`) where services need them. Every async
-port mirrors the sync one with `Future` wrappers.
+These eight are a representative sample, not the full set; Neon WES has fourteen
+event-sourced aggregates, and the others (handling-unit stock, inbound delivery,
+goods receipt, cycle count, count task, and inventory) follow the same template.
+Every sync port follows the same structure: `findById` for single-entity lookup,
+`save` for persisting a state-event pair, and optional query methods
+(`findByWaveId`, `findByHandlingUnitId`, or `findAssignedTo`) where services need
+them. Every async port mirrors the sync one with `Future` wrappers, occasionally
+adding a read-side query (like `findAssignedTo`) that only the production path
+uses.
 
 The consistency across ports means that learning one repository teaches you
 all of them. A developer adding a new aggregate module (Chapter 20) can look

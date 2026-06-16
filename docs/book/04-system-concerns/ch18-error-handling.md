@@ -7,10 +7,10 @@ onto the domain model. It is a deliberate, three-level architecture that
 matches different error types to different mechanisms.
 
 In this chapter, we will walk through all three levels: `require()` for
-programming errors, sealed trait ADTs for business errors, and HTTP status
-code mapping for external callers. Along the way, we will see how these
-levels compose into a coherent strategy that spans the entire system, from
-aggregate creation to the JSON response body.
+programming errors, sealed trait ADTs for business errors, and RFC 9457
+Problem Details mapping for external callers. Along the way, we will see how
+these levels compose into a coherent strategy that spans the entire system,
+from aggregate creation to the JSON response body.
 
 ## Three Levels of Error Handling
 
@@ -18,14 +18,15 @@ Before diving into the details, let's get the big picture. Neon WES has
 three distinct categories of errors, and each one is handled by a different
 mechanism:
 
-| Level | What Goes Wrong                                        | Mechanism                   | Example                                 |
-| ----- | ------------------------------------------------------ | --------------------------- | --------------------------------------- |
-| 1     | Programming error: a precondition was violated         | `require()` throws          | Negative quantity, empty order list     |
-| 2     | Business error: a valid request hits an invalid state  | Sealed trait ADT + `Either` | Task not found, wave already cancelled  |
-| 3     | External presentation: mapping business errors to HTTP | Status code selection       | NotFound to 404, AlreadyTerminal to 409 |
+| Level | What Goes Wrong                                        | Mechanism                       | Example                                 |
+| ----- | ------------------------------------------------------ | ------------------------------- | --------------------------------------- |
+| 1     | Programming error: a precondition was violated         | `require()` throws              | Negative quantity, empty order list     |
+| 2     | Business error: a valid request hits an invalid state  | Sealed trait ADT + `Either`     | Task not found, wave already cancelled  |
+| 3     | External presentation: mapping business errors to HTTP | `ProblemMapper` + problem+json  | NotFound to 404, AlreadyTerminal to 409 |
 
 Level 1 catches bugs. Level 2 models expected failure modes. Level 3
-translates those failure modes for HTTP clients. Let's examine each one.
+translates those failure modes into RFC 9457 Problem Details responses for
+HTTP clients. Let's examine each one.
 
 ## Level 1: Precondition Guards with `require()`
 
@@ -78,8 +79,9 @@ what happened.
 `IllegalArgumentException`. In the domain layer, this is the correct response.
 If someone passes a negative quantity to `Task.Planned`, the calling code is
 wrong. The service layer should have validated this before calling the
-aggregate. The exception bubbles up as a 500 Internal Server Error, which is
-appropriate for a bug.
+aggregate. The exception bubbles up to the global exception handler, which
+renders a 500 Internal Server Error (as a problem+json body, see Level 3),
+which is appropriate for a bug.
 
 @:callout(info)
 
@@ -132,7 +134,7 @@ object TaskCompletionError:
   case class VerificationRequired(taskId: TaskId) extends TaskCompletionError
 ```
 
-<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionCascade.scala_</small>
 
 Four things to notice:
 
@@ -191,41 +193,40 @@ less.
 ## Either Composition in Services
 
 Now let's see how services use `Either` to compose operations that can fail
-at multiple points. Here is the `TaskCompletionService.complete` method:
+at multiple points. Task completion is split into a pure decision module and
+a thin shell: the `TaskCompletionCascade.validate` gate decides every failure
+mode up front and returns either an error or a validated `Task.Assigned`:
 
 ```scala
-def complete(
+def validate(
     taskId: TaskId,
+    task: Option[Task],
     actualQuantity: Int,
     verified: Boolean,
-    at: Instant
-): Either[TaskCompletionError, TaskCompletionResult] =
+    verificationProfile: VerificationProfile
+): Either[TaskCompletionError, Task.Assigned] =
   if actualQuantity < 0 then
-    return Left(TaskCompletionError.InvalidActualQuantity(
-      taskId, actualQuantity))
-
-  taskRepository.findById(taskId) match
-    case None =>
-      Left(TaskCompletionError.TaskNotFound(taskId))
-    case Some(assigned: Task.Assigned) =>
-      if verificationProfile.requiresVerification(
-        assigned.packagingLevel) && !verified
-      then Left(TaskCompletionError.VerificationRequired(taskId))
-      else completeAssigned(assigned, actualQuantity, at)
-    case Some(_) =>
-      Left(TaskCompletionError.TaskNotAssigned(taskId))
+    Left(TaskCompletionError.InvalidActualQuantity(taskId, actualQuantity))
+  else
+    task match
+      case None                          => Left(TaskCompletionError.TaskNotFound(taskId))
+      case Some(assigned: Task.Assigned) =>
+        if verificationProfile.requiresVerification(assigned.packagingLevel) && !verified
+        then Left(TaskCompletionError.VerificationRequired(taskId))
+        else Right(assigned)
+      case Some(_) => Left(TaskCompletionError.TaskNotAssigned(taskId))
 ```
 
-<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionCascade.scala_</small>
 
 Let's trace the logic step by step:
 
 1. **Validate input.** If `actualQuantity` is negative, return
    `Left(InvalidActualQuantity)` immediately. This is a borderline case
-   between Level 1 and Level 2; the service catches it as a business error
+   between Level 1 and Level 2; the cascade catches it as a business error
    rather than letting the aggregate's `require()` throw.
 
-2. **Look up the task.** If `findById` returns `None`, return
+2. **Look up the task.** If the loaded task is `None`, return
    `Left(TaskNotFound)`.
 
 3. **Check the state.** If the task exists but is not `Assigned`, return
@@ -235,9 +236,13 @@ Let's trace the logic step by step:
 4. **Check verification.** If the packaging level requires verification and
    the `verified` flag is false, return `Left(VerificationRequired)`.
 
-5. **Proceed.** Only when all four checks pass do we call
-   `completeAssigned`, which runs the full cascade (shortpick check, routing,
-   wave completion, picking completion) and returns `Right(result)`.
+5. **Proceed.** Only when all four checks pass does `validate` return
+   `Right(assigned)`. The shell then loads the cascade's state and calls
+   `TaskCompletionCascade.decide`, which runs the full cascade (shortpick
+   check, routing, wave completion, picking completion) over a total function
+   that cannot fail. The sync `TaskCompletionService` and its async sibling
+   are thin load/decide/persist shells over this one module, so they cannot
+   drift.
 
 And here is `WaveCancellationService.cancel`, which follows the same
 pattern:
@@ -248,16 +253,11 @@ def cancel(
     at: Instant
 ): Either[WaveCancellationError, WaveCancellationResult] =
   waveRepository.findById(waveId) match
-    case None =>
-      Left(WaveCancellationError.WaveNotFound(waveId))
-    case Some(planned: Wave.Planned) =>
-      cancelPlanned(planned, at)
-    case Some(released: Wave.Released) =>
-      cancelReleased(released, at)
-    case Some(_: Wave.Completed) =>
-      Left(WaveCancellationError.WaveAlreadyTerminal(waveId))
-    case Some(_: Wave.Cancelled) =>
-      Left(WaveCancellationError.WaveAlreadyTerminal(waveId))
+    case None                          => Left(WaveCancellationError.WaveNotFound(waveId))
+    case Some(planned: Wave.Planned)   => cancelPlanned(planned, at)
+    case Some(released: Wave.Released) => cancelReleased(released, at)
+    case Some(_: Wave.Completed)       => Left(WaveCancellationError.WaveAlreadyTerminal(waveId))
+    case Some(_: Wave.Cancelled)       => Left(WaveCancellationError.WaveAlreadyTerminal(waveId))
 ```
 
 <small>_File: core/src/main/scala/neon/core/WaveCancellationService.scala_</small>
@@ -272,40 +272,89 @@ typestate check. The `Left(WaveAlreadyTerminal)` is an error ADT case. The
 two mechanisms work together: typestates tell us _which_ state the entity is
 in, and the error ADT tells the _caller_ why the operation was rejected.
 
-## Level 3: HTTP Status Code Mapping
+## Level 3: Problem Details Mapping
 
-The third level bridges domain errors to the outside world. HTTP routes
-pattern-match on the `Either` result from services and select the
-appropriate status code. Here is how `TaskRoutes` maps
-`TaskCompletionError`:
+The third level bridges domain errors to the outside world. Rather than have
+every route hand-roll a status-code match, Neon WES keeps the
+error-to-response knowledge at a single seam: a `ProblemMapper` type class
+with one given instance per error ADT. Each instance maps an error to a
+`ProblemDetails` value, the RFC 9457 (`application/problem+json`) shape. See
+ADR 0011.
 
 ```scala
-case Left(error) =>
-  error match
-    case _: TaskCompletionError.TaskNotFound =>
-      complete(StatusCodes.NotFound)
-    case _: TaskCompletionError.TaskNotAssigned =>
-      complete(StatusCodes.Conflict)
-    case _: TaskCompletionError.InvalidActualQuantity =>
-      complete(StatusCodes.UnprocessableEntity)
-    case _: TaskCompletionError.VerificationRequired =>
-      complete(StatusCodes.PreconditionRequired)
+trait ProblemMapper[E]:
+  def toProblem(error: E): ProblemDetails
+
+object ProblemMapper:
+
+  /** Completes the request with the error's problem response. */
+  def completeProblem[E](error: E)(using mapper: ProblemMapper[E]): Route =
+    val problem = mapper.toProblem(error)
+    complete(StatusCode.int2StatusCode(problem.status) -> problem)
+```
+
+<small>_File: app/src/main/scala/neon/app/http/ProblemMapper.scala_</small>
+
+A route no longer selects a status code itself. On the `Left` branch it just
+calls `completeProblem(error)`, and given resolution finds the right mapper.
+Here is `TaskRoutes` completing the task-completion endpoint:
+
+```scala
+onSuccess(
+  taskCompletionService.complete(taskId, request.actualQuantity, request.verified, Instant.now())
+):
+  case Right(result) =>
+    complete(TaskCompletionResponse(/* ... */))
+  case Left(error) =>
+    completeProblem(error)
 ```
 
 <small>_File: app/src/main/scala/neon/app/http/TaskRoutes.scala_</small>
 
-And `WaveRoutes` maps `WaveCancellationError`:
+`WaveRoutes` does exactly the same thing on its `Left` branch:
+`completeProblem(error)`. The difference between the two routes is only which
+`ProblemMapper` instance the compiler selects; the call site is identical.
+
+The actual error-to-status decision lives inside each given instance. Here is
+the `TaskCompletionError` mapper:
 
 ```scala
-case Left(_: WaveCancellationError.WaveNotFound) =>
-  complete(StatusCodes.NotFound)
-case Left(_: WaveCancellationError.WaveAlreadyTerminal) =>
-  complete(StatusCodes.Conflict)
+given ProblemMapper[TaskCompletionError] with
+  def toProblem(error: TaskCompletionError): ProblemDetails = error match
+    case TaskCompletionError.TaskNotFound(taskId) =>
+      ProblemDetails.of(
+        status = StatusCodes.NotFound,
+        slug = "task-not-found",
+        title = "Task not found",
+        detail = Some(s"Task ${taskId.value} was not found")
+      )
+    case TaskCompletionError.TaskNotAssigned(taskId) =>
+      ProblemDetails.of(
+        status = StatusCodes.Conflict,
+        slug = "task-not-assigned",
+        title = "Task not assigned",
+        detail = Some(s"Task ${taskId.value} is not in the Assigned state required for completion")
+      )
+    case TaskCompletionError.InvalidActualQuantity(taskId, actualQuantity) =>
+      ProblemDetails.of(
+        status = StatusCodes.UnprocessableEntity,
+        slug = "invalid-actual-quantity",
+        title = "Invalid actual quantity",
+        detail = Some(s"Actual quantity $actualQuantity for task ${taskId.value} is invalid")
+      )
+    case TaskCompletionError.VerificationRequired(taskId) =>
+      ProblemDetails.of(
+        status = StatusCodes.PreconditionRequired,
+        slug = "verification-required",
+        title = "Verification required",
+        detail = Some(s"Task ${taskId.value} requires verification before completion")
+      )
 ```
 
-<small>_File: app/src/main/scala/neon/app/http/WaveRoutes.scala_</small>
+<small>_File: app/src/main/scala/neon/app/http/ProblemMapper.scala_</small>
 
-The mapping convention is consistent across every route in the system:
+The status mapping convention is consistent across every error ADT in the
+system:
 
 | Domain Error Pattern                    | HTTP Status               | Semantics                                             |
 | --------------------------------------- | ------------------------- | ----------------------------------------------------- |
@@ -314,50 +363,54 @@ The mapping convention is consistent across every route in the system:
 | `InvalidXxx`, validation errors         | 422 Unprocessable Entity  | Structurally valid request, semantically invalid data |
 | `VerificationRequired`                  | 428 Precondition Required | A business precondition was not met                   |
 
-The route layer also factors out reusable error mappers for services that
-have many error cases. Here is `TaskRoutes`' lifecycle error mapper:
+Because each error trait is sealed and the `match` is total, the compiler
+verifies exhaustive mapping. If someone adds a new error case to
+`TaskCompletionError`, the given instance will not compile until the new case
+maps to a status. This is the sealed trait's killer feature: no error can
+silently slip through, and no error can reach a client without a problem
+body.
+
+### The Problem Details Body
+
+Unlike a bare status code, every error now carries a structured body. The
+`ProblemDetails` record renders an RFC 9457 document: a `type` URI, the
+numeric `status`, a short `title`, and an optional human-readable `detail`.
 
 ```scala
-private def mapLifecycleError(error: TaskLifecycleError): Route =
-  error match
-    case _: TaskLifecycleError.TaskNotFound =>
-      complete(StatusCodes.NotFound)
-    case _: TaskLifecycleError.TaskInWrongState =>
-      complete(StatusCodes.Conflict)
-    case _: TaskLifecycleError.TaskAlreadyTerminal =>
-      complete(StatusCodes.Conflict)
-    case _: TaskLifecycleError.UserNotFound =>
-      complete(StatusCodes.UnprocessableEntity)
-    case _: TaskLifecycleError.UserNotActive =>
-      complete(StatusCodes.UnprocessableEntity)
+final case class ProblemDetails(
+    status: Int,
+    title: String,
+    `type`: String = ProblemDetails.About,
+    detail: Option[String] = None,
+    instance: Option[String] = None
+)
 ```
 
-<small>_File: app/src/main/scala/neon/app/http/TaskRoutes.scala_</small>
+<small>_File: app/src/main/scala/neon/app/http/ProblemDetails.scala_</small>
 
-Because the error traits are sealed, the compiler verifies exhaustive
-matching. If someone adds a new error case to `TaskLifecycleError`, every
-route that matches on it will produce a warning until the new case is
-handled. This is the sealed trait's killer feature: no error can silently
-slip through.
-
-### Why No Error Bodies?
-
-You may have noticed that the routes return status codes without JSON error
-bodies. In a production system, you might add structured error responses:
+`ProblemDetails.of(slug = "task-not-assigned", ...)` builds the `type` field
+as `urn:neon:error:task-not-assigned`, so a client can branch on a stable URI
+rather than parsing prose. The marshaller emits the body with the
+`application/problem+json` content type. A `409` from the task-completion
+endpoint therefore looks like:
 
 ```json
 {
-  "error": "TaskNotAssigned",
-  "taskId": "0195abc...",
-  "message": "Task is in Planned state, not Assigned"
+  "status": 409,
+  "title": "Task not assigned",
+  "type": "urn:neon:error:task-not-assigned",
+  "detail": "Task 0195abc... is not in the Assigned state required for completion"
 }
 ```
 
-The important point is that the domain error ADT would be the single source
-of truth for generating these bodies. The information is already in the
-error case class fields (`taskId`, `actualQuantity`). Adding JSON error
-responses is a presentation concern that does not require changing the
-domain or service layers.
+The domain error ADT is the single source of truth for this body: the `slug`,
+title, and detail all derive from the specific error case and its fields
+(`taskId`, `actualQuantity`). Framework-level failures that never reach a
+route handler, such as malformed JSON, a missing header, or an unhandled
+exception, are funnelled through the same shape by `ProblemRouteHandlers`,
+the `handleRejections` / `handleExceptions` wrapper installed in `HttpServer`
+(Chapter 16). Every error response a client sees, domain or infrastructural,
+is a problem+json document.
 
 ## Architecture Note: Railway Oriented Programming
 
@@ -407,8 +460,9 @@ The three levels we discussed map onto the railway model:
   not a track switch.
 - **Level 2 (sealed trait + `Either`)**: the railway itself. Every switch
   function can route to the success track or the failure track.
-- **Level 3 (HTTP mapping)**: the station at the end of the line, where we
-  translate the track the train arrived on into an HTTP response.
+- **Level 3 (Problem Details mapping)**: the station at the end of the line,
+  where we translate the track the train arrived on into an HTTP
+  problem+json response.
 
 @:callout(info)
 
@@ -426,9 +480,11 @@ examples use F#, but the concepts map directly to Scala's `Either` and
 - **Sealed trait ADTs** enumerate every business failure mode for each
   service. Services return `Either[Error, Result]`, making errors visible
   in the type signature and forcing callers to handle them.
-- **HTTP status code mapping** translates domain errors to standard HTTP
-  status codes. The sealed trait's exhaustive matching guarantee ensures
-  every error case has a corresponding status code.
+- **Problem Details mapping** translates domain errors to RFC 9457
+  `application/problem+json` responses through a `ProblemMapper` given per
+  error ADT; routes call `completeProblem(error)`. The sealed trait's
+  exhaustive matching guarantee ensures every error case maps to a status and
+  a structured body.
 - **Railway Oriented Programming** provides the conceptual framework:
   `Either` is a two-track railway, `flatMap` chains switch functions, and
   `Left` values bypass all remaining processing.

@@ -108,7 +108,7 @@
 
 **Port.** An abstract trait defining an interface between the domain and external systems (e.g., `WaveRepository`). Ports are implemented by in-memory mocks in tests and Pekko repositories in production.
 
-**Projection.** A CQRS read-side process that consumes tagged events from the journal and writes denormalized views to query tables. Projections run via `ShardedDaemonProcess` with `exactlyOnce` delivery.
+**Projection.** A CQRS read-side process that consumes events by slice from the journal (via `EventSourcedProvider.eventsBySlices`, not event tags) and writes denormalized views to query tables. Projections run via `ShardedDaemonProcess` with `atLeastOnce` delivery, relying on idempotent upserts.
 
 **R2DBC.** Reactive Relational Database Connectivity. A non-blocking database driver API used by Pekko Persistence for journal, snapshot, and projection storage against PostgreSQL.
 

@@ -103,32 +103,52 @@ object ProjectionBootstrap:
     given ExecutionContext = system.executionContext
 
     initProjection[TaskEvent](
-      "task-projection",
-      "Task",
-      () => TaskProjectionHandler()
+      name = "task-projection",
+      entityType = "Task",
+      handlerFactory = () => TaskProjectionHandler()
+    )
+
+    initProjection[TaskEvent](
+      name = "task-by-assignee-projection",
+      entityType = "Task",
+      handlerFactory = () => TaskByAssigneeProjectionHandler()
     )
 
     initProjection[ConsolidationGroupEvent](
-      "consolidation-group-projection",
-      "ConsolidationGroup",
-      () => ConsolidationGroupProjectionHandler()
+      name = "consolidation-group-projection",
+      entityType = "ConsolidationGroup",
+      handlerFactory = () => ConsolidationGroupProjectionHandler()
     )
 
     initProjection[TransportOrderEvent](
-      "transport-order-projection",
-      "TransportOrder",
-      () => TransportOrderProjectionHandler()
+      name = "transport-order-projection",
+      entityType = "TransportOrder",
+      handlerFactory = () => TransportOrderProjectionHandler()
     )
 
-    // ... one initProjection call per event-sourced aggregate
+    // ... one initProjection call per projection (fourteen in all)
 ```
 
 <small>_File: app/src/main/scala/neon/app/projection/ProjectionBootstrap.scala_</small>
 
-The pattern is consistent: every event-sourced aggregate gets its own
-projection, identified by a name string and the entity type tag that matches
-what the actor uses in `.withTagger`. The handler factory is a zero-argument
-function that creates a fresh handler instance.
+The pattern is consistent: each projection is identified by a name string and
+the `entityType` string, the same logical entity-type name the actor registered
+with its `EntityTypeKey`, which `EventSourcedProvider.eventsBySlices` uses to
+select that aggregate's events from the journal. The handler factory is a
+zero-argument function that creates a fresh handler instance. Most aggregates
+have a single projection, but a busy one can have more: the `Task` aggregate
+feeds both `task-projection` and `task-by-assignee-projection`, two read models
+built from the same `TaskEvent` stream.
+
+@:callout(info)
+
+Events are selected by slice, not by tag. None of the actors call
+`.withTagger`; the projection's source provider,
+`EventSourcedProvider.eventsBySlices`, reads every event for the given
+`entityType` directly from the R2DBC journal, partitioned by slice range. There
+is no per-event tag to maintain.
+
+@:@
 
 ### The initProjection Helper
 
@@ -209,8 +229,10 @@ Now let's see what happens inside a handler when an event arrives. The
 read-side tables: `task_by_wave` and `task_by_handling_unit`.
 
 ```scala
-class TaskProjectionHandler(using ExecutionContext)
+class TaskProjectionHandler(using ExecutionContext, ActorSystem[?])
     extends LoggingProjectionHandler[TaskEvent]:
+
+  private val eventStream = summon[ActorSystem[?]].eventStream
 
   override protected def processEvent(
       session: R2dbcSession,
@@ -218,29 +240,18 @@ class TaskProjectionHandler(using ExecutionContext)
   ): Future[Done] =
     envelope.event match
       case e: TaskEvent.TaskCreated =>
-        val stmt = session.createStatement(
-          """INSERT INTO task_by_wave
-            |  (task_id, wave_id, order_id, handling_unit_id, state)
-            |VALUES ($1, $2, $3, $4, $5)
-            |ON CONFLICT (task_id) DO UPDATE SET state = $5""".stripMargin
-        )
+        val stmt = session.createStatement(TaskByWave.Upsert)
         stmt.bind(0, e.taskId.value)
-        bindOptionalUuid(stmt, 1, e.waveId.map(_.value))
+        bindOptionalUuid(stmt = stmt, index = 1, value = e.waveId.map(_.value))
         stmt.bind(2, e.orderId.value)
-        bindOptionalUuid(stmt, 3, e.handlingUnitId.map(_.value))
+        bindOptionalUuid(stmt = stmt, index = 3, value = e.handlingUnitId.map(_.value))
         stmt.bind(4, "Planned")
 
-        // Also insert into task_by_handling_unit if present
         val insertHandlingUnit = e.handlingUnitId.map { handlingUnitId =>
-          val stmt2 = session.createStatement(
-            """INSERT INTO task_by_handling_unit
-              |  (task_id, handling_unit_id, wave_id, order_id, state)
-              |VALUES ($1, $2, $3, $4, $5)
-              |ON CONFLICT (task_id) DO UPDATE SET state = $5""".stripMargin
-          )
+          val stmt2 = session.createStatement(TaskByHandlingUnit.Upsert)
           stmt2.bind(0, e.taskId.value)
           stmt2.bind(1, handlingUnitId.value)
-          bindOptionalUuid(stmt2, 2, e.waveId.map(_.value))
+          bindOptionalUuid(stmt = stmt2, index = 2, value = e.waveId.map(_.value))
           stmt2.bind(3, e.orderId.value)
           stmt2.bind(4, "Planned")
           stmt2
@@ -255,6 +266,15 @@ class TaskProjectionHandler(using ExecutionContext)
       case e: TaskEvent.TaskAllocated =>
         updateState(session, e.taskId.value, "Allocated")
       case e: TaskEvent.TaskAssigned =>
+        eventStream.tell(
+          org.apache.pekko.actor.typed.eventstream.EventStream.Publish(
+            NotificationEvent.TaskAssignedToUser(
+              targetUser = e.userId,
+              taskId = e.taskId,
+              at = e.occurredAt
+            )
+          )
+        )
         updateState(session, e.taskId.value, "Assigned")
       case e: TaskEvent.TaskCompleted =>
         updateState(session, e.taskId.value, "Completed")
@@ -266,18 +286,33 @@ class TaskProjectionHandler(using ExecutionContext)
 
 Several patterns stand out:
 
+**SQL lives in a schema object, not inline strings.** The statements are built
+from constants like `TaskByWave.Upsert` and `TaskByHandlingUnit.Upsert`, defined
+once on the `TaskProjectionSchema` object in the `task` module. We will look at
+that object in the next section. The handler that writes these tables and the
+Pekko repository that reads them (Chapter 11) consult the same constants, so the
+two cannot drift apart.
+
 **Pattern matching on the event sealed trait.** Every event type gets its own
 case. For `TaskCreated`, we insert a new row. For state-change events
 (`TaskAllocated`, `TaskAssigned`, `TaskCompleted`, `TaskCancelled`), we
 update the `state` column.
 
-**Idempotent writes with ON CONFLICT.** The `INSERT ... ON CONFLICT (task_id)
-DO UPDATE` clause means replaying the same event twice produces the same
-result. This is essential for at-least-once delivery.
+**Idempotent writes with ON CONFLICT.** The `Upsert` constant expands to an
+`INSERT ... ON CONFLICT (task_id) DO UPDATE`, so replaying the same event twice
+produces the same result. This is essential for at-least-once delivery.
 
 **Two tables from one event.** `TaskCreated` writes to both `task_by_wave`
 and `task_by_handling_unit`. This denormalization lets us query tasks
 efficiently by either dimension without joins.
+
+**A side effect beyond the database.** On `TaskAssigned`, the handler also
+publishes a `NotificationEvent.TaskAssignedToUser` to the actor system's event
+stream. A WebSocket route subscribes to that stream and pushes the notification
+to the assigned operator's mobile device. The projection is thus doing two
+jobs: maintaining the read model and fanning out a real-time notification. The
+handler takes an `ActorSystem[?]` as a `using` parameter precisely so it can
+reach the event stream.
 
 **Optional UUID binding.** Tasks may or may not belong to a wave (standalone
 tasks have `waveId = None`). The `bindOptionalUuid` helper binds `NULL` when
@@ -297,7 +332,8 @@ private def bindOptionalUuid(
 <small>_File: app/src/main/scala/neon/app/projection/TaskProjectionHandler.scala_</small>
 
 **Shared updateState helper.** Four of the five event types need the same
-operation (update two tables), so we factor that into a private method:
+operation (update two tables), so we factor that into a private method, again
+reading its SQL from the schema object:
 
 ```scala
 private def updateState(
@@ -306,15 +342,11 @@ private def updateState(
     state: String
 ): Future[Done] =
   val stmt1 = session
-    .createStatement(
-      "UPDATE task_by_wave SET state = $1 WHERE task_id = $2"
-    )
+    .createStatement(TaskByWave.UpdateState)
     .bind(0, state)
     .bind(1, taskId)
   val stmt2 = session
-    .createStatement(
-      "UPDATE task_by_handling_unit SET state = $1 WHERE task_id = $2"
-    )
+    .createStatement(TaskByHandlingUnit.UpdateState)
     .bind(0, state)
     .bind(1, taskId)
   session
@@ -325,14 +357,61 @@ private def updateState(
 
 <small>_File: app/src/main/scala/neon/app/projection/TaskProjectionHandler.scala_</small>
 
+### The Projection Schema Object
+
+Every SQL string the handler uses is a constant on the `TaskProjectionSchema`
+object, which lives in the `task` module (not the `app` module). Grouping the
+table name, column names, and statements in one place means a column rename is
+a single edit, and it gives the Pekko repository queries from Chapter 11 the
+same source of truth as the projection handler. Here is the `TaskByWave`
+fragment of that object:
+
+```scala
+object TaskProjectionSchema:
+
+  object TaskByWave:
+    val Table = "task_by_wave"
+    val TaskId = "task_id"
+    val WaveId = "wave_id"
+    val OrderId = "order_id"
+    val HandlingUnitId = "handling_unit_id"
+    val State = "state"
+
+    val SelectTaskIdsByWaveId =
+      s"SELECT $TaskId FROM $Table WHERE $WaveId = $$1"
+
+    val Upsert =
+      s"""INSERT INTO $Table ($TaskId, $WaveId, $OrderId, $HandlingUnitId, $State)
+         |VALUES ($$1, $$2, $$3, $$4, $$5)
+         |ON CONFLICT ($TaskId) DO UPDATE SET $State = $$5""".stripMargin
+
+    val UpdateState =
+      s"UPDATE $Table SET $State = $$1 WHERE $TaskId = $$2"
+
+  object TaskByHandlingUnit:
+    // ... same shape, keyed by handling_unit_id
+
+  object TaskByAssignee:
+    // ... task_id, user_id, state, assigned_at; read by findAssignedTo
+```
+
+<small>_File: task/src/main/scala/neon/task/TaskProjectionSchema.scala_</small>
+
+The column names are interpolated into the statement strings, so the `Upsert`
+and `UpdateState` constants stay consistent with the column list automatically.
+The `task` module owns three such index objects, `TaskByWave`,
+`TaskByHandlingUnit`, and `TaskByAssignee`, one per read-side table built from
+task events.
+
 ## The Full Projection Catalogue
 
-Neon WES ships with thirteen projections. Each one follows the same pattern
+Neon WES ships with fourteen projections. Each one follows the same pattern
 we just studied. Here is the complete catalogue:
 
 | Projection                       | Handler Class                         | Read-Side Table                         | Key Columns                                                    |
 | -------------------------------- | ------------------------------------- | --------------------------------------- | -------------------------------------------------------------- |
 | `task-projection`                | `TaskProjectionHandler`               | `task_by_wave`, `task_by_handling_unit` | `task_id`, `wave_id`, `state`                                  |
+| `task-by-assignee-projection`    | `TaskByAssigneeProjectionHandler`     | `task_by_assignee`                      | `task_id`, `user_id`, `state`, `assigned_at`                  |
 | `consolidation-group-projection` | `ConsolidationGroupProjectionHandler` | `consolidation_group_by_wave`           | `consolidation_group_id`, `wave_id`, `state`                   |
 | `transport-order-projection`     | `TransportOrderProjectionHandler`     | `transport_order_by_handling_unit`      | `transport_order_id`, `handling_unit_id`, `state`              |
 | `workstation-projection`         | `WorkstationProjectionHandler`        | `workstation_by_type_and_state`         | `workstation_id`, `workstation_type`, `state`                  |
@@ -353,7 +432,7 @@ workstations by type and current state," and so on. This is a deliberate
 CQRS practice: name your read model tables after the queries they serve.
 
 Some projections are more complex than others. `StockPositionProjectionHandler`
-handles ten different event types (Created, Allocated, Deallocated,
+handles eleven different event types (Created, Allocated, Deallocated,
 QuantityAdded, AllocatedConsumed, Reserved, ReservationReleased, Blocked,
 Unblocked, Adjusted, StatusChanged) because stock positions have rich
 quantity semantics. `GoodsReceiptProjectionHandler` is simpler, tracking just
@@ -417,7 +496,7 @@ The design is a straightforward application of the Template Method pattern:
    re-throws so Pekko's projection supervision can handle the failure
    (typically by retrying or restarting the projection).
 
-This means we get consistent observability across all thirteen projections
+This means we get consistent observability across all fourteen projections
 without any boilerplate in the concrete handlers. When a projection falls
 behind or starts failing, the ERROR logs immediately tell us which entity
 and which event type caused the problem.
@@ -441,5 +520,5 @@ not much use if we cannot expose them through an API.
 In the next chapter, we will build the HTTP layer that ties everything
 together. We will see how Pekko HTTP routes call async services, how circe
 provides JSON marshalling with zero boilerplate, how domain error ADTs map
-cleanly to HTTP status codes, and how session-based authentication protects
-every endpoint.
+cleanly to RFC 9457 problem-details responses, and how token- and
+cookie-based authentication protects every endpoint.

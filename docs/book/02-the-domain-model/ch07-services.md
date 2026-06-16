@@ -64,7 +64,7 @@ object TaskCompletionError:
   case class VerificationRequired(taskId: TaskId) extends TaskCompletionError
 ```
 
-<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionCascade.scala_</small>
 
 Four things to notice here.
 
@@ -118,7 +118,7 @@ case class TaskCompletionResult(
 )
 ```
 
-<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionCascade.scala_</small>
 
 This result captures _everything_ that happened. The primary action (task
 completed) is always present. The cascade effects are each `Option` because
@@ -127,30 +127,41 @@ unit means `transportOrder = None`, and so on. This gives callers full
 visibility. The HTTP layer can choose which fields to include in a response.
 The test layer can assert on exactly which cascades fired. Nothing is hidden.
 
-## Walkthrough: TaskCompletionService
+## The Decider Split: Cascade Module and Thin Shells
 
-`TaskCompletionService` is the centerpiece of this chapter. A single call to
-`complete()` can trigger up to five downstream effects, all coordinated within
-one service method. Let's look at the constructor first, then walk through the
-method step by step.
+`TaskCompletionService` is the centerpiece of this chapter, but it is not where
+the interesting logic lives. A single completion can trigger up to five
+downstream effects: stock adjustment, a shortpick replacement, a transport
+order, wave completion, and a consolidation group transition. Coordinating that
+cascade is intricate, and the system has both a synchronous and an asynchronous
+service that must produce identical results. To keep those two services from
+drifting, the cascade is factored into a _pure decision module_ that neither
+service can bypass.
 
-```scala
-class TaskCompletionService(
-    taskRepository: TaskRepository,
-    waveRepository: WaveRepository,
-    consolidationGroupRepository: ConsolidationGroupRepository,
-    transportOrderRepository: TransportOrderRepository,
-    verificationProfile: VerificationProfile,
-    stockPositionRepository: Option[StockPositionRepository] = None
-):
-```
+That module is `TaskCompletionCascade`. It is a plain `object` with no
+repositories, no `Future`, and no I/O of any kind. It exposes two functions:
 
-<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
+- `validate` — the gate. Given the loaded task and the inputs, it returns
+  `Either[TaskCompletionError, Task.Assigned]`: a `Left` if any precondition
+  fails, or a `Right` carrying the one state from which completion is legal.
+- `decide` — the cascade. Given a validated `Task.Assigned` and a pre-loaded
+  snapshot of the surrounding world, it computes _every_ state transition and
+  event the completion produces, plus the ordered list of stock writes.
 
-The constructor takes five repository traits and one configuration object.
-Notice that `stockPositionRepository` is `Option`: stock management is not
-required for all warehouse configurations, so when the repository is `None`,
-the service simply skips the stock consumption step.
+This is the Decider pattern the book's foreword praised, made concrete:
+`validate`/`decide` are pure functions over pre-loaded state, and the services
+are thin shells that load, call `decide`, and persist. The shell does the I/O;
+the module does the thinking. Because both shells call the same `decide`, the
+sync and async paths cannot diverge.
+
+@:callout(info)
+
+`TaskCompletionError` and `TaskCompletionResult` (which we saw above) are both
+defined _inside_ `TaskCompletionCascade.scala`, alongside the module. They are
+the cascade's vocabulary, not the service's, so they live with the decision
+logic that produces them.
+
+@:@
 
 `VerificationProfile` is a lightweight configuration case class that defines
 which packaging levels require scan verification:
@@ -170,224 +181,280 @@ A warehouse that requires verification for each-level picks passes
 `VerificationProfile(Set(PackagingLevel.Each))`. A warehouse with no
 verification requirements passes `VerificationProfile.disabled`.
 
-### Step 0: Validation
+### The validation gate
 
 ```scala
-def complete(
+def validate(
     taskId: TaskId,
+    task: Option[Task],
     actualQuantity: Int,
     verified: Boolean,
-    at: Instant
-): Either[TaskCompletionError, TaskCompletionResult] =
+    verificationProfile: VerificationProfile
+): Either[TaskCompletionError, Task.Assigned] =
   if actualQuantity < 0 then
-    return Left(TaskCompletionError.InvalidActualQuantity(taskId, actualQuantity))
-
-  taskRepository.findById(taskId) match
-    case None                          => Left(TaskCompletionError.TaskNotFound(taskId))
-    case Some(assigned: Task.Assigned) =>
-      if verificationProfile.requiresVerification(assigned.packagingLevel) && !verified
-      then Left(TaskCompletionError.VerificationRequired(taskId))
-      else completeAssigned(assigned, actualQuantity, at)
-    case Some(_) => Left(TaskCompletionError.TaskNotAssigned(taskId))
+    Left(TaskCompletionError.InvalidActualQuantity(taskId, actualQuantity))
+  else
+    task match
+      case None                          => Left(TaskCompletionError.TaskNotFound(taskId))
+      case Some(assigned: Task.Assigned) =>
+        if verificationProfile.requiresVerification(assigned.packagingLevel) && !verified
+        then Left(TaskCompletionError.VerificationRequired(taskId))
+        else Right(assigned)
+      case Some(_) => Left(TaskCompletionError.TaskNotAssigned(taskId))
 ```
 
-<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionCascade.scala_</small>
 
-Before any business logic runs, the service validates inputs and loads the
-aggregate. There are four ways to reach the failure track:
+The gate takes the loaded task as a parameter; it does not fetch it. There are
+four ways to reach the failure track:
 
-1. **Negative quantity.** The `actualQuantity < 0` guard uses an early return.
-   Zero is valid (it represents a full shortpick where the worker found nothing
-   at the location).
-2. **Task not found.** The repository returned `None`.
-3. **Wrong state.** The repository found a task, but it is not `Assigned`. The
-   typed pattern match `Some(assigned: Task.Assigned)` only matches the one
-   valid state. Every other state (Planned, Allocated, Completed, Cancelled)
-   falls through to `TaskNotAssigned`.
+1. **Negative quantity.** Zero is valid (it represents a full shortpick where
+   the worker found nothing at the location), but a negative quantity is an
+   `InvalidActualQuantity`.
+2. **Task not found.** The shell passed `None`.
+3. **Wrong state.** The typed pattern match `Some(assigned: Task.Assigned)`
+   only matches the one valid state. Every other state (Planned, Allocated,
+   Completed, Cancelled) falls through to `TaskNotAssigned`.
 4. **Verification required.** The task's packaging level requires a
    verification scan, and the caller did not provide one.
 
-Only after passing all four checks does execution continue to `completeAssigned`.
+On success, `validate` returns the `Task.Assigned` itself, not a bare boolean.
+That return type is the contract for `decide`: you cannot call `decide` without
+first proving, in the type system, that you hold an assignable task.
 
-### Step 1: Complete the task
+### The cascade decision
 
 ```scala
-private def completeAssigned(
+def decide(
     assigned: Task.Assigned,
     actualQuantity: Int,
-    at: Instant
-): Either[TaskCompletionError, TaskCompletionResult] =
+    at: Instant,
+    state: CascadeState
+): Outcome =
   val (completed, completedEvent) = assigned.complete(actualQuantity, at)
-  taskRepository.save(completed, completedEvent)
+  val stockWrites = stockWritesFor(completed, state.stockPosition, at)
+  val shortpick = ShortpickPolicy(completed, at)
+  val routing = RoutingPolicy(completedEvent, at)
+
+  val (waveCompletion, pickingCompletion) = completed.waveId match
+    case None    => (None, None)
+    case Some(_) =>
+      // Canonical post-completion task set: represent the completing task by its
+      // Completed state whatever the load returned, and include the shortpick
+      // replacement so an open remainder suppresses completion in every shell.
+      val effectiveWaveTasks =
+        state.waveTasks.filterNot(_.id == completed.id) ++
+          (completed :: shortpick.map(_._1).toList)
+
+      val waveCompletion = state.wave.collect { case released: Wave.Released =>
+        WaveCompletionPolicy(effectiveWaveTasks, released, at)
+      }.flatten
+
+      val pickingCompletion = state.consolidationGroups
+        .collectFirst {
+          case group: ConsolidationGroup.Created
+              if group.orderIds.contains(completed.orderId) =>
+            group
+        }
+        .flatMap { group =>
+          val groupOrderIds = group.orderIds.toSet
+          val groupTasks =
+            effectiveWaveTasks.filter(task => groupOrderIds.contains(task.orderId))
+          PickingCompletionPolicy(groupTasks, group, at)
+        }
+
+      (waveCompletion, pickingCompletion)
+
+  Outcome(
+    result = TaskCompletionResult(
+      completed = completed,
+      completedEvent = completedEvent,
+      shortpick = shortpick,
+      transportOrder = routing,
+      waveCompletion = waveCompletion,
+      pickingCompletion = pickingCompletion,
+      stockConsumption = stockWrites.lastOption
+    ),
+    stockWrites = stockWrites
+  )
 ```
 
-The `assigned.complete(actualQuantity, at)` call is the typestate transition
-from Chapter 4. It returns `(Task.Completed, TaskEvent.TaskCompleted)`. The
-service destructures the tuple, saves both the new state and the event to the
-repository, and continues with the cascade.
+<small>_File: core/src/main/scala/neon/core/TaskCompletionCascade.scala_</small>
 
-### Step 2: Stock consumption
+Read this as five decisions, all over data already in hand:
+
+1. **Complete the task.** `assigned.complete(actualQuantity, at)` is the
+   typestate transition from Chapter 4, returning `(Task.Completed, Event)`.
+2. **Stock writes.** `stockWritesFor` (below) computes the stock adjustments as
+   a pure list. Nothing is persisted here.
+3. **Shortpick.** `ShortpickPolicy` decides whether a replacement is needed.
+4. **Routing.** `RoutingPolicy` decides whether a transport order is needed.
+5. **Wave and picking completion.** Guarded by `completed.waveId`. Standalone
+   tasks (no wave) skip both checks.
+
+The wave and picking checks read from `state`: the wave, its tasks, and its
+consolidation groups, all loaded by the shell _before_ `decide` ran. But the
+loaded `waveTasks` may be stale: it might still show the completing task in its
+old `Assigned` state, or miss a just-saved sibling. So `decide` normalizes the
+set itself, building `effectiveWaveTasks` by dropping the completing task's old
+entry and appending its fresh `Completed` state plus any shortpick replacement.
+This is what lets the policy see reality regardless of how stale the shell's
+load was, and it is why the shortpick replacement correctly suppresses wave
+completion: the open replacement is in the set the policy evaluates.
+
+`decide` returns an `Outcome`, which bundles the `TaskCompletionResult` (the
+caller-facing summary) with `stockWrites` (the ordered list the shell must
+persist). The `result.stockConsumption` field is simply `stockWrites.lastOption`,
+so a caller that only cares about the final stock state can ignore the ordering.
+
+### Stock writes as a pure list
+
+The stock logic that used to live in the service is now a pure function that
+returns writes instead of performing them:
 
 ```scala
-val stockConsumption = consumeOrDeallocateStock(completed, at)
-```
-
-The `consumeOrDeallocateStock` helper handles three scenarios based on what
-actually happened during the pick:
-
-```scala
-private def consumeOrDeallocateStock(
+private def stockWritesFor(
     completed: Task.Completed,
+    stockPosition: Option[StockPosition],
     at: Instant
-): Option[(StockPosition, StockPositionEvent)] =
-  (stockPositionRepository, completed.stockPositionId) match
-    case (Some(spRepo), Some(spId)) =>
-      spRepo.findById(spId).flatMap { sp =>
-        val remainder = completed.requestedQuantity - completed.actualQuantity
-        if completed.actualQuantity > 0 && remainder > 0 then
-          // Partial pick: consume actual, then deallocate remainder
-          val (afterConsume, consumeEvent) =
-            sp.consumeAllocated(completed.actualQuantity, at)
-          spRepo.save(afterConsume, consumeEvent)
-          val (afterDeallocate, deallocateEvent) =
-            afterConsume.deallocate(remainder, at)
-          spRepo.save(afterDeallocate, deallocateEvent)
-          Some((afterDeallocate, deallocateEvent))
-        else if completed.actualQuantity > 0 then
-          // Full pick: consume all
-          val (updated, event) =
-            sp.consumeAllocated(completed.actualQuantity, at)
-          spRepo.save(updated, event)
-          Some((updated, event))
-        else if completed.requestedQuantity > 0 then
-          // Zero pick (full shortpick): deallocate all back to available
-          val (updated, event) =
-            sp.deallocate(completed.requestedQuantity, at)
-          spRepo.save(updated, event)
-          Some((updated, event))
-        else None
-      }
-    case _ => None
+): List[(StockPosition, StockPositionEvent)] =
+  stockPosition match
+    case None                => Nil
+    case Some(stockPosition) =>
+      val remainder = completed.requestedQuantity - completed.actualQuantity
+      if completed.actualQuantity > 0 && remainder > 0 then
+        // Partial pick: consume actual, then deallocate remainder
+        val (afterConsume, consumeEvent) =
+          stockPosition.consumeAllocated(completed.actualQuantity, at)
+        val (afterDeallocate, deallocateEvent) = afterConsume.deallocate(remainder, at)
+        List((afterConsume, consumeEvent), (afterDeallocate, deallocateEvent))
+      else if completed.actualQuantity > 0 then
+        // Full pick: consume all
+        List(stockPosition.consumeAllocated(completed.actualQuantity, at))
+      else if completed.requestedQuantity > 0 then
+        // Zero pick (full shortpick): deallocate all back to available
+        List(stockPosition.deallocate(completed.requestedQuantity, at))
+      else Nil
 ```
 
-<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionCascade.scala_</small>
 
 The three branches cover every outcome. **Partial pick** (requested 10,
-picked 7): consume 7 from allocated stock, deallocate 3 back to available.
-**Full pick** (requested 10, picked 10): consume the full amount. **Zero pick**
-(requested 10, picked 0): the worker found nothing, so deallocate everything
-back. The outer `match` on `(stockPositionRepository, completed.stockPositionId)`
-guards the entire block; if stock management is not configured or the task has
-no stock position, the method returns `None` and the cascade continues.
+picked 7): consume 7 from allocated stock, then deallocate 3 back to available,
+producing _two_ ordered writes. **Full pick** (requested 10, picked 10):
+consume the full amount, one write. **Zero pick** (requested 10, picked 0): the
+worker found nothing, so deallocate everything back, one write. When the task
+has no loaded stock position, the function returns `Nil` and the cascade
+continues. Because this is a pure list, the partial-pick ordering (consume
+before deallocate) is captured in the data, and the shell can replay it without
+re-deriving the logic.
 
-### Step 3: Shortpick detection
+### The synchronous shell
 
-```scala
-val shortpick = ShortpickPolicy(completed, at)
-shortpick.foreach { (replacement, event) => taskRepository.save(replacement, event) }
-```
-
-This is the impure/pure/impure sandwich in action. The service calls
-`ShortpickPolicy` (a pure function from Chapter 6), which examines the
-completed task and decides whether a replacement is needed. If the policy
-returns `Some`, the service saves the replacement task. If it returns `None`,
-`.foreach` does nothing. The service contains no shortpick logic itself; that
-lives entirely in the policy.
-
-### Step 4: Routing
+With the decisions extracted, the synchronous service shrinks to a load /
+decide / persist shell:
 
 ```scala
-val routing = RoutingPolicy(completedEvent, at)
-routing.foreach { (pending, event) => transportOrderRepository.save(pending, event) }
-```
-
-Same pattern, different policy. `RoutingPolicy` checks whether the completed
-task had a handling unit and, if so, creates a transport order to move it to
-the destination. As we discussed in Chapter 6, the policy takes the _event_
-rather than the _state_ because routing is a reaction to something that just
-happened.
-
-### Step 5: Wave and picking completion detection
-
-```scala
-val (waveCompletion, pickingCompletion) = completed.waveId match
-  case None         => (None, None)
-  case Some(waveId) =>
-    val waveTasks = taskRepository.findByWaveId(waveId)
-
-    val completedWave = waveRepository
-      .findById(waveId)
-      .collect { case released: Wave.Released =>
-        WaveCompletionPolicy(waveTasks, released, at)
+class TaskCompletionService(
+    taskRepository: TaskRepository,
+    waveRepository: WaveRepository,
+    consolidationGroupRepository: ConsolidationGroupRepository,
+    transportOrderRepository: TransportOrderRepository,
+    verificationProfile: VerificationProfile,
+    stockPositionRepository: Option[StockPositionRepository] = None
+):
+  def complete(
+      taskId: TaskId,
+      actualQuantity: Int,
+      verified: Boolean,
+      at: Instant
+  ): Either[TaskCompletionError, TaskCompletionResult] =
+    TaskCompletionCascade
+      .validate(
+        taskId = taskId,
+        task = taskRepository.findById(taskId),
+        actualQuantity = actualQuantity,
+        verified = verified,
+        verificationProfile = verificationProfile
+      )
+      .map { assigned =>
+        val outcome = TaskCompletionCascade.decide(
+          assigned = assigned,
+          actualQuantity = actualQuantity,
+          at = at,
+          state = loadCascadeState(assigned)
+        )
+        persist(outcome)
+        outcome.result
       }
-      .flatten
-    completedWave.foreach { (wave, event) => waveRepository.save(wave, event) }
-
-    val pickedConsolidationGroup = consolidationGroupRepository
-      .findByWaveId(waveId)
-      .collectFirst {
-        case consolidationGroup: ConsolidationGroup.Created
-            if consolidationGroup.orderIds.contains(completed.orderId) =>
-          consolidationGroup
-      }
-      .flatMap { consolidationGroup =>
-        val consolidationGroupOrderIds = consolidationGroup.orderIds.toSet
-        val consolidationGroupTasks =
-          waveTasks.filter(t => consolidationGroupOrderIds.contains(t.orderId))
-        PickingCompletionPolicy(consolidationGroupTasks, consolidationGroup, at)
-      }
-    pickedConsolidationGroup.foreach { (consolidationGroup, event) =>
-      consolidationGroupRepository.save(consolidationGroup, event)
-    }
-
-    (completedWave, pickedConsolidationGroup)
 ```
 
 <small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
 
-This is the most complex part of the cascade, and it deserves a careful reading.
+The constructor still takes five repository traits and one configuration
+object. Notice that `stockPositionRepository` is `Option`: stock management is
+not required for all warehouse configurations, so when the repository is `None`,
+`loadCascadeState` simply yields no stock position and the cascade decides
+without stock writes.
 
-First, the outer `match` on `completed.waveId`. Not every task belongs to a
-wave (standalone tasks exist), so if there is no wave, both completion checks
-are skipped.
-
-For wave completion, the service loads all tasks for the wave, then loads the
-wave itself. The `.collect` filters to `Wave.Released` because only a released
-wave can be completed (a planned wave has not started, and a completed or
-cancelled wave is already terminal). `WaveCompletionPolicy` checks whether all
-tasks have reached a terminal state. If so, it returns the completed wave and
-event.
-
-For picking completion, the service looks for the consolidation group that
-contains this task's order. The `.collectFirst` finds the first `Created`
-consolidation group whose `orderIds` includes the completed task's `orderId`.
-Then `PickingCompletionPolicy` checks whether all tasks for that group's orders
-are terminal. If they are, the group transitions to `Picked`.
-
-Notice that both policies reuse the `waveTasks` list loaded once at the top of
-the block. The service does not query the repository twice. Small detail, but
-it matters for both performance and consistency.
-
-### The result
+The `complete` method reads almost like prose: validate the looked-up task; if
+that succeeds, load the cascade state, decide, persist the outcome, and hand the
+caller the `result`. The two private helpers are mechanical. `loadCascadeState`
+fetches everything `decide` needs, and the order matters:
 
 ```scala
-Right(
-  TaskCompletionResult(
-    completed = completed,
-    completedEvent = completedEvent,
-    shortpick = shortpick,
-    transportOrder = routing,
-    waveCompletion = waveCompletion,
-    pickingCompletion = pickingCompletion,
-    stockConsumption = stockConsumption
-  )
-)
+private def loadCascadeState(assigned: Task.Assigned): CascadeState =
+  val stockPosition =
+    for
+      repository <- stockPositionRepository
+      stockPositionId <- assigned.stockPositionId
+      position <- repository.findById(stockPositionId)
+    yield position
+  assigned.waveId match
+    case None         => CascadeState.empty.copy(stockPosition = stockPosition)
+    case Some(waveId) =>
+      CascadeState(
+        stockPosition = stockPosition,
+        wave = waveRepository.findById(waveId),
+        waveTasks = taskRepository.findByWaveId(waveId),
+        consolidationGroups = consolidationGroupRepository.findByWaveId(waveId)
+      )
 ```
 
-Everything is bundled into `TaskCompletionResult` and returned as `Right`. One
-task completion can produce up to five downstream effects: stock adjustment,
-shortpick replacement, transport order, wave completion, and consolidation
-group transition. All of them are visible in a single return value.
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
+
+All loads happen here, before `decide`. The shell never reads its own writes:
+once `decide` has run on this snapshot, persistence only writes. That discipline
+is what makes the stale-set normalization inside `decide` necessary and
+sufficient.
+
+`persist` then writes the outcome in cascade order:
+
+```scala
+private def persist(outcome: TaskCompletionCascade.Outcome): Unit =
+  taskRepository.save(outcome.result.completed, outcome.result.completedEvent)
+  stockPositionRepository.foreach { repository =>
+    outcome.stockWrites.foreach { (position, event) => repository.save(position, event) }
+  }
+  outcome.result.shortpick.foreach { (replacement, event) =>
+    taskRepository.save(replacement, event)
+  }
+  outcome.result.transportOrder.foreach { (pending, event) =>
+    transportOrderRepository.save(pending, event)
+  }
+  outcome.result.waveCompletion.foreach { (wave, event) => waveRepository.save(wave, event) }
+  outcome.result.pickingCompletion.foreach { (group, event) =>
+    consolidationGroupRepository.save(group, event)
+  }
+```
+
+<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
+
+Every line is `.save`. There is no logic, no branching beyond "did this effect
+fire?", and no business decision. The shell is pure plumbing wrapped around a
+pure decision. One task completion can still produce up to five downstream
+effects, but each is now a field on the `Outcome` that `persist` mechanically
+writes out.
 
 ## Walkthrough: WaveReleaseService
 
@@ -570,24 +637,44 @@ In Neon WES, the two tracks are the two sides of `Either`:
 - **Left track (failure):** something went wrong. Skip all remaining steps and
   return the error.
 
-Each step in a service is a "switch function" that can route to the failure
-track. The repository lookup returns `None`, and we switch to
-`Left(TaskNotFound(...))`. The state pattern match finds a non-Assigned task,
-and we switch to `Left(TaskNotAssigned(...))`. Once on the failure track, the
-cascade steps never run.
+For task completion, the single switch is `TaskCompletionCascade.validate`. It
+returns `Left` for a missing task, a non-Assigned task, a negative quantity, or
+a missing verification scan; it returns `Right(assigned)` otherwise. Once on the
+failure track, neither `decide` nor `persist` runs. The shell's `.map` over the
+`Either` only fires on the success track.
 
-In the async counterpart (which we will see in Chapter 11), `for`-comprehensions
-over `Future[Either[...]]` achieve the same two-track flow:
+The async counterpart (which we will see in Chapter 11) achieves the same
+two-track flow, but threads the `Future` through it. Because validation needs
+the looked-up task, the shell first awaits `findById`, then matches on the
+`validate` result, sequencing the loads, the decision, and the persistence in a
+`for`-comprehension over `Future` only on the `Right`:
 
 ```scala
-for
-  task      <- findTask(taskId)        // Left if not found
-  assigned  <- ensureAssigned(task)    // Left if wrong state
-  result    <- completeAssigned(assigned, qty, at)
-yield result
+taskRepository.findById(taskId).flatMap { task =>
+  TaskCompletionCascade.validate(taskId, task, actualQuantity, verified, verificationProfile) match
+    case Left(error)     => Future.successful(Left(error))
+    case Right(assigned) =>
+      for
+        state   <- loadCascadeState(assigned)  // load wave, tasks, groups, stock
+        outcome  = TaskCompletionCascade.decide(assigned, actualQuantity, at, state)
+        _       <- persist(outcome)            // fan out the saves
+      yield Right(outcome.result)
+}
 ```
 
-The shape is the same whether the operations are synchronous or asynchronous.
+<small>_File: core/src/main/scala/neon/core/AsyncTaskCompletionService.scala_</small>
+
+The decision in the middle is the very same `TaskCompletionCascade.decide` the
+synchronous shell calls; only the load and persist steps are wrapped in `Future`.
+That shared core is the whole point of extracting the cascade: the two shells
+cannot drift, because the business logic lives in neither of them. The async
+shell's constructor differs in one telling way from the sync one. It takes a
+required `stockPositionRepository: AsyncStockPositionRepository` rather than an
+`Option`, closing a gap where the async path used to skip stock consumption
+entirely. `decide` produces the stock writes for both shells identically; the
+async `persist` folds them sequentially, because the deallocate of a partial
+pick must reach the actor only after the consume that precedes it.
+
 `Either` provides the railway. Pattern matching and `for`-comprehensions provide
 the track switching. No exceptions, no try-catch, no hidden control flow.
 

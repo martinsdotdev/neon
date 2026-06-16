@@ -142,7 +142,7 @@ class ShortpickPolicySuite extends AnyFunSpec with OptionValues:
 
 ```scala
 class TaskCompletionServiceSuite extends AnyFunSpec
-    with OptionValues with EitherValues:
+    with OptionValues with EitherValues with DomainFactories:
   // service returns Either[TaskCompletionError, TaskCompletionResult]
   val result = service.complete(taskId, 5, true, at).left.value
   // .left.value on Right fails with a clear message showing the Right value
@@ -150,35 +150,58 @@ class TaskCompletionServiceSuite extends AnyFunSpec
 
 ### Factory Methods
 
-Test suites define factory methods that create domain objects in specific
-states. These methods have sensible defaults for every parameter, so
-individual tests only override the values they care about:
+Rather than redefining factory methods in every suite, the core service tests
+share them through a single `DomainFactories` trait. A suite mixes the trait in
+and gets a set of factory methods that create domain objects in specific states.
+These methods have sensible defaults for every parameter (including
+suite-level shared identifiers, so a `task`, its `wave`, and its
+`consolidationGroup` agree out of the box), so individual tests only override
+the values they care about:
 
 ```scala
-def assignedTask(
-    id: TaskId = TaskId(),
-    requestedQuantity: Int = 10,
-    orderId: OrderId = orderId,
-    waveId: Option[WaveId] = Some(waveId),
-    handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId),
-    stockPositionId: Option[StockPositionId] = None
-): Task.Assigned =
-  Task.Assigned(
-    id, TaskType.Pick, skuId, PackagingLevel.Each,
-    requestedQuantity, orderId, waveId, None,
-    handlingUnitId, stockPositionId, sourceLocationId,
-    destinationLocationId, userId
-  )
+trait DomainFactories:
+  val skuId: SkuId = SkuId()
+  val userId: UserId = UserId()
+  val orderId: OrderId = OrderId()
+  val waveId: WaveId = WaveId()
+  // ... more shared identifiers
 
-def releasedWave(id: WaveId = waveId): Wave.Released =
-  Wave.Released(id, OrderGrouping.Single, List(orderId))
+  def assignedTask(
+      id: TaskId = TaskId(),
+      requestedQuantity: Int = 10,
+      orderId: OrderId = orderId,
+      waveId: Option[WaveId] = Some(waveId),
+      handlingUnitId: Option[HandlingUnitId] = Some(handlingUnitId),
+      stockPositionId: Option[StockPositionId] = None
+  ): Task.Assigned =
+    Task.Assigned(
+      id = id,
+      taskType = TaskType.Pick,
+      skuId = skuId,
+      packagingLevel = PackagingLevel.Each,
+      requestedQuantity = requestedQuantity,
+      orderId = orderId,
+      waveId = waveId,
+      parentTaskId = None,
+      handlingUnitId = handlingUnitId,
+      stockPositionId = stockPositionId,
+      sourceLocationId = sourceLocationId,
+      destinationLocationId = destinationLocationId,
+      assignedTo = userId
+    )
+
+  def releasedWave(id: WaveId = waveId): Wave.Released =
+    Wave.Released(id, OrderGrouping.Single, List(orderId))
 ```
 
-<small>_File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala_</small>
+<small>_File: core/src/test/scala/neon/core/DomainFactories.scala_</small>
 
 This pattern keeps tests readable. Instead of constructing a full
-`Task.Assigned` with twelve parameters in every test, we write
-`assignedTask(requestedQuantity = 5)` and let the defaults handle the rest.
+`Task.Assigned` with thirteen parameters in every test, we write
+`assignedTask(requestedQuantity = 5)` and let the defaults handle the rest. A
+suite opts in by extending `DomainFactories` alongside its ScalaTest base, for
+example `class TaskCompletionServiceSuite extends AnyFunSpec with OptionValues
+with EitherValues with DomainFactories`.
 
 ## Layers 1 and 2: Domain and Policy Tests
 
@@ -302,9 +325,11 @@ correct result or error. The key tool here is the **in-memory repository**.
 
 ### In-Memory Repositories
 
-Each service test suite defines its own in-memory repository
-implementations. These are trivial classes backed by mutable maps, with an
-event buffer for tracking side effects:
+The service tests share a family of in-memory repository implementations, one
+standalone file per repository (`InMemoryTaskRepository`,
+`InMemoryWaveRepository`, and so on), rather than redefining them inside each
+suite. These are trivial classes backed by mutable maps, with an event buffer
+for tracking side effects:
 
 ```scala
 class InMemoryTaskRepository extends TaskRepository:
@@ -319,14 +344,30 @@ class InMemoryTaskRepository extends TaskRepository:
     store(task.id) = task
     events += event
   def saveAll(entries: List[(Task, TaskEvent)]): Unit =
-    entries.foreach { (task, event) => save(task, event) }
+    entries.foreach((task, event) => save(task, event))
 ```
 
-<small>_File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala_</small>
+<small>_File: core/src/test/scala/neon/core/InMemoryTaskRepository.scala_</small>
 
 The `store` map gives us the current state of every entity. The `events`
 buffer lets us assert on what was persisted. This same pattern appears across
-all in-memory repositories in the codebase.
+all the synchronous in-memory repositories in the codebase.
+
+For the async services there is a parallel family of call-recording
+repositories (`InMemoryAsyncTaskRepository`, `InMemoryAsyncWaveRepository`,
+...). These share a single `CallRecorder` instance so a suite can assert on
+the _ordering_ of cross-repository effects, for example that the task was saved
+before the stock position, and that conditional loads were skipped:
+
+```scala
+final class CallRecorder:
+  val entries: mutable.ListBuffer[String] = mutable.ListBuffer.empty
+  def record(entry: String): Unit = entries += entry
+  def saves: List[String] = entries.filter(_.endsWith(".save")).toList
+  def contains(entry: String): Boolean = entries.contains(entry)
+```
+
+<small>_File: core/src/test/scala/neon/core/CallRecorder.scala_</small>
 
 Service test suites also use a `buildService` factory that accepts optional
 repository overrides, so each test passes in only the repositories it needs
@@ -334,42 +375,50 @@ to inspect and lets defaults handle the rest.
 
 ### Example: TaskCompletionServiceSuite
 
-Let's look at how service tests verify both success and error paths:
+Task completion is the most intricate orchestration in the system: completing a
+task can cascade into shortpick detection, stock consumption, transport-order
+routing, wave completion, and consolidation-group completion. To keep that
+testable, the logic is split. The pure cascade _decisions_ (given pre-loaded
+state, what should happen) live in a separate decision module exercised by
+`TaskCompletionCascadeSuite`. `TaskCompletionServiceSuite` is then a thinner
+_shell_ suite: it verifies wiring, persistence effects, and end-to-end smoke
+paths, not the decision logic itself. Here is the shape of that shell suite:
 
 ```scala
 describe("TaskCompletionService"):
-  describe("when task does not exist"):
-    it("returns TaskNotFound"):
+  describe("validation wiring"):
+    it("returns TaskNotFound when the task does not exist"):
       val missingId = TaskId()
       val service = buildService()
-      val result = service.complete(missingId, 5, true, at)
-      assert(
-        result.left.value ==
-          TaskCompletionError.TaskNotFound(missingId)
-      )
+      val result =
+        service.complete(taskId = missingId, actualQuantity = 5, verified = true, at = at)
+      assert(result.left.value == TaskCompletionError.TaskNotFound(missingId))
 
-  describe("when task is not Assigned"):
-    it("rejects Planned"):
+  describe("persistence"):
+    it("persists Completed state"):
       val taskRepository = InMemoryTaskRepository()
-      val (planned, _) = Task.create(
-        TaskType.Pick, skuId, PackagingLevel.Each,
-        10, orderId, Some(waveId), None, None, at
-      )
-      taskRepository.store(planned.id) = planned
+      val task = assignedTask(requestedQuantity = 10)
+      taskRepository.store(task.id) = task
       val service = buildService(taskRepository = taskRepository)
-      assert(
-        service.complete(planned.id, 5, true, at).left.value ==
-          TaskCompletionError.TaskNotAssigned(planned.id)
-      )
+      service.complete(taskId = task.id, actualQuantity = 10, verified = true, at = at)
+      assert(taskRepository.store(task.id).isInstanceOf[Task.Completed])
 ```
 
 <small>_File: core/src/test/scala/neon/core/TaskCompletionServiceSuite.scala_</small>
 
-The first test verifies that completing a nonexistent task returns the
-correct error. The second test creates a `Task.Planned` (not `Task.Assigned`)
-in the repository, then verifies that the service rejects the completion.
+The first test verifies the validation wiring (a nonexistent task yields the
+correct error). The second seeds an `assignedTask` from `DomainFactories` and
+checks that, after `complete`, the repository holds a `Task.Completed`, an
+assertion on a persisted side effect, not just the return value.
 
-Service tests also assert on repository side effects. In
+There is also an async counterpart, `AsyncTaskCompletionServiceSuite`, which
+exercises the `Future`-returning service over the call-recording async
+repositories, verifying that the load/decide/persist shell drives the same
+cascade and persists in the right order. Because the synchronous and
+asynchronous services are thin shells over one shared decision module, the two
+cannot drift.
+
+Service tests also assert on repository side effects more broadly. In
 `WaveReleaseServiceSuite`, after calling `service.release(wavePlan, at)`, we
 verify both the return value (`result.tasks.size == 1`) and the repository
 state (`waveRepository.store(wavePlan.wave.id).isInstanceOf[Wave.Released]`,
@@ -526,7 +575,7 @@ send HTTP requests to the route tree and assert on status codes, headers,
 and response bodies:
 
 ```scala
-class WaveRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
+class WaveRoutesSuite extends AnyFunSpec with ScalatestRouteTest with RouteSuiteBase:
 
   describe("WaveRoutes"):
     describe("DELETE /waves/:id"):
@@ -550,6 +599,26 @@ class WaveRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
           )
         }
 
+      it("returns 404 when wave not found"):
+        val routes = WaveRoutes(
+          stubCancellationService(
+            Left(WaveCancellationError.WaveNotFound(waveId))
+          ),
+          stubPlanningService(Right(null)),
+          stubOrderRepo,
+          authService
+        )
+        val request = Delete(s"/waves/${waveId.value}")
+          .addHeader(Cookie("session", sessionToken))
+        request ~> routes ~> check {
+          assert(status == StatusCodes.NotFound)
+          assert(contentType.mediaType.toString == "application/problem+json")
+          val json = parse(responseAs[String]).getOrElse(Json.Null)
+          assert(
+            json.hcursor.get[String]("type").exists(_.startsWith("urn:neon:error:"))
+          )
+        }
+
       it("returns 401 without session cookie"):
         Delete(s"/waves/${waveId.value}") ~> routes ~> check {
           assert(status == StatusCodes.Unauthorized)
@@ -560,10 +629,17 @@ class WaveRoutesSuite extends AnyFunSpec with ScalatestRouteTest:
 
 Route tests use stub services (anonymous subclasses that return canned
 `Either` values) so they focus purely on HTTP behavior: request routing,
-JSON serialization, status codes, and cookie handling. Auth is tested with
-a real `AuthenticationService` backed by in-memory repositories. The test
-obtains a genuine session token through `login` and sends it as a cookie,
-verifying the full auth flow without hitting a database.
+JSON serialization, status codes, content type, and cookie handling. Notice
+the error-path test asserts not just the 404 status but also the
+`application/problem+json` content type and the `urn:neon:error:` `type` field,
+confirming the route went through `completeProblem` and `ProblemRouteHandlers`.
+
+Auth scaffolding comes from the shared `RouteSuiteBase` trait, which every
+route suite mixes in. It wires a real `AuthenticationService` over in-memory
+user, session, and permission repositories, seeds an Admin user holding every
+permission, and exposes a logged-in `sessionToken` obtained through a genuine
+`login` call, so tests verify the full auth flow without hitting a database and
+without each suite re-building the same scaffolding.
 
 ### Layer 7: Projection Handler Tests
 
@@ -574,6 +650,9 @@ PostgreSQL instance and creates the required tables:
 ```scala
 class TaskProjectionHandlerSuite extends PostgresContainerSuite:
 
+  private given scala.concurrent.ExecutionContext =
+    system.executionContext
+
   private val handler = TaskProjectionHandler()
 
   describe("TaskProjectionHandler"):
@@ -583,17 +662,27 @@ class TaskProjectionHandlerSuite extends PostgresContainerSuite:
 
       withSession { session =>
         handler
-          .process(session, envelope(event, s"Task|${taskId.value}", "Task"))
+          .process(
+            session,
+            envelope(event = event, persistenceId = s"Task|${taskId.value}", entityType = "Task")
+          )
           .futureValue
       }
 
       val count = queryCount(
-        s"SELECT COUNT(*) FROM task_by_wave WHERE task_id = '${taskId.value}'"
+        "SELECT COUNT(*) FROM task_by_wave " +
+          s"WHERE task_id = '${taskId.value}'"
       )
       assert(count == 1L)
 ```
 
 <small>_File: app/src/test/scala/neon/app/projection/TaskProjectionHandlerSuite.scala_</small>
+
+The `TaskProjectionHandler` constructor needs an `ExecutionContext` and an
+`ActorSystem[?]` (recall from Chapter 12 that it publishes notifications to the
+event stream). The suite provides the former as a `given` and inherits the
+latter, plus the `withSession`, `queryCount`, and `envelope` helpers, from
+`PostgresContainerSuite`.
 
 These tests catch SQL syntax errors, incorrect column bindings, and
 `ON CONFLICT` clause issues that cannot be caught without a real database.

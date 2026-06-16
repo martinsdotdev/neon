@@ -87,9 +87,11 @@ to be wrong.
 ## The Neon WES Catalogue
 
 All ADRs live in `docs/decisions/` and follow the naming convention
-`NNNN-title-with-kebab-case.md`. As of now, the project has ten ADRs
+`NNNN-title-with-kebab-case.md`. As of now, the project has fifteen ADRs
 covering domain modeling, infrastructure, error handling, frontend
-technology, security, and observability. Let's walk through each one.
+technology, security, observability, API error format, development process,
+and the extraction of cascades into pure decision modules. Let's walk through
+each one.
 
 ### ADR-0001: Typestate-Encoded Aggregates
 
@@ -187,7 +189,7 @@ _See: [Chapter 24: The Frontend](ch24-frontend.md)_
 
 ### ADR-0008: Session-Based Authentication
 
-Neon WES needs authentication for all HTTP endpoints. This ADR chose
+_Status: proposed._ Neon WES needs authentication for all HTTP endpoints. This ADR chose
 server-side sessions following The Copenhagen Book over stateless JWTs and
 the pekko-http-session library. Session tokens (160 bits of entropy from
 SecureRandom) are SHA-256 hashed before PostgreSQL storage. Cookies are
@@ -202,7 +204,7 @@ _See: [Chapter 13: The HTTP API](../03-the-infrastructure/ch13-http-api.md)_
 
 ### ADR-0009: RBAC with Per-User Permission Overrides
 
-The WES has clear role hierarchies (Admin, Supervisor, Operator, Viewer) but
+_Status: proposed._ The WES has clear role hierarchies (Admin, Supervisor, Operator, Viewer) but
 occasionally needs per-user exceptions: an operator promoted to handle wave
 planning, or a supervisor denied access to user management. This ADR chose
 RBAC with per-user permission overrides (deny wins) over plain RBAC and
@@ -218,7 +220,7 @@ _See: [Chapter 13: The HTTP API](../03-the-infrastructure/ch13-http-api.md)_
 
 ### ADR-0010: Structured Logging with Wide Events
 
-Neon WES needed observability: request tracing, structured logging, and
+_Status: proposed._ Neon WES needed observability: request tracing, structured logging, and
 context propagation across async boundaries. This ADR chose Logback with
 logstash-logback-encoder and scala-logging over Scribe (Scala-native
 logging) and OpenTelemetry auto-instrumentation. The system emits one
@@ -231,6 +233,91 @@ LogstashEncoder, directly ingestible by Loki, Elasticsearch, or Datadog.
 _See: [Chapter 19: Observability and Logging](../04-system-concerns/ch19-observability.md)_
 
 <small>_File: docs/decisions/0010-use-structured-logging-with-wide-events.md_</small>
+
+### ADR-0011: RFC 9457 Problem Details for API Errors
+
+The API needs a consistent, machine-readable error response format that maps
+cleanly from the backend's sealed-trait error ADTs. This ADR chose RFC 9457
+Problem Details (the IETF standard that obsoletes RFC 7807) over an ad-hoc
+`{ error, code }` envelope and a plain status-code-plus-text body. Every non-2xx
+response carries the `application/problem+json` media type and a body with
+`type`, `status`, `title`, and an optional `detail`. The `type` field is a URI
+that identifies the error kind: Neon uses `urn:neon:error:<slug>` for its own
+errors and `about:blank` for generic ones. In the code, a single
+`ProblemMapper[E]` given instance per error ADT keeps the error-to-status
+mapping at one seam; routes call `completeProblem(error)` rather than
+hand-rolling status codes. The frontend can switch on the `type` URI for
+specific handling.
+
+_See: [Chapter 13: The HTTP API](../03-the-infrastructure/ch13-http-api.md), [Appendix D: API Reference](../06-appendices/appendix-d-api-reference.md)_
+
+<small>_File: docs/decisions/0011-use-rfc9457-problem-details-for-errors.md_</small>
+
+### ADR-0012: Conventional Commits and Branch Naming
+
+With multiple contributors, the project needs a scannable, machine-readable Git
+history and consistent branch names for CI integration. This ADR chose
+Conventional Commits (`<type>(<scope>): <description>`) with matching
+Conventional Branch naming (`<type>/<description>`) over free-form messages and
+an emoji-based convention (gitmoji). The `<type>` vocabulary (`feat`, `fix`,
+`docs`, `refactor`, ...) communicates intent at a glance and enables automated
+changelog and semver inference. The tradeoff is that, without commit linting,
+the convention relies on discipline and review to stay consistent.
+
+<small>_File: docs/decisions/0012-use-conventional-commits-and-branches.md_</small>
+
+### ADR-0013: GitHub Flow Workflow
+
+The team needs a branching strategy that supports continuous delivery while
+staying simple for a small team, and that builds on the Conventional Commits
+conventions of ADR-0012. This ADR chose GitHub Flow (one long-lived branch,
+`master`; short-lived feature branches; all merges through reviewed pull
+requests; linear history, no merge commits) over Git Flow (develop/release/
+hotfix branches) and trunk-based development (commit to main behind feature
+flags). GitHub Flow gives the right balance of simplicity and safety; the
+tradeoff is that it has no built-in story for parallel maintenance releases,
+which larger release-train teams may need.
+
+<small>_File: docs/decisions/0013-use-github-flow-workflow.md_</small>
+
+### ADR-0014: neverthrow for Service-Layer Errors
+
+The frontend service layer needs error handling that mirrors the backend's
+`Either[Error, Result]` pattern and maps cleanly onto the RFC 9457 responses of
+ADR-0011. This ADR chose neverthrow with Railway Oriented Programming
+(`Result<T, E>` / `ResultAsync<T, E>`, resolved with `.match()`) over native
+try/catch and the heavier fp-ts. Failures become explicit in the type signature,
+error types are discriminated unions handled exhaustively, and route handlers
+map those unions onto problem types in one place. The tradeoff is an added
+dependency and a functional style the whole frontend must adopt consistently.
+
+_See: [Chapter 24: The Frontend](ch24-frontend.md)_
+
+<small>_File: docs/decisions/0014-use-neverthrow-for-service-errors.md_</small>
+
+### ADR-0015: Extract Cascades into Pure Decision Modules
+
+The core module orchestrates multi-step cascades: completing a task can consume
+stock, create a shortpick replacement, route a handling unit, and complete the
+wave and consolidation group. Each such operation was historically encoded
+twice, once in a synchronous `Either` service and once in an asynchronous
+`Future` service, and the two drifted: the async production path silently lost
+stock consumption, and it could complete a wave while a shortpick replacement
+was still open. This ADR chose to extract the cascade into a pure decision
+module (`validate` then `decide` over pre-loaded state, as in
+`TaskCompletionCascade`) with the sync and async services reduced to thin
+load/decide/persist shells, over keeping the duplicated cascades or deleting the
+sync variant. Because the decision is pure, it is exhaustively unit-testable and
+the two shells cannot diverge in logic. This extends ADR-0002 rather than
+superseding it, applying the same functional-core principle to the cascade that
+wires single business rules together. (We met this module's stock writes in
+Chapter 21, and the completion cascade in Chapter 7.) The tradeoff is a third
+type per cascade and an `Outcome` carrying ordered side-effect data the public
+result type does not expose.
+
+_See: [Chapter 7: Services](../02-the-domain-model/ch07-services.md), [Chapter 21: Stock Management](ch21-stock-management.md)_
+
+<small>_File: docs/decisions/0015-extract-cascades-into-pure-decision-modules.md_</small>
 
 ## Cross-Reference Map
 
@@ -249,6 +336,11 @@ chapters:
 | 0008 | Session-Based Authentication        | [Ch 13: HTTP API](../03-the-infrastructure/ch13-http-api.md)                                                                                          |
 | 0009 | RBAC with Permission Overrides      | [Ch 13: HTTP API](../03-the-infrastructure/ch13-http-api.md)                                                                                          |
 | 0010 | Structured Logging with Wide Events | [Ch 19: Observability](../04-system-concerns/ch19-observability.md)                                                                                   |
+| 0011 | RFC 9457 Problem Details            | [Ch 13: HTTP API](../03-the-infrastructure/ch13-http-api.md), [App D: API Reference](../06-appendices/appendix-d-api-reference.md)                    |
+| 0012 | Conventional Commits and Branches   | (process — no chapter)                                                                                                                                |
+| 0013 | GitHub Flow Workflow                | (process — no chapter)                                                                                                                                |
+| 0014 | neverthrow for Service Errors       | [Ch 24: Frontend](ch24-frontend.md)                                                                                                                   |
+| 0015 | Extract Cascades into Pure Modules  | [Ch 7: Services](../02-the-domain-model/ch07-services.md), [Ch 21: Stock Management](ch21-stock-management.md)                                         |
 
 ## Writing Your Own ADRs
 
@@ -333,10 +425,12 @@ way, the ADR reference points you to the reasoning.
 
 - **ADRs are short documents** that capture architectural decisions: the
   context, the options considered, the choice made, and the consequences.
-- **Neon WES has ten ADRs** covering domain modeling (typestates, opaque
+- **Neon WES has fifteen ADRs** covering domain modeling (typestates, opaque
   type IDs, modular sbt structure), core patterns (Policy-Service-Repository,
-  Either-based errors), infrastructure (sessions, RBAC, structured logging),
-  and the frontend stack (TanStack Start, shadcn/ui).
+  Either-based errors, pure cascade decision modules), infrastructure (sessions,
+  RBAC, structured logging, RFC 9457 Problem Details), the frontend stack
+  (TanStack Start, shadcn/ui, neverthrow), and development process (Conventional
+  Commits, GitHub Flow).
 - **ADRs are append-only.** Reversed decisions are superseded, never deleted.
 - **Use the template.** Consistency makes ADRs scannable and useful.
 - **Cross-reference.** ADRs reference code, code references ADRs, and the

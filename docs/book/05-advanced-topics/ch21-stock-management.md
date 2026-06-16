@@ -355,9 +355,14 @@ the partial allocation or reject it entirely.
 
 ## Stock Consumption Patterns
 
-The `TaskCompletionService` orchestrates what happens to allocated stock when a
-task finishes. Three patterns emerge from the relationship between requested
-and actual quantities:
+When a task finishes, the system decides what happens to its allocated stock.
+That decision is _pure_: the `stockWritesFor` method on `TaskCompletionCascade`
+takes the completed task and its loaded `StockPosition` and returns an ordered
+`List[(StockPosition, StockPositionEvent)]`. It performs no I/O. It calls no
+`save`. It just computes the new positions and the events that explain them.
+The service shells (one synchronous, one asynchronous) persist that list
+afterwards, in order. Three patterns emerge from the relationship between
+requested and actual quantities:
 
 ### Full Pick
 
@@ -367,9 +372,7 @@ consumed:
 ```scala
 else if completed.actualQuantity > 0 then
   // Full pick: consume all
-  val (updated, event) = sp.consumeAllocated(completed.actualQuantity, at)
-  spRepo.save(updated, event)
-  Some((updated, event))
+  List(stockPosition.consumeAllocated(completed.actualQuantity, at))
 ```
 
 ### Partial Pick (Shortpick)
@@ -381,17 +384,17 @@ and the remainder is deallocated back to available:
 if completed.actualQuantity > 0 && remainder > 0 then
   // Partial pick: consume actual, then deallocate remainder
   val (afterConsume, consumeEvent) =
-    sp.consumeAllocated(completed.actualQuantity, at)
-  spRepo.save(afterConsume, consumeEvent)
-  val (afterDeallocate, deallocateEvent) =
-    afterConsume.deallocate(remainder, at)
-  spRepo.save(afterDeallocate, deallocateEvent)
-  Some((afterDeallocate, deallocateEvent))
+    stockPosition.consumeAllocated(completed.actualQuantity, at)
+  val (afterDeallocate, deallocateEvent) = afterConsume.deallocate(remainder, at)
+  List((afterConsume, consumeEvent), (afterDeallocate, deallocateEvent))
 ```
 
 This is a two-step process. First, `consumeAllocated` reduces both on-hand and
 allocated by the actual amount picked. Then, `deallocate` moves the unfulfilled
 remainder from allocated back to available, making it eligible for future waves.
+Both writes land in the returned list in that order, and the shells persist them
+sequentially, because the deallocate command depends on the consume having
+already been applied.
 
 ### Zero Pick
 
@@ -401,12 +404,18 @@ quantity is deallocated:
 ```scala
 else if completed.requestedQuantity > 0 then
   // Zero pick (full shortpick): deallocate all back to available
-  val (updated, event) = sp.deallocate(completed.requestedQuantity, at)
-  spRepo.save(updated, event)
-  Some((updated, event))
+  List(stockPosition.deallocate(completed.requestedQuantity, at))
 ```
 
-<small>_File: core/src/main/scala/neon/core/TaskCompletionService.scala_</small>
+<small>_File: core/src/main/scala/neon/core/TaskCompletionCascade.scala_</small>
+
+Because the decision is pure, both the synchronous `TaskCompletionService` and
+the asynchronous `AsyncTaskCompletionService` are thin shells over it: they load
+the stock position, call `decide`, and persist `outcome.stockWrites` in order.
+Keeping the logic in one pure module is what stopped the two paths from
+drifting. Before this extraction the async path skipped stock consumption
+entirely, a bug that vanished once both shells started persisting the same
+computed list.
 
 @:callout(info)
 
@@ -458,9 +467,12 @@ object AdjustmentService:
       at: Instant
   ): Either[AdjustmentError, AdjustmentResult] =
     if adjustedBy == variance.countedBy then
-      Left(AdjustmentError.SegregationOfDutiesViolation(
-        variance.countedBy, adjustedBy
-      ))
+      Left(
+        AdjustmentError.SegregationOfDutiesViolation(
+          countedBy = variance.countedBy,
+          adjustedBy = adjustedBy
+        )
+      )
     else Right(AdjustmentResult(variance, adjustedBy, reasonCode))
 ```
 

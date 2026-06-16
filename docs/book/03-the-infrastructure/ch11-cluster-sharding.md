@@ -76,42 +76,89 @@ practice. The bridge between the domain layer and the actor cluster is the
 from Chapter 8 by translating each repository method into a Cluster Sharding
 ask.
 
-Here is `PekkoWaveRepository` in full:
+The sharding _plumbing_, initializing the entity type, obtaining entity refs,
+the `GetState` ask, and the non-transactional save fan-out, is identical for
+every aggregate. So it lives once in an abstract base class,
+`PekkoEntityRepository`, in the `common` module:
+
+```scala
+abstract class PekkoEntityRepository[Command, Aggregate](
+    actorSystem: ActorSystem[?],
+    entityKey: EntityTypeKey[Command],
+    behaviorFactory: String => Behavior[Command],
+    getState: ActorRef[Option[Aggregate]] => Command
+)(using Timeout):
+
+  protected given system: ActorSystem[?] = actorSystem
+  protected given ec: ExecutionContext = actorSystem.executionContext
+
+  protected val sharding: ClusterSharding = ClusterSharding(system)
+
+  sharding.init(Entity(entityKey)(entityContext => behaviorFactory(entityContext.entityId)))
+
+  protected def entityRef(entityId: String): EntityRef[Command] =
+    sharding.entityRefFor(entityKey, entityId)
+
+  protected def findByEntityId(entityId: String): Future[Option[Aggregate]] =
+    entityRef(entityId).ask(getState)
+
+  protected final def sequenceSaves[SavedAggregate, Event](
+      entries: List[(SavedAggregate, Event)]
+  )(saveOne: (SavedAggregate, Event) => Future[Unit]): Future[Unit] =
+    Future.sequence(entries.map(saveOne.tupled)).map(_ => ())
+```
+
+<small>_File: common/src/main/scala/neon/common/entity/PekkoEntityRepository.scala_</small>
+
+The base takes four constructor arguments: the actor system, the entity key,
+a `behaviorFactory` (how to build the actor from an entity ID), and a
+`getState` constructor (how to build the actor's `GetState` command from a
+reply-to ref). From those it derives everything uniform: the `system` and `ec`
+givens, the sharding `init` call, the `entityRef` lookup, a `findByEntityId`
+that issues the `GetState` ask, and a `sequenceSaves` helper for fan-out saves.
+
+@:callout(info)
+
+The `system` and `ec` givens declared here also satisfy the
+abstract members of the `R2dbcProjectionQueries` trait. A repository that needs
+cross-entity queries simply mixes that trait in; it does not have to re-declare
+the execution context, because the base class already provides it.
+
+@:@
+
+With that base in place, `PekkoWaveRepository` reduces to just the
+Wave-specific parts, the `findById` bridge and the per-event `save` mapping:
 
 ```scala
 class PekkoWaveRepository(system: ActorSystem[?])(using Timeout)
-    extends AsyncWaveRepository:
-
-  private given ExecutionContext = system.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(Entity(WaveActor.EntityKey)(ctx => WaveActor(ctx.entityId)))
+    extends PekkoEntityRepository[WaveActor.Command, Wave](
+      actorSystem = system,
+      entityKey = WaveActor.EntityKey,
+      behaviorFactory = WaveActor.apply,
+      getState = WaveActor.GetState.apply
+    )
+    with AsyncWaveRepository:
 
   def findById(id: WaveId): Future[Option[Wave]] =
-    sharding
-      .entityRefFor(WaveActor.EntityKey, id.value.toString)
-      .ask(WaveActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def save(wave: Wave, event: WaveEvent): Future[Unit] =
-    val entityRef = sharding.entityRefFor(
-      WaveActor.EntityKey,
-      wave.id.value.toString
-    )
+    val ref = entityRef(wave.id.value.toString)
     event match
       case e: WaveEvent.WaveReleased =>
-        entityRef
+        ref
           .askWithStatus(
             WaveActor.Create(Wave.Planned(wave.id, wave.orderGrouping, e.orderIds), e, _)
           )
           .map(_ => ())
       case e: WaveEvent.WaveCompleted =>
-        entityRef
+        ref
           .askWithStatus[WaveActor.CompleteResponse](
             WaveActor.Complete(e.occurredAt, _)
           )
           .map(_ => ())
       case e: WaveEvent.WaveCancelled =>
-        entityRef
+        ref
           .askWithStatus[WaveActor.CancelResponse](
             WaveActor.Cancel(e.occurredAt, _)
           )
@@ -123,29 +170,35 @@ class PekkoWaveRepository(system: ActorSystem[?])(using Timeout)
 Let's walk through this piece by piece.
 
 **Constructor and initialization.** The repository receives an `ActorSystem` and
-an implicit `Timeout` (for ask operations). In the constructor body, it calls
-`sharding.init(Entity(...))`, which registers the Wave entity type with Cluster
-Sharding and tells it how to create actors. The factory function
-`ctx => WaveActor(ctx.entityId)` receives the entity context and passes the
-entity ID string to the `WaveActor.apply` method we saw in Chapter 10.
+an implicit `Timeout` (for ask operations) and passes them up to
+`PekkoEntityRepository` along with the Wave entity key, the `WaveActor.apply`
+behavior factory, and `WaveActor.GetState.apply`. The base-class constructor
+body runs `sharding.init(Entity(...))`, which registers the Wave entity type
+with Cluster Sharding and tells it how to create actors via the factory. The
+factory passes the entity ID string to the `WaveActor.apply` method we saw in
+Chapter 10.
 
 This `init` call is idempotent. If another part of the system has already
 initialized the Wave entity type, the call is a no-op. This is important because
 multiple components might need Wave entity references, and each one calls `init`
 defensively.
 
-**`findById`** gets an `EntityRef` for the requested wave ID, sends a `GetState`
-command via `ask`, and returns the `Future[Option[Wave]]` reply. If the actor
-does not exist yet, sharding starts it, it initializes with `EmptyState`, and
-replies with `None`. If the actor holds a wave, it replies with `Some(wave)`.
+**`findById`** delegates to the base class's `findByEntityId`, which gets an
+`EntityRef` for the requested wave ID, sends a `GetState` command via `ask`, and
+returns the `Future[Option[Wave]]` reply. If the actor does not exist yet,
+sharding starts it, it initializes with `EmptyState`, and replies with `None`.
+If the actor holds a wave, it replies with `Some(wave)`.
 
-**`save`** is more interesting. It pattern-matches on the event type to determine
-which command to send. A `WaveReleased` event means we are creating the wave in
-the actor for the first time, so we send a `Create` command. A `WaveCompleted`
-event triggers a `Complete` command. A `WaveCancelled` event triggers a `Cancel`
-command. Each branch uses `askWithStatus`, which wraps the reply in a
-`StatusReply`. If the actor rejects the command (for example, trying to complete
-a wave that is already cancelled), the `Future` fails with the error message.
+**`save`** is more interesting, and it is the part the base class cannot
+provide, because the event-to-command mapping is specific to each aggregate. It
+calls `entityRef` (from the base) for the wave's ID, then pattern-matches on the
+event type to determine which command to send. A `WaveReleased` event means we
+are creating the wave in the actor for the first time, so we send a `Create`
+command. A `WaveCompleted` event triggers a `Complete` command. A
+`WaveCancelled` event triggers a `Cancel` command. Each branch uses
+`askWithStatus`, which wraps the reply in a `StatusReply`. If the actor rejects
+the command (for example, trying to complete a wave that is already cancelled),
+the `Future` fails with the error message.
 
 @:callout(info)
 
@@ -153,7 +206,8 @@ The `save` method does not blindly forward the wave and event. It
 translates domain-level intent (an event) into actor-level commands. This
 translation is the adapter's job in hexagonal architecture. The domain layer
 produces events; the Pekko adapter maps those events to the specific actor
-commands that will persist them.
+commands that will persist them. This per-event mapping is exactly the slice of
+the repository the base class leaves to each subclass.
 
 @:@
 
@@ -174,44 +228,56 @@ wave it belongs to. That would be absurdly slow and would not scale.
 The solution combines two techniques: a CQRS projection table for discovery,
 followed by actor fan-out for current state.
 
-Here is `PekkoTaskRepository`, which demonstrates the pattern:
+Here is `PekkoTaskRepository`, which demonstrates the pattern. Like
+`PekkoWaveRepository`, it extends `PekkoEntityRepository` for the sharding
+plumbing, but it _also_ mixes in `R2dbcProjectionQueries` for the cross-entity
+reads:
 
 ```scala
 class PekkoTaskRepository(
     actorSystem: ActorSystem[?],
     val connectionFactory: ConnectionFactory
 )(using Timeout)
-    extends AsyncTaskRepository
+    extends PekkoEntityRepository[TaskActor.Command, Task](
+      actorSystem = actorSystem,
+      entityKey = TaskActor.EntityKey,
+      behaviorFactory = TaskActor.apply,
+      getState = TaskActor.GetState.apply
+    )
+    with AsyncTaskRepository
     with R2dbcProjectionQueries:
 
-  protected given system: ActorSystem[?] = actorSystem
-  protected given ec: ExecutionContext = actorSystem.executionContext
-  private val sharding = ClusterSharding(system)
-
-  sharding.init(Entity(TaskActor.EntityKey)(ctx => TaskActor(ctx.entityId)))
-
   def findById(id: TaskId): Future[Option[Task]] =
-    sharding.entityRefFor(TaskActor.EntityKey, id.value.toString)
-      .ask(TaskActor.GetState(_))
+    findByEntityId(id.value.toString)
 
   def findByWaveId(waveId: WaveId): Future[List[Task]] =
     queryProjectionIds(
-      "SELECT task_id FROM task_by_wave WHERE wave_id = $1",
-      waveId.value,
-      "task_id"
-    ).flatMap(ids =>
-      Future.sequence(ids.map(id => findById(TaskId(id)))).map(_.flatten)
+      sql = TaskByWave.SelectTaskIdsByWaveId,
+      param = waveId.value,
+      idColumn = TaskByWave.TaskId
     )
+      .flatMap(ids => Future.sequence(ids.map(id => findById(TaskId(id)))).map(_.flatten))
 ```
 
 <small>_File: task/src/main/scala/neon/task/PekkoTaskRepository.scala_</small>
 
+The repository declares `val connectionFactory` to satisfy the abstract member
+of `R2dbcProjectionQueries`; the `system` and `ec` givens that trait also
+requires come for free from the `PekkoEntityRepository` base. Notice that the
+SQL is not an inline string literal: `TaskByWave.SelectTaskIdsByWaveId` and
+`TaskByWave.TaskId` are constants on a per-module `TaskProjectionSchema` object,
+the single home for the read-side table and column names. We will see that
+schema object in Chapter 12; the same constants are used by the projection
+handler that _writes_ the table, so the reader and writer cannot drift.
+
 Let's trace the `findByWaveId` call step by step.
 
 **Step 1: Query the projection table.** The method calls `queryProjectionIds`,
-a helper from the `R2dbcProjectionQueries` trait. This executes a raw SQL query
-against a read-side table called `task_by_wave`. The projection table maps wave
-IDs to task IDs. It is populated by a projection handler (Chapter 12) that
+a helper from the `R2dbcProjectionQueries` trait, passing the
+`SelectTaskIdsByWaveId` query (which expands to
+`SELECT task_id FROM task_by_wave WHERE wave_id = $1`). This executes a raw SQL
+query against a read-side table called `task_by_wave`. The projection table maps
+wave IDs to task IDs. It is populated by a projection handler (Chapter 12) that
 consumes task events and writes the mapping whenever a task is created. The query
 returns a `Future[List[UUID]]`, the list of task IDs belonging to this wave.
 
@@ -238,32 +304,68 @@ wave completion checks, reporting).
 ### The R2dbcProjectionQueries Trait
 
 The `queryProjectionIds` helper lives in the `R2dbcProjectionQueries` trait in
-the `common` module:
+the `common` module. It exposes two overloads, a single-parameter convenience
+that forwards to the list form, plus the list form that does the work:
 
 ```scala
 trait R2dbcProjectionQueries:
+
   protected def connectionFactory: ConnectionFactory
   protected given system: ActorSystem[?]
   protected given ec: ExecutionContext
 
   protected def queryProjectionIds(
       sql: String,
+      param: Any,
+      idColumn: String
+  ): Future[List[UUID]] =
+    queryProjectionIds(sql, List(param), idColumn)
+
+  protected def queryProjectionIds(
+      sql: String,
       params: List[Any],
       idColumn: String
-  ): Future[List[UUID]]
+  ): Future[List[UUID]] =
+    Source
+      .fromPublisher(connectionFactory.create())
+      .runWith(Sink.headOption)
+      .flatMap {
+        case None =>
+          Future.failed(
+            new IllegalStateException("Failed to acquire R2DBC connection")
+          )
+        case Some(connection) =>
+          val stmt = connection.createStatement(sql)
+          params.zipWithIndex.foreach { (param, index) =>
+            stmt.bind(index, param)
+          }
+          Source
+            .fromPublisher(stmt.execute())
+            .flatMapConcat { result =>
+              Source.fromPublisher(
+                result.map((row, _) => row.get(idColumn, classOf[UUID]))
+              )
+            }
+            .runWith(Sink.seq)
+            .map(_.toList)
+            .andThen { case _ =>
+              Source.fromPublisher(connection.close()).runWith(Sink.ignore)
+            }
+      }
 ```
 
 <small>_File: common/src/main/scala/neon/common/R2dbcProjectionQueries.scala_</small>
 
-The implementation acquires an R2DBC connection, binds the query parameters,
-streams the result rows into a list of UUIDs via Pekko Streams, and closes the
-connection in an `andThen` block (which runs regardless of success or failure).
-Everything is non-blocking: `Source.fromPublisher` wraps R2DBC's reactive
-`Publisher` into a Pekko Streams `Source`.
+The implementation acquires an R2DBC connection, binds the query parameters by
+position, streams the result rows into a list of UUIDs via Pekko Streams, and
+closes the connection in an `andThen` block (which runs regardless of success or
+failure). Everything is non-blocking: `Source.fromPublisher` wraps R2DBC's
+reactive `Publisher` into a Pekko Streams `Source`.
 
 Any `PekkoRepository` that needs cross-entity queries mixes in this trait,
 provides a `ConnectionFactory`, and calls `queryProjectionIds` with the
-appropriate SQL.
+appropriate SQL, drawn from the module's projection-schema object rather than
+inlined.
 
 ## Non-Transactional saveAll
 
@@ -282,19 +384,23 @@ def saveAll(entries: List[(Task, TaskEvent)]): Future[Unit]
 <small>_File: task/src/main/scala/neon/task/AsyncTaskRepository.scala_</small>
 
 The Scaladoc makes the contract explicit: this is not transactional. Here is the
-implementation in `PekkoTaskRepository`:
+implementation in `PekkoTaskRepository`, which simply delegates to the
+`sequenceSaves` helper on the base class, passing its own `save` as the
+per-entry operation:
 
 ```scala
 def saveAll(entries: List[(Task, TaskEvent)]): Future[Unit] =
-  Future.sequence(entries.map((task, event) => save(task, event))).map(_ => ())
+  sequenceSaves(entries)(save)
 ```
 
 <small>_File: task/src/main/scala/neon/task/PekkoTaskRepository.scala_</small>
 
-`Future.sequence` launches all individual `save` calls in parallel. Each `save`
-sends a command to its respective task actor via Cluster Sharding. If one actor
-rejects its command (perhaps due to a serialization error or an invalid state
-transition), that individual `Future` fails, but the others may succeed.
+`sequenceSaves` (which we saw on `PekkoEntityRepository` above) runs
+`Future.sequence` over the entries, launching all individual `save` calls in
+parallel. Each `save` sends a command to its respective task actor via Cluster
+Sharding. If one actor rejects its command (perhaps due to a serialization error
+or an invalid state transition), that individual `Future` fails, but the others
+may succeed.
 
 Why not use a distributed transaction? Because distributed transactions across
 event-sourced actors are complex, introduce coordination overhead, and conflict
@@ -337,14 +443,16 @@ pekko.persistence {
 
 Events are stored as rows in the `event_journal` table with the serialized
 payload in a CBOR binary column. Snapshots go to the `snapshot` table, keyed
-by persistence ID and sequence number. Each actor configures its retention:
+by persistence ID and sequence number. Retention is configured once, in the
+shared `EventSourcedEntity.behavior` helper from Chapter 10, so every actor
+gets the same policy:
 
 ```scala
 EventSourcedBehavior
-  .withEnforcedReplies[Command, WaveEvent, State](
-    persistenceId = PersistenceId(EntityKey.name, entityId),
-    emptyState = EmptyState,
-    commandHandler = commandHandler(context),
+  .withEnforcedReplies[Command, Event, State](
+    persistenceId = PersistenceId(entityKey.name, entityId),
+    emptyState = emptyState,
+    commandHandler = ...,
     eventHandler = eventHandler
   )
   .withRetention(
@@ -352,7 +460,7 @@ EventSourcedBehavior
   )
 ```
 
-<small>_File: wave/src/main/scala/neon/wave/WaveActor.scala_</small>
+<small>_File: common/src/main/scala/neon/common/entity/EventSourcedEntity.scala_</small>
 
 `snapshotEvery(100, 2)` means: take a snapshot every 100 events, and keep the
 2 most recent snapshots. On recovery, the actor loads the latest snapshot and
