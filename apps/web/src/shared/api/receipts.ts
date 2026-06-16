@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 
@@ -40,23 +41,27 @@ const MOCK_RECEIPTS: Array<Receipt> = import.meta.env.DEV
 export const receiptQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result = await apiClient.get<Array<Receipt>>(
-          "/api/inbound/receipts"
-        )
-        return result.unwrapOr(MOCK_RECEIPTS)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<Array<Receipt>>("/api/inbound/receipts"),
+          {
+            fallback: import.meta.env.DEV ? MOCK_RECEIPTS : undefined,
+          }
+        ),
       queryKey: ["receipts"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<Receipt>(
-          `/api/inbound/receipts/${id}`
-        )
-        return result.unwrapOr(MOCK_RECEIPTS.find((r) => r.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<Receipt>(`/api/inbound/receipts/${id}`),
+          {
+            fallback: import.meta.env.DEV
+              ? (MOCK_RECEIPTS.find((r) => r.id === id) ?? null)
+              : undefined,
+          }
+        ),
       queryKey: ["receipts", id] as const,
     }),
 }

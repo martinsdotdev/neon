@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 
@@ -97,23 +98,29 @@ const MOCK_CGS: Array<ConsolidationGroup> = import.meta.env.DEV
 export const consolidationGroupQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result = await apiClient.get<Array<ConsolidationGroup>>(
-          "/api/consolidation-groups"
-        )
-        return result.unwrapOr(MOCK_CGS)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<Array<ConsolidationGroup>>("/api/consolidation-groups"),
+          {
+            fallback: import.meta.env.DEV ? MOCK_CGS : undefined,
+          }
+        ),
       queryKey: ["consolidation-groups"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<ConsolidationGroup>(
-          `/api/consolidation-groups/${id}`
-        )
-        return result.unwrapOr(MOCK_CGS.find((cg) => cg.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<ConsolidationGroup>(
+            `/api/consolidation-groups/${id}`
+          ),
+          {
+            fallback: import.meta.env.DEV
+              ? (MOCK_CGS.find((cg) => cg.id === id) ?? null)
+              : undefined,
+          }
+        ),
       queryKey: ["consolidation-groups", id] as const,
     }),
 }

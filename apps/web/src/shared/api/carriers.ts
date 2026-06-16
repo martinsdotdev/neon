@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 
@@ -23,19 +24,21 @@ const MOCK_CARRIERS: Array<Carrier> = import.meta.env.DEV
 export const carrierQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result = await apiClient.get<Array<Carrier>>("/api/carriers")
-        return result.unwrapOr(MOCK_CARRIERS)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<Array<Carrier>>("/api/carriers"), {
+          fallback: import.meta.env.DEV ? MOCK_CARRIERS : undefined,
+        }),
       queryKey: ["carriers"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<Carrier>(`/api/carriers/${id}`)
-        return result.unwrapOr(MOCK_CARRIERS.find((c) => c.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<Carrier>(`/api/carriers/${id}`), {
+          fallback: import.meta.env.DEV
+            ? (MOCK_CARRIERS.find((c) => c.id === id) ?? null)
+            : undefined,
+        }),
       queryKey: ["carriers", id] as const,
     }),
 }

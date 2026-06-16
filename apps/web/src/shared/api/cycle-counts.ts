@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 
@@ -50,22 +51,21 @@ const MOCK_CCS: Array<CycleCount> = import.meta.env.DEV
 export const cycleCountQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result =
-          await apiClient.get<Array<CycleCount>>("/api/cycle-counts")
-        return result.unwrapOr(MOCK_CCS)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<Array<CycleCount>>("/api/cycle-counts"), {
+          fallback: import.meta.env.DEV ? MOCK_CCS : undefined,
+        }),
       queryKey: ["cycle-counts"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<CycleCount>(
-          `/api/cycle-counts/${id}`
-        )
-        return result.unwrapOr(MOCK_CCS.find((cc) => cc.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<CycleCount>(`/api/cycle-counts/${id}`), {
+          fallback: import.meta.env.DEV
+            ? (MOCK_CCS.find((cc) => cc.id === id) ?? null)
+            : undefined,
+        }),
       queryKey: ["cycle-counts", id] as const,
     }),
 }

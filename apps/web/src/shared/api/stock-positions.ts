@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 
@@ -46,23 +47,27 @@ const MOCK_SPS: Array<StockPosition> = import.meta.env.DEV
 export const stockPositionQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result = await apiClient.get<Array<StockPosition>>(
-          "/api/stock-positions"
-        )
-        return result.unwrapOr(MOCK_SPS)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<Array<StockPosition>>("/api/stock-positions"),
+          {
+            fallback: import.meta.env.DEV ? MOCK_SPS : undefined,
+          }
+        ),
       queryKey: ["stock-positions"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<StockPosition>(
-          `/api/stock-positions/${id}`
-        )
-        return result.unwrapOr(MOCK_SPS.find((sp) => sp.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<StockPosition>(`/api/stock-positions/${id}`),
+          {
+            fallback: import.meta.env.DEV
+              ? (MOCK_SPS.find((sp) => sp.id === id) ?? null)
+              : undefined,
+          }
+        ),
       queryKey: ["stock-positions", id] as const,
     }),
 }

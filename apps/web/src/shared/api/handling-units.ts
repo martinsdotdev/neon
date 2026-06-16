@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 
@@ -57,23 +58,27 @@ const MOCK_HUS: Array<HandlingUnit> = import.meta.env.DEV
 export const handlingUnitQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result = await apiClient.get<Array<HandlingUnit>>(
-          "/api/handling-units"
-        )
-        return result.unwrapOr(MOCK_HUS)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<Array<HandlingUnit>>("/api/handling-units"),
+          {
+            fallback: import.meta.env.DEV ? MOCK_HUS : undefined,
+          }
+        ),
       queryKey: ["handling-units"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<HandlingUnit>(
-          `/api/handling-units/${id}`
-        )
-        return result.unwrapOr(MOCK_HUS.find((hu) => hu.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<HandlingUnit>(`/api/handling-units/${id}`),
+          {
+            fallback: import.meta.env.DEV
+              ? (MOCK_HUS.find((hu) => hu.id === id) ?? null)
+              : undefined,
+          }
+        ),
       queryKey: ["handling-units", id] as const,
     }),
 }

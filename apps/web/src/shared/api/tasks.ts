@@ -4,6 +4,7 @@ import {
   STATE_LABEL as DOMAIN_STATE_LABEL,
   STATE_ORDER as DOMAIN_STATE_ORDER,
 } from "@neon/domain/task"
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 import type {
@@ -427,8 +428,13 @@ export const taskQueries = {
   all: () =>
     queryOptions({
       queryFn: async () => {
-        const result = await apiClient.get<Array<Task>>("/api/tasks")
-        return result.unwrapOr(MOCK_TASKS).map((t) => enrich(t))
+        const tasks = await unwrapForQuery(
+          apiClient.get<Array<Task>>("/api/tasks"),
+          {
+            fallback: import.meta.env.DEV ? MOCK_TASKS : undefined,
+          }
+        )
+        return tasks.map((t) => enrich(t))
       },
       queryKey: ["tasks"] as const,
     }),
@@ -436,9 +442,13 @@ export const taskQueries = {
     queryOptions({
       enabled: !!id,
       queryFn: async () => {
-        const result = await apiClient.get<Task>(`/api/tasks/${id}`)
-        const found = result.unwrapOr(
-          MOCK_TASKS.find((t) => t.id === id) ?? null
+        const found = await unwrapForQuery(
+          apiClient.get<Task>(`/api/tasks/${id}`),
+          {
+            fallback: import.meta.env.DEV
+              ? (MOCK_TASKS.find((t) => t.id === id) ?? null)
+              : undefined,
+          }
         )
         return found ? enrich(found) : null
       },

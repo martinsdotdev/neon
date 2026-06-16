@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 import type { Workstation } from "@neon/domain/workstation"
@@ -36,22 +37,21 @@ const MOCK_WS: Array<Workstation> = import.meta.env.DEV
 export const workstationQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result =
-          await apiClient.get<Array<Workstation>>("/api/workstations")
-        return result.unwrapOr(MOCK_WS)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<Array<Workstation>>("/api/workstations"), {
+          fallback: import.meta.env.DEV ? MOCK_WS : undefined,
+        }),
       queryKey: ["workstations"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<Workstation>(
-          `/api/workstations/${id}`
-        )
-        return result.unwrapOr(MOCK_WS.find((ws) => ws.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<Workstation>(`/api/workstations/${id}`), {
+          fallback: import.meta.env.DEV
+            ? (MOCK_WS.find((ws) => ws.id === id) ?? null)
+            : undefined,
+        }),
       queryKey: ["workstations", id] as const,
     }),
 }

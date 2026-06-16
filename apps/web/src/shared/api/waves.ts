@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { ResultAsync, errAsync } from "neverthrow"
 import { apiClient } from "./client"
@@ -115,19 +116,21 @@ const MOCK_WAVES: Array<Wave> = import.meta.env.DEV
 export const waveQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result = await apiClient.get<Array<Wave>>("/api/waves")
-        return result.unwrapOr(MOCK_WAVES)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<Array<Wave>>("/api/waves"), {
+          fallback: import.meta.env.DEV ? MOCK_WAVES : undefined,
+        }),
       queryKey: ["waves"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<Wave>(`/api/waves/${id}`)
-        return result.unwrapOr(MOCK_WAVES.find((w) => w.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<Wave>(`/api/waves/${id}`), {
+          fallback: import.meta.env.DEV
+            ? (MOCK_WAVES.find((w) => w.id === id) ?? null)
+            : undefined,
+        }),
       queryKey: ["waves", id] as const,
     }),
 }

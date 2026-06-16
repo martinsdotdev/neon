@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 
@@ -54,23 +55,27 @@ const MOCK_DELIVERIES: Array<Delivery> = import.meta.env.DEV
 export const deliveryQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result = await apiClient.get<Array<Delivery>>(
-          "/api/inbound/deliveries"
-        )
-        return result.unwrapOr(MOCK_DELIVERIES)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<Array<Delivery>>("/api/inbound/deliveries"),
+          {
+            fallback: import.meta.env.DEV ? MOCK_DELIVERIES : undefined,
+          }
+        ),
       queryKey: ["deliveries"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<Delivery>(
-          `/api/inbound/deliveries/${id}`
-        )
-        return result.unwrapOr(MOCK_DELIVERIES.find((d) => d.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<Delivery>(`/api/inbound/deliveries/${id}`),
+          {
+            fallback: import.meta.env.DEV
+              ? (MOCK_DELIVERIES.find((d) => d.id === id) ?? null)
+              : undefined,
+          }
+        ),
       queryKey: ["deliveries", id] as const,
     }),
 }

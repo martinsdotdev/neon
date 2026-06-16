@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 
@@ -38,23 +39,27 @@ const MOCK_TOS: Array<TransportOrder> = import.meta.env.DEV
 export const transportOrderQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result = await apiClient.get<Array<TransportOrder>>(
-          "/api/transport-orders"
-        )
-        return result.unwrapOr(MOCK_TOS)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<Array<TransportOrder>>("/api/transport-orders"),
+          {
+            fallback: import.meta.env.DEV ? MOCK_TOS : undefined,
+          }
+        ),
       queryKey: ["transport-orders"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<TransportOrder>(
-          `/api/transport-orders/${id}`
-        )
-        return result.unwrapOr(MOCK_TOS.find((to) => to.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<TransportOrder>(`/api/transport-orders/${id}`),
+          {
+            fallback: import.meta.env.DEV
+              ? (MOCK_TOS.find((to) => to.id === id) ?? null)
+              : undefined,
+          }
+        ),
       queryKey: ["transport-orders", id] as const,
     }),
 }

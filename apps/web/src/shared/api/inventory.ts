@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 
@@ -54,22 +55,24 @@ const MOCK_INV: Array<InventoryRecord> = import.meta.env.DEV
 export const inventoryQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result =
-          await apiClient.get<Array<InventoryRecord>>("/api/inventory")
-        return result.unwrapOr(MOCK_INV)
-      },
+      queryFn: async () =>
+        unwrapForQuery(
+          apiClient.get<Array<InventoryRecord>>("/api/inventory"),
+          {
+            fallback: import.meta.env.DEV ? MOCK_INV : undefined,
+          }
+        ),
       queryKey: ["inventory"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<InventoryRecord>(
-          `/api/inventory/${id}`
-        )
-        return result.unwrapOr(MOCK_INV.find((inv) => inv.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<InventoryRecord>(`/api/inventory/${id}`), {
+          fallback: import.meta.env.DEV
+            ? (MOCK_INV.find((inv) => inv.id === id) ?? null)
+            : undefined,
+        }),
       queryKey: ["inventory", id] as const,
     }),
 }

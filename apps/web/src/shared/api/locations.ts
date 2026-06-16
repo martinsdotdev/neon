@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 import type { Location } from "@neon/domain/location"
@@ -59,19 +60,21 @@ const MOCK_LOCATIONS: Array<Location> = import.meta.env.DEV
 export const locationQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result = await apiClient.get<Array<Location>>("/api/locations")
-        return result.unwrapOr(MOCK_LOCATIONS)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<Array<Location>>("/api/locations"), {
+          fallback: import.meta.env.DEV ? MOCK_LOCATIONS : undefined,
+        }),
       queryKey: ["locations"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<Location>(`/api/locations/${id}`)
-        return result.unwrapOr(MOCK_LOCATIONS.find((l) => l.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<Location>(`/api/locations/${id}`), {
+          fallback: import.meta.env.DEV
+            ? (MOCK_LOCATIONS.find((l) => l.id === id) ?? null)
+            : undefined,
+        }),
       queryKey: ["locations", id] as const,
     }),
 }

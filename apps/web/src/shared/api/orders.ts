@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
 
@@ -91,19 +92,21 @@ const MOCK_ORDERS: Array<Order> = import.meta.env.DEV
 export const orderQueries = {
   all: () =>
     queryOptions({
-      queryFn: async () => {
-        const result = await apiClient.get<Array<Order>>("/api/orders")
-        return result.unwrapOr(MOCK_ORDERS)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<Array<Order>>("/api/orders"), {
+          fallback: import.meta.env.DEV ? MOCK_ORDERS : undefined,
+        }),
       queryKey: ["orders"] as const,
     }),
   detail: (id: string) =>
     queryOptions({
       enabled: !!id,
-      queryFn: async () => {
-        const result = await apiClient.get<Order>(`/api/orders/${id}`)
-        return result.unwrapOr(MOCK_ORDERS.find((o) => o.id === id) ?? null)
-      },
+      queryFn: async () =>
+        unwrapForQuery(apiClient.get<Order>(`/api/orders/${id}`), {
+          fallback: import.meta.env.DEV
+            ? (MOCK_ORDERS.find((o) => o.id === id) ?? null)
+            : undefined,
+        }),
       queryKey: ["orders", id] as const,
     }),
 }
