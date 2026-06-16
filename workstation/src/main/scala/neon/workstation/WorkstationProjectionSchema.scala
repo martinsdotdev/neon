@@ -1,7 +1,7 @@
 package neon.workstation
 
-/** Read-side projection schema for the workstation module: the single owner of the table and
-  * column names shared by [[PekkoWorkstationRepository]] queries and the app-side
+/** Read-side projection schema for the workstation module: the single owner of the table and column
+  * names shared by [[PekkoWorkstationRepository]] queries and the app-side
   * `WorkstationProjectionHandler`. DDL: app/src/main/resources/db/V5__read_side_projections.sql
   * (`mode` column added by V7, currently unused in Scala SQL).
   */

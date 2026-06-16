@@ -16,12 +16,12 @@ import scala.reflect.ClassTag
   * tagging, enforced replies, a persistence id derived from the entity key, snapshot retention
   * every 100 events keeping 2, and the standard received-command debug log.
   *
-  * Serialization guardrails: this object only assembles behavior. Commands, events, responses,
-  * and state classes stay concrete types nested in each per-module actor object — never move,
-  * rename, or genericize them, because Jackson CBOR manifests are fully-qualified class names
-  * baked into the journal and snapshots. Always pass the type arguments explicitly at call sites
-  * (`behavior[Command, WaveEvent, State](...)`); letting `emptyState` drive inference would
-  * narrow `State` to the `EmptyState` singleton type.
+  * Serialization guardrails: this object only assembles behavior. Commands, events, responses, and
+  * state classes stay concrete types nested in each per-module actor object — never move, rename,
+  * or genericize them, because Jackson CBOR manifests are fully-qualified class names baked into
+  * the journal and snapshots. Always pass the type arguments explicitly at call sites
+  * (`behavior[Command, WaveEvent, State](...)`); letting `emptyState` drive inference would narrow
+  * `State` to the `EmptyState` singleton type.
   */
 object EventSourcedEntity:
 

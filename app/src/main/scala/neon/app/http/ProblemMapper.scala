@@ -23,9 +23,9 @@ import org.apache.pekko.http.scaladsl.model.{StatusCode, StatusCodes}
 import org.apache.pekko.http.scaladsl.server.Directives.complete
 import org.apache.pekko.http.scaladsl.server.Route
 
-/** Maps a domain error to its RFC 9457 problem response. One given instance per error ADT keeps
-  * the error-to-status knowledge at one seam; routes call [[ProblemMapper.completeProblem]]
-  * instead of hand-rolling matches. See ADR 0011.
+/** Maps a domain error to its RFC 9457 problem response. One given instance per error ADT keeps the
+  * error-to-status knowledge at one seam; routes call [[ProblemMapper.completeProblem]] instead of
+  * hand-rolling matches. See ADR 0011.
   */
 trait ProblemMapper[E]:
   def toProblem(error: E): ProblemDetails

@@ -1,9 +1,9 @@
 package neon.goodsreceipt
 
 /** Read-side projection schema for the goods receipt module: the single owner of the table and
-  * column names used by the app-side `GoodsReceiptProjectionHandler`. The module's Pekko
-  * repository does not query this table; the schema lives here so the module owns its read-model
-  * vocabulary. DDL: app/src/main/resources/db/V7__stock_inbound_cycle_count_tables.sql.
+  * column names used by the app-side `GoodsReceiptProjectionHandler`. The module's Pekko repository
+  * does not query this table; the schema lives here so the module owns its read-model vocabulary.
+  * DDL: app/src/main/resources/db/V7__stock_inbound_cycle_count_tables.sql.
   */
 object GoodsReceiptProjectionSchema:
 

@@ -7,8 +7,7 @@ package neon.consolidationgroup
   */
 object ConsolidationGroupProjectionSchema:
 
-  /** Consolidation groups indexed by wave, for
-    * [[AsyncConsolidationGroupRepository.findByWaveId]].
+  /** Consolidation groups indexed by wave, for [[AsyncConsolidationGroupRepository.findByWaveId]].
     */
   object ConsolidationGroupByWave:
     val Table = "consolidation_group_by_wave"

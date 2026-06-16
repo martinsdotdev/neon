@@ -22,7 +22,10 @@ class PermissionContractSuite extends AnyFunSpec:
 
   describe("Permission mirror"):
     it("matches the TypeScript PERMISSION_KEYS in packages/domain"):
-      val authFile = repositoryRoot.resolve("packages").resolve("domain").resolve("src")
+      val authFile = repositoryRoot
+        .resolve("packages")
+        .resolve("domain")
+        .resolve("src")
         .resolve("auth.ts")
       assert(Files.exists(authFile), s"TypeScript mirror not found at $authFile")
 

@@ -9,8 +9,8 @@ import neon.wave.{Wave, WaveRepository}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.{EitherValues, OptionValues}
 
-/** Shell suite: load wiring, persistence effects, and end-to-end smoke paths. The cascade
-  * decisions themselves are covered by [[TaskCompletionCascadeSuite]].
+/** Shell suite: load wiring, persistence effects, and end-to-end smoke paths. The cascade decisions
+  * themselves are covered by [[TaskCompletionCascadeSuite]].
   */
 class TaskCompletionServiceSuite
     extends AnyFunSpec

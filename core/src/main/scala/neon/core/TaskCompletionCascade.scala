@@ -61,8 +61,8 @@ case class TaskCompletionResult(
   *
   * Shells load a [[CascadeState]] before calling [[decide]] and persist the outcome afterwards.
   * Shell contract: all loads happen before [[decide]]; no shell reads its own writes. The module
-  * normalises the loaded task set itself (substituting the freshly completed task and appending
-  * the shortpick replacement), so sync and async shells decide identically regardless of how stale
+  * normalises the loaded task set itself (substituting the freshly completed task and appending the
+  * shortpick replacement), so sync and async shells decide identically regardless of how stale
   * their loaded view is.
   */
 object TaskCompletionCascade:
@@ -142,11 +142,9 @@ object TaskCompletionCascade:
           state.waveTasks.filterNot(_.id == completed.id) ++
             (completed :: shortpick.map(_._1).toList)
 
-        val waveCompletion = state.wave
-          .collect { case released: Wave.Released =>
-            WaveCompletionPolicy(effectiveWaveTasks, released, at)
-          }
-          .flatten
+        val waveCompletion = state.wave.collect { case released: Wave.Released =>
+          WaveCompletionPolicy(effectiveWaveTasks, released, at)
+        }.flatten
 
         val pickingCompletion = state.consolidationGroups
           .collectFirst {

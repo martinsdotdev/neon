@@ -15,10 +15,9 @@ import scala.concurrent.{ExecutionContext, Future}
 /** Async counterpart of [[TaskCompletionService]]: loads the cascade state, delegates every
   * decision to [[TaskCompletionCascade]], and persists the outcome.
   *
-  * Persistence fans out to individual entity actors and is not transactional: a failure
-  * mid-cascade leaves earlier saves in place. Stock writes persist sequentially because the
-  * second command of a partial pick (deallocate) requires the first (consume) to have been
-  * applied to the actor.
+  * Persistence fans out to individual entity actors and is not transactional: a failure mid-cascade
+  * leaves earlier saves in place. Stock writes persist sequentially because the second command of a
+  * partial pick (deallocate) requires the first (consume) to have been applied to the actor.
   */
 class AsyncTaskCompletionService(
     taskRepository: AsyncTaskRepository,

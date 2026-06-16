@@ -32,10 +32,7 @@ import java.time.Instant
 import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
-class ConsolidationGroupRoutesSuite
-    extends AnyFunSpec
-    with ScalatestRouteTest
-    with RouteSuiteBase:
+class ConsolidationGroupRoutesSuite extends AnyFunSpec with ScalatestRouteTest with RouteSuiteBase:
 
   private val consolidationGroupId = ConsolidationGroupId()
   private val workstationId = WorkstationId()

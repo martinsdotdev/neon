@@ -2,8 +2,7 @@ package neon.transportorder
 
 /** Read-side projection schema for the transport order module: the single owner of the table and
   * column names shared by [[PekkoTransportOrderRepository]] queries and the app-side
-  * `TransportOrderProjectionHandler`. DDL:
-  * app/src/main/resources/db/V5__read_side_projections.sql.
+  * `TransportOrderProjectionHandler`. DDL: app/src/main/resources/db/V5__read_side_projections.sql.
   */
 object TransportOrderProjectionSchema:
 

@@ -104,7 +104,9 @@ class AsyncTaskCompletionServiceSuite
         assert(!fixture.recorder.contains("stockPosition.findById"))
 
     describe("decision consistency under stale projection reads"):
-      it("does not complete the wave or group on shortpick even when the stale view misses the replacement"):
+      it(
+        "does not complete the wave or group on shortpick even when the stale view misses the replacement"
+      ):
         val task = assignedTask(requestedQuantity = 10, waveId = Some(waveId))
         // The projection-backed findByWaveId returns the completing task still Assigned and
         // cannot contain the replacement created in this request.
@@ -128,7 +130,9 @@ class AsyncTaskCompletionServiceSuite
             .isInstanceOf[ConsolidationGroup.Created]
         )
 
-      it("completes the wave and group on full pick even when the stale view shows the task as Assigned"):
+      it(
+        "completes the wave and group on full pick even when the stale view shows the task as Assigned"
+      ):
         val task = assignedTask(requestedQuantity = 10, waveId = Some(waveId))
         val fixture = Fixture(staleWaveView = Some(List(task)))
         fixture.taskRepository.store(task.id) = task

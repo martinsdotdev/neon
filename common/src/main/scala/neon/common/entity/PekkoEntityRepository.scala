@@ -12,9 +12,9 @@ import org.apache.pekko.util.Timeout
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Base class for actor-backed repositories: initializes cluster sharding for the entity, exposes
-  * entity refs, and provides the uniform state query and save fan-out. The `system` and `ec`
-  * givens also satisfy the abstract members of `R2dbcProjectionQueries` for repositories that mix
-  * it in for read-side queries.
+  * entity refs, and provides the uniform state query and save fan-out. The `system` and `ec` givens
+  * also satisfy the abstract members of `R2dbcProjectionQueries` for repositories that mix it in
+  * for read-side queries.
   *
   * @param behaviorFactory
   *   creates the entity behavior from its entity id
@@ -41,8 +41,8 @@ abstract class PekkoEntityRepository[Command, Aggregate](
   protected def findByEntityId(entityId: String): Future[Option[Aggregate]] =
     entityRef(entityId).ask(getState)
 
-  /** Fans out entries to individual entity saves. Not transactional: individual entries may
-    * succeed or fail independently.
+  /** Fans out entries to individual entity saves. Not transactional: individual entries may succeed
+    * or fail independently.
     */
   protected final def sequenceSaves[SavedAggregate, Event](
       entries: List[(SavedAggregate, Event)]
