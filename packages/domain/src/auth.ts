@@ -2,30 +2,36 @@ import { z } from "zod"
 
 export type Role = "Admin" | "Supervisor" | "Operator" | "Viewer"
 
-// Mirrors `common/src/main/scala/neon/common/Permission.scala`. Keys must
-// stay in lockstep with the Scala enum's `key` values.
-export type Permission =
-  | "wave:plan"
-  | "wave:cancel"
-  | "task:complete"
-  | "task:allocate"
-  | "task:assign"
-  | "task:cancel"
-  | "transport-order:confirm"
-  | "transport-order:cancel"
-  | "consolidation-group:complete"
-  | "consolidation-group:cancel"
-  | "consolidation-group:advance"
-  | "workstation:assign"
-  | "workstation:manage"
-  | "handling-unit:manage"
-  | "slot:manage"
-  | "inventory:manage"
-  | "stock:manage"
-  | "inbound:manage"
-  | "inbound:receive"
-  | "cycle-count:manage"
-  | "user:manage"
+// Mirrors `common/src/main/scala/neon/common/Permission.scala`. Keys must stay
+// in lockstep with the Scala enum's `key` values; PermissionContractSuite in
+// the backend common module compares this list against the enum and fails the
+// build when either side drifts.
+export const PERMISSION_KEYS = [
+  "wave:plan",
+  "wave:cancel",
+  "task:complete",
+  "task:allocate",
+  "task:assign",
+  "task:cancel",
+  "transport-order:confirm",
+  "transport-order:cancel",
+  "consolidation-group:complete",
+  "consolidation-group:cancel",
+  "consolidation-group:advance",
+  "workstation:assign",
+  "workstation:manage",
+  "handling-unit:manage",
+  "slot:manage",
+  "inventory:manage",
+  "stock:manage",
+  "inbound:manage",
+  "cycle-count:manage",
+  "user:manage",
+] as const
+
+export type Permission = (typeof PERMISSION_KEYS)[number]
+
+export const PermissionSchema = z.enum(PERMISSION_KEYS)
 
 export interface AuthUser {
   userId: string
@@ -44,6 +50,9 @@ export interface AuthLoginResponse extends AuthUser {
 
 export const RoleSchema = z.enum(["Admin", "Supervisor", "Operator", "Viewer"])
 
+// `permissions` deliberately parses as plain strings rather than the
+// Permission enum: the backend may ship a new key before this mirror updates,
+// and an unknown permission must not fail the login response at runtime.
 export const AuthUserSchema: z.ZodType<AuthUser> = z.object({
   login: z.string(),
   name: z.string(),
