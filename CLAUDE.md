@@ -37,7 +37,7 @@ pnpm --filter web format  # Prettier (no semicolons, double quotes, trailing com
 pnpm dev:mobile          # Metro on port 8081 (Expo dev server)
 pnpm --filter mobile android   # Open in Android emulator (camera scanning)
 pnpm --filter mobile ios       # Open in iOS simulator
-# Custom Dev Client (required for DataWedge): see apps/mobile/AGENTS.md
+# Camera scanning runs in the Expo dev client; a DataWedge path is planned (see apps/mobile/AGENTS.md)
 ```
 
 ## Architecture
@@ -76,7 +76,7 @@ Key state machines:
 ### Core Module: Policy-Service-Repository Pattern
 
 - **Policies**: stateless decision objects returning `Option[(State, Event)]`. Pure business rules, easily testable in isolation.
-- **Services**: orchestrators that inject repositories and policies, return `Either[Error, Result]` (sync) or `Future` (async). Manage cascading state transitions across aggregates (e.g., task completion triggers shortpick check, routing, wave completion, consolidation group completion).
+- **Services**: orchestrators that inject repositories and policies, return `Either[Error, Result]` (sync) or `Future` (async). Manage cascading state transitions across aggregates (e.g., task completion triggers shortpick check, routing, wave completion, consolidation group completion). Multi-step cascades are extracted into a pure decision module (e.g. `TaskCompletionCascade` — `validate` then `decide` over pre-loaded state); the sync and async services are then thin load/decide/persist shells over it, so the two cannot drift.
 - **Repositories**: abstract trait ports (`findById`, `save`, etc.). Sync traits use in-memory implementations in tests; async traits (`AsyncXxxRepository`) are implemented by `PekkoXxxRepository` classes backed by Cluster Sharding.
 
 ### Pekko Infrastructure Layer (Vertical Slice Architecture)
@@ -94,13 +94,13 @@ app/
   projection/WaveProjectionHandler.scala # CQRS read-side handler
 ```
 
-**Event-Sourced Actors** (`XxxActor.scala`): `EventSourcedBehavior.withEnforcedReplies` with `Command`/`ActorEvent`/`State` type parameters. Commands are sealed traits extending `CborSerializable`. State is `EmptyState | ActiveState(aggregate)`. Command handlers return `ReplyEffect`, event handlers reconstruct state for recovery. Tagged for projection consumption (`.withTagger`), snapshots every 100 events (`.withRetention`).
+**Event-Sourced Actors** (`XxxActor.scala`): the uniform behavior (MDC tags, `withEnforcedReplies`, persistence id from the entity key, snapshot retention every 100 events, and the received-command debug log) is assembled by `neon.common.entity.EventSourcedEntity.behavior[Command, Event, State]`; each actor supplies only its command/event handlers. Commands are sealed traits extending `CborSerializable`. State is `EmptyState | ActiveState(aggregate)`. Projections read via `eventsBySlices` (no `.withTagger`). GetState handling and the unknown-command rejection stay per-actor (the rejection message comes from `EventSourcedEntity.invalidCommandMessage`).
 
-**Pekko Repositories** (`PekkoXxxRepository.scala`): Single-entity operations use `sharding.entityRefFor(...).ask(...)`. Cross-entity queries use `R2dbcProjectionQueries` trait (from `common`) to query CQRS projection tables, then fan out to individual actors. `saveAll` is non-transactional: individual entity operations may succeed or fail independently.
+**Pekko Repositories** (`PekkoXxxRepository.scala`): extend `neon.common.entity.PekkoEntityRepository[Command, Aggregate]` for sharding init, `findByEntityId`, and `sequenceSaves`; each repo keeps only its per-event `save` mapping and any cross-entity queries. Cross-entity queries use the `R2dbcProjectionQueries` trait (from `common`) to query CQRS projection tables, then fan out to individual actors. `saveAll` is non-transactional: individual entity operations may succeed or fail independently.
 
-**CQRS Projections** (`app/projection/`): `ProjectionBootstrap` initializes all projections via `ShardedDaemonProcess` with `R2dbcProjection.exactlyOnce`. Each handler consumes tagged events and upserts into read-side PostgreSQL tables (e.g., `task_by_wave`, `workstation_by_type_and_state`).
+**CQRS Projections** (`app/projection/`): `ProjectionBootstrap` initializes all projections via `ShardedDaemonProcess` with `R2dbcProjection.exactlyOnce`. Each handler upserts into read-side PostgreSQL tables (e.g., `task_by_wave`, `workstation_by_type_and_state`). Each module owns a `<X>ProjectionSchema` object (the single home for its table/column names and SQL), consulted by both the projection handler and the module's Pekko repository queries.
 
-**HTTP Routes** (`app/http/`): Pekko HTTP directives with circe JSON marshalling (`derives Encoder.AsObject` / `derives Decoder`). `CirceSupport` provides implicit marshallers. Domain error ADTs map to HTTP status codes.
+**HTTP Routes** (`app/http/`): Pekko HTTP directives with circe JSON marshalling (`derives Encoder.AsObject` / `derives Decoder`). `CirceSupport` provides implicit marshallers. Domain error ADTs map to RFC 9457 Problem Details via `ProblemMapper` given instances — routes call `completeProblem(error)` rather than hand-rolling status codes (ADR 0011).
 
 **Bootstrap**: `Guardian` is the root actor. It obtains the R2DBC `ConnectionFactory`, creates `ServiceRegistry` (wires all repos and services), starts `ProjectionBootstrap`, and launches `HttpServer`.
 
@@ -114,17 +114,17 @@ Sealed trait ADTs for errors, `Either[Error, Result]` return types. No exception
 
 ### Common Module
 
-Provides opaque type ID wrappers (UUID v7 via uuid-creator) for all entities, shared enums (`Priority`, `PackagingLevel`), utility types (`UomHierarchy`, `Lot`), `CborSerializable` marker trait, and `R2dbcProjectionQueries` trait for cross-entity queries.
+Provides opaque type ID wrappers (UUID v7 via uuid-creator) for all entities, shared enums (`Priority`, `PackagingLevel`), utility types (`UomHierarchy`, `Lot`), `CborSerializable` marker trait, `R2dbcProjectionQueries` trait for cross-entity queries, and the `neon.common.entity` event-sourced scaffolding (`EventSourcedEntity`, `PekkoEntityRepository`) shared by every slice.
 
 ### Frontend workspace (`apps/`, `packages/`)
 
 pnpm workspaces. Two apps:
 - **`apps/web/`** — TanStack Start + React 19 + TypeScript. UI with shadcn/ui (Base UI primitives + CVA variants + Tailwind CSS v4). File-based routing in `src/routes/`. Path alias `@/*` maps to `apps/web/src/*`.
-- **`apps/mobile/`** — Expo SDK 53+ with Expo Router v4. React Native + TypeScript. Theming via `react-native-unistyles`. Auth via Bearer token in `expo-secure-store`. Scanner abstraction supports DataWedge (rugged Android) + `expo-camera` (consumer phones).
+- **`apps/mobile/`** — Expo SDK 53+ with Expo Router v4. React Native + TypeScript. Theming via `react-native-unistyles`. Auth via Bearer token in `expo-secure-store`. Scanning currently uses `expo-camera`; a DataWedge adapter for rugged Android is planned — the scanner seam will be introduced when that second adapter lands (one adapter today, so no seam yet).
 
 Shared packages:
-- **`packages/domain/`** — TS types mirroring the Scala domain (Task, Wave, ConsolidationGroup, etc.), Zod schemas, label maps, legal-transition tables.
-- **`packages/client/`** — `createApiClient({ baseUrl, getAuthToken })` factory returning `ResultAsync<T, ApiError>` (neverthrow). Web calls it with `getAuthToken: () => undefined` (cookie auth); mobile passes a SecureStore-backed getter.
+- **`packages/domain/`** — the single home for TS types mirroring the Scala domain (Task, Wave, ConsolidationGroup, Permission, Location, Sku, etc.), Zod schemas, label maps, legal-transition tables. Both apps import shared entity types from here rather than re-declaring them. The Scala `PermissionContractSuite` (in `common`) reads `PERMISSION_KEYS` out of `auth.ts` and fails the build if the TS and Scala permission lists drift.
+- **`packages/client/`** — `createApiClient({ baseUrl, getAuthToken })` factory returning `ResultAsync<T, ApiError>` (neverthrow). Web calls it with `getAuthToken: () => undefined` (cookie auth); mobile passes a SecureStore-backed getter. Queries/mutations consume the result through `unwrapForQuery` (`@neon/client/query`), which throws `ApiRequestError` on failure unless given a fallback; web passes `import.meta.env.DEV ? MOCK : undefined` so production surfaces errors while dev serves mocks.
 - **`packages/tokens/`** — OKLch design tokens as a JS object. Web continues using CSS vars (generated from the JS object); mobile consumes the object directly via Unistyles.
 
 ## Coding Conventions
@@ -145,8 +145,8 @@ Shared packages:
 - ScalaTest `AnyFunSpec` with `describe`/`it` blocks
 - Suite naming: `<ComponentName>Suite` (e.g., `TaskCompletionServiceSuite`)
 - Mix-in traits: `OptionValues`, `EitherValues`
-- Factory methods for test data setup (`def assignedTask(...)`, `def releasedWave(...)`)
-- In-memory repository implementations with mutable maps and event tracking for domain tests
+- Factory methods for test data setup, shared via the `DomainFactories` trait (`def assignedTask(...)`, `def releasedWave(...)`)
+- In-memory repository implementations with mutable maps and event tracking for domain tests — shared `InMemoryXxxRepository` classes (sync) plus call-recording async variants for shell suites; app route suites share auth scaffolding via `RouteSuiteBase`
 - `EventSourcedBehaviorTestKit` for actor tests (no cluster needed, serialization verification enabled)
 - `ScalaTestWithActorTestKit` with single-node cluster for Pekko repository integration tests
 - `ScalatestRouteTest` with stub services for HTTP route tests

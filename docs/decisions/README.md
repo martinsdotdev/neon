@@ -87,6 +87,7 @@ The [architecture book](../book/README.md) is the *current* design — the prese
 | [0012](0012-use-conventional-commits-and-branches.md) | Use Conventional Commits and branch naming | accepted | 2026-04-14 |
 | [0013](0013-use-github-flow-workflow.md) | Use GitHub Flow workflow | accepted | 2026-04-14 |
 | [0014](0014-use-neverthrow-for-service-errors.md) | Use neverthrow for service-layer error handling | accepted | 2026-04-14 |
+| [0015](0015-extract-cascades-into-pure-decision-modules.md) | Extract multi-step cascades into pure decision modules behind thin service shells | accepted | 2026-06-11 |
 
 When adding an ADR, append a row to this table.
 
