@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import type {
   AuthLoginRequest,
   AuthLoginResponse,
@@ -8,16 +9,14 @@ import { apiClient, clearAuthToken, setAuthToken } from "./client"
 export const login = async (
   credentials: AuthLoginRequest,
 ): Promise<AuthLoginResponse> => {
-  const result = await apiClient.post<AuthLoginResponse>(
-    "/auth/login",
-    credentials,
+  const response = await unwrapForQuery(
+    apiClient.post<AuthLoginResponse>("/auth/login", credentials),
   )
-  if (result.isErr()) throw result.error
-  if (!result.value.token) {
+  if (!response.token) {
     throw new Error("Login response missing token (mobile clients require it)")
   }
-  await setAuthToken(result.value.token)
-  return result.value
+  await setAuthToken(response.token)
+  return response
 }
 
 export const fetchCurrentUser = async (): Promise<AuthUser | null> => {

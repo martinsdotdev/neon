@@ -1,3 +1,4 @@
+import { unwrapForQuery } from "@neon/client/query"
 import type { Task, TaskState } from "@neon/domain/task"
 import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query"
 import { apiClient } from "./client"
@@ -28,22 +29,20 @@ export const taskQueries = {
     queryOptions({
       queryFn: async (): Promise<Array<MobileTask>> => {
         const stateParam = state === "all" ? "" : `&state=${state}`
-        const result = await apiClient.get<TaskListResponse>(
-          `/tasks?assignedTo=${userId}${stateParam}`,
+        const response = await unwrapForQuery(
+          apiClient.get<TaskListResponse>(
+            `/tasks?assignedTo=${userId}${stateParam}`,
+          ),
         )
-        if (result.isErr()) throw result.error
-        return result.value.tasks
+        return response.tasks
       },
       queryKey: ["tasks", "assigned", userId, state] as const,
     }),
 
   byId: (taskId: string) =>
     queryOptions({
-      queryFn: async (): Promise<MobileTask> => {
-        const result = await apiClient.get<MobileTask>(`/tasks/${taskId}`)
-        if (result.isErr()) throw result.error
-        return result.value
-      },
+      queryFn: (): Promise<MobileTask> =>
+        unwrapForQuery(apiClient.get<MobileTask>(`/tasks/${taskId}`)),
       queryKey: ["tasks", "byId", taskId] as const,
     }),
 }
@@ -60,14 +59,10 @@ interface CompleteTaskResponse {
 export const useCompleteTask = (taskId: string) => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (input: { actualQuantity: number; verified: boolean }) => {
-      const result = await apiClient.post<CompleteTaskResponse>(
-        `/tasks/${taskId}/complete`,
-        input,
-      )
-      if (result.isErr()) throw result.error
-      return result.value
-    },
+    mutationFn: (input: { actualQuantity: number; verified: boolean }) =>
+      unwrapForQuery(
+        apiClient.post<CompleteTaskResponse>(`/tasks/${taskId}/complete`, input),
+      ),
     onSuccess: () => {
       // Invalidate the assigned-tasks list so the completed task moves out
       // and any newly-spawned shortpick replacement appears.
@@ -79,15 +74,14 @@ export const useCompleteTask = (taskId: string) => {
 export const useClaimTask = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (taskId: string) => {
-      const result = await apiClient.post<{
-        status: string
-        taskId: string
-        userId: string
-      }>(`/tasks/${taskId}/claim`)
-      if (result.isErr()) throw result.error
-      return result.value
-    },
+    mutationFn: (taskId: string) =>
+      unwrapForQuery(
+        apiClient.post<{
+          status: string
+          taskId: string
+          userId: string
+        }>(`/tasks/${taskId}/claim`),
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] })
     },
