@@ -1,13 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
-
-export interface Location {
-  code: string
-  id: string
-  locationType: "Pick" | "Reserve" | "Buffer" | "Staging" | "Packing" | "Dock"
-  pickingSequence: number | null
-  zoneId: string | null
-}
+import type { Location } from "@neon/domain/location"
 
 const MOCK_LOCATIONS: Array<Location> = import.meta.env.DEV
   ? [

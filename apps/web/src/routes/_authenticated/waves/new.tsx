@@ -11,8 +11,8 @@ import {
   Truck,
 } from "lucide-react"
 import { toast } from "sonner"
+import type { Location } from "@neon/domain/location"
 import type { Carrier } from "@/shared/api/carriers"
-import type { Location } from "@/shared/api/locations"
 import type { Order } from "@/shared/api/orders"
 import type { Wave } from "@/shared/api/waves"
 import { carrierQueries } from "@/shared/api/carriers"

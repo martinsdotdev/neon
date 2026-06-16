@@ -1,18 +1,12 @@
+import type { Sku } from "@neon/domain/sku"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
-
-export interface MobileSku {
-  id: string
-  code: string
-  description: string
-  lotManaged: boolean
-}
 
 export const skuQueries = {
   byId: (skuId: string) =>
     queryOptions({
-      queryFn: async (): Promise<MobileSku> => {
-        const result = await apiClient.get<MobileSku>(`/skus/${skuId}`)
+      queryFn: async (): Promise<Sku> => {
+        const result = await apiClient.get<Sku>(`/skus/${skuId}`)
         if (result.isErr()) throw result.error
         return result.value
       },

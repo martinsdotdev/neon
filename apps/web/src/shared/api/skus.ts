@@ -1,12 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
-
-export interface Sku {
-  code: string
-  description: string
-  id: string
-  lotManaged: boolean
-}
+import type { Sku } from "@neon/domain/sku"
 
 const MOCK_SKUS: Array<Sku> = import.meta.env.DEV
   ? [

@@ -1,21 +1,12 @@
+import type { Location } from "@neon/domain/location"
 import { queryOptions } from "@tanstack/react-query"
 import { apiClient } from "./client"
-
-export interface MobileLocation {
-  id: string
-  code: string
-  locationType: string
-  zoneId: string | null
-  pickingSequence: number | null
-}
 
 export const locationQueries = {
   byId: (locationId: string) =>
     queryOptions({
-      queryFn: async (): Promise<MobileLocation> => {
-        const result = await apiClient.get<MobileLocation>(
-          `/locations/${locationId}`,
-        )
+      queryFn: async (): Promise<Location> => {
+        const result = await apiClient.get<Location>(`/locations/${locationId}`)
         if (result.isErr()) throw result.error
         return result.value
       },
