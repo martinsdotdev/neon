@@ -20,6 +20,8 @@ sbt scalafmtCheckAll     # Check formatting
 sbt scalafixAll          # Run scalafix (import organization)
 ```
 
+> Most suites need no external services. The exceptions live in the `app` module: the R2DBC reference-data repository suites (`neon.app.repository.*`) and the projection-handler suites (`neon.app.projection.*`) run against PostgreSQL via Testcontainers, so **Docker must be running** for a full `sbt test`. Domain-module tests (`core/test`, `wave/test`, …) and the app HTTP route/auth suites do not need Docker. `scalafmtAll` rewrites every source to LF line endings.
+
 ### Web Frontend
 
 ```bash
@@ -29,6 +31,9 @@ pnpm --filter web build   # Production build
 pnpm --filter web test    # Run Vitest tests
 pnpm --filter web lint    # ESLint
 pnpm --filter web format  # Prettier (no semicolons, double quotes, trailing commas)
+pnpm --filter web check   # Ultracite (Oxlint + Oxfmt) — apps/web's primary lint/format gate
+pnpm --filter web fix     # Ultracite autofix (run before committing web changes; see apps/web/.claude/CLAUDE.md)
+pnpm -r test              # Run every workspace package's Vitest suites
 ```
 
 ### Mobile (Expo)
@@ -156,3 +161,14 @@ Shared packages:
 - No semicolons, double quotes, 80-char line width
 - `cn()` utility for Tailwind class merging (clsx + tailwind-merge)
 - OKLch color tokens with light/dark mode support
+
+### Commits & Branching
+
+- Conventional Commits: `type(scope): description` (e.g. `feat(app): …`, `refactor(core): …`); scope is the kebab module name (ADR 0012).
+- Branch names: `type/description` (e.g. `refactor/scala-named-arguments`). GitHub Flow — short-lived branches off `master`, PRs required, linear history (ADR 0013).
+
+## Architecture Decisions & Documentation
+
+- **ADRs** live in `docs/decisions/` (MADR 4.0, indexed by `docs/decisions/README.md`). They are **append-only**: never edit an accepted ADR — add a new one (marking the old one superseded) instead.
+- **Ubiquitous language**: `CONTEXT.md` (repo root) plus `docs/book/06-appendices/appendix-f-glossary.md`.
+- **Deep architecture**: `docs/book/` walks the whole system chapter by chapter (domain model → infrastructure → system concerns), with every snippet cited to a real source file — keep it in sync when you change a pattern it documents.
