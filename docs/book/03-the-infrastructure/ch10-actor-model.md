@@ -1,6 +1,6 @@
 # The Actor Model with Pekko
 
-In Part II we built a complete domain layer that works beautifully in memory.
+In Part II we built a complete domain layer that runs entirely in memory.
 Pure typestate transitions, immutable events, stateless policies, orchestrating
 services, and abstract repository ports: everything compiles, tests pass, and
 the design is clean. But production systems need persistence, concurrency
@@ -151,7 +151,7 @@ The method also takes four value parameters:
 - **`eventHandler`**: a function `(State, WaveEvent) => State` that
   reconstructs state from persisted events during recovery.
 
-These two functions are the heart of the actor. Everything else is
+These two functions do the actor's real work. Everything else is
 configuration the helper supplies uniformly.
 
 @:callout(info)
@@ -554,7 +554,7 @@ log message produced by this actor, whether from the command handler, event
 handler, or Pekko internals, will include `entityType=Wave` (from the entity
 key's name) and `entityId=<the-id>`.
 
-In production, this is invaluable for debugging. When you see a log line like:
+In production, this matters for debugging. When you see a log line like:
 
 ```
 WARN [entityType=Wave, entityId=abc-123] Invalid command Cancel in state Completed
@@ -626,7 +626,7 @@ command, then either persists events (accepting the command) or replies with an
 error (rejecting it). The event handler is `evolve`. It takes the current state
 and an event, then produces the next state. `EmptyState` is the initial state.
 
-What makes this architecture powerful is the layering. The Pekko actor provides
+What makes this architecture work is the layering. The Pekko actor provides
 the Decider interface to the infrastructure (persistence, recovery, clustering).
 Inside the command handler, the actual decision logic delegates to the domain
 aggregate's typestate transition methods. The `planned.release(at)` call in the

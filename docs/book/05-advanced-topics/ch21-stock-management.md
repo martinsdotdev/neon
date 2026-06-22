@@ -77,7 +77,7 @@ much_ is available across an entire zone.
 
 ## The 4-Bucket Quantity Model
 
-The heart of StockPosition is its four-bucket decomposition. Every unit of
+StockPosition is built around a four-bucket decomposition. Every unit of
 on-hand stock falls into exactly one bucket:
 
 ```
@@ -127,8 +127,8 @@ enforces these constraints after every operation.
 
 ## Operations on StockPosition
 
-StockPosition exposes a rich set of operations, each moving quantities between
-specific buckets. Every operation returns a `(StockPosition, Event)` tuple,
+StockPosition exposes operations that move quantities between specific
+buckets. Every operation returns a `(StockPosition, Event)` tuple,
 following the same typestate pattern we saw in earlier chapters.
 
 ### Allocate and Deallocate

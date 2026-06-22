@@ -397,7 +397,7 @@ not required for all warehouse configurations, so when the repository is `None`,
 `loadCascadeState` simply yields no stock position and the cascade decides
 without stock writes.
 
-The `complete` method reads almost like prose: validate the looked-up task; if
+The `complete` method is a straight line: validate the looked-up task; if
 that succeeds, load the cascade state, decide, persist the outcome, and hand the
 caller the `result`. The two private helpers are mechanical. `loadCascadeState`
 fetches everything `decide` needs, and the order matters:

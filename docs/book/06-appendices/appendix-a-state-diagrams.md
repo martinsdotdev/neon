@@ -160,7 +160,7 @@ stateDiagram-v2
 
 ## GoodsReceipt
 
-A goods receipt represents a physical receiving session against an inbound delivery. Lines are recorded incrementally before confirmation.
+A goods receipt is a physical receiving session against an inbound delivery, with lines recorded incrementally before confirmation.
 
 ```mermaid
 stateDiagram-v2
@@ -193,7 +193,7 @@ stateDiagram-v2
 
 ## CountTask
 
-A count task represents a single SKU-location count within a cycle count. The counter records the actual quantity; variance is computed automatically.
+A count task is a single SKU-location count within a cycle count. The counter records the actual quantity; variance is computed automatically.
 
 ```mermaid
 stateDiagram-v2

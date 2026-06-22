@@ -362,7 +362,7 @@ This policy is a single expression. The `Option` comes directly from
 `event.handlingUnitId`: if the completed task had a handling unit, create a
 transport order to move it to the destination; if not, do nothing. Not every
 task involves a handling unit (some task types like replenishment or transfer
-may operate without one), so the `Option` handles both cases elegantly.
+may operate without one), so the `Option` covers both cases.
 
 The policy takes a `TaskEvent.TaskCompleted` rather than a `Task.Completed`.
 This is a deliberate choice. The routing decision fires in response to an

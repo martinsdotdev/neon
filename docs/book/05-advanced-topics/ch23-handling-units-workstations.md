@@ -501,9 +501,9 @@ together during outbound fulfillment:
    skip it if pre-packed). They transition through `ReadyToShip` and finally
    `Shipped` as they leave the building.
 
-Through this flow, the four aggregates maintain clear boundaries. Handling units
-track the containers. Transport orders track the movements. Workstations track
-the processing stations. Slots track the positions within those stations. Each
+Through this flow, the four aggregates maintain clear boundaries. Handling
+units track the containers, transport orders the movements, workstations the
+processing stations, and slots the positions within those stations. Each
 aggregate owns its own state machine, and cross-aggregate coordination happens
 through the services and policies in the core module.
 

@@ -190,10 +190,11 @@ Wave
 ```
 
 Notice several things about this output. The suite uses `describe`/`it` blocks,
-which produce the nested structure you see above. The test names read like
-specifications ("authorizes work to begin," "marks all work as done"). And this
-entire suite ran without a database, without an actor system, without Docker. It
-exercises the `Wave` domain aggregate as a plain Scala object in memory.
+which produce the nested structure you see above, and the test names read like
+specifications ("authorizes work to begin," "marks all work as done"). Most
+telling of all, the whole suite ran with no database, no actor system, and no
+Docker: it exercises the `Wave` domain aggregate as a plain Scala object in
+memory.
 
 The naming convention is straightforward: every test suite is named
 `<ComponentName>Suite`. So `WaveSuite` tests the `Wave` aggregate,

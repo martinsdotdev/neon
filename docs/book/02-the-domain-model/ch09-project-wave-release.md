@@ -746,7 +746,7 @@ ran the entire flow with in-memory maps and list buffers. Not a single line
 of code needs to change when we swap in production implementations backed by
 Pekko Cluster Sharding and PostgreSQL.
 
-The domain model works beautifully in memory. But production systems need
+The domain model runs entirely in memory. But production systems need
 actors, cluster sharding, and persistent storage. In Part III, we will build
 the infrastructure layer that brings this domain model to life in a
 distributed, event-sourced system.

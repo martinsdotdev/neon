@@ -134,8 +134,8 @@ val connectionFactory =
 The `ConnectionFactory` is an R2DBC concept: a pool of non-blocking
 database connections. Pekko's `ConnectionFactoryProvider` creates and
 manages this pool based on the configuration we saw in `application.conf`.
-This single connection factory instance gets shared across all repositories
-and serves as the foundation for every database interaction in the system.
+This single connection factory instance is shared across all repositories;
+every database interaction in the system goes through it.
 
 ## Step 4: Build the Service Registry
 

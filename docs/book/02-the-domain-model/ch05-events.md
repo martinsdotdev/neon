@@ -327,7 +327,7 @@ overall architecture.
 
 ## Events as the Contract Between Layers
 
-Events do more than record history. They serve as the contract between three
+Events do more than record history. They are the contract between three
 distinct layers of the architecture:
 
 1. **Aggregates produce events.** The typestate transition methods from
@@ -347,8 +347,8 @@ types. Both speak the language of events.
 
 This makes events an API boundary. Adding a field to `TaskCompleted` means
 updating the aggregate's transition method, the actor's event handler, and
-every projection that consumes that event. This is a feature, not a bug: the
-compiler makes the impact of changes visible. You cannot quietly change what an
+every projection that consumes that event. That is the point: the compiler
+makes the impact of changes visible. You cannot quietly change what an
 event means without updating its consumers.
 
 Here is the flow as a sequence:

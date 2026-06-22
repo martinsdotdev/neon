@@ -3,7 +3,7 @@
 Throughout this book, we have built the entire backend of Neon WES: domain
 aggregates, event sourcing, policies, services, actors, cluster sharding, CQRS
 projections, and an HTTP API. This chapter crosses to the other side of the
-wire and tours the clients that warehouse operators actually use — and the
+wire and tours the clients that warehouse operators actually use, along with the
 shared TypeScript packages that keep those clients honest with the Scala domain.
 
 @:callout(info)
@@ -30,8 +30,8 @@ packages/
 ```
 
 Each shared package publishes its modules through a per-file export map
-(`"./*": "./src/*.ts"`), so an app imports exactly what it needs —
-`@neon/domain/task`, `@neon/client/query` — with no barrel files.
+(`"./*": "./src/*.ts"`), so an app imports exactly what it needs
+(`@neon/domain/task`, `@neon/client/query`) with no barrel files.
 
 ## The Web Console (`apps/web`)
 
@@ -100,7 +100,7 @@ here is a backend test failure, not a silent gap.
 @:@
 
 **`@neon/client`** wraps `fetch` in a `createApiClient({ baseUrl, getAuthToken })`
-factory returning a **neverthrow** `ResultAsync<T, ApiError>` — errors are
+factory returning a **neverthrow** `ResultAsync<T, ApiError>`. Errors are
 values, exactly as in the Scala services (Chapter 18). It parses RFC 9457
 `application/problem+json` bodies into a structured `ApiError`, so the
 problem-details responses we built in Chapter 13 arrive on the client as typed
@@ -164,7 +164,7 @@ with a `ScannerOverlay` component (`apps/mobile/src/scanner/`).
 @:callout(info)
 
 A DataWedge path for rugged Android scanners is planned. Today there is a single
-camera-based adapter, so there is no scanner abstraction seam yet — it will be
+camera-based adapter, so there is no scanner abstraction seam yet; it will be
 introduced when the second adapter lands and gives the seam two implementations
 to justify it.
 
@@ -178,7 +178,7 @@ handling, auth injection, and the `unwrapForQuery` seam; `@neon/domain` pins the
 permission invariants and the task transition table. Run the whole workspace's
 tests with `pnpm -r test`, and the web app's with `pnpm --filter web test`.
 
-With both clients and the shared packages in place, every layer of Neon WES —
+With both clients and the shared packages in place, every layer of Neon WES,
 from the typestate-encoded aggregate at the center to the operator's handheld at
-the edge — is now accounted for. The next chapter steps back to look at the
+the edge, is now accounted for. The next chapter steps back to look at the
 architecture decision records that shaped these choices.

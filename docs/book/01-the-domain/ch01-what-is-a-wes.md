@@ -433,9 +433,9 @@ and velocity-based counting (high-activity locations counted more frequently).
 
 We have spent this chapter describing warehouse operations in terms of things
 that happen: goods _received_, inventory _allocated_, items _picked_, orders
-_shipped_. This is not a coincidence. Warehouse operations are inherently
-event-driven. Every meaningful change in the warehouse is a discrete,
-observable event.
+_shipped_. We described it that way because warehouse operations are
+inherently event-driven: every meaningful change in the warehouse is a
+discrete, observable event.
 
 This is why Neon WES uses _event sourcing_ as its persistence model. Let's
 look at why this is a natural fit rather than a forced technical choice.

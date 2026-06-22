@@ -1,6 +1,6 @@
 # Serialization
 
-An event-sourced system serializes constantly. Every command sent to an actor,
+An event-sourced system serializes constantly: every command sent to an actor,
 every event persisted to the journal, every snapshot saved for recovery, every
 response returned to the caller. If serialization is wrong, the system
 silently corrupts data or fails to recover. In this chapter, we will look at

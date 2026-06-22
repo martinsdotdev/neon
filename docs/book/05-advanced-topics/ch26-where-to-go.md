@@ -41,10 +41,10 @@ In Part V, we went further: stock management, inbound and cycle counting,
 handling units and workstations, the frontend stack, and the Architecture
 Decision Records that document why we made the choices we made.
 
-The result is not a toy. It is a system with fourteen event-sourced
-aggregates, over a dozen services with cascading state transitions, a
-complete RBAC-protected HTTP API, CQRS projections for read-side queries,
-and structured observability from the HTTP boundary through actors and
+What we built is a working system with fourteen event-sourced aggregates,
+over a dozen services with cascading state transitions, a complete
+RBAC-protected HTTP API, CQRS projections for read-side queries, and
+structured observability from the HTTP boundary through actors and
 projections.
 
 ## The Five Patterns Revisited
@@ -231,6 +231,7 @@ defense against bugs. When an illegal state transition is a compile error
 rather than a runtime exception, when every failure mode is visible in a
 type signature, when every architectural choice is documented in an ADR, you
 can change the system with confidence. And in a warehouse that runs around
-the clock, confidence is everything.
+the clock, with no quiet window to recover from a bad deploy, that confidence
+is what keeps the goods moving.
 
 Thank you for reading. Now go build something.

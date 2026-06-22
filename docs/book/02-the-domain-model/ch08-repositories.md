@@ -278,8 +278,8 @@ class InMemoryWaveRepository extends WaveRepository:
 
 <small>_File: core/src/test/scala/neon/core/InMemoryWaveRepository.scala_</small>
 
-Four lines of implementation. The structural repetition is a feature. When you
-have seen one in-memory repository, you have seen them all. Because each adapter
+Four lines of implementation. The repetition is the point: when you have seen
+one in-memory repository, you have seen them all. Because each adapter
 is its own file shared across suites, a new aggregate module can have a working
 test repository in under a minute.
 

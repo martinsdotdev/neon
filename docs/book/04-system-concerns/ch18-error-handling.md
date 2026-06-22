@@ -2,9 +2,8 @@
 
 Every system must deal with things going wrong. The question is not whether
 errors will happen, but how we represent them, propagate them, and present
-them to callers. In Neon WES, error handling is not an afterthought bolted
-onto the domain model. It is a deliberate, three-level architecture that
-matches different error types to different mechanisms.
+them to callers. In Neon WES, error handling is a three-level architecture that matches
+different error types to different mechanisms.
 
 In this chapter, we will walk through all three levels: `require()` for
 programming errors, sealed trait ADTs for business errors, and RFC 9457
@@ -366,7 +365,7 @@ system:
 Because each error trait is sealed and the `match` is total, the compiler
 verifies exhaustive mapping. If someone adds a new error case to
 `TaskCompletionError`, the given instance will not compile until the new case
-maps to a status. This is the sealed trait's killer feature: no error can
+maps to a status. This is what the sealed trait buys you: no error can
 silently slip through, and no error can reach a client without a problem
 body.
 
@@ -449,8 +448,8 @@ If any switch sends the value onto the Left track, steps 2 through 5 are
 bypassed. The `Left(TaskNotFound)` from step 2 propagates directly to the
 caller without executing steps 3, 4, or 5.
 
-This is not just a metaphor. It is a structural property of the code. The
-`Either` type encodes the two-track railway at the type level. The compiler
+The railway is not only a metaphor; it is a structural property of the code.
+The `Either` type encodes the two-track railway at the type level. The compiler
 ensures that callers handle both tracks. And the sealed trait ensures that
 every possible Left value is accounted for.
 

@@ -476,9 +476,8 @@ destination. It is created by routing policies when a task completes, modeling
 the temporal gap between "the task is done" and "the operator confirmed arrival
 at the destination." Once confirmed or cancelled, the order is finished.
 
-Simplicity is a virtue here. Not every aggregate needs a long lifecycle. The
-transport order captures exactly one decision point (confirm or cancel) and
-nothing more.
+Not every aggregate needs a long lifecycle. The transport order captures
+exactly one decision point (confirm or cancel) and nothing more.
 
 ### Workstation
 
@@ -563,9 +562,9 @@ location fields. `Task.Allocated` adds source and destination. `Task.Assigned`
 adds the user. `Task.Completed` adds the actual quantity. Each transition
 enriches the aggregate with the data that becomes available at that stage.
 
-This is not just a modeling choice; it is a documentation feature. By reading
-the case class fields, you know exactly what information is available at each
-point in the lifecycle without consulting any external documentation.
+The accumulation also doubles as documentation. By reading the case class
+fields, you know exactly what information is available at each point in the
+lifecycle without consulting any external documentation.
 
 ### `require()` for creation-time invariants
 

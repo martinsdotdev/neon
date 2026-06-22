@@ -45,7 +45,7 @@ Here is what we are applying:
 By the end of this chapter, we will have received goods at the dock,
 allocated stock for outbound orders, picked with a shortpick, counted
 inventory, adjusted a variance under SOX rules, and switched workstation
-modes. Every line of code is real. Every assertion passes. The test is
+modes. Every line of code is real and every assertion passes; the test is
 the specification.
 
 ## The Test as Living Documentation
@@ -148,7 +148,7 @@ stockRepo.save(bandageStock, bandageEvent)
 
 <small>_File: core/src/test/scala/neon/core/WarehouseDaySimulationSuite.scala_</small>
 
-Three stock positions. Two for aspirin (same SKU, different lots) and
+Three stock positions: two for aspirin (same SKU, different lots) and
 one for bandages. The lot attributes carry GS1 data:
 
 ```scala
@@ -748,7 +748,7 @@ it("switches to Counting mode for cycle count"):
 
 ### Compile-Time Enforcement on Active Workstations
 
-Here is where the typestate pattern shines:
+Here is the payoff of the typestate pattern:
 
 ```scala
 it("cannot switch mode while Active (processing work)"):
@@ -887,7 +887,7 @@ We could not complete a `New` delivery, confirm an empty receipt,
 adjust stock with the same user who counted it (via `Either`), or
 switch modes on an `Active` workstation.
 
-**The 4-bucket stock model** tracked inventory through five distinct
+**The 4-bucket stock model** tracked inventory through six distinct
 operations: creation, addition, allocation, consumption, deallocation,
 and adjustment. The `onHand == available + allocated + reserved +
 blocked` invariant held at every step, enforced by `require` in the

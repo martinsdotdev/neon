@@ -6,12 +6,12 @@ correctly through shortpick detection, transport order creation, wave
 completion checking, and consolidation group state updates. If any link in
 that chain breaks silently, physical goods end up in the wrong place.
 
-Testing in Neon WES is organized as a pyramid with seven distinct layers.
-Each layer tests a different concern, uses different tools, and catches
-different categories of bugs. The lower layers are fast, pure, and
-numerous. The upper layers are slower, involve real infrastructure, and are
-fewer in count. Together they provide confidence that every state transition,
-every policy decision, and every service orchestration works correctly.
+Testing in Neon WES is organized as a pyramid with seven distinct layers. Each
+layer tests a different concern with different tools, and catches a different
+category of bug. The lower layers are fast, pure, and numerous; the upper
+layers are slower and fewer, and lean on real infrastructure. Together they
+cover every state transition, policy decision, and service orchestration in
+the system.
 
 In this chapter we will walk through each layer, study the conventions that
 keep tests consistent, and examine real test suites from the codebase.

@@ -37,9 +37,9 @@ introductory Scala 3 resource, you will be well prepared.
 
 ## What You Will Learn
 
-This is not a toy example. Neon WES is a real system with over a dozen domain
-modules, fourteen event-sourced aggregates, cluster sharding, CQRS projections,
-and a full HTTP API. Over the course of this book, we will cover:
+Neon WES is a real system with over a dozen domain modules, fourteen
+event-sourced aggregates, cluster sharding, CQRS projections, and a full HTTP
+API. Over the course of this book, we will cover:
 
 - **Domain modeling** with typestate-encoded aggregates, where the Scala
   compiler itself prevents invalid state transitions.
@@ -90,11 +90,11 @@ draws on five foundational patterns, each of which has shaped a different aspect
 of the system. We mention them briefly here so you know what to look for as you
 read. Each one will be explored in depth in the relevant chapters.
 
-**The Decider pattern** (Jrme Chassaing). This pattern separates _deciding_
+**The Decider pattern** (Jérôme Chassaing). This pattern separates _deciding_
 what should happen from _executing_ the decision. In Neon WES, our policies are
 pure functions that examine current state and return an optional state
 transition paired with an event. No side effects, no I/O, just decisions. This
-is the beating heart of our domain logic.
+pure decision logic is the core of the domain.
 
 **Railway Oriented Programming** (Scott Wlaschin). Inspired by the functional
 programming community's approach to error handling, we use `Either[Error, Result]`
@@ -177,4 +177,4 @@ If you are new to the domain, we hope this book makes the warehouse feel
 approachable. If you are new to these technical patterns, we hope it makes
 event sourcing and the actor model feel practical rather than theoretical.
 
-Either way, let's dig in.
+Either way, let's open the hood.

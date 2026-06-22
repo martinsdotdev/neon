@@ -671,7 +671,8 @@ exposes:
 All routes follow the same structure we explored in `WaveRoutes`:
 authenticate, parse request, call async service, map `Right` to a success DTO
 and `Left` through `completeProblem`. The consistency makes the codebase easy
-to navigate. If you understand one route file, you understand them all.
+to navigate: the route files are interchangeable in shape, so reading one
+teaches you the rest.
 
 ## What Comes Next
 
